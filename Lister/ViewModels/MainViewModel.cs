@@ -233,7 +233,7 @@ class MainViewModel : ViewModelBase
 
         //Process notepade = Process.Start ("notepade");
         //IntPtr handle = notepade.Handle;
-
+        
         bool isDialogSuccessfull = PrintDlg (unmanagedPrintDlg);
 
         DOCINFO docInfo = new DOCINFO ();
