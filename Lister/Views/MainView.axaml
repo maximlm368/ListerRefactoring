@@ -1,0 +1,646 @@
+<!-- 
+<Design.DataContext>	
+		  <vm:MainViewModel />
+    </Design.DataContext>
+
+This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+		 
+		 if ( lastName.Width < formatedText.Width * 1.176 )
+		 
+		 
+		 
+		  <Image
+								  Source =  "{Binding   Path = singleImage,   Mode=OneWay }"
+								  Width="350"
+								  Height="212" />
+		 
+		 
+		 Name="badgeBackground"
+"{Binding   Path = badgeDescription.backgroundImagePath,   Mode=OneWay }"
+Name="TextDataOfPerson"
+
+"{Binding   Path = viewModelImage,   Mode=OneWay }"
+
+<views:MainView />
+Content="{Binding  Content}"
+
+
+<Border   BorderBrush="Brown"  BorderThickness="1"  Grid.Column="3"  Width="100"   Height="20" >
+			     <TextBlock  Name="trail"  
+						   Opacity="1"  FontSize="10" 
+						   Tapped="TrailTapped"
+						   Text="qwerty           qwerty">
+					 
+				 </TextBlock>
+			   </Border>
+			   
+			   
+			   
+			   
+	 <TextBlock
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = reserveDepartmentText,   Mode=OneWay }" />		   
+			  			  
+						  
+						  
+	 <TextBlock
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = reservePositionText,   Mode=OneWay }" />	
+										   
+										   Loaded="LoadedPositionToHandle"
+										   
+										   
+										   
+	 <TextBlock DataContext="{Binding   Mode=OneWay }" 
+										   Height="{Binding   Path = reservePositionTextBlock.Height,   Mode=OneWay }"
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = reservePositionTextBlock.Text,   Mode=OneWay }" />	
+										   
+										   
+	  <TextBlock  DataContext="{Binding    Mode=OneWay }" 
+										   Height="{Binding   Path = reserveDepartmentTextBlock.Height,   Mode=OneWay }"
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = reserveDepartmentTextBlock.Text,   Mode=OneWay }" />		
+										   
+										    Height="{Binding  Path = Height,  Mode=OneWay }"
+										            HorizontalAlignment="Center"  FontSize="11"
+													
+													
+													
+								
+									   <TextBlock  DataContext="{Binding   Mode=OneWay }"
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = personalTextContainerHeight,   Mode=OneWay }" />	
+										   
+										   
+										   <Grid.ColumnDefinitions>
+				   <ColumnDefinition Width="100" ></ColumnDefinition>
+				   <ColumnDefinition ></ColumnDefinition>
+				   <ColumnDefinition Width="5" ></ColumnDefinition>
+				   <ColumnDefinition Width="120" ></ColumnDefinition>
+				   <ColumnDefinition Width="170" ></ColumnDefinition>
+			   </Grid.ColumnDefinitions>
+			   
+			   <Grid.ColumnDefinitions>
+				   <ColumnDefinition  Width="100" ></ColumnDefinition>
+				   <ColumnDefinition  Width="305" ></ColumnDefinition>
+				   <ColumnDefinition  Width="120" ></ColumnDefinition>
+				   <ColumnDefinition  Width="120" ></ColumnDefinition>
+			   </Grid.ColumnDefinitions>
+			   
+			   
+			   
+			   
+			   
+			    <ItemsControl  Name="evers"
+					      ItemsSource="{Binding   Path = everBadges,   Mode=OneWay }"  Canvas.Left="46"  Canvas.Top="30" >
+					   <ItemsControl.ItemTemplate>
+						   <DataTemplate>
+							   
+							   <Border  BorderThickness="1"  BorderBrush="Gray" >
+
+								   <Canvas  Name="badgeInEvers"  Width="350"  Height="212">
+									   
+									   <Image  Source = "{Binding   Path = viewModelImage,   Mode=OneWay }"
+								            Width="350" />
+
+									   <StackPanel   Width="220" Background="AliceBlue"
+										   Canvas.Left="{Binding   
+										                 Path = badgeModel.badgeDescription.badgeDimensions.personTextBlockLeftShiftOnBackground,   
+														 Mode=OneWay }"  
+									       Canvas.Top="{Binding   
+										                Path = badgeModel.badgeDescription.badgeDimensions.personTextBlockTopShiftOnBackground,   
+														Mode=OneWay }"	>
+
+										   <TextBlock
+											   HorizontalAlignment="Center"  FontSize="30"  Loaded="LoadedLastNameToHandle" 
+											   Text="{Binding   Path = lastName,   Mode=OneWay }" />
+
+										   <ItemsControl
+											   ItemsSource="{Binding   Path = reserveLastNameTextBlocks,   Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock DataContext="{Binding   Mode=OneWay }"
+																  Height="{Binding  Path = Height,  Mode=OneWay }"
+														          HorizontalAlignment="{Binding  Path = HorizontalAlignment,  Mode=OneWay }"
+														          FontSize="{Binding  Path = FontSize,  Mode=OneWay }"
+														          Text="{Binding   Path = Text,   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+										   
+										   <TextBlock  DataContext="{Binding   Mode=OneWay }"
+											   HorizontalAlignment="Center"  FontSize="16"  Loaded="LoadedFirstAndMiddleNamesToHandle"  
+											   Text="{Binding   Path = firstAndMiddleName,   Mode=OneWay }" />
+
+										   <ItemsControl
+											   ItemsSource="{Binding   Path = reserveFirstAndMiddleNamesTextBlocks,   Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock DataContext="{Binding   Mode=OneWay }"
+																  Height="{Binding  Path = Height,  Mode=OneWay }"
+														          HorizontalAlignment="{Binding  Path = HorizontalAlignment,  Mode=OneWay }"
+														          FontSize="{Binding  Path = FontSize,  Mode=OneWay }"
+														          Text="{Binding   Path = Text,   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+										   
+										   <TextBlock  DataContext="{Binding   Mode=OneWay }"
+											   HorizontalAlignment="Center"  FontSize="11"  Loaded="LoadedDepartmentToHandle"
+											   Text="{Binding   Path = departmentName,   Mode=OneWay }" />
+
+										   <ItemsControl
+												ItemsSource="{Binding   Path = reserveDepartmentTextBlocks,   Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock DataContext="{Binding   Mode=OneWay }"
+																  Height="{Binding  Path = Height,  Mode=OneWay }"
+														          HorizontalAlignment="{Binding  Path = HorizontalAlignment,  Mode=OneWay }"
+														          FontSize="{Binding  Path = FontSize,  Mode=OneWay }"
+														          Text="{Binding   Path = Text,   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  DataContext="{Binding   Mode=OneWay }"
+											   HorizontalAlignment="Center"  FontSize="11"   Loaded="LoadedPositionToHandle"
+											   Text="{Binding   Path = positionName,   Mode=OneWay }" />
+
+										   <ItemsControl
+														 ItemsSource="{Binding  Path = reservePositionTextBlocks,  Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock DataContext="{Binding   Mode=OneWay }"
+																  Height="{Binding  Path = Height,  Mode=OneWay }"
+										                          HorizontalAlignment="{Binding  Path = HorizontalAlignment,  Mode=OneWay }"
+														          FontSize="{Binding  Path = FontSize,  Mode=OneWay }"
+																  Text="{Binding   Path = Text,   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+										   
+										   <TextBlock  DataContext="{Binding   Mode=OneWay }"
+										   HorizontalAlignment="Center"  FontSize="11"
+										   Text="{Binding   Path = personalTextContainerHeight,   Mode=OneWay }" />
+										   
+									   </StackPanel>
+								   </Canvas> 
+							   </Border>
+						   </DataTemplate>
+					   </ItemsControl.ItemTemplate>
+				   </ItemsControl>
+			   
+			   
+			   
+			   <Button  Name="generator"  Width="120"  Content="Generate" 
+						Grid.Column="1"  Grid.Row="0"  Tapped="GeneratePdf"
+						 HorizontalAlignment="Center"/>
+						 
+				<Border Name="pageBorder"   BorderBrush="LightBlue"  BorderThickness="1"  Margin="20"  Width="794"  Height="1123">
+				
+				<Style Selector="TextBlock.Position">
+					   <Setter Property="FontSize" Value="11"/>
+					   <Setter Property="Height" Value="14"/>
+					   <Setter Property="HorizontalAlignment" Value="Center"/>
+				   </Style>
+				   
+				   
+				   
+				   <Canvas  Name="badgeInEvens"  Width= "{Binding   Path = badgeWidth,   Mode=OneWay }"
+											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
+									   
+									   <Image  Source = "{Binding   Path = imageBitmap,   Mode=OneWay }"
+								               Width="{Binding   Path = badgeWidth,   Mode=OneWay }" />
+											   
+				<ItemsControl  Name="evens"
+					              ItemsSource="{Binding   Path = evenBadges,   Mode=OneWay }"  
+								  Canvas.Left= "{Binding   Path = evenLeftShift,   Mode=OneWay }" 
+								  Canvas.Top="{Binding   Path = badgeStackTopShift,   Mode=OneWay }" >	
+								  
+								  
+				<Canvas.Styles>
+					   <Style Selector="TextBlock">
+						   <Setter Property="HorizontalAlignment" Value="Center"/>
+					   </Style>
+					   <Style Selector="TextBlock.FirstLevel">
+						   <Setter Property="FontSize" Value="{Binding   Path = badgeExample.firstLevelFontSize,   Mode=OneWay }" />
+						   <Setter Property="Height" Value="{Binding   Path = badgeExample.firstLevelTBHeight,   Mode=OneWay }" />
+					   </Style>
+					   <Style Selector="TextBlock.SecondLevel">
+						   <Setter Property="FontSize" Value="{Binding   Path = badgeExample.secondLevelFontSize,   Mode=OneWay }"/>
+						   <Setter Property="Height" Value="{Binding   Path = badgeExample.secondLevelTBHeight,   Mode=OneWay }"/>
+					   </Style>
+					   <Style Selector="TextBlock.ThirdLevel">
+						   <Setter Property="FontSize" Value="{Binding   Path = badgeExample.thirdLevelFontSize,   Mode=OneWay }"/>
+						   <Setter Property="Height" Value="{Binding   Path = badgeExample.thirdLevelTBHeight,   Mode=OneWay }"/>
+					   </Style>
+				   </Canvas.Styles>
+			   
+			   
+			   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }" 
+													Background="AliceBlue"
+										            Canvas.Left="{Binding   Path = textAreaLeftShift,   Mode=OneWay }"  
+									                Canvas.Top="{Binding   Path = textAreaTopShift,   Mode=OneWay }"	>
+													
+													
+			<Label  Content="{Binding   Path = screenWidth,   Mode=OneWay}" />										
+		 -->
+
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Lister.ViewModels"
+			 xmlns:usercontrols="clr-namespace : Lister.Views"
+             mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
+             x:Class="Lister.Views.MainView"
+             x:DataType="vm:MainViewModel" >
+  
+
+
+   <StackPanel   ZIndex="0">
+	   <StackPanel ZIndex="1">
+
+		   <Grid Name="source"  Height="40" >
+			   <Grid.ColumnDefinitions>
+				   <ColumnDefinition Width="100" ></ColumnDefinition>
+				   <ColumnDefinition ></ColumnDefinition>
+				   <ColumnDefinition Width="130" ></ColumnDefinition>
+				   <ColumnDefinition Width="200" ></ColumnDefinition>
+			   </Grid.ColumnDefinitions>
+
+			   <Label Content="Источник:" Grid.Column="0"  Padding="10"></Label>
+			   <TextBox  Name="personsSourceFile"  Text="{ Binding   Path = sourceFilePath,   Mode=OneWayToSource }"
+						 Grid.Column="1"  Height="20"  FontSize="14"  TextChanged="Seal" />
+			   <Button Name="chooseFile"  Tapped="ChooseFile"  Content="Выбрать файл"  Grid.Column="2" 
+					   HorizontalAlignment="Center" ></Button>
+			   <Button  Name="editSourceFile"   Tapped="OpenLikeExcel"  HorizontalAlignment="Center"
+						Content="Редактировать файл" Grid.Column="3" ></Button>
+		   </Grid>
+
+
+		   <Grid Name="personInsertionKindChoosing"  ZIndex="0"   Height="35">
+			   <Grid.ColumnDefinitions>
+				   <ColumnDefinition  Width="100" ></ColumnDefinition>
+				   <ColumnDefinition  Width="1036" ></ColumnDefinition>
+				   <ColumnDefinition  Width="100" ></ColumnDefinition>
+				   <ColumnDefinition  Width="130" ></ColumnDefinition>
+			   </Grid.ColumnDefinitions>
+
+			   <Label  Name="fio"  Content="По ФИО:" Grid.Column="0"  Padding="10" ></Label>
+
+			   <Canvas  Name="customCombobox"  Grid.Column="1" >
+
+				   <TextBox  Name="startFace"  Margin="0,1"
+							 TextChanged="HandleTapingOnPersonSelectionTextBox"
+							 Text="{Binding   Path = chosenPerson.entireName,   Mode=OneWay  }"  
+							 Opacity="1"  Width="1046"  FontSize="14" />
+
+				   <Button  Name="toDropDownOrPickUpInsertionKindList"  Canvas.Left="1019"  Canvas.Top="2"  FontSize="14"
+							Tapped="DropDownOrPickUpListOfPersons" > v </Button>
+
+				   <ListBox  Name="dropInsertionKindList"  SelectionMode="Single"  AutoScrollToSelectedItem="True"
+							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="1046"
+							 BorderBrush="Brown"  BorderThickness="1" Canvas.Top="32"   Opacity="0"
+							 Tapped="PickUpPersonList"
+							 ItemsSource="{Binding   Path = visiblePeople,   Mode=OneWay }"
+							 SelectedItem="{Binding   Path = chosenPerson,   Mode=OneWay  }" >
+
+					   <ListBox.ItemTemplate>
+						   <DataTemplate>
+							   <TextBlock  Text="{Binding   Path = entireName,   Mode=OneWay  }"  FontSize="14"
+										   Padding="0,0,0,0"></TextBlock>
+						   </DataTemplate>
+					   </ListBox.ItemTemplate>
+
+				   </ListBox>
+
+			   </Canvas>
+
+			   <Label  Name="or"  Content="ИЛИ"  Grid.Column="2"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
+			   
+			   <Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="3"
+						                          Tapped="AcceptEntirePersonList" />
+
+		   </Grid>
+		   
+
+		   <Grid Name="badgeTemplateChoice" >
+			   <Grid.ColumnDefinitions>
+				   <ColumnDefinition  Width="100"></ColumnDefinition>
+				   <ColumnDefinition  Width="233"></ColumnDefinition>
+				   <ColumnDefinition  Width="100"></ColumnDefinition>
+				   <ColumnDefinition Width="100"></ColumnDefinition>
+				   <ColumnDefinition Width="100"></ColumnDefinition>
+				   <ColumnDefinition Width="100"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="64"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="30"></ColumnDefinition>
+				   <ColumnDefinition Width="64"></ColumnDefinition>
+				   <ColumnDefinition ></ColumnDefinition>
+			   </Grid.ColumnDefinitions>
+			   <Grid.RowDefinitions>
+				   <RowDefinition ></RowDefinition>
+			   </Grid.RowDefinitions>
+
+			   <Label Content="Шаблон:" Grid.Column="0"   Padding="10"></Label>
+
+
+			   <Canvas  Name="customCombobox2"  Grid.Column="1" >
+
+				   <TextBox  Name="startFace2"  Margin="0,3"  Opacity="1"  Width="230"  FontSize="14"  MaxHeight="30" />
+				   
+				   <Button  Name="toDropDownOrPickUpTemplateList"  Canvas.Left="203"  Canvas.Top="4"    FontSize="14"
+							Tapped="DropDownOrPickUpTemplatesList" > v </Button>
+
+				   <ListBox  Name="dropTemplateList"  SelectionMode="Single"  AutoScrollToSelectedItem="True"
+							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="230"
+							 BorderBrush="Brown"  BorderThickness="1"  Canvas.Top="34"  Opacity="0"
+						     Tapped="PickUpTemplatesList"
+							 ItemsSource="{ Binding   Path = templates,   Mode = OneWay }"
+							 SelectedItem="{ Binding   Path = chosenTemplate,   Mode = OneWay }" >
+
+					   <ListBox.ItemTemplate>
+						   <DataTemplate>
+							   <TextBlock  Text="{Binding   Path = Name,   Mode=OneWay  }"  FontSize="14"></TextBlock>
+						   </DataTemplate>
+					   </ListBox.ItemTemplate>
+				   </ListBox>
+				   
+			   </Canvas>
+
+
+			   <Button  Name="buildBadges"  Width="100" Content="Построить" Grid.Column="2"  Tapped="BuildBadges"
+						                                                                        HorizontalAlignment="Center"/>
+			   <Button  Name="clearBadges"  Width="96" Content="Очистить" Grid.Column="3"  Tapped="ClearBadges"
+						                                                                        HorizontalAlignment="Center"/>
+			   <Button  Name="editIncorrectBadges" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
+												                                               Tapped="GeneratePdf" />
+			   <Button Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  Tapped="Print" />
+			   <Button   Content="z" Grid.Column="6"  HorizontalAlignment="Center" Width="28"
+																							  Tapped="ToFirstPage" />
+			   <Button   Content="b" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
+												                                               Tapped="ToPreviousPage" />
+
+			   <TextBox  Name="visiblePageNumber"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
+						      TextChanged="StepOnPage" Text="{Binding   Path = visiblePageNumber,   Mode=OneWay}"/>
+			   
+			   <Button   Content="f" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
+												                                               Tapped="ToNextPage" />
+			   <Button   Content="l" Grid.Column="10"  HorizontalAlignment="Center" Width="28" 
+												                                               Tapped="ToLastPage" />
+			   <Button   Content="+" Grid.Column="11"  HorizontalAlignment="Center" Width="28" 
+												                                               Tapped="ZoomOn" />
+			   <Button   Content="-" Grid.Column="12"  HorizontalAlignment="Center" Width="28"
+												                                               Tapped="ZoomOut" />
+			   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="13"  MaxHeight="30" Margin="0,3"
+						        TextChanged="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
+			   
+		   </Grid>
+
+	   </StackPanel>
+       
+	   
+	   
+
+	   <Border   BorderBrush="Brown"  BorderThickness="1"  Height="570"  Width="1330" Margin="20">
+	   <ScrollViewer  Name="scroller" AllowAutoHide="True"    Background="AliceBlue">
+
+		   <Border Name="pageBorder"   BorderBrush="LightBlue"  BorderThickness="1"  Margin="20"
+				   DataContext="{Binding   Path = visiblePage,   Mode=OneWay }"
+				   Width= "{Binding   Path = pageWidth,   Mode=OneWay }"
+				   Height="{Binding   Path = pageHeight,   Mode=OneWay }" 
+				   ScrollViewer.VerticalScrollBarVisibility="Auto"
+				   ScrollViewer.HorizontalScrollBarVisibility="Auto">
+			   <Canvas  Name="A4"   Background="White">
+				   
+				   <Canvas.Styles>
+					   <Style Selector="TextBlock">
+						   <Setter Property="HorizontalAlignment" Value="Center"/>
+					   </Style>
+					   <Style Selector="TextBlock.FirstLevel">
+						   <Setter Property="FontSize" 
+								   Value="{Binding ElementName=pageBorder, Path =DataContext.badgeExample.firstLevelFontSize, Mode=OneWay }"/>
+						   <Setter Property="Height" 
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.firstLevelTBHeight, Mode=OneWay }" />
+					   </Style>
+					   <Style Selector="TextBlock.SecondLevel">
+						   <Setter Property="FontSize" 
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.secondLevelFontSize, Mode=OneWay }"/>
+						   <Setter Property="Height" 
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.secondLevelTBHeight, Mode=OneWay }"/>
+					   </Style>
+					   <Style Selector="TextBlock.ThirdLevel">
+						   <Setter Property="FontSize" 
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.thirdLevelFontSize, Mode=OneWay }"/>
+						   <Setter Property="Height" 
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.thirdLevelTBHeight, Mode=OneWay }"/>
+					   </Style>
+				   </Canvas.Styles>
+				   
+				   <ItemsControl  Name="evens"
+								  ItemsSource="{Binding   Path = evenBadges,  Mode=OneWay }"
+								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.evenLeftShift, Mode=OneWay }"
+								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.badgeStackTopShift, Mode=OneWay }">
+					   <ItemsControl.ItemTemplate>
+						   <DataTemplate>
+
+							   <Border  BorderThickness="1"  BorderBrush="Gray" >
+
+								   <Canvas  Name="badgeInEvens"  Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
+											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
+
+									   <Image  Source = "{Binding   Path = imageBitmap,  Mode=OneWay }"
+								               Width="{Binding   Path = badgeWidth,   Mode=OneWay }" />
+
+									   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }"
+													Background="AliceBlue"
+										            Canvas.Left="{Binding Path = textAreaLeftShift, Mode=OneWay }"
+									                Canvas.Top="{Binding Path = textAreaTopShift, Mode=OneWay }"	>
+
+										   <TextBlock  Classes ="FirstLevel"
+													   Text="{Binding   Path = lastName,  Mode=OneWay }" />
+
+										   <ItemsControl ItemsSource="{Binding Path = reserveLastNameTextBlocks, Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock 
+																  Classes ="FirstLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="SecondLevel"
+											           Text="{Binding   Path = firstAndSecondName,   Mode=OneWay }" />
+
+										   <ItemsControl
+											   ItemsSource="{Binding   Path = reserveFirstAndMiddleNamesTextBlocks,  Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="SecondLevel"
+														          Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="ThirdLevel"
+											           Text="{Binding   Path = departmentName,  Mode=OneWay }" />
+
+										   <ItemsControl ItemsSource="{Binding Path = reserveDepartmentTextBlocks, Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="ThirdLevel"
+														          Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="ThirdLevel"
+											           Text="{Binding   Path = positionName,  Mode=OneWay }" />
+
+										   <ItemsControl ItemsSource="{Binding Path = reservePositionTextBlocks, Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="ThirdLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+									   </StackPanel>
+								   </Canvas>
+							   </Border>
+						   </DataTemplate>
+					   </ItemsControl.ItemTemplate>
+				   </ItemsControl>
+
+				   <ItemsControl  Name="odds"
+								  ItemsSource="{Binding   Path = oddBadges,   Mode=OneWay }"
+								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.oddLeftShift, Mode=OneWay }"
+								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.badgeStackTopShift, Mode=OneWay }" >
+					   <ItemsControl.ItemTemplate>
+						   <DataTemplate>
+
+							   <Border  BorderThickness="1"  BorderBrush="Gray" >
+
+								   <Canvas  Name="badgeInOdds"  Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
+											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
+
+									   <Image  Source = "{Binding   Path = imageBitmap,   Mode=OneWay }"
+											   Width="{Binding   Path = badgeWidth,   Mode=OneWay }" />
+
+									   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }"
+													Background="AliceBlue"
+													Canvas.Left="{Binding   Path = textAreaLeftShift,   Mode=OneWay }"
+													Canvas.Top="{Binding   Path = textAreaTopShift,   Mode=OneWay }">
+
+										   <TextBlock  Classes ="FirstLevel"
+													   Text="{Binding   Path = lastName,   Mode=OneWay }" />
+
+										   <ItemsControl ItemsSource="{Binding Path = reserveLastNameTextBlocks, Mode=OneWay }" >
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="FirstLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="SecondLevel"
+													   Text="{Binding   Path = firstAndSecondName,   Mode=OneWay }" />
+
+										   <ItemsControl
+												   ItemsSource="{Binding Path = reserveFirstAndMiddleNamesTextBlocks, Mode=OneWay }">
+
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="SecondLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="ThirdLevel"
+													   Text="{Binding   Path = departmentName,   Mode=OneWay }" />
+
+										   <ItemsControl ItemsSource="{Binding Path = reserveDepartmentTextBlocks, Mode=OneWay }" >
+											   
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+
+													   <TextBlock Classes ="ThirdLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+										   <TextBlock  Classes ="ThirdLevel"
+													   Text="{Binding   Path = positionName,   Mode=OneWay }" />
+
+
+										   <ItemsControl ItemsSource="{Binding  Path = reservePositionTextBlocks,  Mode=OneWay }" >
+											   
+											   <ItemsControl.ItemTemplate>
+												   <DataTemplate>
+													   
+													   <TextBlock Classes ="ThirdLevel"
+																  Text="{Binding   Mode=OneWay }" />
+
+												   </DataTemplate>
+											   </ItemsControl.ItemTemplate>
+										   </ItemsControl>
+
+									   </StackPanel>
+								   </Canvas>
+							   </Border>
+						   </DataTemplate>
+					   </ItemsControl.ItemTemplate>
+				   </ItemsControl>
+
+			   </Canvas>
+		   </Border>
+			   
+	   </ScrollViewer>
+	   </Border>
+		   
+   </StackPanel>
+
+</UserControl>
