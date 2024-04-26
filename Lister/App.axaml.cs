@@ -19,7 +19,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource(null);
-        IPeopleDataSource peopleDataSource = new AnyFilePeopleSource();
+        IPeopleDataSource peopleDataSource = new PeopleSource();
         IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
         IUniformDocumentAssembler docAssembler = new UniformDocAssembler(converter, badgeAppearenceDataSource, peopleDataSource);
         MainWindow mainWindow = new MainWindow (docAssembler);

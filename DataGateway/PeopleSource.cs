@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace DataGateway
 {
-    public class AnyFilePeopleSource : IPeopleDataSource
+    public class PeopleSource : IPeopleDataSource
     {
         public string sourcePath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 
-        public AnyFilePeopleSource() { }
+        public PeopleSource() { }
 
 
         public List<Person> GetPersons(string ? filePath)

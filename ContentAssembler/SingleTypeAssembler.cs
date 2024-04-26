@@ -111,36 +111,5 @@ namespace ContentAssembler
         }
 
 
-        private List<Person> GetPersonList(string sourceFilePath, char[]? separators)
-        {
-            List<Person> result = new List<Person>();
-            Encoding encoding = Encoding.Default;
-            
-            using (StreamReader reader = new StreamReader(sourceFilePath, encoding, true))
-            {
-                string data = reader.ReadLine();
-
-                while ((data = reader.ReadLine()) != null)
-                {
-                    string[] splitedLine = data.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-
-                    var id  = splitedLine[0];
-                    var firstName = splitedLine[1];
-                    var middleName = splitedLine[2];
-                    var lastName = splitedLine[3];
-                    var department = splitedLine[4];
-                    var position = splitedLine[5];
-
-                    Person person = new Person(id, firstName, middleName, lastName, department, position);
-                    result.Add(person);
-
-
-                }
-            }
-
-            return result;
-        }
-
-
     }
 }
