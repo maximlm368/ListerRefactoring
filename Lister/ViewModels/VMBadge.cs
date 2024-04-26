@@ -250,10 +250,10 @@ class VMBadge : ViewModelBase
         secondLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. secondLevelTBHeight;
         thirdLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. thirdLevelTBHeight;
 
-        lastName = badgeModel.person. lastName;
-        firstAndSecondName = badgeModel.person. firstName + " " + badgeModel.person. middleName;
-        departmentName = badgeModel.person. department;
-        positionName = badgeModel.person. position;
+        lastName = badgeModel.person. FamilyName;
+        firstAndSecondName = badgeModel.person. FirstName + " " + badgeModel.person. PatronymicName;
+        departmentName = badgeModel.person. Department;
+        positionName = badgeModel.person. Post;
         reserveLastNameTextBlocks = new ObservableCollection<string> ();
         reserveFirstAndMiddleNamesTextBlocks = new ObservableCollection<string> ();
         reserveDepartmentTextBlocks = new ObservableCollection<string> ();

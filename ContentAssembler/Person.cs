@@ -1,40 +1,103 @@
 ﻿using SkiaSharp;
 using System;
 using System.IO;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace ContentAssembler
 {
     public class Person
     {
-        public string id { get; private set; }
-        public string firstName { get; private set; }
-        public string middleName { get; private set; }
-        public string lastName { get; private set; }
-        public string department { get; private set; }
-        public string position { get; private set; }
+        public string Id { get; private set; }
+        public string FamilyName { get; private set; }
+        public string FirstName { get; private set; }
+        public string PatronymicName { get; private set; }
+        public string Department { get; private set; }
+        public string Post { get; private set; }
 
-
-        public Person(string id, string firstName, string middleName, string lastName,  string department, string position)
-        {
-            this.id = id;
-            this.firstName = firstName;
-            this.middleName = middleName;
-            this.lastName = lastName;
-            this.department = department;
-            this.position = position;
-
-           
+        public string StringPresentation 
+        { 
+            get 
+            {   string view = string.Empty;
+                AppendNameInView (FamilyName, ref view);
+                AppendNameInView (FirstName, ref view);
+                AppendNameInView (PatronymicName, ref view);
+                return view;
+            } 
         }
 
+
+        public Person(string id, string familyName, string firstName, string patronymicName, string department, string post)
+        {
+            Id = id;
+            FamilyName = familyName;
+            FirstName = firstName;
+            PatronymicName = patronymicName;
+            Department = department;
+            Post = post;
+        }
+
+
+        public static Person Create ( string id, string familyName, string firstName
+                                     , string patronymicName, string department, string post ) 
+        {
+            return new Person (id, familyName, firstName, patronymicName, department, post);
+        }
+
+
+        public static Person Create ( string [] parts)
+        {
+            if( parts == null   &&   parts.Length < 6 ) 
+            {
+                throw new ArgumentException ("Arguments are incorrect, check input value");
+            }
+
+            bool condition = IsAllEmpty(parts);
+
+            if ( condition ) 
+            {
+                throw new ArgumentException ("Arguments are incorrect, check input value");
+            }
+
+            return new Person (parts [0], parts [1], parts [2], parts [3], parts [4], parts [5]);
+        }
+
+
+        private static bool IsAllEmpty ( string [] parts ) 
+        {
+            bool result = true;
+
+            for ( int index = 0;   index < parts.Length;   index++ )
+            {
+                if ( ! string.IsNullOrWhiteSpace (parts [index]) )
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
 
 
         public override string ToString()
         {
-            return firstName + " " + middleName + " " + lastName;
+            string result = $"{Id} {FamilyName} {FirstName} {PatronymicName} {Department} {Post}";
+
+            return result;
         }
 
+
+        private void AppendNameInView ( string name, ref string view ) 
+        {
+            if ( ! string.IsNullOrWhiteSpace (name) )
+            {
+                if ( ! string.IsNullOrWhiteSpace (view) )
+                {
+                    view += " ";
+                }
+
+                view += name;
+            }
+        }
     }
-
-
-
 }

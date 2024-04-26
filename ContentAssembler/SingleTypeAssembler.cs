@@ -104,7 +104,7 @@ namespace ContentAssembler
         }
 
 
-        public List<Person> GetPersons(string? personsFilePath) 
+        public List<Person> GetPersons(string ? personsFilePath) 
         {
             people = peopleDataSource.GetPersons(personsFilePath);
             return people;

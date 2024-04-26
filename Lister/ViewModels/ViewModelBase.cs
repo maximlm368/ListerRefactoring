@@ -27,17 +27,17 @@ public class ViewModelBase : ReactiveObject
 }
 
 
-class VMPerson
-{
-    internal string entireName { get; private set; }
-    internal Person person { get; private set; }
+//class VMPerson
+//{
+//    internal string entireName { get; private set; }
+//    internal Person person { get; private set; }
 
-    internal VMPerson(Person person)
-    {
-        entireName = person.lastName + " " + person.firstName + " " + person.middleName;
-        this.person = person;
-    }
-}
+//    internal VMPerson(Person person)
+//    {
+//        entireName = person.lastName + " " + person.firstName + " " + person.middleName;
+//        this.person = person;
+//    }
+//}
 
 
  

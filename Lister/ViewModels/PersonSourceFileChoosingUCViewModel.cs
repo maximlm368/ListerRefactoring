@@ -14,7 +14,7 @@ namespace Lister.ViewModels
     internal class PersonSourceFileChoosingUCViewModel : ViewModelBase
     {
         private IUniformDocumentAssembler uniformAssembler;
-        internal List<VMPerson> people { get; private set; }
+        internal List<Person> people { get; private set; }
         internal string sourceFilePath
         {
             //get { return personsSourceFilePath; }
@@ -25,8 +25,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private ObservableCollection<VMPerson> visibleP;
-        internal ObservableCollection<VMPerson> visiblePeople
+        private ObservableCollection<Person> visibleP;
+        internal ObservableCollection<Person> visiblePeople
         {
             get { return visibleP; }
             set
@@ -38,8 +38,8 @@ namespace Lister.ViewModels
 
         internal PersonSourceFileChoosingUCViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
         {
-            visiblePeople = new ObservableCollection<VMPerson> ();
-            people = new List<VMPerson> (); 
+            visiblePeople = new ObservableCollection<Person> ();
+            people = new List<Person> (); 
             this.uniformAssembler = singleTypeDocumentAssembler;
             
         }
@@ -75,9 +75,8 @@ namespace Lister.ViewModels
 
                 foreach ( var person in persons )
                 {
-                    VMPerson vmPerson = new VMPerson (person);
-                    visiblePeople.Add (vmPerson);
-                    people.Add (vmPerson);
+                    visiblePeople.Add (person);
+                    people.Add (person);
                 }
             }
         }

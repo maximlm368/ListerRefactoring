@@ -36,11 +36,11 @@ class MainViewModel : ViewModelBase
     ConverterToPdf converter;
     private string personsSourceFilePath;
     private string chosenTemplateFilePath;
-    internal List<VMPerson> people { get; private set; }
+    internal List<Person> people { get; private set; }
     internal List<VMBadge> incorrectBadges { get; private set; }
 
-    private ObservableCollection<VMPerson> vP;
-    internal ObservableCollection<VMPerson> visiblePeople 
+    private ObservableCollection<Person> vP;
+    internal ObservableCollection<Person> visiblePeople 
     {
         get {  return vP; }
         set 
@@ -49,8 +49,8 @@ class MainViewModel : ViewModelBase
         }
     }
 
-    private VMPerson cP;
-    internal VMPerson chosenPerson 
+    private Person cP;
+    internal Person chosenPerson 
     {
         get {  return cP; }
         set 
@@ -90,14 +90,15 @@ class MainViewModel : ViewModelBase
         }
     }
 
-    internal string sourceFilePath 
+    private string sFP;
+    internal string sourceFilePath
     {
-        //get { return personsSourceFilePath; }
-        set 
+        get { return sFP; }
+        set
         {
-           SetPersonsFilePath(value);
-            OnPropertyChanged("sourceFilePath");
-        } 
+            SetPersonsFilePath (value);
+            this.RaiseAndSetIfChanged (ref sFP, value, nameof (sourceFilePath));
+        }
     }
 
     private List<VMPage> allPages;
@@ -155,8 +156,8 @@ class MainViewModel : ViewModelBase
         this.uniformAssembler = singleTypeDocumentAssembler;
         converter = new ConverterToPdf ();
         templates = uniformAssembler.GetBadgeModels();
-        visiblePeople = new ObservableCollection<VMPerson>();
-        people = new List<VMPerson>();
+        visiblePeople = new ObservableCollection<Person>();
+        people = new List<Person>();
         incorrectBadges = new List<VMBadge> ();
         allPages = new List<VMPage>();
         this.pageSize = pageSize;
@@ -169,6 +170,26 @@ class MainViewModel : ViewModelBase
         scaleCorrespondingPages = new List<int> ();
 
         
+    }
+
+
+    internal void SetPersonsFilePath ( string value )
+    {
+        bool valueIsSuitable = (value != null)   &&   (value != string.Empty);
+
+        if ( valueIsSuitable )
+        {
+            value = value.Substring (8, value.Length - 8);
+            visiblePeople.Clear ();
+            people.Clear ();
+            var persons = uniformAssembler.GetPersons (value);
+
+            foreach ( var person in persons )
+            {
+                visiblePeople.Add (person);
+                people.Add (person);
+            }
+        }
     }
 
 
@@ -465,7 +486,7 @@ class MainViewModel : ViewModelBase
         string pathInAvalonia = "avares://Lister/Assets";
         string fileName = chosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
-        Person goalPerson = chosenPerson. person;
+        Person goalPerson = chosenPerson;
         Badge requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
         VMBadge goalVMBadge = new VMBadge (requiredBadge);
 
@@ -534,26 +555,26 @@ class MainViewModel : ViewModelBase
     }
 
 
-    private void SetPersonsFilePath (string value)
-    {
-        bool valueIsSuitable = (value != string.Empty)   &&   (value != null);
+    //private void SetPersonsFilePath (string value)
+    //{
+    //    bool valueIsSuitable = (value != string.Empty)   &&   (value != null);
 
-        if (valueIsSuitable)
-        {
-            value = value.Substring(8, value.Length - 8);
+    //    if (valueIsSuitable)
+    //    {
+    //        value = value.Substring(8, value.Length - 8);
 
-            visiblePeople.Clear();
-            people.Clear();
-            var persons = this.uniformAssembler.GetPersons(value);
+    //        visiblePeople.Clear();
+    //        people.Clear();
+    //        var persons = this.uniformAssembler.GetPersons(value);
 
-            foreach ( var person in persons ) 
-            {
-                VMPerson vmPerson = new VMPerson(person);
-                visiblePeople.Add(vmPerson);
-                people.Add(vmPerson);
-            }
-        }
-    }
+    //        foreach ( var person in persons ) 
+    //        {
+    //            VMPerson vmPerson = new VMPerson(person);
+    //            visiblePeople.Add(vmPerson);
+    //            people.Add(vmPerson);
+    //        }
+    //    }
+    //}
 
 
     internal void ClearAllPages ()

@@ -31,7 +31,7 @@ public partial class MainView : UserControl
 
     internal MainViewModel viewModel { get; private set; }
     private List<VMBadge> incorrectBadges;
-    private Task<IReadOnlyList<IStorageFile>> ? personsFile;
+    //private Task<IReadOnlyList<IStorageFile>> ? personsFile;
     private bool insertionKindListIsDropped = false;
     private bool templateListIsDropped = false;
     private bool singlePersonIsSelected = false;
@@ -112,26 +112,23 @@ public partial class MainView : UserControl
 
     internal void ChooseFile ( object sender, TappedEventArgs args )
     {
-        FilePickerOpenOptions options = new FilePickerOpenOptions ();
-        List<FilePickerFileType> fileExtentions = new List<FilePickerFileType> ();
+        List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add (new FilePickerFileType ("csv"));
-
-        options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        FilePickerOpenOptions options = new FilePickerOpenOptions ();
+        //options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        options.Title = "Open Text File";
+        options.AllowMultiple = false;
         var window = TopLevel.GetTopLevel (this);
-        personsFile = window.StorageProvider.OpenFilePickerAsync (new FilePickerOpenOptions
-        {
-            Title = "Open Text File",
-            AllowMultiple = false
-        });
+        Task<IReadOnlyList<IStorageFile>> personFiles = window.StorageProvider.OpenFilePickerAsync (options);
 
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
-        personsFile.ContinueWith
+        personFiles.ContinueWith
             (
                task =>
                {
                    string result = task.Result [0].Path.ToString ();
-                   personsSourceFile.Text = result;
-                   //mainViewModel.personsSourceFilePath = result;
+                   MainViewModel vm = viewModel;
+                   vm.sourceFilePath = result;
                }
                , uiScheduler
             );
@@ -196,7 +193,7 @@ public partial class MainView : UserControl
     }
 
 
-    internal void PickUpTemplatesList(object sender, TappedEventArgs args)
+    internal void HandleTemplateChoosing (object sender, TappedEventArgs args)
     {
         if (templateListIsDropped)
         {
@@ -217,7 +214,7 @@ public partial class MainView : UserControl
     }
 
 
-    internal void PickUpPersonList (object sender, TappedEventArgs args)
+    internal void HandlePersonChoosing (object sender, TappedEventArgs args)
     {
         if (insertionKindListIsDropped)
         {
@@ -225,7 +222,7 @@ public partial class MainView : UserControl
             dropInsertionKindList.Opacity = 0;
             insertionKindListIsDropped = false;
             ListBox listBox = (ListBox) sender;
-            viewModel.chosenPerson = (VMPerson) listBox.SelectedValue;
+            viewModel.chosenPerson = (Person) listBox.SelectedValue;
             singlePersonIsSelected = true;
             entirePersonListIsSelected = false;
         }
@@ -242,20 +239,22 @@ public partial class MainView : UserControl
     }
 
 
-    internal void HandleTapingOnPersonSelectionTextBox ( object sender, TextChangedEventArgs args )
+    internal void HandlePersonListReduction ( object sender, TextChangedEventArgs args )
     {
         TextBox textBox = ( TextBox ) sender;
 
         if ( textBox.IsFocused )
         {
             string partOfName = textBox.Text.ToLower ();
-            List<VMPerson> people = viewModel.people;
-            ObservableCollection<VMPerson> visiblePeople = viewModel.visiblePeople;
-            ObservableCollection<VMPerson> foundVisiblePeople = new ObservableCollection<VMPerson> ();
+            List<Person> people = viewModel. people;
+            ObservableCollection<Person> visiblePeople = viewModel. visiblePeople;
+            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
 
-            for ( int personCounter = 0; personCounter < people.Count; personCounter++ )
+            for ( int personCounter = 0;   personCounter < people.Count;   personCounter++ )
             {
-                string entireNameInLowCase = people [personCounter].entireName.ToLower ();
+                Person person = people [personCounter];
+                string entireName = person.StringPresentation;
+                string entireNameInLowCase = entireName.ToLower ();
 
                 if ( entireNameInLowCase.Contains (partOfName) )
                 {
@@ -263,7 +262,7 @@ public partial class MainView : UserControl
                 }
             }
 
-            viewModel.visiblePeople = foundVisiblePeople;
+            viewModel. visiblePeople = foundVisiblePeople;
         }
     }
 

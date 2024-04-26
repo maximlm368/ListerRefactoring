@@ -7,7 +7,7 @@ namespace Lister.Extentions
 {
     public static class StringExtention
     {
-        internal static string ExtractFileNameFromPath(this string path)
+        public static string ExtractFileNameFromPath(this string path)
         {
             string result;
             var builder = new StringBuilder();
@@ -29,7 +29,7 @@ namespace Lister.Extentions
         }
 
 
-        internal static string ReverseAndReturn(this string str)
+        public static string ReverseAndReturn(this string str)
         {
             string result;
             var builder = new StringBuilder();
@@ -44,7 +44,7 @@ namespace Lister.Extentions
         }
 
 
-        internal static List<string> SplitIntoRestAndLastWord ( this string str )
+        public static List<string> SplitIntoRestAndLastWord ( this string str )
         {
             List<string> result = new List<string>();
 
@@ -65,6 +65,24 @@ namespace Lister.Extentions
 
             return result;
         }
+
+
+        public static bool IsAllEmpty ( this string target, string [] parts )
+        {
+            bool result = true;
+
+            for ( int index = 0;   index < parts.Length;   index++ )
+            {
+                if ( !string.IsNullOrWhiteSpace (parts [index]) )
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
     }
 
 

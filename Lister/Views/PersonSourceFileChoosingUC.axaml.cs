@@ -57,7 +57,8 @@ namespace Lister.Views
             personsFile = window.StorageProvider.OpenFilePickerAsync (new FilePickerOpenOptions
             {
                 Title = "Open Text File",
-                AllowMultiple = false
+                AllowMultiple = false,
+                FileTypeFilter = options.FileTypeFilter
             });
 
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
