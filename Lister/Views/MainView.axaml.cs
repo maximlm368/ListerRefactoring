@@ -22,6 +22,7 @@ using DataGateway;
 using Avalonia.Markup.Xaml.Templates;
 using Lister.Extentions;
 using Avalonia.Layout;
+using static QuestPDF.Helpers.Colors;
 
 namespace Lister.Views;
 
@@ -80,7 +81,30 @@ public partial class MainView : UserControl
 
     internal void GeneratePdf( object sender, TappedEventArgs args ) 
     {
-        viewModel.GeneratePdf ();
+        List<FilePickerFileType> fileExtentions = [];
+        //fileExtentions.Add (new FilePickerFileType ("pdf"));
+        fileExtentions.Add (FilePickerFileTypes.Pdf);
+
+        FilePickerSaveOptions options = new ();
+        options.Title = "Open Text File";
+        options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        var window = TopLevel.GetTopLevel (this);
+        Task<IStorageFile> chosenFile = window.StorageProvider.SaveFilePickerAsync (options);
+        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+        chosenFile.ContinueWith
+            (
+               task =>
+               {
+                   if ( task.Result != null ) 
+                   {
+                       string result = task.Result.Path.ToString ();
+                       result = result.Substring (8, result.Length - 8);
+                       viewModel.GeneratePdf (result);
+                   }
+               }
+               , uiScheduler
+            );
     }
 
 
@@ -112,23 +136,35 @@ public partial class MainView : UserControl
 
     internal void ChooseFile ( object sender, TappedEventArgs args )
     {
+        FilePickerFileType csvFileType = new FilePickerFileType ("Csv")
+        {
+            Patterns = new [] { "*.csv" },
+            AppleUniformTypeIdentifiers = new [] { "public.image" },
+            MimeTypes = new [] { "image/*" }
+        };
+
         List<FilePickerFileType> fileExtentions = [];
-        fileExtentions.Add (new FilePickerFileType ("csv"));
+        fileExtentions.Add (csvFileType);
         FilePickerOpenOptions options = new FilePickerOpenOptions ();
-        //options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
         options.Title = "Open Text File";
         options.AllowMultiple = false;
         var window = TopLevel.GetTopLevel (this);
-        Task<IReadOnlyList<IStorageFile>> personFiles = window.StorageProvider.OpenFilePickerAsync (options);
-
+        Task<IReadOnlyList<IStorageFile>> chosenFile = null;
+        chosenFile = window.StorageProvider.OpenFilePickerAsync (options);
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
-        personFiles.ContinueWith
+
+        chosenFile.ContinueWith
             (
                task =>
                {
-                   string result = task.Result [0].Path.ToString ();
-                   MainViewModel vm = viewModel;
-                   vm.sourceFilePath = result;
+                   if ( task.Result.Count > 0 ) 
+                   {
+                       string result = task.Result [0].Path.ToString ();
+                       MainViewModel vm = viewModel;
+                       result = result.Substring (8, result.Length - 8);
+                       vm.sourceFilePath = result;
+                   }
                }
                , uiScheduler
             );

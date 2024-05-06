@@ -20,6 +20,8 @@ using Avalonia.Platform;
 using System.Data.Common;
 using Lister.Extentions;
 using Avalonia.Platform;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Avalonia.Controls.Shapes;
 
 namespace Lister.ViewModels;
 
@@ -28,9 +30,10 @@ class ConverterToPdf
     private string ? currentImagePath = null;
     private Pdf.Image? image = null;
     private int step = 0;
-    public IEnumerable<byte []> bytes;
+    public IEnumerable<byte []> bytes = null;
+    public List<string> intermidiateFiles = new ();
 
-    internal void ConvertToExtention(List<VMBadge> items, string filePathToSave)
+    internal void SaveAsFile (List<VMBadge> items, string filePathToSave)
     {
         if ( items.Count == 0 ) return;
         Settings.License = LicenseType.Community;
@@ -41,7 +44,6 @@ class ConverterToPdf
             container.Page(page =>
             {
                 page.Size (794, 1123, Unit.Point);
-                //page.Size (PageSizes.A3);
                 page.MarginLeft (46, Unit.Point);
                 page.MarginTop (30, Unit.Point);
                 page.PageColor(Colors.White);
@@ -75,36 +77,25 @@ class ConverterToPdf
             });
         });
 
-        //doc.GeneratePdf (filePathToSave);
+        doc.GeneratePdf (filePathToSave);
 
-        ImageGenerationSettings imageGenerationSettings = new ImageGenerationSettings ();
-        imageGenerationSettings.RasterDpi = DocumentSettings.DefaultRasterDpi;
-
-        bytes = doc.GenerateImages (imageGenerationSettings);
-
+        //ImageGenerationSettings imageGenerationSettings = new ImageGenerationSettings ();
+        //imageGenerationSettings.RasterDpi = 96;
+        //imageGenerationSettings.ImageFormat = ImageFormat.Png;
         //doc.GenerateImages (GetFilePath, imageGenerationSettings);
 
-
-        //int bytesLength = bytes.Count ();
-        //var enumerator = bytes.GetEnumerator ();
-        //enumerator.MoveNext ();
-        ////enumerator.MoveNext ();
-        //var data = enumerator.Current;
-
-        //if ( data != null )
-        //{
-        //    int length = data.Length;
-        //    SaveBitmap ("./FromBitmap.png", 794, 1123, data);
-        //}
+        //imageGenerationSettings.ImageCompressionQuality = ImageCompressionQuality.VeryLow;
+        //bytes = doc.GenerateImages (imageGenerationSettings);
+        //FontManager.RegisterFontWithCustomName ("Comic Sans", File.OpenRead (path));
     }
 
 
-    private string GetFilePath(int index ) 
+    private string GetFilePath (int index) 
     {
-        string path = "./FromBitmap" + index.ToString() + ".bmp";
+        string path = "FromBitmap" + index.ToString() + ".png";
+        intermidiateFiles.Add (path);
         return path;
     }
-
 
 
     private void RenderPair ( TableDescriptor tableForPair, VMBadge [] pair )
@@ -141,7 +132,7 @@ class ConverterToPdf
             VMBadge beingRenderedBadge = pair [ inPairCounter ];
             string imagePath = beingRenderedBadge.badgeModel. backgroundImagePath;
             bool firstTime = (currentImagePath == null);
-            bool itsTimeToSetNewImage = firstTime  ||  ( currentImagePath != imagePath );
+            bool itsTimeToSetNewImage = firstTime   ||   ( currentImagePath != imagePath );
 
             if ( itsTimeToSetNewImage )
             {
@@ -250,7 +241,7 @@ class ConverterToPdf
 
     private void RenderDepartmentLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )
     {
-        string ? departmentName = beingRenderedItem.departmentName;
+        string departmentName = beingRenderedItem.departmentName;
         float fontSize = ( float ) beingRenderedItem.thirdLevelFontSize;
 
         column
@@ -302,45 +293,6 @@ class ConverterToPdf
            .FontSize (fontSize);
         }
     }
-
-
-
-    public void SaveBitmap ( string fileName, int width, int height, byte [] imageData )
-    {
-
-        //byte [] data = new byte [width * height * 4];
-
-        //int o = 0;
-
-        //for ( int i = 0;   i < width * height;   i++ )
-        //{
-        //    byte value = imageData [i];
-
-
-        //    data [o++] = value;
-        //    data [o++] = value;
-        //    data [o++] = value;
-        //    data [o++] = 0;
-        //}
-        
-        unsafe
-        {
-            fixed ( byte* ptr = imageData )
-            {
-                PixelSize bitmapSize = new PixelSize (width, height);
-                Vector dpi = new Vector (72, 72);
-                int stride = 974;
-
-                using ( Bitmap image = new Bitmap (PixelFormat.Rgba8888, AlphaFormat.Unpremul, new IntPtr (ptr)
-                      , bitmapSize, dpi, stride) )
-                {
-                    //image.Save (Path.ChangeExtension (fileName, ".png"));
-                    image.Save (fileName);
-                }
-            }
-        }
-    }
-
 }
 
  

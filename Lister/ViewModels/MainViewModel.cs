@@ -25,7 +25,10 @@ using ReactiveUI;
 using Avalonia.Input;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Buffers.Binary;
 using static Lister.ViewModels.MainViewModel;
+using System.Reflection;
+using Microsoft.Win32;
 
 
 namespace Lister.ViewModels;
@@ -179,7 +182,6 @@ class MainViewModel : ViewModelBase
 
         if ( valueIsSuitable )
         {
-            value = value.Substring (8, value.Length - 8);
             visiblePeople.Clear ();
             people.Clear ();
             var persons = uniformAssembler.GetPersons (value);
@@ -199,94 +201,171 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal void GeneratePdf ( )
+    internal void GeneratePdf ( string fileToSave )
     {
-        //string fileToSave = "D:\\MML\\Lister\\Lister\\pdfFromDotNet.pdf";
-        string fileToSave = "./pdfFromDotNet.pdf";
+        List<VMBadge> allBadges = GetAllBadges ();
+        Task task = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
+        task.Start ();
+    }
 
+
+    public void Print ( )
+    {
+        List<VMBadge> allBadges = GetAllBadges();
+        //string fileToSave = @"D:\MML\Lister\Lister\Lister.Desktop\bin\Debug\net8.0\intermidiate.pdf";
+        string fileToSave = @"intermidiate.pdf";
+        Task pdf = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
+        pdf.Start ();
+        pdf.ContinueWith
+               (
+                  savingTask =>
+                  {
+                      int length = converter.intermidiateFiles.Count;
+
+                      ProcessStartInfo info = new ()
+                      {
+                          FileName = fileToSave,
+                          Verb = "Print",
+                          UseShellExecute = true,
+                          ErrorDialog = false,
+                          CreateNoWindow = true,
+                          WindowStyle = ProcessWindowStyle.Minimized
+                      };
+
+                      Process.Start (info)?.WaitForExit (20_000);
+                  }
+               );
+    }
+
+
+    private List<VMBadge> GetAllBadges () 
+    {
         List<VMBadge> allBadges = new List<VMBadge> ();
 
-        for( int pageCounter = 0;   pageCounter < allPages.Count;   pageCounter++ ) 
+        for ( int pageCounter = 0;   pageCounter < allPages.Count;   pageCounter++ )
         {
             int badgePairCounter = 0;
 
-            while (true)
+            while ( true )
             {
                 try
                 {
                     allBadges.Add (allPages [pageCounter].evenBadges [badgePairCounter]);
                     allBadges.Add (allPages [pageCounter].oddBadges [badgePairCounter]);
-
                     badgePairCounter++;
                 }
-                catch ( ArgumentOutOfRangeException e ) 
+                catch ( ArgumentOutOfRangeException e )
                 {
                     break;
-                }  
+                }
             }
         }
 
-        //Task task = new Task (() => { converter.ConvertToExtention (allBadges, fileToSave); });
-        //task.Start ();
-        converter.ConvertToExtention (allBadges, fileToSave);
+        return allBadges;
     }
 
 
-    internal unsafe void Print ()
-    {
-        bool badgesNotCreated = (converter. bytes == null);
+    //internal void PrintViaWinapi ()
+    //{
+    //    bool badgesNotCreated = ( converter.bytes == null );
 
-        if ( badgesNotCreated ) 
-        {
-            GeneratePdf ();
-        }
+    //    if ( badgesNotCreated )
+    //    {
+    //        GeneratePdf ();
+    //    }
 
-        IEnumerable<byte[]> printableData = converter. bytes;
+    //    IEnumerable<byte []> printableData = converter.bytes;
 
-        PRINTDLG pd = new PRINTDLG ();
-        pd.lStructSize = Marshal.SizeOf<PRINTDLG> ();
-        
-        IntPtr unmanagedPrintDlg = Marshal.AllocHGlobal (pd.lStructSize);
-        Marshal.StructureToPtr (pd, unmanagedPrintDlg, true);
-        //long* printDlgPointer = ( long* ) unmanagedPrintDlg.ToPointer ();
+    //    PRINTDLGA pd = new PRINTDLGA ();
+    //    pd.lStructSize = Marshal.SizeOf<PRINTDLGA> ();
+    //    IntPtr unmanagedPrintDlg = Marshal.AllocHGlobal (pd.lStructSize);
+    //    Marshal.StructureToPtr (pd, unmanagedPrintDlg, false);
 
-        //PRINTDLG* pointer = &pd;
+    //    bool isDialogSuccessfull = PrintDlg (unmanagedPrintDlg);
+    //    pd = Marshal.PtrToStructure<PRINTDLGA> (unmanagedPrintDlg);
+    //    int error = GetLastError ();
 
-        //Process notepade = Process.Start ("notepade");
-        //IntPtr handle = notepade.Handle;
-        
-        bool isDialogSuccessfull = PrintDlg (unmanagedPrintDlg);
+    //    DOCINFOA docInfo = new DOCINFOA ();
+    //    docInfo.cbSize = Marshal.SizeOf<DOCINFOA> ();
+    //    docInfo.lpszDocName = Marshal.StringToHGlobalUni ("My Document");
+    //    docInfo.lpszOutput = IntPtr.Zero;
+    //    docInfo.lpszDatatype = Marshal.StringToHGlobalUni ("RAW");
+    //    docInfo.fwType = 0;
 
-        DOCINFO docInfo = new DOCINFO ();
-        docInfo.cbSize = Marshal.SizeOf<DOCINFO> ();
-        docInfo.lpszDocName = Marshal.StringToHGlobalUni ("My Document");
-        docInfo.lpszOutput = 0;
-        docInfo.lpszDatatype = Marshal.StringToHGlobalUni ("RAW");
-        docInfo.fwType = 0;
+    //    IntPtr pointerToDocInfo = Marshal.AllocHGlobal (docInfo.cbSize);
+    //    Marshal.StructureToPtr (docInfo, pointerToDocInfo, false);
 
-        StartDoc(pd.hDC, docInfo);
+    //    int res = StartDocA (pd.hDC, pointerToDocInfo);
+    //    error = GetLastError ();
 
-        foreach ( byte[] pageBytes in printableData) 
-        {
-            var handlePointer = pd.hDC;
-            StartPage (pd.hDC);
+    //    foreach ( byte [] pageBytes in printableData )
+    //    {
 
-            BITMAPINFO bitmapInfo = new BITMAPINFO ();
-            bitmapInfo.biSize = Marshal.SizeOf<BITMAPINFO> ();
-            bitmapInfo.biHeight = 1123;
-            bitmapInfo.biWidth = 974;
-            bitmapInfo.biPlanes = 1;
-            bitmapInfo.biBitCount = 24;
-            bitmapInfo.biCompression = 0;
+    //        var handlePointer = pd.hDC;
+    //        error = 0;
+    //        res = StartPage (pd.hDC);
+    //        error = GetLastError ();
 
-            int copiedLinesAmount = StretchDIBits (pd.hDC, 0, 0, 974, 1123, 0, 0, 974, 1123, pageBytes, bitmapInfo, 0, 13369376);
-            int errNumber = GetLastError ();
-            EndPage(pd.hDC);
-        }
+    //        //BITMAPINFO bitmapInfo = new BITMAPINFO ();
+    //        //int bitmapinfoSize = Marshal.SizeOf<BITMAPINFO> ();
 
-        EndDoc (pd.hDC);
-        DeleteObject (pd.hDC);
-    }
+    //        //57 data start
+    //        //49 data length
+
+    //        //byte [] length = pageBytes.SubArray (49, 4);
+    //        byte [] length = pageBytes.SubArray (8253, 4);
+    //        int bigEndLength = BitConverter.ToInt32 (length, 0);
+    //        int dataLength = BinaryPrimitives.ReverseEndianness (bigEndLength);
+
+
+
+
+
+
+    //        byte first = pageBytes [8257];
+    //        first = pageBytes [8258];
+    //        first = pageBytes [8259];
+    //        first = pageBytes [8260];
+
+
+
+
+    //        IntPtr pointerToBitmapFileHeader = Marshal.AllocHGlobal (14);
+    //        Marshal.Copy (pageBytes, 0, pointerToBitmapFileHeader, 14);
+
+
+
+    //        BITMAPFILEHEADER bitmapFileHeader = 
+    //                (BITMAPFILEHEADER) Marshal.PtrToStructure(pointerToBitmapFileHeader, typeof(BITMAPFILEHEADER));
+    //        short type = bitmapFileHeader.bfType;
+    //        int size = bitmapFileHeader.bfSize;
+    //        int bitsStartAdress = (int) bitmapFileHeader.bfOffBits;
+
+    //        IntPtr pointerToBitmapInfo = Marshal.AllocHGlobal (56);
+    //        Marshal.Copy (pageBytes, 14, pointerToBitmapInfo, 56);
+    //        BITMAPINFOHEADER bi = new BITMAPINFOHEADER ();
+    //        Marshal.PtrToStructure (pointerToBitmapInfo, bi);
+
+    //        IntPtr pointerToBits = Marshal.AllocHGlobal (pageBytes.Length - bitsStartAdress);
+    //        Marshal.Copy (pageBytes, bitsStartAdress, pointerToBits, pageBytes.Length - bitsStartAdress);
+
+    //        //int copiedLinesAmount = StretchDIBits
+    //        //      (pd.hDC, 0, 0, 794, 1123, 0, 0, 794, 1123, pointerToBits, pointerToBitmapInfo, 1, 13369376);
+
+    //        int copiedLinesAmount = SetDIBitsToDevice
+    //              (pd.hDC, 0, 0, 794, 1123, 0, 0, 794, 1123, pointerToBits, pointerToBitmapInfo, 1);
+
+    //        int errNumber = GetLastError ();
+    //        EndPage (pd.hDC);
+    //    }
+
+    //    EndDoc (pd.hDC);
+    //    DeleteObject (pd.hDC);
+    //}
+
+
+    [DllImport ("Printer.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern int DllMain ( );
 
 
     [DllImport ("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -294,16 +373,22 @@ class MainViewModel : ViewModelBase
 
 
     [DllImport ("Comdlg32.dll", CharSet = CharSet.Auto)]
-    private static unsafe extern bool PrintDlg ( [In, Out] IntPtr lppd );
+    private static extern bool PrintDlg ( [In, Out] IntPtr lppd );
 
 
     [DllImport ("Gdi32.dll", CharSet = CharSet.Auto)]
     private static extern int StretchDIBits (IntPtr hdc, int xDest, int yDest, int DestWidth, int DestHeight, int xSrc, int ySrc, 
-                                            int SrcWidth, int SrcHeight, byte[] lpBits, BITMAPINFO lpbmi, uint iUsage, int rop);
+                                          int SrcWidth, int SrcHeight, IntPtr lpBits, IntPtr lpbmi, uint iUsage, int rop);
 
 
     [DllImport ("Gdi32.dll", CharSet = CharSet.Auto)]
-    private static extern int StartDoc (IntPtr hdc, DOCINFO docInfo);
+    private static extern int SetDIBitsToDevice ( IntPtr hdc, int xDest, int yDest, int DestWidth
+                                                , int DestHeight, int xSrc, int ySrc, uint StartScan
+                                                , uint cLines, IntPtr lpvBits, IntPtr lpbmi, uint ColorUse );
+
+
+    [DllImport ("Gdi32.dll", CharSet = CharSet.Auto)]
+    private static extern int StartDocA (IntPtr hdc, IntPtr docInfo);
 
 
     [DllImport ("Spoolss.dll", CharSet = CharSet.Auto)]
@@ -442,7 +527,7 @@ class MainViewModel : ViewModelBase
             return;
         }
 
-        string fileName = chosenTemplate.FullName.ExtractFileNameFromPath ();
+        string fileName = chosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
         List<Badge> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
 
@@ -636,62 +721,118 @@ class MainViewModel : ViewModelBase
 
 
 
+//[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+//class PRINTDLG
+//{
+//    public Int32 lStructSize;
+//    public IntPtr hwndOwner;
+//    public IntPtr hDevMode;
+//    public IntPtr hDevNames;
+//    public IntPtr hDC = IntPtr.Zero;
+//    public Int32 Flags;
+//    public Int16 FromPage = 0;
+//    public Int16 ToPage = 0;
+//    public Int16 MinPage = 0;
+//    public Int16 MaxPage = 0;
+//    public Int16 Copies = 0;
+//    public IntPtr hInstance = IntPtr.Zero;
+//    public IntPtr lCustData = IntPtr.Zero;
+//    public IntPtr lpfnPrintHook;
+//    public IntPtr lpfnSetupHook = IntPtr.Zero;
+//    public IntPtr lpPrintTemplateName = IntPtr.Zero;
+//    public IntPtr lpSetupTemplateName = IntPtr.Zero;
+//    public IntPtr hPrintTemplate = IntPtr.Zero;
+//    public IntPtr hSetupTemplate = IntPtr.Zero;
+//}
+
+
+
+//[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+//public struct DOCINFO
+//{
+//    public int cbSize;
+//    public IntPtr lpszDocName;
+//    public IntPtr lpszOutput;
+//    public IntPtr lpszDatatype;
+//    public Int32 fwType;
+//}
+
+
+
+//[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+//public struct BITMAPINFOHEADER
+//{
+//    public int biSize;
+//    public long biWidth;
+//    public long biHeight;
+//    public short biPlanes;
+//    public short biBitCount;
+//    public short biCompression;
+//    public short biSizeImage;
+//    public long biXPelsPerMeter;
+//    public long biYPelsPerMeter;
+//    public short biClrUsed;
+//    public short biClrImportant;
+//}
+
+
+
 [StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
 //[System.Runtime.InteropServices.ComVisible (false)]
-public unsafe struct PRINTDLG
+public struct PRINTDLGA
 {
-    [MarshalAs (UnmanagedType.I4)]
+    //[MarshalAs (UnmanagedType.I4)]
     public Int32 lStructSize;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hwndOwner;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hDevMode;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hDevNames;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hDC;
-    [MarshalAs (UnmanagedType.I4)]
-    public Int32 Flags = 0x00000100 | 0x00100000 | 0x00080000 | 0x00000004;
-    [MarshalAs (UnmanagedType.I2)]
+    //[MarshalAs (UnmanagedType.I4)]
+    public Int32 Flags;
+    //[MarshalAs (UnmanagedType.I2)]
     public Int16 FromPage;
-    [MarshalAs (UnmanagedType.I2)]
+    //[MarshalAs (UnmanagedType.I2)]
     public Int16 ToPage;
-    [MarshalAs (UnmanagedType.I2)]
+    //[MarshalAs (UnmanagedType.I2)]
     public Int16 MinPage;
-    [MarshalAs (UnmanagedType.I2)]
+    //[MarshalAs (UnmanagedType.I2)]
     public Int16 MaxPage;
-    [MarshalAs (UnmanagedType.I2)]
+    //[MarshalAs (UnmanagedType.I2)]
     public Int16 Copies;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hInstance;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.I8 )]
     public IntPtr lCustData;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr lpfnPrintHook;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr lpfnSetupHook;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStr )]
     public IntPtr lpPrintTemplateName;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStr )]
     public IntPtr lpSetupTemplateName;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hPrintTemplate;
-    //[MarshalAs (UnmanagedType.I8)]
+    //[MarshalAs ( UnmanagedType.LPStruct )]
     public IntPtr hSetupTemplate;
 
-    public PRINTDLG ()
+    public PRINTDLGA ()
     {
         lStructSize = 0;
         hwndOwner = IntPtr.Zero;
         hDevMode = IntPtr.Zero;
         hDevNames = IntPtr.Zero;
-        Flags = 0;
+        Flags = 0x00000100 | 0x00100000 | 0x00080000 | 0x00000004;
         hDC = IntPtr.Zero;
-        FromPage = 0;
-        ToPage = 0;
-        MinPage = 0;
-        MaxPage = 0;
-        Copies = 0;
+        FromPage = 1;
+        ToPage = 20;
+        MinPage = 1;
+        MaxPage = 20;
+        Copies = 1;
         hInstance = IntPtr.Zero;
         lCustData = IntPtr.Zero;
         lpfnPrintHook = IntPtr.Zero;
@@ -705,7 +846,7 @@ public unsafe struct PRINTDLG
 
 
 [StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
-public struct DOCINFO
+public struct DOCINFOA
 {
     public int cbSize;
     public IntPtr lpszDocName;
@@ -717,7 +858,7 @@ public struct DOCINFO
 
 
 [StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
-public struct BITMAPINFO
+public struct BITMAPINFOHEADER
 {
     public int biSize;
     public long biWidth;
@@ -730,6 +871,112 @@ public struct BITMAPINFO
     public long biYPelsPerMeter;
     public short biClrUsed;
     public short biClrImportant;
+}
+
+
+
+[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+public struct BITMAPINFO
+{
+    BITMAPINFOHEADER bmiHeader;
+    RGBQUAD [] bmiColors;
+}
+
+
+
+[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+public struct RGBQUAD
+{
+    public byte rgbBlue;
+    public byte rgbGreen;
+    public byte rgbRed;
+    public byte rgbReserved;
+}
+
+
+
+[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 8)]
+public struct BITMAPFILEHEADER
+{
+    public short bfType;
+    public int bfSize;
+    public short bfReserved1;
+    public short bfReserved2;
+    public int bfOffBits;
+}
+
+
+
+[DebuggerDisplay ("{Value}")]
+public readonly unsafe struct PWSTR : IEquatable<PWSTR>
+{
+    public readonly char* Value;
+
+    public PWSTR ( char* value ) => Value = value;
+
+    public static implicit operator char* ( PWSTR value ) => value.Value;
+
+    public static implicit operator PWSTR ( char* value ) => new (value);
+
+    public static bool operator == ( PWSTR left, PWSTR right ) => left.Value == right.Value;
+
+    public static bool operator != ( PWSTR left, PWSTR right ) => !( left == right );
+
+    public bool Equals ( PWSTR other ) => Value == other.Value;
+
+    public override bool Equals ( object obj ) => obj is PWSTR other && Equals (other);
+
+    public override int GetHashCode () => ( int ) Value;
+
+    public override string ToString () => new PCWSTR (Value).ToString ();
+
+    public static implicit operator PCWSTR ( PWSTR value ) => new (value.Value);
+
+    public int Length => new PCWSTR (Value).Length;
+
+    public Span<char> AsSpan () => Value is null ? default : new Span<char> (Value, Length);
+}
+
+
+
+[DebuggerDisplay ("{" + nameof (DebuggerDisplay) + "}")]
+public readonly unsafe struct PCWSTR : IEquatable<PCWSTR>
+{
+    public readonly char* Value;
+
+    public PCWSTR ( char* value ) => Value = value;
+
+    public static explicit operator char* ( PCWSTR value ) => value.Value;
+
+    public static implicit operator PCWSTR ( char* value ) => new (value);
+
+    public bool Equals ( PCWSTR other ) => Value == other.Value;
+
+    public override bool Equals ( object obj ) => obj is PCWSTR other && Equals (other);
+
+    public override int GetHashCode () => ( int ) Value;
+
+    public int Length
+    {
+        get
+        {
+            var p = Value;
+
+            if ( p is null )
+                return 0;
+
+            while ( *p != '\0' )
+                p++;
+
+            return checked(( int ) ( p - Value ));
+        }
+    }
+
+    public override string ToString () => Value is null ? string.Empty : new string (Value);
+
+    public ReadOnlySpan<char> AsSpan () => Value is null ? default : new ReadOnlySpan<char> (Value, Length);
+
+    private string DebuggerDisplay => ToString ();
 }
 
 
