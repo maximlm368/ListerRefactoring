@@ -212,7 +212,6 @@ class MainViewModel : ViewModelBase
     public void Print ( )
     {
         List<VMBadge> allBadges = GetAllBadges();
-        //string fileToSave = @"D:\MML\Lister\Lister\Lister.Desktop\bin\Debug\net8.0\intermidiate.pdf";
         string fileToSave = @"intermidiate.pdf";
         Task pdf = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
         pdf.Start ();
@@ -220,7 +219,7 @@ class MainViewModel : ViewModelBase
                (
                   savingTask =>
                   {
-                      int length = converter.intermidiateFiles.Count;
+                      int length = converter. intermidiateFiles.Count;
 
                       ProcessStartInfo info = new ()
                       {
@@ -233,6 +232,7 @@ class MainViewModel : ViewModelBase
                       };
 
                       Process.Start (info)?.WaitForExit (20_000);
+                      File.Delete (fileToSave);
                   }
                );
     }

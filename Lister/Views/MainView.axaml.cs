@@ -114,23 +114,27 @@ public partial class MainView : UserControl
     }
 
 
-    internal void OpenLikeExcel ( object sender, TappedEventArgs args )
+    internal void OpenEditor ( object sender, TappedEventArgs args )
     {
-        string processFilePath = "";
-        string beingEditedInLikeExcelFilePath = personsSourceFile.Text;
+        string filePath = personsSourceFile.Text;
 
-        var os = Environment.OSVersion.VersionString;
-        bool currentOsIsWindow = os.Contains ("Windows") || os.Contains ("windows");
-
-        if ( currentOsIsWindow )
+        if ( string.IsNullOrWhiteSpace(filePath) ) 
         {
-            processFilePath = "c:\\Program Files\\Microsoft Office\\Office15\\EXCEL.EXE";
+            return;
         }
 
-        ProcessStartInfo procInfo = new ProcessStartInfo ();
-        procInfo.FileName = processFilePath;
-        procInfo.Arguments = beingEditedInLikeExcelFilePath;
-        Process.Start (procInfo);
+        ProcessStartInfo procInfo = new ProcessStartInfo () 
+        {
+            FileName = filePath,
+            UseShellExecute = true
+        };
+        try 
+        {
+            Process.Start (procInfo);
+        }
+        catch ( System.ComponentModel.Win32Exception ex ) 
+        {
+        }
     }
 
 
@@ -164,6 +168,7 @@ public partial class MainView : UserControl
                        MainViewModel vm = viewModel;
                        result = result.Substring (8, result.Length - 8);
                        vm.sourceFilePath = result;
+                       editSourceFile.IsEnabled = true;
                    }
                }
                , uiScheduler
