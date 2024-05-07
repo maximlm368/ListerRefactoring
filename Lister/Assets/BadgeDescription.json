@@ -1,0 +1,83 @@
+{
+  "TemplateName" : "врач",
+  "BackgroundImagePath" : "dfdf.jpg",
+  "Width" : "350",
+  "Height" : "212",
+
+  "FamilyNameBlock": {
+    "Width" : "220",
+    "TopOffset" : "454",
+    "LeftOffset" : "56",
+    "Alignment" : "Center",
+    "FontSize" : "30",
+    "FontFamily" : "Arial"
+  },
+
+  "FirstNameBlock": {
+    "Width" : "220",
+    "TopOffset" : "454",
+    "LeftOffset" : "56",
+    "Alignment" : "Center",
+    "FontSize" : "16",
+    "FontFamily" : "Arial"
+  },
+
+  "PatronymicNameBlock": {
+    "Width" : "220",
+    "TopOffset" : "454",
+    "LeftOffset" : "56",
+    "Alignment" : "Center",
+    "FontSize" : "16",
+    "FontFamily" : "Arial"
+  },
+
+  "PostBlock": {
+    "Width" : "220",
+    "TopOffset" : "454",
+    "LeftOffset" : "56",
+    "Alignment" : "Center",
+    "FontSize" : "11",
+    "FontFamily" : "Arial"
+  },
+
+  "Department": {
+    "Width" : "220",
+    "TopOffset" : "454",
+    "LeftOffset" : "56",
+    "Alignment" : "Center",
+    "FontSize" : "11",
+    "FontFamily" : "Arial"
+  },
+
+  "UnitedTextBlocks" : {
+    "Items" : [
+      {
+        "United": {
+
+          "Block_0": "FirstNameBlock",
+          "Block_1": "PatronymicNameBlock"
+        },
+        "SummaryLength" : "220",
+        "Width" : "220",
+        "TopOffset" : "454",
+        "LeftOffset" : "56",
+        "Alignment" : "Center",
+        "FontSize" : "11",
+        "FontFamily" : "Arial"
+      }
+    ]
+  },
+
+  "InsideImages" : {
+    "Items" : [
+      {
+        "ImagePath" : "",
+        "ImageGeometricElement" : "",
+        "Width" : "220",
+        "TopOffset" : "454",
+        "LeftOffset" : "56"
+      }
+    ]
+
+  }
+}

@@ -193,12 +193,17 @@ public partial class MainView : UserControl
         {
             viewModel.BuildBadges();
         }
+
+        zoomOn.IsEnabled = true;
+        zoomOut.IsEnabled = true;
     }
 
 
     internal void ClearBadges ( object sender, TappedEventArgs args )
     {
         viewModel.ClearAllPages ();
+        zoomOn.IsEnabled = false;
+        zoomOut.IsEnabled = false;
     }
 
 
