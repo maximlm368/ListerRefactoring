@@ -1,35 +1,64 @@
 ﻿using ContentAssembler;
+using ExtentionsAndAuxiliary;
+using Microsoft.Extensions.Configuration;
 
 namespace DataGateway
 {
     public class ConfigFileBasedDataSource : IBadgeAppearenceDataSource
     {
-        private string configFilePath;
+        private string templatesFolderPath;
+        private Dictionary<string, string> templateJsons;
 
 
-        public ConfigFileBasedDataSource(string configFilePath) 
+        public ConfigFileBasedDataSource (string templatesPath) 
         {
-            this.configFilePath = configFilePath;
+            this.templatesFolderPath = templatesPath;
+            DirectoryInfo containingDirectory = new DirectoryInfo (templatesFolderPath);
+            FileInfo [] fileInfos = containingDirectory.GetFiles ("*.json");
+            templateJsons = new Dictionary<string, string> ();
+
+            foreach (FileInfo fileInfo  in  fileInfos) 
+            {
+                string jsonPath = fileInfo.FullName;
+                string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath);
+                bool nameExists = ! string.IsNullOrEmpty (templateName);
+
+                if ( nameExists ) 
+                {
+                    templateJsons.Add (templateName, jsonPath);
+                }
+            }
         }
 
 
-        public BadgeDimensions GetMainBadgeDimesions( string BadgeModelName ) 
+        public OrganizationalDataOfBadge GetBadgeData (string badgeTemplateName)
         {
+            //string jsonPath = templateJsons [badgeTemplateName];
+            //List<string> unitedNames = new ();
+
+            //double badgeWidth = GetterFromJson.GetSectionValue (new List<string> { "Width" }, jsonPath).TranslateIntoDouble ();
+            //double badgeHeight = 
+            //GetterFromJson.GetSectionValue (new List<string> { "Height" }, jsonPath).TranslateIntoDouble ();
+            //Size badgeSize = new Size (badgeWidth, badgeHeight);
+
+            //IEnumerable<IConfigurationSection> unitings =
+            //                      GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks : Items" }, jsonPath);
+            //List<string> namesOfUnitedInOneUniting = new ();
+
+            //foreach (IConfigurationSection unit in unitings ) 
+            //{
+            //    IConfigurationSection united = unit.GetSection ("United");
+            //    List<string> unitedNames = GetterFromJson.GetChildrenValues (united);
+            //}
+
+            //TextualAtom familyName = BuildTextualAtom ("FamilyNameBlock", jsonPath);
+            //TextualAtom firstName = BuildTextualAtom ("FirstNameBlock", jsonPath);
+            //TextualAtom patronymicName = BuildTextualAtom ("PatronymicNameBlock", jsonPath);
+            //TextualAtom post = BuildTextualAtom ("PostBlock", jsonPath);
+            //TextualAtom department = BuildTextualAtom ("Department", jsonPath);
 
 
-            return null;
-        }
 
-
-        public List<InsideImage> GetBadgeInsideImages( string BadgeModelName ) 
-        {
-
-            return null;
-        }
-
-
-        public OrganizationalDataOfBadge GetBadgeData (string badgeModelName)
-        {
             double badgeWidth = 350;
             double badgeHeight = 212;
             Size badgeSize = new Size (badgeWidth, badgeHeight);
@@ -60,20 +89,61 @@ namespace DataGateway
         }
 
 
+        public List<string> GetBadgeTemplateNames ()
+        {
+            List<string> templateNames = new ();
+
+            foreach ( KeyValuePair <string, string> template   in   templateJsons )
+            {
+                templateNames.Add (template.Key);
+            }
+
+            return templateNames;
+        }
+
+
+        private TextualAtom BuildTextualAtom ( string atomName, string jsonPath ) 
+        {
+            
+
+
+
+            double width = GetterFromJson.GetSectionValue (new List<string> { atomName, "Width" }, jsonPath)
+                .TranslateIntoDouble ();
+            double height = GetterFromJson.GetSectionValue (new List<string> { atomName, "Height" }, jsonPath)
+            .TranslateIntoDouble ();
+            double topOffset = GetterFromJson.GetSectionValue (new List<string> { atomName, "TopOffset" }, jsonPath)
+            .TranslateIntoDouble ();
+            double leftOffset = GetterFromJson.GetSectionValue (new List<string> { atomName, "LeftOffset" }, jsonPath)
+            .TranslateIntoDouble ();
+            string alignment = GetterFromJson.GetSectionValue (new List<string> { atomName, "Alignment" }, jsonPath);
+            double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
+            .TranslateIntoDouble ();
+            string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
+
+            TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset, alignment, fontSize, fontFamily);
+            return atom;
+        }
+
+
         public List<FileInfo> GetBadgeModelsNames ()
         {
-            string badgeModelsFolderPath = "avares://Lister/Assets";
-            badgeModelsFolderPath = "D:\\MML\\Lister\\Lister\\Lister\\Assets";
-            DirectoryInfo modelFileDirectory = new DirectoryInfo(badgeModelsFolderPath);
-            FileInfo[] Files = modelFileDirectory.GetFiles("*.jpg");
-            List<FileInfo> modelNames = new List<FileInfo>();
+            string badgeModelsFolderPath = @"D:\MML\Lister";
+            badgeModelsFolderPath = @"./";
+            DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
+            FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
+            List<FileInfo> modelNames = new List<FileInfo> ();
 
-            foreach (FileInfo file in Files)
+            foreach ( FileInfo file in Files )
             {
-                modelNames.Add(file);
+                modelNames.Add (file);
             }
 
             return modelNames;
         }
+
+
+        
+
     }
 }

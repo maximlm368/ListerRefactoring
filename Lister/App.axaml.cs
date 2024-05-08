@@ -18,7 +18,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource(null);
+        string badgeTemplatesFolderPath = @"D:\MML\Lister\Lister\Lister\Assets";
+        IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource(badgeTemplatesFolderPath);
         IPeopleDataSource peopleDataSource = new PeopleSource();
         IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
         IUniformDocumentAssembler docAssembler = new UniformDocAssembler(converter, badgeAppearenceDataSource, peopleDataSource);

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
     <ProjectReference Include="..\Lister\Lister.csproj" />
   </ItemGroup>
 </Project>

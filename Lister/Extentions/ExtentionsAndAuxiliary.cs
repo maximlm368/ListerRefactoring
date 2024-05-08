@@ -5,146 +5,154 @@ using System.Text;
 
 namespace Lister.Extentions 
 {
-    public static class StringExtention
-    {
-        public static string ExtractFileNameFromPath(this string path)
-        {
-            string result;
-            var builder = new StringBuilder();
+    //public static class StringExtention
+    //{
+    //    public static string ExtractFileNameFromPath(this string path)
+    //    {
+    //        string result;
+    //        var builder = new StringBuilder();
 
-            for (var charCounter = path.Length - 1;    charCounter >= 0;    charCounter--)
-            {
-                if (path[charCounter] != '/'   &&   path[charCounter] != '\\')
-                {
-                    builder.Append(path[charCounter]);
-                }
-                else 
-                {
-                    break;
-                }
-            }
+    //        for (var charCounter = path.Length - 1;    charCounter >= 0;    charCounter--)
+    //        {
+    //            if (path[charCounter] != '/'   &&   path[charCounter] != '\\')
+    //            {
+    //                builder.Append(path[charCounter]);
+    //            }
+    //            else 
+    //            {
+    //                break;
+    //            }
+    //        }
 
-            result = builder.ToString().ReverseAndReturn();
-            return result;
-        }
-
-
-        public static string ReverseAndReturn(this string str)
-        {
-            string result;
-            var builder = new StringBuilder();
-
-            for (var charCounter = str.Length - 1;   charCounter >= 0;    charCounter--)
-            {
-                builder.Append(str[charCounter]);
-            }
-
-            result = builder.ToString();
-            return result;
-        }
+    //        result = builder.ToString().ReverseAndReturn();
+    //        return result;
+    //    }
 
 
-        public static List<string> SplitIntoRestAndLastWord ( this string str )
-        {
-            List<string> result = new List<string>();
+    //    public static string ReverseAndReturn(this string str)
+    //    {
+    //        string result;
+    //        var builder = new StringBuilder();
 
-            for ( var charCounter = str.Length - 1;   charCounter >= 0;   charCounter-- )
-            {
-                if ( str [charCounter] == ' '   ||   str [charCounter] == '-' ) 
-                {
-                    int gapLength = 1;
-                    int endPartLength = str.Length - charCounter - gapLength;
-                    string secondPart = str.Substring (charCounter + 1, endPartLength);
-                    string firstPart = str.Substring (0, charCounter);
-                    result.Add (firstPart);
-                    result.Add (secondPart);
+    //        for (var charCounter = str.Length - 1;   charCounter >= 0;    charCounter--)
+    //        {
+    //            builder.Append(str[charCounter]);
+    //        }
 
-                    break;
-                }
-            }
-
-            return result;
-        }
+    //        result = builder.ToString();
+    //        return result;
+    //    }
 
 
-        public static bool IsAllEmpty ( this string target, string [] parts )
-        {
-            bool result = true;
+    //    public static List<string> SplitIntoRestAndLastWord ( this string str )
+    //    {
+    //        List<string> result = new List<string>();
 
-            for ( int index = 0;   index < parts.Length;   index++ )
-            {
-                if ( !string.IsNullOrWhiteSpace (parts [index]) )
-                {
-                    result = false;
-                    break;
-                }
-            }
+    //        for ( var charCounter = str.Length - 1;   charCounter >= 0;   charCounter-- )
+    //        {
+    //            if ( str [charCounter] == ' '   ||   str [charCounter] == '-' ) 
+    //            {
+    //                int gapLength = 1;
+    //                int endPartLength = str.Length - charCounter - gapLength;
+    //                string secondPart = str.Substring (charCounter + 1, endPartLength);
+    //                string firstPart = str.Substring (0, charCounter);
+    //                result.Add (firstPart);
+    //                result.Add (secondPart);
 
-            return result;
-        }
+    //                break;
+    //            }
+    //        }
 
-    }
+    //        return result;
+    //    }
 
 
+    //    public static bool IsAllEmpty ( this string target, string [] parts )
+    //    {
+    //        bool result = true;
 
-    public static class ListExtensions 
-    {
-        public static List<T []> SeparateIntoPairs <T> ( this List<T> items ) where T : class
-        {
-            List<T []> result = new List<T []> ();
-            int counterInPair = 0;
-            T [] pair = [null, null];
-            bool pairIsNotEmptyAlready = false;
+    //        for ( int index = 0;   index < parts.Length;   index++ )
+    //        {
+    //            if ( !string.IsNullOrWhiteSpace (parts [index]) )
+    //            {
+    //                result = false;
+    //                break;
+    //            }
+    //        }
 
-            for ( int itemCounter = 0;   itemCounter < items.Count;   itemCounter++ )
-            {
-                pair [counterInPair] = items [itemCounter];
-                pairIsNotEmptyAlready = true;
+    //        return result;
+    //    }
 
-                if ( counterInPair == 1 )
-                {
-                    result.Add (pair);
-                    pair = [null, null];
-                    counterInPair = 0;
-                    pairIsNotEmptyAlready = false;
-                }
-                else
-                {
-                    counterInPair++;
-                }
 
-                bool isLastPair = (itemCounter == items.Count - 1);
+    //    public static double TranslateIntoDouble ( this string possibleDouble )
+    //    {
+    //        double result = 0;
 
-                if ( isLastPair   &&   pairIsNotEmptyAlready ) 
-                {
-                    result.Add (pair);
-                }
-            }
+    //        try
+    //        {
+    //            result = Double.Parse (possibleDouble);
+    //        }
+    //        catch ( FormatException ex )
+    //        {
+    //            return 0;
+    //        }
 
-            return result;
-        }
-    }
+    //        return result;
+    //    }
+
+    //}
 
 
 
-    public static class ArrayExtensions
-    {
-        public static T [] SubArray<T> ( this T [] array, int offset, int length )
-        {
-            T [] result = new T [length];
-            Array.Copy (array, offset, result, 0, length);
+    //public static class ListExtensions 
+    //{
+    //    public static List<T []> SeparateIntoPairs <T> ( this List<T> items ) where T : class
+    //    {
+    //        List<T []> result = new List<T []> ();
+    //        int counterInPair = 0;
+    //        T [] pair = [null, null];
+    //        bool pairIsNotEmptyAlready = false;
 
-            //int scratch = offset;
+    //        for ( int itemCounter = 0;   itemCounter < items.Count;   itemCounter++ )
+    //        {
+    //            pair [counterInPair] = items [itemCounter];
+    //            pairIsNotEmptyAlready = true;
 
-            //for ( int index = 0;   index < length;   index++ ) 
-            //{
-            //    result [index] = array [scratch];
-            //    scratch++;
-            //}
+    //            if ( counterInPair == 1 )
+    //            {
+    //                result.Add (pair);
+    //                pair = [null, null];
+    //                counterInPair = 0;
+    //                pairIsNotEmptyAlready = false;
+    //            }
+    //            else
+    //            {
+    //                counterInPair++;
+    //            }
 
-            return result;
-        }
-    }
+    //            bool isLastPair = (itemCounter == items.Count - 1);
+
+    //            if ( isLastPair   &&   pairIsNotEmptyAlready ) 
+    //            {
+    //                result.Add (pair);
+    //            }
+    //        }
+
+    //        return result;
+    //    }
+    //}
+
+
+
+    //public static class ArrayExtensions
+    //{
+    //    public static T [] SubArray<T> ( this T [] array, int offset, int length )
+    //    {
+    //        T [] result = new T [length];
+    //        Array.Copy (array, offset, result, 0, length);
+    //        return result;
+    //    }
+    //}
 
 
 
@@ -172,13 +180,5 @@ namespace Lister.Extentions
                 return null;
             }
         }
-    }
-
-
-
-    public enum FileDialogMode 
-    {
-        pick = 0,
-        save = 1
     }
 }

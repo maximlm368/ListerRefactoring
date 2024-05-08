@@ -37,6 +37,7 @@ public partial class MainView : UserControl
     private bool templateListIsDropped = false;
     private bool singlePersonIsSelected = false;
     private bool entirePersonListIsSelected = false;
+    private bool templateIsSelected = false;
     private bool personSelectionGotFocus = false;
     private bool textStackIsMesuared = false;
     private Window owner;
@@ -62,21 +63,21 @@ public partial class MainView : UserControl
     }
 
 
-    internal void DropListGotFocus ( object sender, PointerEventArgs args )
-    {
-        if ( insertionKindListIsDropped )
-        {
-            personInsertionKindChoosing.ZIndex = 0;
-            dropInsertionKindList.Opacity = 0;
-            insertionKindListIsDropped = false;
-        }
-        else
-        {
-            personInsertionKindChoosing.ZIndex = 2;
-            dropInsertionKindList.Opacity = 1;
-            insertionKindListIsDropped = true;
-        }
-    }
+    //internal void DropListGotFocus ( object sender, PointerEventArgs args )
+    //{
+    //    if ( insertionKindListIsDropped )
+    //    {
+    //        personInsertionKindChoosing.ZIndex = 0;
+    //        dropInsertionKindList.Opacity = 0;
+    //        insertionKindListIsDropped = false;
+    //    }
+    //    else
+    //    {
+    //        personInsertionKindChoosing.ZIndex = 2;
+    //        dropInsertionKindList.Opacity = 1;
+    //        insertionKindListIsDropped = true;
+    //    }
+    //}
 
 
     internal void GeneratePdf( object sender, TappedEventArgs args ) 
@@ -169,6 +170,7 @@ public partial class MainView : UserControl
                        result = result.Substring (8, result.Length - 8);
                        vm.sourceFilePath = result;
                        editSourceFile.IsEnabled = true;
+                       setEntirePersonList.IsEnabled = true;
                    }
                }
                , uiScheduler
@@ -180,6 +182,7 @@ public partial class MainView : UserControl
     {
         entirePersonListIsSelected = true;
         singlePersonIsSelected = false;
+        SetEnableBuildButton ();
     }
 
 
@@ -196,6 +199,50 @@ public partial class MainView : UserControl
 
         zoomOn.IsEnabled = true;
         zoomOut.IsEnabled = true;
+
+        SetEnablePageNavigation ();
+
+        clearBadges.IsEnabled = true;
+        save.IsEnabled = true;
+        print.IsEnabled = true;
+    }
+
+
+    private void SetEnablePageNavigation () 
+    {
+        int pageCount = viewModel.GetPageCount ();
+
+        if ( pageCount > 1 )
+        {
+            if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber == pageCount ) )
+            {
+                firstPage.IsEnabled = true;
+                previousPage.IsEnabled = true;
+                nextPage.IsEnabled = false;
+                lastPage.IsEnabled = false;
+            }
+            else if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber < pageCount ) )
+            {
+                firstPage.IsEnabled = true;
+                previousPage.IsEnabled = true;
+                nextPage.IsEnabled = true;
+                lastPage.IsEnabled = true;
+            }
+            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount == 1 ) )
+            {
+                firstPage.IsEnabled = false;
+                previousPage.IsEnabled = false;
+                nextPage.IsEnabled = false;
+                lastPage.IsEnabled = false;
+            }
+            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount > 1 ) )
+            {
+                firstPage.IsEnabled = false;
+                previousPage.IsEnabled = false;
+                nextPage.IsEnabled = true;
+                lastPage.IsEnabled = true;
+            }
+        }
     }
 
 
@@ -204,73 +251,109 @@ public partial class MainView : UserControl
         viewModel.ClearAllPages ();
         zoomOn.IsEnabled = false;
         zoomOut.IsEnabled = false;
+        clearBadges.IsEnabled = false;
+        save.IsEnabled = false;
+        print.IsEnabled = false;
+        firstPage.IsEnabled = false;
+        previousPage.IsEnabled = false;
+        nextPage.IsEnabled = false;
+        lastPage.IsEnabled = false;
     }
 
 
-    internal void DropDownOrPickUpListOfPersons(object sender, TappedEventArgs args)
+    //internal void DropDownOrPickUpListOfPersons(object sender, TappedEventArgs args)
+    //{
+    //    if (insertionKindListIsDropped)
+    //    {
+    //        personInsertionKindChoosing.ZIndex = 0;
+    //        dropInsertionKindList.Opacity = 0;
+    //        insertionKindListIsDropped = false;
+    //    }
+    //    else
+    //    {
+    //        personInsertionKindChoosing.ZIndex = 2;
+    //        dropInsertionKindList.Opacity = 1;
+    //        insertionKindListIsDropped = true;
+    //    }
+    //}
+
+
+    //internal void DropDownOrPickUpTemplatesList(object sender, TappedEventArgs args)
+    //{
+    //    if (templateListIsDropped) 
+    //    {
+    //        dropTemplateList.Opacity = 0;
+    //        templateListIsDropped = false;
+    //    }
+    //    else 
+    //    {
+    //        dropTemplateList.Opacity = 1;
+    //        templateListIsDropped = true;
+    //    }
+    //}
+
+
+    //internal void HandleTemplateChoosing (object sender, TappedEventArgs args)
+    //{
+    //    if (templateListIsDropped)
+    //    {
+    //        dropTemplateList.Opacity = 0;
+    //        templateListIsDropped = false;
+    //        ListBox listBox = (ListBox)sender;
+    //        viewModel.chosenTemplate = (FileInfo) listBox.SelectedItem;
+
+    //        if (viewModel.chosenTemplate == null) 
+    //        { 
+    //            startFace2.Text = "there is null"; 
+    //        }
+    //        else 
+    //        {
+    //            startFace2.Text = viewModel.chosenTemplate.Name;
+    //        }
+    //    }
+    //}
+
+
+    internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
     {
-        if (insertionKindListIsDropped)
-        {
-            personInsertionKindChoosing.ZIndex = 0;
-            dropInsertionKindList.Opacity = 0;
-            insertionKindListIsDropped = false;
-        }
-        else
-        {
-            personInsertionKindChoosing.ZIndex = 2;
-            dropInsertionKindList.Opacity = 1;
-            insertionKindListIsDropped = true;
-        }
+        ComboBox comboBox = ( ComboBox ) sender;
+        viewModel.chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
+        templateIsSelected = true;
+        SetEnableBuildButton ();
     }
 
 
-    internal void DropDownOrPickUpTemplatesList(object sender, TappedEventArgs args)
+    //internal void HandlePersonChoosing (object sender, TappedEventArgs args)
+    //{
+    //    if (insertionKindListIsDropped)
+    //    {
+    //        personInsertionKindChoosing.ZIndex = 0;
+    //        dropInsertionKindList.Opacity = 0;
+    //        insertionKindListIsDropped = false;
+    //        ListBox listBox = (ListBox) sender;
+    //        viewModel.chosenPerson = (Person) listBox.SelectedValue;
+    //        singlePersonIsSelected = true;
+    //        entirePersonListIsSelected = false;
+    //    }
+    //}
+
+
+    internal void HandlePersonChoosing ( object sender, SelectionChangedEventArgs args )
     {
-        if (templateListIsDropped) 
-        {
-            dropTemplateList.Opacity = 0;
-            templateListIsDropped = false;
-        }
-        else 
-        {
-            dropTemplateList.Opacity = 1;
-            templateListIsDropped = true;
-        }
+        ComboBox comboBox = ( ComboBox ) sender;
+        viewModel.chosenPerson = ( Person ) comboBox.SelectedValue;
+        singlePersonIsSelected = true;
+        entirePersonListIsSelected = false;
+        SetEnableBuildButton ();
     }
 
 
-    internal void HandleTemplateChoosing (object sender, TappedEventArgs args)
+    private void SetEnableBuildButton () 
     {
-        if (templateListIsDropped)
+        bool itsTimeToEnable = ( singlePersonIsSelected || entirePersonListIsSelected ) && templateIsSelected;
+        if ( itsTimeToEnable ) 
         {
-            dropTemplateList.Opacity = 0;
-            templateListIsDropped = false;
-            ListBox listBox = (ListBox)sender;
-            viewModel.chosenTemplate = (FileInfo) listBox.SelectedItem;
-            
-            if (viewModel.chosenTemplate == null) 
-            { 
-                startFace2.Text = "there is null"; 
-            }
-            else 
-            {
-                startFace2.Text = viewModel.chosenTemplate.Name;
-            }
-        }
-    }
-
-
-    internal void HandlePersonChoosing (object sender, TappedEventArgs args)
-    {
-        if (insertionKindListIsDropped)
-        {
-            personInsertionKindChoosing.ZIndex = 0;
-            dropInsertionKindList.Opacity = 0;
-            insertionKindListIsDropped = false;
-            ListBox listBox = (ListBox) sender;
-            viewModel.chosenPerson = (Person) listBox.SelectedValue;
-            singlePersonIsSelected = true;
-            entirePersonListIsSelected = false;
+            buildBadges.IsEnabled = true;       
         }
     }
 
@@ -316,24 +399,28 @@ public partial class MainView : UserControl
     internal void ToNextPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseNextPage ();
+        SetEnablePageNavigation ();
     }
 
 
     internal void ToPreviousPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualisePreviousPage ();
+        SetEnablePageNavigation ();
     }
 
 
     internal void ToLastPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseLastPage ();
+        SetEnablePageNavigation ();
     }
 
 
     internal void ToFirstPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseFirstPage ();
+        SetEnablePageNavigation ();
     }
 
 
@@ -394,12 +481,6 @@ public partial class MainView : UserControl
 }
 
 
-class DataOfTextBlock 
-{
-    internal double Height { get; set; }
-    internal double Width { get; set; }
-    internal string Text { get; set; }
-}
 
 
 

@@ -39,6 +39,12 @@
         x:Class="Lister.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Lister"
-		x:DataType="vm:MainWindowViewModel">
+		x:DataType="vm:MainWindowViewModel"
+		MinHeight="600"
+        MinWidth="800"
+        Height="650"
+        Width="1200"
+		
+		>
         
 </Window>

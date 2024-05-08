@@ -257,7 +257,64 @@ Content="{Binding  Content}"
 									                Canvas.Top="{Binding   Path = textAreaTopShift,   Mode=OneWay }"	>
 													
 													
-			<Label  Content="{Binding   Path = screenWidth,   Mode=OneWay}" />										
+			<Label  Content="{Binding   Path = screenWidth,   Mode=OneWay}" />		
+			
+			
+			
+			
+			
+			<Canvas  Name="customCombobox"  Grid.Column="1" >
+
+				   <TextBox  Name="startFace"  Margin="0,1"  Grid.Column="1"
+							 TextChanged="HandlePersonListReduction"
+							 Text="{Binding   Path = chosenPerson.StringPresentation,   Mode=OneWay  }"  
+							 Opacity="1"  FontSize="14" />
+
+				   <Button  Name="toDropDownOrPickUpInsertionKindList"  FontSize="14" Grid.Column="1"
+							Tapped="DropDownOrPickUpListOfPersons" > v </Button>
+
+				   <ListBox  Name="dropInsertionKindList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
+							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="1036"
+							 BorderBrush="Brown"  BorderThickness="1" Canvas.Top="32"   Opacity="0"
+						     Tapped="HandlePersonChoosing"
+							 ItemsSource="{Binding   Path = visiblePeople,   Mode=OneWay }"
+							 SelectedItem="{Binding   Path = chosenPerson,   Mode=OneWay  }" >
+
+					   <ListBox.ItemTemplate>
+						   <DataTemplate>
+							   <TextBlock  Text="{Binding   Path = StringPresentation,   Mode=OneWay  }"  FontSize="14"
+										   Padding="0,0,0,0"></TextBlock>
+						   </DataTemplate>
+					   </ListBox.ItemTemplate>
+
+				   </ListBox>
+
+			    </Canvas>
+				
+				
+				<Canvas  Name="customCombobox2"  Grid.Column="1" >
+
+				   <TextBox  Name="startFace2"  Margin="0,3"  Opacity="1"  Width="230"  FontSize="14"  MaxHeight="30" />
+				   
+				   <Button  Name="toDropDownOrPickUpTemplateList"  Canvas.Left="203"  Canvas.Top="4"    FontSize="14"
+							Tapped="DropDownOrPickUpTemplatesList" > v </Button>
+
+				   <ListBox  Name="dropTemplateList"  SelectionMode="Single"  AutoScrollToSelectedItem="True"
+							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="230"
+							 BorderBrush="Brown"  BorderThickness="1"  Canvas.Top="34"  Opacity="0"
+						     Tapped="HandleTemplateChoosing"
+							 ItemsSource="{ Binding   Path = templates,   Mode = OneWay }"
+							 SelectedItem="{ Binding   Path = chosenTemplate,   Mode = OneWay }" >
+
+					   <ListBox.ItemTemplate>
+						   <DataTemplate>
+							   <TextBlock  Text="{Binding   Path = Name,   Mode=OneWay  }"  FontSize="14"></TextBlock>
+						   </DataTemplate>
+					   </ListBox.ItemTemplate>
+				   </ListBox>
+				   
+			   </Canvas>
+			
 		 -->
 
 
@@ -276,7 +333,7 @@ Content="{Binding  Content}"
    <StackPanel   ZIndex="0">
 	   <StackPanel ZIndex="1">
 
-		   <Grid Name="source"  Height="40" >
+		   <Grid Name="source"  Height="40" Margin="0,0" >
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition Width="100" ></ColumnDefinition>
 				   <ColumnDefinition ></ColumnDefinition>
@@ -286,7 +343,7 @@ Content="{Binding  Content}"
 
 			   <Label Content="Источник:" Grid.Column="0"  Padding="10"></Label>
 			   <TextBox  Name="personsSourceFile"  Text="{ Binding   Path = sourceFilePath,   Mode=OneWay }"  IsReadOnly="True"
-						 Grid.Column="1"  Height="20"  FontSize="14"  TextChanged="Seal" />
+						VerticalAlignment="Center" Grid.Column="1"  Height="20"  FontSize="14"  TextChanged="Seal" />
 			   <Button Name="chooseFile"  Tapped="ChooseFile"  Content="Выбрать файл"  Grid.Column="2" 
 					   HorizontalAlignment="Center" ></Button>
 			   <Button  Name="editSourceFile"   Tapped="OpenEditor"  HorizontalAlignment="Center"  IsEnabled="False"
@@ -297,50 +354,31 @@ Content="{Binding  Content}"
 		   <Grid Name="personInsertionKindChoosing"  ZIndex="0"   Height="35">
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
-				   <ColumnDefinition  Width="1036" ></ColumnDefinition>
+				   <ColumnDefinition  ></ColumnDefinition>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
 				   <ColumnDefinition  Width="130" ></ColumnDefinition>
 			   </Grid.ColumnDefinitions>
 
 			   <Label  Name="fio"  Content="По ФИО:" Grid.Column="0"  Padding="10" ></Label>
 
-			   <Canvas  Name="customCombobox"  Grid.Column="1" >
-
-				   <TextBox  Name="startFace"  Margin="0,1"
-							 TextChanged="HandlePersonListReduction"
-							 Text="{Binding   Path = chosenPerson.StringPresentation,   Mode=OneWay  }"  
-							 Opacity="1"  Width="1046"  FontSize="14" />
-
-				   <Button  Name="toDropDownOrPickUpInsertionKindList"  Canvas.Left="1019"  Canvas.Top="2"  FontSize="14"
-							Tapped="DropDownOrPickUpListOfPersons" > v </Button>
-
-				   <ListBox  Name="dropInsertionKindList"  SelectionMode="Single"  AutoScrollToSelectedItem="True"
-							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="1046"
-							 BorderBrush="Brown"  BorderThickness="1" Canvas.Top="32"   Opacity="0"
-							 Tapped="HandlePersonChoosing"
-							 ItemsSource="{Binding   Path = visiblePeople,   Mode=OneWay }"
-							 SelectedItem="{Binding   Path = chosenPerson,   Mode=OneWay  }" >
-
-					   <ListBox.ItemTemplate>
-						   <DataTemplate>
-							   <TextBlock  Text="{Binding   Path = StringPresentation,   Mode=OneWay  }"  FontSize="14"
+			   <ComboBox SelectedIndex="0" MaxDropDownHeight="100"  Grid.Column="1"  Width="1036"
+						 VerticalAlignment="Center"
+						 SelectionChanged="HandlePersonChoosing" ItemsSource="{Binding   Path = visiblePeople,  Mode=OneWay }" >
+				   <ComboBox.ItemTemplate>
+					   <DataTemplate>
+						   <TextBlock  Text="{Binding  Path = StringPresentation, Mode=OneWay  }"  FontSize="14"
 										   Padding="0,0,0,0"></TextBlock>
-						   </DataTemplate>
-					   </ListBox.ItemTemplate>
-
-				   </ListBox>
-
-			   </Canvas>
-
+					   </DataTemplate>
+				   </ComboBox.ItemTemplate>
+			   </ComboBox>
+			     
 			   <Label  Name="or"  Content="ИЛИ"  Grid.Column="2"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
-			   
 			   <Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="3"
-						                          Tapped="AcceptEntirePersonList" />
-
+						IsEnabled="False"  Tapped="AcceptEntirePersonList" />
 		   </Grid>
 		   
 
-		   <Grid Name="badgeTemplateChoice" >
+		   <Grid Name="badgeTemplateChoice" Margin="0,2">
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition  Width="100"></ColumnDefinition>
 				   <ColumnDefinition  Width="233"></ColumnDefinition>
@@ -364,64 +402,47 @@ Content="{Binding  Content}"
 
 			   <Label Content="Шаблон:" Grid.Column="0"   Padding="10"></Label>
 
-
-			   <Canvas  Name="customCombobox2"  Grid.Column="1" >
-
-				   <TextBox  Name="startFace2"  Margin="0,3"  Opacity="1"  Width="230"  FontSize="14"  MaxHeight="30" />
-				   
-				   <Button  Name="toDropDownOrPickUpTemplateList"  Canvas.Left="203"  Canvas.Top="4"    FontSize="14"
-							Tapped="DropDownOrPickUpTemplatesList" > v </Button>
-
-				   <ListBox  Name="dropTemplateList"  SelectionMode="Single"  AutoScrollToSelectedItem="True"
-							 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="150"  Width="230"
-							 BorderBrush="Brown"  BorderThickness="1"  Canvas.Top="34"  Opacity="0"
-						     Tapped="HandleTemplateChoosing"
-							 ItemsSource="{ Binding   Path = templates,   Mode = OneWay }"
-							 SelectedItem="{ Binding   Path = chosenTemplate,   Mode = OneWay }" >
-
-					   <ListBox.ItemTemplate>
-						   <DataTemplate>
-							   <TextBlock  Text="{Binding   Path = Name,   Mode=OneWay  }"  FontSize="14"></TextBlock>
-						   </DataTemplate>
-					   </ListBox.ItemTemplate>
-				   </ListBox>
-				   
-			   </Canvas>
-
-
+			   <ComboBox Name="templateChoosing" SelectedIndex="0"  MaxDropDownHeight="100"  Grid.Column="1"  Width="230"
+						 VerticalAlignment="Center"
+			             ItemsSource="{ Binding   Path = templates,   Mode = OneWay }" SelectionChanged="HandleTemplateChoosing">
+				   <ComboBox.ItemTemplate>
+					   <DataTemplate>
+						   <TextBlock  Text="{Binding  Path = Name, Mode=OneWay  }"  FontSize="14"
+										   Padding="0,0,0,0"></TextBlock>
+					   </DataTemplate>
+				   </ComboBox.ItemTemplate>
+			   </ComboBox>
+			   
 			   <Button  Name="buildBadges"  Width="100" Content="Построить" Grid.Column="2"  Tapped="BuildBadges"
-						                                                                        HorizontalAlignment="Center"/>
+						                                          IsEnabled="False"  HorizontalAlignment="Center"/>
 			   <Button  Name="clearBadges"  Width="96" Content="Очистить" Grid.Column="3"  Tapped="ClearBadges"
-						                                                                        HorizontalAlignment="Center"/>
-			   <Button  Name="editIncorrectBadges" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
-												                                               Tapped="GeneratePdf" />
-			   <Button Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  Tapped="Print" />
-			   <Button   Content="z" Grid.Column="6"  HorizontalAlignment="Center" Width="28"
+						                                          IsEnabled="False" HorizontalAlignment="Center"/>
+			   <Button  Name="save" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
+												                  IsEnabled="False" Tapped="GeneratePdf" />
+			   <Button Name="print" Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  
+					   Tapped="Print" IsEnabled="False"/>
+			   <Button Name="firstPage"  Content="z" Grid.Column="6"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
 																							  Tapped="ToFirstPage" />
-			   <Button   Content="b" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
+			   <Button  Name="previousPage" Content="b" Grid.Column="7"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
 												                                               Tapped="ToPreviousPage" />
 
 			   <TextBox  Name="visiblePageNumber"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
 						      TextChanged="StepOnPage" Text="{Binding   Path = visiblePageNumber,   Mode=OneWay}"/>
 			   
-			   <Button   Content="f" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
+			   <Button Name="nextPage"  Content="f" Grid.Column="9"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
 												                                               Tapped="ToNextPage" />
-			   <Button   Content="l" Grid.Column="10"  HorizontalAlignment="Center" Width="28" 
+			   <Button Name="lastPage"  Content="l" Grid.Column="10"  HorizontalAlignment="Center" Width="28" IsEnabled="False" 
 												                                               Tapped="ToLastPage" />
-			   <Button   Content="+" Grid.Column="11"  HorizontalAlignment="Center" Width="28"
-												                               Name="zoomOn"  Tapped="ZoomOn" IsEnabled="False" />
-			   <Button   Content="-" Grid.Column="12"  HorizontalAlignment="Center" Width="28"
-												                               Name="zoomOut" Tapped="ZoomOut" IsEnabled="False" />
+			   <Button  Name="zoomOn" Content="+" Grid.Column="11"  HorizontalAlignment="Center" Width="28"
+												                                 Tapped="ZoomOn" IsEnabled="False" />
+			   <Button  Name="zoomOut"  Content="-" Grid.Column="12"  HorizontalAlignment="Center" Width="28"
+												                               Tapped="ZoomOut" IsEnabled="False" />
 			   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="13"  MaxHeight="30" Margin="0,3"
-						        TextChanged="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
-			   
+						        TextChanged="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>	   
 		   </Grid>
-
 	   </StackPanel>
        
 	   
-	   
-
 	   <Border   BorderBrush="Brown"  BorderThickness="1"  Height="570"  Width="1330" Margin="20">
 	   <ScrollViewer  Name="scroller" AllowAutoHide="True"    Background="AliceBlue">
 
@@ -484,10 +505,7 @@ Content="{Binding  Content}"
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
 
-													   <TextBlock 
-																  Classes ="FirstLevel"
-																  Text="{Binding   Mode=OneWay }" />
-
+													   <TextBlock Classes ="FirstLevel" Text="{Binding   Mode=OneWay }" />
 												   </DataTemplate>
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
@@ -501,8 +519,7 @@ Content="{Binding  Content}"
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
 
-													   <TextBlock Classes ="SecondLevel"
-														          Text="{Binding   Mode=OneWay }" />
+													   <TextBlock Classes ="SecondLevel" Text="{Binding   Mode=OneWay }" />
 
 												   </DataTemplate>
 											   </ItemsControl.ItemTemplate>

@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ContentAssembler\ContentAssembler.csproj" />
     <ProjectReference Include="..\DataGateway\DataGateway.csproj" />
+    <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

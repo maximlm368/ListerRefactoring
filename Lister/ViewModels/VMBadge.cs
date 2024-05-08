@@ -12,6 +12,7 @@ using Avalonia.Layout;
 using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 

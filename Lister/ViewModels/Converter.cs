@@ -22,6 +22,8 @@ using Lister.Extentions;
 using Avalonia.Platform;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Avalonia.Controls.Shapes;
+using ExtentionsAndAuxiliary;
+
 
 namespace Lister.ViewModels;
 

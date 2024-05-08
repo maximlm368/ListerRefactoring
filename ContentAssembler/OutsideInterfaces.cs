@@ -2,11 +2,11 @@
 {
     public interface IBadgeAppearenceDataSource
     {
-        public BadgeDimensions GetMainBadgeDimesions(string BadgeModelName);
+        //public BadgeDimensions GetMainBadgeDimesions(string BadgeTemplateName);
 
-        public List<InsideImage> GetBadgeInsideImages(string BadgeModelName);
+        //public List<InsideImage> GetBadgeInsideImages(string BadgeTemplateName);
 
-        public OrganizationalDataOfBadge GetBadgeData(string BadgeModelName);
+        public OrganizationalDataOfBadge GetBadgeData(string BadgeTemplateName);
         
         public List<FileInfo> GetBadgeModelsNames();
     }

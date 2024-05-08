@@ -29,6 +29,7 @@ using System.Buffers.Binary;
 using static Lister.ViewModels.MainViewModel;
 using System.Reflection;
 using Microsoft.Win32;
+using ExtentionsAndAuxiliary;
 
 
 namespace Lister.ViewModels;
@@ -173,6 +174,12 @@ class MainViewModel : ViewModelBase
         scaleCorrespondingPages = new List<int> ();
 
         
+    }
+
+
+    internal int GetPageCount () 
+    {
+        return allPages.Count;
     }
 
 
