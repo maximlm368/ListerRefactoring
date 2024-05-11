@@ -23,7 +23,6 @@ using Avalonia.Markup.Xaml.Templates;
 using Lister.Extentions;
 using Avalonia.Layout;
 using static QuestPDF.Helpers.Colors;
-using System.Runtime.InteropServices;
 
 namespace Lister.Views;
 
@@ -54,50 +53,13 @@ public partial class MainView : UserControl
         this.DataContext = new MainViewModel(docAssembler, pageSize);
         this.viewModel = ( MainViewModel ) this.DataContext;
         this.incorrectBadges = new List<VMBadge> ();
-        scroller.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;        
+        scroller.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
     }
 
 
-    internal void SendEventToCombobox ( object sender , TappedEventArgs args )
+    internal void SetWidth (int screenSize)
     {
-        ComboBox comboBox = ( ComboBox ) sender;
-        personChoosing.ZIndex = 1;
-        personTypping.ZIndex = 0;
-        personTypping.Opacity = 0;
-
-        POINT cursorCoordinats = new POINT ( );
-        GetCursorPos ( ref cursorCoordinats );
-        DoMouseLeftClick ( cursorCoordinats.x , cursorCoordinats.y );
-
-
-    }
-
-
-    [DllImport ( "user32.dll" )]
-    public static extern bool GetCursorPos ( ref POINT lpPoint );
-
-
-    [DllImport ( "user32.dll" )]
-    public static extern void mouse_event ( int dsFlags , int dx , int dy , int cButtons , int dsExtraInfo );
-
-
-    public static void DoMouseLeftClick ( int x , int y )
-    {
-        mouse_event ( 0x02 , x , y , 0 , 0 );
-        mouse_event ( 0x04 , x , y , 0 , 0 );
-    }
-
-
-    public static void DoMouseRightClick ( int x , int y )
-    {
-        mouse_event ( 0x08 , x , y , 0 , 0 );
-        mouse_event ( 0x10 , x , y , 0 , 0 );
-    }
-
-
-    internal void SetWidth ( int screenSize )
-    {
-        viewModel.SetWidth ( screenSize );
+        viewModel.SetWidth (screenSize);
     }
 
 

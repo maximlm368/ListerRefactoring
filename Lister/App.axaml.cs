@@ -18,7 +18,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        string badgeTemplatesFolderPath = @"C:\Users\RBT\source\repos\ListerGit\Lister\Assets";
+        string badgeTemplatesFolderPath = @"D:\MML\Lister\Lister\Lister\Assets";
         IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource(badgeTemplatesFolderPath);
         IPeopleDataSource peopleDataSource = new PeopleSource();
         IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
