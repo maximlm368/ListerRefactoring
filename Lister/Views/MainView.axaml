@@ -315,6 +315,13 @@ Content="{Binding  Content}"
 				   
 			   </Canvas>
 			
+      
+
+ 
+ <TextBox  Name="personTypping"	VerticalAlignment="Center" Grid.Column="1"  Height="20"  FontSize="14"
+                             ZIndex="1"  Width="840" HorizontalAlignment="Left"
+                             Tapped="SendEventToCombobox" />
+
 		 -->
 
 
@@ -323,15 +330,15 @@ Content="{Binding  Content}"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Lister.ViewModels"
-			 xmlns:usercontrols="clr-namespace : Lister.Views"
+			       xmlns:usercontrols="clr-namespace : Lister.Views"
              mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
              x:Class="Lister.Views.MainView"
              x:DataType="vm:MainViewModel" >
   
 
 
-   <StackPanel   ZIndex="0">
-	   <StackPanel ZIndex="1">
+   <StackPanel >
+	   <StackPanel >
 
 		   <Grid Name="source"  Height="40" Margin="0,0" >
 			   <Grid.ColumnDefinitions>
@@ -345,24 +352,27 @@ Content="{Binding  Content}"
 			   <TextBox  Name="personsSourceFile"  Text="{ Binding   Path = sourceFilePath,   Mode=OneWay }"  IsReadOnly="True"
 						VerticalAlignment="Center" Grid.Column="1"  Height="20"  FontSize="14"  TextChanged="Seal" />
 			   <Button Name="chooseFile"  Tapped="ChooseFile"  Content="Выбрать файл"  Grid.Column="2" 
-					   HorizontalAlignment="Center" ></Button>
+					   HorizontalAlignment="Center" Focusable="True"></Button>
 			   <Button  Name="editSourceFile"   Tapped="OpenEditor"  HorizontalAlignment="Center"  IsEnabled="False"
 						Content="Редактировать файл" Grid.Column="3" ></Button>
 		   </Grid>
 
 
-		   <Grid Name="personInsertionKindChoosing"  ZIndex="0"   Height="35">
+		   <Grid Name="personInsertionKindChoosing"  Height="35">
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
-				   <ColumnDefinition  ></ColumnDefinition>
+				   <ColumnDefinition ></ColumnDefinition>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
 				   <ColumnDefinition  Width="130" ></ColumnDefinition>
 			   </Grid.ColumnDefinitions>
 
 			   <Label  Name="fio"  Content="По ФИО:" Grid.Column="0"  Padding="10" ></Label>
 
-			   <ComboBox SelectedIndex="0" MaxDropDownHeight="100"  Grid.Column="1"  Width="1036"
-						 VerticalAlignment="Center"
+         <TextBox  Name="personTypping"	VerticalAlignment="Center" Grid.Column="1"  Height="20"  FontSize="14"
+                             ZIndex="1"  Width="840" HorizontalAlignment="Left" Tapped="SendEventToCombobox" />
+         
+         <ComboBox  Name="personChoosing" MaxDropDownHeight="100"  Grid.Column="1"  Width="870"  Height="20"
+						 VerticalAlignment="Center" ZIndex="0"
 						 SelectionChanged="HandlePersonChoosing" ItemsSource="{Binding   Path = visiblePeople,  Mode=OneWay }" >
 				   <ComboBox.ItemTemplate>
 					   <DataTemplate>
@@ -371,7 +381,7 @@ Content="{Binding  Content}"
 					   </DataTemplate>
 				   </ComboBox.ItemTemplate>
 			   </ComboBox>
-			     
+           
 			   <Label  Name="or"  Content="ИЛИ"  Grid.Column="2"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
 			   <Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="3"
 						IsEnabled="False"  Tapped="AcceptEntirePersonList" />
