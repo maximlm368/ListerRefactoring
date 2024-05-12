@@ -8,6 +8,8 @@ namespace Lister.Views;
 public partial class MainWindow : Window
 {
     private PixelSize screenSize;
+    private double currentWidth;
+
 
     public MainWindow (IUniformDocumentAssembler docAssembler)
     {
@@ -30,7 +32,8 @@ public partial class MainWindow : Window
 
         this.Opened += OnOpened;
         this.Content = new MainView( this,  docAssembler);
-        
+        this.SizeChanged += OnSizeChanged;
+        currentWidth = this.Width;
     }
 
 
@@ -55,5 +58,17 @@ public partial class MainWindow : Window
         int y = ( screenSize.Height - windowHeight ) / 2;
         //this.Position = new Avalonia.PixelPoint (x, y);
         int wqw = 0;
+    }
+
+
+    private void OnSizeChanged ( object? sender , SizeChangedEventArgs e )
+    {
+        MainView mainView = ( MainView ) Content;
+        double newWidth = e.NewSize.Width;
+        double difference = currentWidth - newWidth;
+        currentWidth = newWidth;
+        mainView.personList.Width -= difference;
+        mainView.personTyping.Width -= difference;
+        mainView.comboboxFrame.Width -= difference;
     }
 }

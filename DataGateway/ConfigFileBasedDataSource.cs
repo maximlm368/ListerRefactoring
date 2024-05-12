@@ -10,22 +10,22 @@ namespace DataGateway
         private Dictionary<string, string> templateJsons;
 
 
-        public ConfigFileBasedDataSource (string templatesPath) 
+        public ConfigFileBasedDataSource ( string templatesPath )
         {
             this.templatesFolderPath = templatesPath;
-            DirectoryInfo containingDirectory = new DirectoryInfo (templatesFolderPath);
-            FileInfo [] fileInfos = containingDirectory.GetFiles ("*.json");
-            templateJsons = new Dictionary<string, string> ();
+            DirectoryInfo containingDirectory = new DirectoryInfo ( templatesFolderPath );
+            FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
+            templateJsons = new Dictionary<string , string> ( );
 
-            foreach (FileInfo fileInfo  in  fileInfos) 
+            foreach ( FileInfo fileInfo in fileInfos )
             {
                 string jsonPath = fileInfo.FullName;
-                string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath);
-                bool nameExists = ! string.IsNullOrEmpty (templateName);
+                string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" } , jsonPath );
+                bool nameExists = !string.IsNullOrEmpty ( templateName );
 
-                if ( nameExists ) 
+                if ( nameExists )
                 {
-                    templateJsons.Add (templateName, jsonPath);
+                    templateJsons.Add ( templateName , jsonPath );
                 }
             }
         }
@@ -128,8 +128,7 @@ namespace DataGateway
 
         public List<FileInfo> GetBadgeModelsNames ()
         {
-            string badgeModelsFolderPath = @"D:\MML\Lister";
-            badgeModelsFolderPath = @"./";
+            string badgeModelsFolderPath = @"C:\Users\RBT\source\repos\ListerGit\Lister\Assets";
             DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
             FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
             List<FileInfo> modelNames = new List<FileInfo> ();

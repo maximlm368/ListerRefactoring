@@ -33,7 +33,7 @@ public partial class MainView : UserControl
     internal MainViewModel viewModel { get; private set; }
     private List<VMBadge> incorrectBadges;
     //private Task<IReadOnlyList<IStorageFile>> ? personsFile;
-    private bool insertionKindListIsDropped = false;
+    private bool personListIsDropped = false;
     private bool templateListIsDropped = false;
     private bool singlePersonIsSelected = false;
     private bool entirePersonListIsSelected = false;
@@ -141,33 +141,51 @@ public partial class MainView : UserControl
 
     internal void ChooseFile ( object sender, TappedEventArgs args )
     {
-        FilePickerFileType csvFileType = new FilePickerFileType ("Csv")
+        ChooseFile ( );
+    }
+
+
+    internal void ChooseFile ( object sender , KeyEventArgs args )
+    {
+        string str = args.Key.ToString ( );
+        int sas = 0;
+
+
+
+
+        ChooseFile ( );
+    }
+
+
+    private void ChooseFile ( )
+    {
+        FilePickerFileType csvFileType = new FilePickerFileType ( "Csv" )
         {
-            Patterns = new [] { "*.csv" },
-            AppleUniformTypeIdentifiers = new [] { "public.image" },
-            MimeTypes = new [] { "image/*" }
+            Patterns = new [ ] { "*.csv" } ,
+            AppleUniformTypeIdentifiers = new [ ] { "public.image" } ,
+            MimeTypes = new [ ] { "image/*" }
         };
 
-        List<FilePickerFileType> fileExtentions = [];
-        fileExtentions.Add (csvFileType);
-        FilePickerOpenOptions options = new FilePickerOpenOptions ();
-        options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        List<FilePickerFileType> fileExtentions = [ ];
+        fileExtentions.Add ( csvFileType );
+        FilePickerOpenOptions options = new FilePickerOpenOptions ( );
+        options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> ( fileExtentions );
         options.Title = "Open Text File";
         options.AllowMultiple = false;
-        var window = TopLevel.GetTopLevel (this);
+        var window = TopLevel.GetTopLevel ( this );
         Task<IReadOnlyList<IStorageFile>> chosenFile = null;
-        chosenFile = window.StorageProvider.OpenFilePickerAsync (options);
-        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+        chosenFile = window.StorageProvider.OpenFilePickerAsync ( options );
+        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ( );
 
         chosenFile.ContinueWith
             (
                task =>
                {
-                   if ( task.Result.Count > 0 ) 
+                   if ( task.Result.Count > 0 )
                    {
-                       string result = task.Result [0].Path.ToString ();
+                       string result = task.Result [ 0 ].Path.ToString ( );
                        MainViewModel vm = viewModel;
-                       result = result.Substring (8, result.Length - 8);
+                       result = result.Substring ( 8 , result.Length - 8 );
                        vm.sourceFilePath = result;
                        editSourceFile.IsEnabled = true;
                        setEntirePersonList.IsEnabled = true;
@@ -261,57 +279,54 @@ public partial class MainView : UserControl
     }
 
 
-    //internal void DropDownOrPickUpListOfPersons(object sender, TappedEventArgs args)
-    //{
-    //    if (insertionKindListIsDropped)
-    //    {
-    //        personInsertionKindChoosing.ZIndex = 0;
-    //        dropInsertionKindList.Opacity = 0;
-    //        insertionKindListIsDropped = false;
-    //    }
-    //    else
-    //    {
-    //        personInsertionKindChoosing.ZIndex = 2;
-    //        dropInsertionKindList.Opacity = 1;
-    //        insertionKindListIsDropped = true;
-    //    }
-    //}
+    internal void DropDownOrPickUpPersonList ( object sender , TappedEventArgs args )
+    {
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+        else
+        {
+            personList.Height = 150;
+            personListIsDropped = true;
+            personList.Focus ( NavigationMethod.Tab );
+        }
+    }
 
 
-    //internal void DropDownOrPickUpTemplatesList(object sender, TappedEventArgs args)
-    //{
-    //    if (templateListIsDropped) 
-    //    {
-    //        dropTemplateList.Opacity = 0;
-    //        templateListIsDropped = false;
-    //    }
-    //    else 
-    //    {
-    //        dropTemplateList.Opacity = 1;
-    //        templateListIsDropped = true;
-    //    }
-    //}
+    internal void DropDownOrPickUpPersonListViaKey ( object sender , KeyEventArgs args )
+    {
+        string key = args.Key.ToString ();
+        bool keyIsNotEnter = key != "Return";
+
+        if(keyIsNotEnter)
+        {
+            return;
+        }
+
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+        else
+        {
+            personList.Height = 150;
+            personListIsDropped = true;
+            //personList.Focus ( NavigationMethod.Tab );
+        }
+    }
 
 
-    //internal void HandleTemplateChoosing (object sender, TappedEventArgs args)
-    //{
-    //    if (templateListIsDropped)
-    //    {
-    //        dropTemplateList.Opacity = 0;
-    //        templateListIsDropped = false;
-    //        ListBox listBox = (ListBox)sender;
-    //        viewModel.chosenTemplate = (FileInfo) listBox.SelectedItem;
-
-    //        if (viewModel.chosenTemplate == null) 
-    //        { 
-    //            startFace2.Text = "there is null"; 
-    //        }
-    //        else 
-    //        {
-    //            startFace2.Text = viewModel.chosenTemplate.Name;
-    //        }
-    //    }
-    //}
+    internal void ClosePersonList ( object sender , TappedEventArgs args )
+    {
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+    }
 
 
     internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
@@ -323,28 +338,27 @@ public partial class MainView : UserControl
     }
 
 
-    //internal void HandlePersonChoosing (object sender, TappedEventArgs args)
-    //{
-    //    if (insertionKindListIsDropped)
-    //    {
-    //        personInsertionKindChoosing.ZIndex = 0;
-    //        dropInsertionKindList.Opacity = 0;
-    //        insertionKindListIsDropped = false;
-    //        ListBox listBox = (ListBox) sender;
-    //        viewModel.chosenPerson = (Person) listBox.SelectedValue;
-    //        singlePersonIsSelected = true;
-    //        entirePersonListIsSelected = false;
-    //    }
-    //}
-
-
-    internal void HandlePersonChoosing ( object sender, SelectionChangedEventArgs args )
+    internal void HandlePersonChoosingViaTapping ( object sender , TappedEventArgs args )
     {
-        ComboBox comboBox = ( ComboBox ) sender;
-        viewModel.chosenPerson = ( Person ) comboBox.SelectedValue;
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+            //ListBox listBox = ( ListBox ) sender;
+            //viewModel.chosenPerson = ( Person ) listBox.SelectedValue;
+            singlePersonIsSelected = true;
+            entirePersonListIsSelected = false;
+            SetEnableBuildButton ( );
+        }
+    }
+
+
+    internal void HandlePersonChoosingViaKey ( object sender , SelectionChangedEventArgs args )
+    {
+        //personTyping.Focus ( );
         singlePersonIsSelected = true;
         entirePersonListIsSelected = false;
-        SetEnableBuildButton ();
+        SetEnableBuildButton ( );
     }
 
 
