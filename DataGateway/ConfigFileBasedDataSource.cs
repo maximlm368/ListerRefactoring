@@ -128,7 +128,7 @@ namespace DataGateway
 
         public List<FileInfo> GetBadgeModelsNames ()
         {
-            string badgeModelsFolderPath = @"C:\Users\RBT\source\repos\ListerGit\Lister\Assets";
+            string badgeModelsFolderPath = @"D:\MML\Lister";
             DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
             FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
             List<FileInfo> modelNames = new List<FileInfo> ();
