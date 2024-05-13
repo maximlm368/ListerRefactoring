@@ -185,18 +185,42 @@ class MainViewModel : ViewModelBase
 
     internal void SetPersonsFilePath ( string value )
     {
-        bool valueIsSuitable = (value != null)   &&   (value != string.Empty);
+        //bool valueIsSuitable = (value != null)   &&   (value != string.Empty);
+
+        //if ( valueIsSuitable )
+        //{
+        //    visiblePeople.Clear ();
+        //    people.Clear ();
+        //    var persons = uniformAssembler.GetPersons (value);
+
+        //    foreach ( var person in persons )
+        //    {
+        //        visiblePeople.Add (person);
+        //        people.Add (person);
+        //    }
+        //}
+
+        bool valueIsSuitable = ( value != null ) && ( value != string.Empty );
 
         if ( valueIsSuitable )
         {
             visiblePeople.Clear ();
             people.Clear ();
-            var persons = uniformAssembler.GetPersons (value);
 
-            foreach ( var person in persons )
+            try
             {
-                visiblePeople.Add (person);
-                people.Add (person);
+                List<Person> persons = uniformAssembler.GetPersons (value);
+
+                foreach ( var person in persons )
+                {
+                    visiblePeople.Add (person);
+                    people.Add (person);
+                }
+            }
+            catch ( IOException ex )
+            {
+                int idOk = MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+                sourceFilePath = string.Empty;
             }
         }
     }
