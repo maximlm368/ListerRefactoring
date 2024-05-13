@@ -383,7 +383,7 @@ Content="{Binding  Content}"
                    Text="{Binding   Path = chosenPerson.StringPresentation,  Mode=OneWay}" FontSize="14"/>
            
          <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
-             ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="871"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="870"
              BorderBrush="Brown"  BorderThickness="1"  Canvas.Top="32"
              Tapped="HandlePersonChoosingViaTapping"
              SelectionChanged="HandlePersonChoosingViaKey"
