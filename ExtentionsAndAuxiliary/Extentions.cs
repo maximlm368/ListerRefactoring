@@ -137,6 +137,19 @@ namespace ExtentionsAndAuxiliary
 
             return result;
         }
+
+
+        public static List<T> ExtractListOfItemPart<T> ( this List<T> source ) where T : class
+        {
+            List<T> result = new ();
+
+            for ( int index = 0;   index < source.Count;   index++ )
+            {
+                
+            }
+
+            return result;
+        }
     }
 
 

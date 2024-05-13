@@ -23,6 +23,8 @@ using Avalonia.Markup.Xaml.Templates;
 using Lister.Extentions;
 using Avalonia.Layout;
 using static QuestPDF.Helpers.Colors;
+using ExtentionsAndAuxiliary;
+using System.Runtime.InteropServices;
 
 namespace Lister.Views;
 
@@ -41,6 +43,7 @@ public partial class MainView : UserControl
     private bool personSelectionGotFocus = false;
     private bool textStackIsMesuared = false;
     private Window owner;
+    private Person selectedPerson;
 
 
     public MainView (Window owner,  IUniformDocumentAssembler docAssembler)
@@ -63,29 +66,10 @@ public partial class MainView : UserControl
     }
 
 
-    //internal void DropListGotFocus ( object sender, PointerEventArgs args )
-    //{
-    //    if ( insertionKindListIsDropped )
-    //    {
-    //        personInsertionKindChoosing.ZIndex = 0;
-    //        dropInsertionKindList.Opacity = 0;
-    //        insertionKindListIsDropped = false;
-    //    }
-    //    else
-    //    {
-    //        personInsertionKindChoosing.ZIndex = 2;
-    //        dropInsertionKindList.Opacity = 1;
-    //        insertionKindListIsDropped = true;
-    //    }
-    //}
-
-
     internal void GeneratePdf( object sender, TappedEventArgs args ) 
     {
         List<FilePickerFileType> fileExtentions = [];
-        //fileExtentions.Add (new FilePickerFileType ("pdf"));
         fileExtentions.Add (FilePickerFileTypes.Pdf);
-
         FilePickerSaveOptions options = new ();
         options.Title = "Open Text File";
         options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
@@ -147,11 +131,12 @@ public partial class MainView : UserControl
 
     internal void ChooseFile ( object sender , KeyEventArgs args )
     {
-        string str = args.Key.ToString ( );
-        int sas = 0;
-
-
-
+        string key = args.Key.ToString ( );
+        
+        if ( key != "Q" ) 
+        {
+            return;
+        }
 
         ChooseFile ( );
     }
@@ -181,7 +166,7 @@ public partial class MainView : UserControl
             (
                task =>
                {
-                   if ( task.Result.Count > 0 )
+                   if ( task.Result. Count > 0 )
                    {
                        string result = task.Result [ 0 ].Path.ToString ( );
                        MainViewModel vm = viewModel;
@@ -200,7 +185,7 @@ public partial class MainView : UserControl
     {
         entirePersonListIsSelected = true;
         singlePersonIsSelected = false;
-        SetEnableBuildButton ();
+        EnableBadgeCreationButton ();
     }
 
 
@@ -208,6 +193,23 @@ public partial class MainView : UserControl
     {
         if ( singlePersonIsSelected ) 
         {
+            //bool personNotExists = true;
+
+            //foreach ( Person person  in  viewModel. visiblePeople ) 
+            //{
+            //    if ( person.StringPresentation == selectedPerson.StringPresentation ) 
+            //    {
+            //        personNotExists = false;
+            //        break;
+            //    }
+            //}
+
+            //if ( personNotExists ) 
+            //{
+            //    MessageBox (0, "Выберите персону", "", 0);
+                
+            //}
+            
             viewModel.BuildSingleBadge();
         }
         if ( entirePersonListIsSelected )
@@ -218,7 +220,7 @@ public partial class MainView : UserControl
         zoomOn.IsEnabled = true;
         zoomOut.IsEnabled = true;
 
-        SetEnablePageNavigation ();
+        EnablePageNavigation ();
 
         clearBadges.IsEnabled = true;
         save.IsEnabled = true;
@@ -226,34 +228,34 @@ public partial class MainView : UserControl
     }
 
 
-    private void SetEnablePageNavigation () 
+    private void EnablePageNavigation () 
     {
         int pageCount = viewModel.GetPageCount ();
 
         if ( pageCount > 1 )
         {
-            if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber == pageCount ) )
+            if ( ( viewModel. visiblePageNumber > 1 ) && ( viewModel. visiblePageNumber == pageCount ) )
             {
                 firstPage.IsEnabled = true;
                 previousPage.IsEnabled = true;
                 nextPage.IsEnabled = false;
                 lastPage.IsEnabled = false;
             }
-            else if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber < pageCount ) )
+            else if ( ( viewModel. visiblePageNumber > 1 ) && ( viewModel. visiblePageNumber < pageCount ) )
             {
                 firstPage.IsEnabled = true;
                 previousPage.IsEnabled = true;
                 nextPage.IsEnabled = true;
                 lastPage.IsEnabled = true;
             }
-            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount == 1 ) )
+            else if ( ( viewModel. visiblePageNumber == 1 ) && ( pageCount == 1 ) )
             {
                 firstPage.IsEnabled = false;
                 previousPage.IsEnabled = false;
                 nextPage.IsEnabled = false;
                 lastPage.IsEnabled = false;
             }
-            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount > 1 ) )
+            else if ( ( viewModel. visiblePageNumber == 1 ) && ( pageCount > 1 ) )
             {
                 firstPage.IsEnabled = false;
                 previousPage.IsEnabled = false;
@@ -279,7 +281,7 @@ public partial class MainView : UserControl
     }
 
 
-    internal void DropDownOrPickUpPersonList ( object sender , TappedEventArgs args )
+    internal void DropDownOrPickUpPersonListViaButton ( object sender , TappedEventArgs args )
     {
         if ( personListIsDropped )
         {
@@ -288,9 +290,8 @@ public partial class MainView : UserControl
         }
         else
         {
-            personList.Height = 150;
+            personList.Height = 154;
             personListIsDropped = true;
-            personList.Focus ( NavigationMethod.Tab );
         }
     }
 
@@ -307,14 +308,18 @@ public partial class MainView : UserControl
 
         if ( personListIsDropped )
         {
+            if ( selectedPerson != null ) 
+            {
+                personTyping.Text = selectedPerson.StringPresentation;
+            }
+
             personList.Height = 0;
             personListIsDropped = false;
         }
         else
         {
-            personList.Height = 150;
+            personList.Height = 154;
             personListIsDropped = true;
-            //personList.Focus ( NavigationMethod.Tab );
         }
     }
 
@@ -332,9 +337,9 @@ public partial class MainView : UserControl
     internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
     {
         ComboBox comboBox = ( ComboBox ) sender;
-        viewModel.chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
+        viewModel. chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
         templateIsSelected = true;
-        SetEnableBuildButton ();
+        EnableBadgeCreationButton ();
     }
 
 
@@ -342,27 +347,30 @@ public partial class MainView : UserControl
     {
         if ( personListIsDropped )
         {
+            if ( selectedPerson != null ) 
+            {
+                personTyping.Text = selectedPerson.StringPresentation;
+            }
+
             personList.Height = 0;
             personListIsDropped = false;
-            //ListBox listBox = ( ListBox ) sender;
-            //viewModel.chosenPerson = ( Person ) listBox.SelectedValue;
             singlePersonIsSelected = true;
             entirePersonListIsSelected = false;
-            SetEnableBuildButton ( );
+            EnableBadgeCreationButton ( );
         }
     }
 
 
-    internal void HandlePersonChoosingViaKey ( object sender , SelectionChangedEventArgs args )
+    internal void HandleSelectionChanged ( object sender , SelectionChangedEventArgs args )
     {
-        //personTyping.Focus ( );
+        Person previousSelectedPerson = selectedPerson;
+        selectedPerson = ( Person ) personList.SelectedItem;
         singlePersonIsSelected = true;
         entirePersonListIsSelected = false;
-        SetEnableBuildButton ( );
     }
 
 
-    private void SetEnableBuildButton () 
+    private void EnableBadgeCreationButton () 
     {
         bool itsTimeToEnable = ( singlePersonIsSelected || entirePersonListIsSelected ) && templateIsSelected;
         if ( itsTimeToEnable ) 
@@ -384,28 +392,43 @@ public partial class MainView : UserControl
 
     internal void HandlePersonListReduction ( object sender, TextChangedEventArgs args )
     {
-        TextBox textBox = ( TextBox ) sender;
+        TextBox textBox = ( TextBox ) sender; 
+        string partOfName = textBox.Text.ToLower ();
+        List<Person> people = viewModel. people;
+        ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
 
-        if ( textBox.IsFocused )
+        for ( int index = 0;   index < people.Count;   index++ )
         {
-            string partOfName = textBox.Text.ToLower ();
-            List<Person> people = viewModel. people;
-            ObservableCollection<Person> visiblePeople = viewModel. visiblePeople;
-            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+            Person person = people [index];
 
-            for ( int personCounter = 0;   personCounter < people.Count;   personCounter++ )
+            if ( person.StringPresentation.ToLower() == partOfName ) 
             {
-                Person person = people [personCounter];
-                string entireName = person.StringPresentation;
-                string entireNameInLowCase = entireName.ToLower ();
-
-                if ( entireNameInLowCase.Contains (partOfName) )
-                {
-                    foundVisiblePeople.Add (people [personCounter]);
-                }
+                RecoverVisiblePeople ();
+                return;
             }
 
-            viewModel. visiblePeople = foundVisiblePeople;
+            string entireName = person.StringPresentation;
+            string entireNameInLowCase = entireName.ToLower ();
+
+            if ( entireNameInLowCase.Contains (partOfName)   &&   entireNameInLowCase != partOfName )
+            {
+                foundVisiblePeople.Add (people [index]);
+            }
+        }
+
+        viewModel. visiblePeople = foundVisiblePeople;
+    }
+
+
+    private void RecoverVisiblePeople () 
+    {
+        List<Person> people = viewModel. people;
+        viewModel. visiblePeople = new ();
+
+        for ( int index = 0;  index < people.Count;  index++ )
+        {
+            Person person = people [index];
+            viewModel. visiblePeople.Add (person);
         }
     }
 
@@ -413,28 +436,28 @@ public partial class MainView : UserControl
     internal void ToNextPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseNextPage ();
-        SetEnablePageNavigation ();
+        EnablePageNavigation ();
     }
 
 
     internal void ToPreviousPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualisePreviousPage ();
-        SetEnablePageNavigation ();
+        EnablePageNavigation ();
     }
 
 
     internal void ToLastPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseLastPage ();
-        SetEnablePageNavigation ();
+        EnablePageNavigation ();
     }
 
 
     internal void ToFirstPage ( object sender, TappedEventArgs args )
     {
         viewModel.VisualiseFirstPage ();
-        SetEnablePageNavigation ();
+        EnablePageNavigation ();
     }
 
 
@@ -492,6 +515,11 @@ public partial class MainView : UserControl
     {
         
     }
+
+
+    [DllImport ("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    internal static extern int MessageBox ( IntPtr hWnd, [MarshalAs (UnmanagedType.LPTStr)] string lpText
+                                        , [MarshalAs (UnmanagedType.LPTStr)] string lpCaption, uint uType );
 }
 
 
