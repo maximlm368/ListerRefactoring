@@ -9,7 +9,6 @@ public partial class MainWindow : Window
 {
     private PixelSize screenSize;
     private double currentWidth;
-    private double currentHeight;
 
 
     public MainWindow (IUniformDocumentAssembler docAssembler)
@@ -35,7 +34,6 @@ public partial class MainWindow : Window
         this.Content = new MainView( this,  docAssembler);
         this.SizeChanged += OnSizeChanged;
         currentWidth = this.Width;
-        currentHeight = this.Height;
     }
 
 
@@ -67,14 +65,10 @@ public partial class MainWindow : Window
     {
         MainView mainView = ( MainView ) Content;
         double newWidth = e.NewSize.Width;
-        double newHeight = e.NewSize.Height;
-        double widthDifference = currentWidth - newWidth;
-        double heightDifference = currentHeight - newHeight;
+        double difference = currentWidth - newWidth;
         currentWidth = newWidth;
-        currentHeight = newHeight;
-        mainView.personList.Width -= widthDifference;
-        mainView.personTyping.Width -= widthDifference;
-        mainView.comboboxFrame.Width -= widthDifference;
-        mainView.workArea.Height -= heightDifference;
+        mainView.personList.Width -= difference;
+        mainView.personTyping.Width -= difference;
+        mainView.comboboxFrame.Width -= difference;
     }
 }

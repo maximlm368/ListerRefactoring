@@ -20,18 +20,16 @@ namespace DataGateway
             List<Person> result = [];
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding (1251);
-
-            using StreamReader reader = new StreamReader (filePath, encoding, true);
-
+            using StreamReader reader = new StreamReader(filePath, encoding, true);
             string line = string.Empty;
-            string [] parts;
+            string[] parts;
             char seperator = ';';
 
-            while ( ( line = reader.ReadLine () ) != null )
+            while ((line = reader.ReadLine()) != null)
             {
-                parts = line.Split (seperator, StringSplitOptions.TrimEntries);
+                parts = line.Split(seperator, StringSplitOptions.TrimEntries);
                 Person person = Person.Create (parts);
-                result.Add (person);
+                result.Add(person);
             }
 
             return result;

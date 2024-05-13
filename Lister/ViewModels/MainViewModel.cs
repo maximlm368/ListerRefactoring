@@ -191,28 +191,15 @@ class MainViewModel : ViewModelBase
         {
             visiblePeople.Clear ();
             people.Clear ();
+            var persons = uniformAssembler.GetPersons (value);
 
-            try 
+            foreach ( var person in persons )
             {
-                List<Person> persons = uniformAssembler.GetPersons (value); 
-                
-                foreach ( var person in persons )
-                {
-                    visiblePeople.Add (person);
-                    people.Add (person);
-                }
-            }
-            catch (IOException ex) 
-            {
-                int idOk = MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+                visiblePeople.Add (person);
+                people.Add (person);
             }
         }
     }
-
-
-    [DllImport ("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    internal static extern int MessageBox ( IntPtr hWnd, [MarshalAs (UnmanagedType.LPTStr)] string lpText
-                                        , [MarshalAs (UnmanagedType.LPTStr)] string lpCaption, uint uType );
 
 
     internal void SetWidth ( int screenWidth )
@@ -232,8 +219,8 @@ class MainViewModel : ViewModelBase
     public void Print ( )
     {
         List<VMBadge> allBadges = GetAllBadges();
-        string temporaryFile = @"temporary.pdf";
-        Task pdf = new Task (() => { converter.SaveAsFile (allBadges, temporaryFile); });
+        string fileToSave = @"intermidiate.pdf";
+        Task pdf = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
         pdf.Start ();
         pdf.ContinueWith
                (
@@ -243,7 +230,7 @@ class MainViewModel : ViewModelBase
 
                       ProcessStartInfo info = new ()
                       {
-                          FileName = temporaryFile,
+                          FileName = fileToSave,
                           Verb = "Print",
                           UseShellExecute = true,
                           ErrorDialog = false,
@@ -252,7 +239,7 @@ class MainViewModel : ViewModelBase
                       };
 
                       Process.Start (info)?.WaitForExit (20_000);
-                      File.Delete (temporaryFile);
+                      File.Delete (fileToSave);
                   }
                );
     }
@@ -283,9 +270,6 @@ class MainViewModel : ViewModelBase
 
         return allBadges;
     }
-
-
-
 
 
     //internal void PrintViaWinapi ()
@@ -389,6 +373,10 @@ class MainViewModel : ViewModelBase
 
     [DllImport ("Printer.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern int DllMain ( );
+
+
+    [DllImport ("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern int MessageBox ( IntPtr hWnd, string lpText, string lpCaption, uint uType );
 
 
     [DllImport ("Comdlg32.dll", CharSet = CharSet.Auto)]
