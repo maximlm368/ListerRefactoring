@@ -286,7 +286,7 @@ public partial class MainView : UserControl
         {
             personList.Height = 154;
             personListIsDropped = true;
-            personList.Focus ( NavigationMethod.Tab );
+            personList.Focus ( NavigationMethod.Unspecified );
         }
     }
 
@@ -317,28 +317,6 @@ public partial class MainView : UserControl
             personListIsDropped = true;
         }
     }
-    //internal void DropDownOrPickUpPersonListViaKey ( object sender , KeyEventArgs args )
-    //{
-    //    string key = args.Key.ToString ();
-    //    bool keyIsNotEnter = key != "Return";
-
-    //    if(keyIsNotEnter)
-    //    {
-    //        return;
-    //    }
-
-    //    if ( personListIsDropped )
-    //    {
-    //        personList.Height = 0;
-    //        personListIsDropped = false;
-    //    }
-    //    else
-    //    {
-    //        personList.Height = 150;
-    //        personListIsDropped = true;
-    //        //personList.Focus ( NavigationMethod.Tab );
-    //    }
-    //}
 
 
     internal void ClosePersonList ( object sender , TappedEventArgs args )
@@ -373,12 +351,12 @@ public partial class MainView : UserControl
             personListIsDropped = false;
             singlePersonIsSelected = true;
             entirePersonListIsSelected = false;
-            EnableBadgeCreationButton ();
+            EnableBadgeCreationButton ( );
         }
     }
 
 
-    internal void HandleSelectionChanged ( object sender, SelectionChangedEventArgs args )
+    internal void HandleSelectionChanged ( object sender , SelectionChangedEventArgs args )
     {
         Person previousSelectedPerson = selectedPerson;
         selectedPerson = ( Person ) personList.SelectedItem;
@@ -541,9 +519,13 @@ public partial class MainView : UserControl
         try
         {
             int pageNumber = (int) UInt32.Parse (textBox.Text);
-            viewModel.VisualisePageWithNumber (pageNumber);
+            int visiblePageNum = viewModel.VisualisePageWithNumber (pageNumber);
+            visiblePageNumber.Text = viewModel. visiblePageNumber.ToString ( );
         }
-        catch (System.FormatException e){ }
+        catch (System.FormatException e)
+        {
+            visiblePageNumber.Text = viewModel. visiblePageNumber.ToString ( );
+        }
     }
 
 

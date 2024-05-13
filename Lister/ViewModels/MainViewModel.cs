@@ -100,8 +100,8 @@ class MainViewModel : ViewModelBase
         get { return sFP; }
         set
         {
-            SetPersonsFilePath (value);
-            this.RaiseAndSetIfChanged (ref sFP, value, nameof (sourceFilePath));
+            string path = SetPersonsFilePath (value);
+            this.RaiseAndSetIfChanged (ref sFP, path, nameof (sourceFilePath));
         }
     }
 
@@ -183,23 +183,8 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal void SetPersonsFilePath ( string value )
+    internal string SetPersonsFilePath ( string value )
     {
-        //bool valueIsSuitable = (value != null)   &&   (value != string.Empty);
-
-        //if ( valueIsSuitable )
-        //{
-        //    visiblePeople.Clear ();
-        //    people.Clear ();
-        //    var persons = uniformAssembler.GetPersons (value);
-
-        //    foreach ( var person in persons )
-        //    {
-        //        visiblePeople.Add (person);
-        //        people.Add (person);
-        //    }
-        //}
-
         bool valueIsSuitable = ( value != null ) && ( value != string.Empty );
 
         if ( valueIsSuitable )
@@ -216,13 +201,17 @@ class MainViewModel : ViewModelBase
                     visiblePeople.Add (person);
                     people.Add (person);
                 }
+
+                return value;
             }
             catch ( IOException ex )
             {
                 int idOk = MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
-                sourceFilePath = string.Empty;
+                return string.Empty;
             }
         }
+
+        return string.Empty;
     }
 
 
@@ -534,8 +523,9 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal void VisualisePageWithNumber ( int pageNumber )
+    internal int VisualisePageWithNumber ( int pageNumber )
     {
+        int result = visiblePageNumber;
         bool notTheSamePage = visiblePageNumber != pageNumber;
         bool inRange = pageNumber <= allPages.Count;
 
@@ -545,7 +535,10 @@ class MainViewModel : ViewModelBase
             visiblePageNumber = pageNumber;
             visiblePage = allPages [visiblePageNumber - 1];
             visiblePage.ShowBadges ();
+            result = pageNumber;
         }
+
+        return result;
     }
 
 
