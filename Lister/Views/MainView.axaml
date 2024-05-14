@@ -266,7 +266,7 @@ Content="{Binding  Content}"
 			<Canvas  Name="customCombobox"  Grid.Column="1" >
 
 				   <TextBox  Name="startFace"  Margin="0,1"  Grid.Column="1"
-							 TextChanged="HandlePersonListReduction"
+							 TextChanged="HandlePersonListReduction" KeyDown="HandlePersonListReduction"
 							 Text="{Binding   Path = chosenPerson.StringPresentation,   Mode=OneWay  }"  
 							 Opacity="1"  FontSize="14" />
 
@@ -378,8 +378,9 @@ Content="{Binding  Content}"
          <Canvas  Name="customCombobox"  Grid.Column="1" >
            
          <TextBox Name="comboboxFrame"  Focusable="False"  Margin="0,1"  Grid.Column="1"  Width="871" />
-         <TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  TextChanged="HandlePersonListReduction"  Width="840"
-                   KeyDown="DropDownOrPickUpPersonListViaKey"  FontSize="14"/>
+         <TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  Width="840"
+                   KeyDown="DropDownOrPickUpPersonListViaKey" KeyUp="HandlePersonListReduction"
+				    FontSize="14"/>
            
          <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
              ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="870"
@@ -456,6 +457,7 @@ Content="{Binding  Content}"
 			   <ColumnDefinition Width="30"></ColumnDefinition>
 			   <ColumnDefinition Width="30"></ColumnDefinition>
 			   <ColumnDefinition Width="64"></ColumnDefinition>
+			   <ColumnDefinition Width="30"></ColumnDefinition>
 			   <ColumnDefinition ></ColumnDefinition>
 		   </Grid.ColumnDefinitions>
 		   <Grid.RowDefinitions>
@@ -474,12 +476,12 @@ Content="{Binding  Content}"
 																						   Tapped="ToNextPage" />
 		   <Button Name="lastPage"  Content="l" Grid.Column="5"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
 																						   Tapped="ToLastPage" />
-		   <Button  Name="zoomOn" Content="+" Grid.Column="6"  HorizontalAlignment="Center" Width="28"
+		   <Button  Name="zoomOn" Content="+" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
 																			 Tapped="ZoomOn" IsEnabled="False" />
-		   <Button  Name="zoomOut"  Content="-" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
-																		   Tapped="ZoomOut" IsEnabled="False" />
 		   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
 							TextChanged="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
+		   <Button  Name="zoomOut"  Content="-" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
+																		  Tapped="ZoomOut" IsEnabled="False" />
 	   </Grid>
    </StackPanel>
        
@@ -566,7 +568,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="5" />
+                       <Label  Width="220" Height="10" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
 											           Text="{Binding   Path = departmentName,  Mode=OneWay }" />
@@ -657,7 +659,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="5" />
+                       <Label  Width="220" Height="10" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
 													   Text="{Binding   Path = departmentName,   Mode=OneWay }" />

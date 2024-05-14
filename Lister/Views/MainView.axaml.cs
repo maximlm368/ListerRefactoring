@@ -303,11 +303,6 @@ public partial class MainView : UserControl
 
         if ( personListIsDropped )
         {
-            if ( selectedPerson != null )
-            {
-                personTyping.Text = selectedPerson.StringPresentation;
-            }
-
             personList.Height = 0;
             personListIsDropped = false;
         }
@@ -316,6 +311,8 @@ public partial class MainView : UserControl
             personList.Height = 154;
             personListIsDropped = true;
         }
+
+        EnableBadgeCreationButton ();
     }
 
 
@@ -342,10 +339,11 @@ public partial class MainView : UserControl
     {
         if ( personListIsDropped )
         {
-            if ( selectedPerson != null )
-            {
-                personTyping.Text = selectedPerson.StringPresentation;
-            }
+            //if ( selectedPerson != null )
+            //{
+            //    //personTyping.Text = selectedPerson.StringPresentation;
+            //    viewModel.chosenPerson = selectedPerson;
+            //}
 
             personList.Height = 0;
             personListIsDropped = false;
@@ -358,10 +356,15 @@ public partial class MainView : UserControl
 
     internal void HandleSelectionChanged ( object sender , SelectionChangedEventArgs args )
     {
-        Person previousSelectedPerson = selectedPerson;
-        selectedPerson = ( Person ) personList.SelectedItem;
-        singlePersonIsSelected = true;
-        entirePersonListIsSelected = false;
+        //Person previousSelectedPerson = selectedPerson;
+        //selectedPerson = ( Person ) personList.SelectedItem;
+        viewModel.chosenPerson = ( Person ) personList.SelectedItem;
+        Person person = ( Person ) personList.SelectedItem;
+
+        if (person != null) 
+        {
+            personTyping.Text = person.StringPresentation;
+        }
     }
 
 
@@ -385,58 +388,79 @@ public partial class MainView : UserControl
     }
 
 
-    internal void HandlePersonListReduction ( object sender, TextChangedEventArgs args )
+    internal void HandlePersonListReduction ( object sender, KeyEventArgs args )
     {
+        buildBadges.IsEnabled = false;
+        clearBadges.IsEnabled = false;
+        save.IsEnabled = false;
+        print.IsEnabled = false;
+
+
         TextBox textBox = ( TextBox ) sender;
-        string partOfName = textBox.Text.ToLower ();
-        List<Person> people = viewModel.people;
-        ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+        string str = textBox.Text;
 
-        foreach ( Person person   in   people)
+        if ( str != null ) 
         {
-            if ( person.StringPresentation.ToLower () == partOfName )
+            string partOfName = textBox.Text.ToLower ();
+
+            List<Person> people = viewModel.people;
+            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+
+            foreach ( Person person in people )
             {
-                RecoverVisiblePeople ();
-                return;
+                if ( person.StringPresentation.ToLower () == partOfName )
+                {
+                    RecoverVisiblePeople ();
+                    return;
+                }
+
+                string entireName = person.StringPresentation;
+                string entireNameInLowCase = entireName.ToLower ();
+
+                if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
+                {
+                    foundVisiblePeople.Add (person);
+                }
             }
 
-            string entireName = person.StringPresentation;
-            string entireNameInLowCase = entireName.ToLower ();
+            viewModel.visiblePeople = foundVisiblePeople;
+        }
+        
+    }
 
-            if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
+
+    private void ReductPersonList ( TextBox textBox )
+    {
+        string str = textBox.Text;
+
+        if ( str != null )
+        {
+            string partOfName = textBox.Text.ToLower ();
+
+            List<Person> people = viewModel.people;
+            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+
+            foreach ( Person person in people )
             {
-                foundVisiblePeople.Add (person);
+                if ( person.StringPresentation.ToLower () == partOfName )
+                {
+                    RecoverVisiblePeople ();
+                    return;
+                }
+
+                string entireName = person.StringPresentation;
+                string entireNameInLowCase = entireName.ToLower ();
+
+                if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
+                {
+                    foundVisiblePeople.Add (person);
+                }
             }
+
+            viewModel.visiblePeople = foundVisiblePeople;
         }
 
-        viewModel.visiblePeople = foundVisiblePeople;
     }
-    //internal void HandlePersonListReduction ( object sender, TextChangedEventArgs args )
-    //{
-    //    TextBox textBox = ( TextBox ) sender;
-
-    //    if ( textBox.IsFocused )
-    //    {
-    //        string partOfName = textBox.Text.ToLower ();
-    //        List<Person> people = viewModel. people;
-    //        ObservableCollection<Person> visiblePeople = viewModel. visiblePeople;
-    //        ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
-
-    //        for ( int personCounter = 0;   personCounter < people.Count;   personCounter++ )
-    //        {
-    //            Person person = people [personCounter];
-    //            string entireName = person.StringPresentation;
-    //            string entireNameInLowCase = entireName.ToLower ();
-
-    //            if ( entireNameInLowCase.Contains (partOfName) )
-    //            {
-    //                foundVisiblePeople.Add (people [personCounter]);
-    //            }
-    //        }
-
-    //        viewModel. visiblePeople = foundVisiblePeople;
-    //    }
-    //}
 
 
     private void RecoverVisiblePeople ()
@@ -521,6 +545,7 @@ public partial class MainView : UserControl
             int pageNumber = (int) UInt32.Parse (textBox.Text);
             int visiblePageNum = viewModel.VisualisePageWithNumber (pageNumber);
             visiblePageNumber.Text = viewModel. visiblePageNumber.ToString ( );
+            SetEnablePageNavigation ();
         }
         catch (System.FormatException e)
         {
