@@ -49,6 +49,9 @@ public partial class MainView : UserControl
     private readonly short scalabilityStep;
     private short maxDepth;
     private short minDepth;
+    private double personContainerHeight;
+    private double maxPersonListHeight;
+    private double minPersonListHeight;
 
 
     public MainView (Window owner,  IUniformDocumentAssembler docAssembler)
@@ -66,6 +69,9 @@ public partial class MainView : UserControl
         scalabilityStep = 25;
         maxDepth = 5;
         minDepth = -5;
+        personContainerHeight = 38.5;
+        maxPersonListHeight = personContainerHeight * 4;
+        minPersonListHeight = 5;
     }
 
 
@@ -306,7 +312,7 @@ public partial class MainView : UserControl
         }
         else
         {
-            personList.Height = 154;
+            personList.Height = CalculatePersonListHeight ( );
             personListIsDropped = true;
             personList.Focus ( NavigationMethod.Unspecified );
         }
@@ -330,7 +336,7 @@ public partial class MainView : UserControl
         }
         else
         {
-            personList.Height = 154;
+            personList.Height = CalculatePersonListHeight ( );
             personListIsDropped = true;
         }
 
@@ -387,6 +393,28 @@ public partial class MainView : UserControl
         {
             personTyping.Text = person.StringPresentation;
         }
+
+        singlePersonIsSelected = true;
+        entirePersonListIsSelected = false;
+    }
+
+
+    private double CalculatePersonListHeight ( )
+    {
+        int personCount = viewModel. visiblePeople. Count;
+        double personListHeight = personContainerHeight * personCount;
+
+        if( personListHeight > maxPersonListHeight )
+        {
+            personListHeight = maxPersonListHeight;
+        }
+
+        if ( personListHeight < minPersonListHeight )
+        {
+            personListHeight = minPersonListHeight;
+        }
+
+        return personListHeight;
     }
 
 
@@ -412,42 +440,49 @@ public partial class MainView : UserControl
 
     internal void HandlePersonListReduction ( object sender, KeyEventArgs args )
     {
+        string key = args.Key.ToString ( );
+        bool keyIsTab = key == "Tab";
+
+        if ( keyIsTab ) 
+        {
+            return;
+        }
+
         buildBadges.IsEnabled = false;
         clearBadges.IsEnabled = false;
         save.IsEnabled = false;
         print.IsEnabled = false;
 
-
         TextBox textBox = ( TextBox ) sender;
         string str = textBox.Text;
 
-        if ( str != null ) 
+        if ( str != null )
         {
-            string partOfName = textBox.Text.ToLower ();
+            string partOfName = textBox.Text.ToLower ( );
 
             List<Person> people = viewModel.people;
-            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ( );
 
             foreach ( Person person in people )
             {
-                if ( person.StringPresentation.ToLower () == partOfName )
+                if ( person.StringPresentation.ToLower ( ) == partOfName )
                 {
-                    RecoverVisiblePeople ();
+                    RecoverVisiblePeople ( );
                     return;
                 }
 
                 string entireName = person.StringPresentation;
-                string entireNameInLowCase = entireName.ToLower ();
+                string entireNameInLowCase = entireName.ToLower ( );
 
-                if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
+                if ( entireNameInLowCase.Contains ( partOfName ) && entireNameInLowCase != partOfName )
                 {
-                    foundVisiblePeople.Add (person);
+                    foundVisiblePeople.Add ( person );
                 }
             }
 
             viewModel.visiblePeople = foundVisiblePeople;
+            personList.Height = CalculatePersonListHeight ( );
         }
-        
     }
 
 
