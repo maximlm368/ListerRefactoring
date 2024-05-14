@@ -136,7 +136,7 @@ class MainViewModel : ViewModelBase
             this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (zoomDegreeInView));
         }
     }
-    private int zoomDegree;
+    private double zoomDegree;
 
     private ContentAssembler.Size pageSize;
     private string procentSymbol;
@@ -221,11 +221,13 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal void GeneratePdf ( string fileToSave )
+    internal Task GeneratePdf ( string fileToSave )
     {
         List<VMBadge> allBadges = GetAllBadges ();
         Task task = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
+        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
         task.Start ();
+        return task;
     }
 
 
@@ -704,7 +706,7 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal void ZoomOnDocument () 
+    internal void ZoomOnDocument ( short step ) 
     {
         documentScale *= scalabilityCoefficient;
 
@@ -716,14 +718,14 @@ class MainViewModel : ViewModelBase
             }
 
             visiblePage.ZoomOnExampleBadge (scalabilityCoefficient);
-            double zD = zoomDegree * scalabilityCoefficient;
-            zoomDegree = (int) zD;
-            zoomDegreeInView = zoomDegree.ToString () + " " + procentSymbol;
+            zoomDegree *= scalabilityCoefficient;
+            short zDegree = ( short ) zoomDegree;
+            zoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
         }
     }
 
 
-    internal void ZoomOutDocument ()
+    internal void ZoomOutDocument ( short step )
     {
         documentScale /= scalabilityCoefficient;
 
@@ -735,9 +737,9 @@ class MainViewModel : ViewModelBase
             }
 
             visiblePage.ZoomOutExampleBadge (scalabilityCoefficient);
-            double zD = zoomDegree / scalabilityCoefficient;
-            zoomDegree = ( int ) zD;
-            zoomDegreeInView = zoomDegree.ToString () + " " + procentSymbol;
+            zoomDegree /= scalabilityCoefficient;
+            short zDegree = ( short ) zoomDegree;
+            zoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
         }
     }
 

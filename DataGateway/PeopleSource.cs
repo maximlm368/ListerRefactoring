@@ -29,7 +29,11 @@ namespace DataGateway
             {
                 parts = line.Split(seperator, StringSplitOptions.TrimEntries);
                 Person person = Person.Create (parts);
-                result.Add(person);
+
+                if ( person != null ) 
+                {
+                    result.Add (person);
+                }
             }
 
             return result;

@@ -479,7 +479,7 @@ Content="{Binding  Content}"
 		   <Button  Name="zoomOn" Content="+" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
 																			 Tapped="ZoomOn" IsEnabled="False" />
 		   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
-							TextChanged="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
+				     IsReadOnly="True" KeyUp="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
 		   <Button  Name="zoomOut"  Content="-" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
 																		  Tapped="ZoomOut" IsEnabled="False" />
 	   </Grid>
@@ -528,13 +528,16 @@ Content="{Binding  Content}"
 					   <ItemsControl.ItemTemplate>
 						   <DataTemplate>
 
-							   <Border  BorderThickness="1"  BorderBrush="Gray" >
+							   <Border  BorderThickness="1"  BorderBrush="Gray" 
+										Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
+									    Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
 
-								   <Canvas  Name="badgeInEvens"  Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
+								   <Canvas  Name="badgeInEvens"  Width="{Binding  Path = badgeWidth,  Mode=OneWay }" 
 											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
 
 									   <Image  Source = "{Binding   Path = imageBitmap,  Mode=OneWay }"
-								               Width="{Binding   Path = badgeWidth,   Mode=OneWay }" />
+								               Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
+											   Height="{Binding   Path = badgeHeight,   Mode=OneWay }"/>
 									  
 									   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }"
 										            Canvas.Left="{Binding Path = textAreaLeftShift, Mode=OneWay }"
@@ -568,7 +571,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="10" />
+										   <Label  Width="220" Height="{Binding  Path = DepartmentTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
 											           Text="{Binding   Path = departmentName,  Mode=OneWay }" />
@@ -577,7 +580,7 @@ Content="{Binding  Content}"
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
-
+													   
 													   <TextBlock Classes ="ThirdLevel"
 														          Text="{Binding   Mode=OneWay }" />
 
@@ -585,7 +588,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="5" />
+                                           <Label  Width="220" Height="{Binding  Path = PostTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
 											           Text="{Binding   Path = positionName,  Mode=OneWay }" />
@@ -659,7 +662,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="10" />
+                       <Label  Width="220" Height="{Binding  Path = DepartmentTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
 													   Text="{Binding   Path = departmentName,   Mode=OneWay }" />
@@ -676,7 +679,7 @@ Content="{Binding  Content}"
 											   </ItemsControl.ItemTemplate>
 										   </ItemsControl>
 
-                       <Label  Width="220" Height="5" />
+                       <Label  Width="220" Height="{Binding  Path = PostTopPadding,  Mode=OneWay }" />
 
                        <TextBlock  Classes ="ThirdLevel"
 													   Text="{Binding   Path = positionName,   Mode=OneWay }" />

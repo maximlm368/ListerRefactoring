@@ -37,14 +37,14 @@ namespace ContentAssembler
         }
 
 
-        public static Person Create ( string id, string familyName, string firstName
+        public static Person ? Create ( string id, string familyName, string firstName
                                      , string patronymicName, string department, string post ) 
         {
             return new Person (id, familyName, firstName, patronymicName, department, post);
         }
 
 
-        public static Person Create ( string [] parts)
+        public static Person ? Create ( string [] parts)
         {
             if( parts == null   &&   parts.Length < 6 ) 
             {
@@ -53,9 +53,10 @@ namespace ContentAssembler
 
             bool condition = IsAllEmpty(parts);
 
-            if ( condition ) 
+            if ( condition )
             {
-                throw new ArgumentException ("Arguments are incorrect, check input value");
+                //throw new ArgumentException ("Arguments are incorrect, check input value");
+                return null;
             }
 
             return new Person (parts [0], parts [1], parts [2], parts [3], parts [4], parts [5]);

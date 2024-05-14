@@ -43,6 +43,12 @@ public partial class MainView : UserControl
     private bool textStackIsMesuared = false;
     private Window owner;
     private Person selectedPerson;
+    private ushort maxScalability;
+    private ushort minScalability;
+    private short scalabilityDepth;
+    private readonly short scalabilityStep;
+    private short maxDepth;
+    private short minDepth;
 
 
     public MainView (Window owner,  IUniformDocumentAssembler docAssembler)
@@ -56,6 +62,10 @@ public partial class MainView : UserControl
         this.viewModel = ( MainViewModel ) this.DataContext;
         this.incorrectBadges = new List<VMBadge> ();
         scroller.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
+        scalabilityDepth = 0;
+        scalabilityStep = 25;
+        maxDepth = 5;
+        minDepth = -5;
     }
 
 
@@ -68,9 +78,7 @@ public partial class MainView : UserControl
     internal void GeneratePdf( object sender, TappedEventArgs args ) 
     {
         List<FilePickerFileType> fileExtentions = [];
-        //fileExtentions.Add (new FilePickerFileType ("pdf"));
         fileExtentions.Add (FilePickerFileTypes.Pdf);
-
         FilePickerSaveOptions options = new ();
         options.Title = "Open Text File";
         options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
@@ -82,11 +90,25 @@ public partial class MainView : UserControl
             (
                task =>
                {
-                   if ( task.Result != null ) 
+                   if ( task.Result != null )
                    {
                        string result = task.Result.Path.ToString ();
                        result = result.Substring (8, result.Length - 8);
-                       viewModel.GeneratePdf (result);
+                       Task pdf = viewModel.GeneratePdf (result);
+
+                       pdf.ContinueWith
+                           (
+                           task =>
+                           {
+                               Process fileExplorer = new Process ();
+                               fileExplorer.StartInfo.FileName = "explorer.exe";
+                               fileExplorer.StartInfo.Arguments = @"D:/MML/MyPdf.pdf";
+                               fileExplorer.StartInfo.UseShellExecute = true;
+                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                               fileExplorer.Start ();
+                           }
+                           , uiScheduler
+                           );
                    }
                }
                , uiScheduler
@@ -429,40 +451,6 @@ public partial class MainView : UserControl
     }
 
 
-    private void ReductPersonList ( TextBox textBox )
-    {
-        string str = textBox.Text;
-
-        if ( str != null )
-        {
-            string partOfName = textBox.Text.ToLower ();
-
-            List<Person> people = viewModel.people;
-            ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
-
-            foreach ( Person person in people )
-            {
-                if ( person.StringPresentation.ToLower () == partOfName )
-                {
-                    RecoverVisiblePeople ();
-                    return;
-                }
-
-                string entireName = person.StringPresentation;
-                string entireNameInLowCase = entireName.ToLower ();
-
-                if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
-                {
-                    foundVisiblePeople.Add (person);
-                }
-            }
-
-            viewModel.visiblePeople = foundVisiblePeople;
-        }
-
-    }
-
-
     private void RecoverVisiblePeople ()
     {
         List<Person> people = viewModel. people;
@@ -501,18 +489,61 @@ public partial class MainView : UserControl
 
     internal void ZoomOn ( object sender, TappedEventArgs args )
     {
-        viewModel.ZoomOnDocument ();
+        if (scalabilityDepth < maxDepth) 
+        {
+
+            viewModel.ZoomOnDocument (scalabilityStep);
+            scalabilityDepth++;
+        }
+
+        if ( scalabilityDepth == maxDepth ) 
+        {
+            zoomOn.IsEnabled = false;
+        }
+
+        if ( ! zoomOut.IsEnabled )
+        {
+            zoomOut.IsEnabled = true;
+        }
     }
 
 
     internal void ZoomOut ( object sender, TappedEventArgs args )
     {
-        viewModel.ZoomOutDocument ();
+        if ( scalabilityDepth > minDepth )
+        {
+            viewModel.ZoomOutDocument (scalabilityStep);
+            scalabilityDepth--;
+        }
+
+        if ( scalabilityDepth == minDepth )
+        {
+            zoomOut.IsEnabled = false;
+        }
+
+        if ( ! zoomOn.IsEnabled )
+        {
+            zoomOn.IsEnabled = true;
+        }
     }
 
 
-    internal void SetNewScale ( object sender, TextChangedEventArgs args )
+    internal void SetNewScale ( object sender, KeyEventArgs args )
     {
+        string key = args.Key.ToString ();
+        string scale = scalabilityGrade.Text;
+        bool scaleIsCorrect = (scale != null)  &&  (IsScaleStringCorrect(scale));
+
+        if (scaleIsCorrect) 
+        {
+            if (IsKeyCorrect(key)) 
+            {
+            
+            }
+
+
+        }
+
         TextBox textBox = ( TextBox ) sender;
         string text = textBox.Text;
         bool textExists = (text != null) && (text != string.Empty);
@@ -524,15 +555,57 @@ public partial class MainView : UserControl
                 text = text.Remove(text.Length - 1);
             }
 
-            try 
-            {
-                int scale = Int32.Parse (text);
+            //try
+            //{
+            //    int scale = ( int ) UInt32.Parse (text);
+            //    string procent = "%";
 
-            }
-            catch( FormatException ex ) 
-            {}
+            //    if ( text.Contains (' ') )
+            //    {
+            //        int spaceIndex = text.IndexOf (' ');
+            //    }
+            //}
+            //catch ( FormatException ex )
+            //{ }
         }
         
+    }
+
+
+    private bool IsScaleStringCorrect ( string beingProcessed ) 
+    {
+        bool scaleIsCorrect = beingProcessed.Length > 2;
+        scaleIsCorrect = scaleIsCorrect   &&   beingProcessed [beingProcessed.Length - 1] == '%';
+        scaleIsCorrect = scaleIsCorrect   &&   (beingProcessed [beingProcessed.Length - 2] == ' ');
+        scaleIsCorrect = scaleIsCorrect   &&   ( beingProcessed [beingProcessed.Length - 3] != ' ' );
+
+        try 
+        {
+            int lastIntegerIndex = beingProcessed.Length - 3;
+            string integerPart = beingProcessed.Substring (0, lastIntegerIndex);
+            ushort scale = UInt16.Parse (integerPart);
+            scaleIsCorrect = scaleIsCorrect   &&   (scale > minScalability)   &&   (scale < maxScalability);
+
+            if ( scaleIsCorrect ) 
+            { 
+            
+            }
+        }
+        catch( Exception ex ) 
+        {
+        
+        }
+
+        return scaleIsCorrect;
+    }
+
+
+    private bool IsKeyCorrect ( string key )
+    {
+        bool keyIsCorrect = (key.Length == 2);
+        keyIsCorrect = keyIsCorrect   &&   (key [0] == 'D');
+        keyIsCorrect = keyIsCorrect   ||   (key == "Back");
+        return keyIsCorrect;
     }
 
 

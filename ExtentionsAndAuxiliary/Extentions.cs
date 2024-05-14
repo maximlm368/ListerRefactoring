@@ -147,15 +147,27 @@ namespace ExtentionsAndAuxiliary
         {
             T [] result = new T [length];
             Array.Copy (array, offset, result, 0, length);
+            return result;
+        }
 
-            //int scratch = offset;
 
-            //for ( int index = 0;   index < length;   index++ ) 
-            //{
-            //    result [index] = array [scratch];
-            //    scratch++;
-            //}
+        public static T [] ? ReplaceNullItem <T> ( this T [] array, T placeHolder )
+        {
+            if ( (array == null)   ||   (placeHolder == null) ) 
+            {
+                return null;
+            }
 
+            T [] result = new T [array.Length];
+
+            for ( int index = 0;   index < array.Length;   index++ ) 
+            {
+                if ( array [index] == null ) 
+                {
+                    result [index] = placeHolder;
+                }
+            }
+            
             return result;
         }
     }

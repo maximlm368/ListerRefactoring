@@ -232,6 +232,26 @@ class VMBadge : ViewModelBase
         }
     }
 
+    private double dTP;
+    internal double DepartmentTopPadding
+    {
+        get { return dTP; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref dTP, value, nameof (DepartmentTopPadding));
+        }
+    }
+
+    private double pTP;
+    internal double PostTopPadding
+    {
+        get { return pTP; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref pTP, value, nameof (PostTopPadding));
+        }
+    }
+
     internal bool isCorrect { get; private set; }
 
 
@@ -249,7 +269,10 @@ class VMBadge : ViewModelBase
         thirdLevelFontSize = badgeModel.badgeDescription. badgeDimensions. thirdLevelFontSize;
         firstLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. firstLevelTBHeight;
         secondLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. secondLevelTBHeight;
-        thirdLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. thirdLevelTBHeight;
+        thirdLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.thirdLevelTBHeight;
+
+        DepartmentTopPadding = 10;
+        PostTopPadding = 5;
 
         lastName = badgeModel.person. FamilyName;
         firstAndSecondName = badgeModel.person. FirstName + " " + badgeModel.person. PatronymicName;
@@ -296,6 +319,8 @@ class VMBadge : ViewModelBase
         firstLevelTBHeight *= coefficient;
         secondLevelTBHeight *= coefficient;
         thirdLevelTBHeight *= coefficient;
+        DepartmentTopPadding *= coefficient;
+        PostTopPadding *= coefficient;
     }
 
 
@@ -313,6 +338,8 @@ class VMBadge : ViewModelBase
         firstLevelTBHeight /= coefficient;
         secondLevelTBHeight /= coefficient;
         thirdLevelTBHeight /= coefficient;
+        DepartmentTopPadding /= coefficient;
+        PostTopPadding /= coefficient;
     }
 
 

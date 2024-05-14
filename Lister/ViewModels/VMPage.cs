@@ -215,10 +215,14 @@ class VMPage : ViewModelBase
     private void VerifyBadgeSizeAccordence ( VMBadge badge ) 
     {
         Size verifiebleSize = badge.badgeModel. badgeDescription. badgeDimensions. outlineSize;
+        int verifiebleWidth = (int) (scale * verifiebleSize.width);
+        int verifiebleHeight = (int) (scale * verifiebleSize.height);
 
-        bool isNotAccordent = ( scale * verifiebleSize.width != this.badgeExample.badgeWidth ) 
+        bool isNotAccordent = ( verifiebleWidth != (int) this.badgeExample.badgeWidth ) 
                               ||
-                              ( scale * verifiebleSize.height != this.badgeExample.badgeHeight );
+                              ( verifiebleHeight != (int) this.badgeExample.badgeHeight );
+
+        int dffd = 0;
 
         if ( isNotAccordent )
         {
