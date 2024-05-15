@@ -82,6 +82,25 @@ public partial class MainView : UserControl
     }
 
 
+    internal Size GetCustomComboboxDimensions ( )
+    {
+        double height = personTyping.DesiredSize.Height + personList.Height;
+        double width = personList.Width;
+        Size result = new Size (width, height);
+        return result;
+    }
+
+
+    internal void CloseCustomCombobox () 
+    {
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+    }
+
+
     internal void GeneratePdf( object sender, TappedEventArgs args ) 
     {
         List<FilePickerFileType> fileExtentions = [];
@@ -323,6 +342,16 @@ public partial class MainView : UserControl
     }
 
 
+    internal void DropDownOrPickUpPersonListViaLostFocus ( object sender, RoutedEventArgs args )
+    {
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+    }
+
+
     internal void DropDownOrPickUpPersonList ( object sender , TappedEventArgs args )
     {
         if ( personListIsDropped )
@@ -334,7 +363,7 @@ public partial class MainView : UserControl
         {
             personList.Height = CalculatePersonListHeight ( );
             personListIsDropped = true;
-            personList.Focus ( NavigationMethod.Unspecified );
+            //personList.Focus ( NavigationMethod.Unspecified );
         }
     }
 

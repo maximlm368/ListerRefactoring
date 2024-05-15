@@ -43,8 +43,6 @@
 		MinHeight="600"
         MinWidth="800"
         Height="650"
-        Width="1200"
-		
-		>
+        Width="1200">
         
 </Window>

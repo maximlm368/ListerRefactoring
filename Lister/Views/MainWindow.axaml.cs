@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using ContentAssembler;
 using Lister.ViewModels;
 
@@ -30,18 +31,21 @@ public partial class MainWindow : Window
         //button.FontSize *= scaleFactor;
         //textBox.FontSize *= scaleFactor;
         //// ... Adjust other controls accordingly
+        ///
+
 
         this.Opened += OnOpened;
         this.Content = new MainView( this,  docAssembler);
         this.SizeChanged += OnSizeChanged;
         currentWidth = this.Width;
         currentHeight = this.Height;
+        this.Tapped += HandleTapping;
     }
 
 
     internal void SetWidth (int width) 
     {
-        MainView mainView = (MainView) Content;
+        MainView mainView = ( MainView ) Content;
         mainView.SetWidth (width);
     }
 
@@ -76,5 +80,33 @@ public partial class MainWindow : Window
         mainView.personTyping.Width -= widthDifference;
         mainView.comboboxFrame.Width -= widthDifference;
         mainView.workArea.Height -= heightDifference;
+    }
+
+
+    internal void HandleTapping ( object sender, TappedEventArgs args )
+    {
+        MainView mainView = ( MainView ) Content;
+        POINT cursorCoordinates = new POINT ();
+        CursorViaWinapi.GetCursorPos (ref cursorCoordinates);
+        int coordinateX = cursorCoordinates.x;
+        int coordinateY = cursorCoordinates.y;
+
+        ContentAssembler.Size pointOfReference = new ContentAssembler.Size (99, 63);
+        int x = 99;
+        int y = 63;
+
+        ContentAssembler.Size targetSize = mainView.GetCustomComboboxDimensions ();
+        int targetWidth = ( int ) targetSize.width;
+        int targetHeight = ( int ) targetSize.height;
+
+        bool cursorIsOutsideTarget = coordinateX < ( x );
+        cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateX > ( x + targetWidth ) );
+        cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateY < y );
+        cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateY > ( y + targetHeight ) );
+
+        if ( cursorIsOutsideTarget )
+        {
+            mainView.CloseCustomCombobox ();
+        }
     }
 }
