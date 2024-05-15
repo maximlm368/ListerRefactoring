@@ -400,12 +400,12 @@ Content="{Binding  Content}"
          </ListBox>
          </Canvas>
              
-         <Button  Name="toDropDownOrPickUpPersonList"  FontSize="14" Grid.Column="2" Background="White" BorderBrush="Gray"
-                  Width="30" Tapped="DropDownOrPickUpPersonList"  Focusable="False" 
-                  VerticalContentAlignment="Center" HorizontalContentAlignment="Center"> v </Button>
+               <Button  Name="toDropDownOrPickUpPersonList"  FontSize="14" Grid.Column="2" Background="White" BorderBrush="Gray"
+                        Width="30" Tapped="DropDownOrPickUpPersonList"  Focusable="False"
+                        VerticalContentAlignment="Center" HorizontalContentAlignment="Center"> v </Button>
 			   <Label  Name="or"  Content="ИЛИ"  Grid.Column="3"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
 			   <Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="4"
-						IsEnabled="False"  Tapped="AcceptEntirePersonList" />
+						IsEnabled="False"  Tapped="AcceptEntirePersonList" GotFocus="DropDownOrPickUpPersonListViaFocus" />
 		   </Grid>
 		   
 

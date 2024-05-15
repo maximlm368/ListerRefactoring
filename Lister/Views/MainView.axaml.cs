@@ -24,6 +24,7 @@ using Lister.Extentions;
 using Avalonia.Layout;
 using static QuestPDF.Helpers.Colors;
 using DynamicData;
+using System.Runtime.InteropServices;
 
 namespace Lister.Views;
 
@@ -224,7 +225,7 @@ public partial class MainView : UserControl
     {
         entirePersonListIsSelected = true;
         singlePersonIsSelected = false;
-        EnableBadgeCreationButton ();
+        TryToEnableBadgeCreationButton ();
     }
 
 
@@ -303,6 +304,25 @@ public partial class MainView : UserControl
     }
 
 
+    internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
+    {
+        ComboBox comboBox = ( ComboBox ) sender;
+        viewModel.chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
+        templateIsSelected = true;
+        TryToEnableBadgeCreationButton ();
+    }
+
+
+    internal void DropDownOrPickUpPersonListViaFocus ( object sender, GotFocusEventArgs args )
+    {
+        if ( personListIsDropped )
+        {
+            personList.Height = 0;
+            personListIsDropped = false;
+        }
+    }
+
+
     internal void DropDownOrPickUpPersonList ( object sender , TappedEventArgs args )
     {
         if ( personListIsDropped )
@@ -339,8 +359,6 @@ public partial class MainView : UserControl
             personList.Height = CalculatePersonListHeight ( );
             personListIsDropped = true;
         }
-
-        EnableBadgeCreationButton ();
     }
 
 
@@ -354,30 +372,12 @@ public partial class MainView : UserControl
     }
 
 
-    internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
-    {
-        ComboBox comboBox = ( ComboBox ) sender;
-        viewModel.chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
-        templateIsSelected = true;
-        EnableBadgeCreationButton ();
-    }
-
-
     internal void HandlePersonChoosingViaTapping ( object sender , TappedEventArgs args )
     {
         if ( personListIsDropped )
         {
-            //if ( selectedPerson != null )
-            //{
-            //    //personTyping.Text = selectedPerson.StringPresentation;
-            //    viewModel.chosenPerson = selectedPerson;
-            //}
-
             personList.Height = 0;
             personListIsDropped = false;
-            singlePersonIsSelected = true;
-            entirePersonListIsSelected = false;
-            EnableBadgeCreationButton ( );
         }
     }
 
@@ -396,6 +396,7 @@ public partial class MainView : UserControl
 
         singlePersonIsSelected = true;
         entirePersonListIsSelected = false;
+        TryToEnableBadgeCreationButton ();
     }
 
 
@@ -418,13 +419,25 @@ public partial class MainView : UserControl
     }
 
 
-    private void EnableBadgeCreationButton () 
+    private void TryToEnableBadgeCreationButton ()
     {
         bool itsTimeToEnable = ( singlePersonIsSelected || entirePersonListIsSelected ) && templateIsSelected;
-        if ( itsTimeToEnable ) 
+        if ( itsTimeToEnable )
         {
-            buildBadges.IsEnabled = true;       
+            buildBadges.IsEnabled = true;
         }
+    }
+
+
+    private bool IsKeyUnipacting ( string key )
+    {
+        bool keyIsUnimpacting = key == "Tab";
+        keyIsUnimpacting = keyIsUnimpacting || ( key == "Left" );
+        keyIsUnimpacting = keyIsUnimpacting || ( key == "Up" );
+        keyIsUnimpacting = keyIsUnimpacting || ( key == "Right" );
+        keyIsUnimpacting = keyIsUnimpacting || ( key == "Down" );
+        keyIsUnimpacting = keyIsUnimpacting || ( key == "Return" );
+        return keyIsUnimpacting;
     }
 
 
@@ -440,10 +453,10 @@ public partial class MainView : UserControl
 
     internal void HandlePersonListReduction ( object sender, KeyEventArgs args )
     {
-        string key = args.Key.ToString ( );
-        bool keyIsTab = key == "Tab";
+        string key = args.Key.ToString ();
+        bool keyIsUnimpacting = IsKeyUnipacting (key);
 
-        if ( keyIsTab ) 
+        if ( keyIsUnimpacting )
         {
             return;
         }
@@ -482,6 +495,7 @@ public partial class MainView : UserControl
 
             viewModel.visiblePeople = foundVisiblePeople;
             personList.Height = CalculatePersonListHeight ( );
+            personListIsDropped = true;
         }
     }
 
@@ -666,10 +680,26 @@ public partial class MainView : UserControl
     {
         
     }
+
+
+
 }
 
 
 
+public static class CursorViaWinapi 
+{
+    [DllImport ("user32.dll")]
+    public static extern bool GetCursorPos ( ref POINT lpPoint );
 
+
+    [DllImport ("user32.dll")]
+    public static extern void mouse_event ( int dsFlags, int dx, int dy, int cButtons, int dsExtraInfo );
+}
+
+
+
+[StructLayout (LayoutKind.Sequential)]
+public struct POINT { public int x; public int y; }
 
 
