@@ -60,7 +60,7 @@ namespace DataGateway
 
 
             double badgeWidth = 350;
-            double badgeHeight = 212;
+            double badgeHeight = 214;
             Size badgeSize = new Size (badgeWidth, badgeHeight);
 
             double personTextAreaWidth = 220;

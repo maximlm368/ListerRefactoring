@@ -120,8 +120,8 @@ class VMPage : ViewModelBase
         pageWidth = pageSize.width;
         pageHeight = pageSize.height;
         evenLeftShift = 46;
-        oddLeftShift = 398;
-        badgeStackTopShift = 30;
+        oddLeftShift = 397;
+        badgeStackTopShift = 20;
         badgeLimit = GetAmountOfBadgesOnPage ( );
         Zoom ();
     }

@@ -252,6 +252,17 @@ class VMBadge : ViewModelBase
         }
     }
 
+    private double borderThickness;
+    private Avalonia.Thickness bT;
+    internal Avalonia.Thickness BorderThickness
+    {
+        get { return bT; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref bT, value, nameof (BorderThickness));
+        }
+    }
+
     internal bool isCorrect { get; private set; }
 
 
@@ -285,6 +296,8 @@ class VMBadge : ViewModelBase
 
         personalTextContainerHeight = 0;
         isCorrect = true;
+        borderThickness = 1;
+        BorderThickness = new Avalonia.Thickness (borderThickness);
 
         FitTextDataInContainer ();
     }
@@ -321,6 +334,9 @@ class VMBadge : ViewModelBase
         thirdLevelTBHeight *= coefficient;
         DepartmentTopPadding *= coefficient;
         PostTopPadding *= coefficient;
+
+        borderThickness *= coefficient;
+        BorderThickness = new Avalonia.Thickness(borderThickness);
     }
 
 
@@ -340,6 +356,9 @@ class VMBadge : ViewModelBase
         thirdLevelTBHeight /= coefficient;
         DepartmentTopPadding /= coefficient;
         PostTopPadding /= coefficient;
+
+        borderThickness /= coefficient;
+        BorderThickness = new Avalonia.Thickness (borderThickness);
     }
 
 

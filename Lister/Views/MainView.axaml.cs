@@ -42,6 +42,9 @@ public partial class MainView : UserControl
     private bool templateIsSelected = false;
     private bool personSelectionGotFocus = false;
     private bool textStackIsMesuared = false;
+    private bool openedViaButton = false;
+    private bool cursorIsOverPersonList = false;
+    private bool selectionIsChanged = false;
     private Window owner;
     private Person selectedPerson;
     private ushort maxScalability;
@@ -93,11 +96,15 @@ public partial class MainView : UserControl
 
     internal void CloseCustomCombobox () 
     {
-        if ( personListIsDropped )
+        
+        if ( personListIsDropped   &&   ! openedViaButton   &&   ! cursorIsOverPersonList )
         {
             personList.Height = 0;
             personListIsDropped = false;
+            
         }
+
+        openedViaButton = false;
     }
 
 
@@ -189,12 +196,6 @@ public partial class MainView : UserControl
 
         ChooseFile ();
     }
-    //internal void ChooseFile ( object sender , KeyEventArgs args )
-    //{
-    //    string str = args.Key.ToString ( );
-    //    int sas = 0;
-    //    ChooseFile ( );
-    //}
 
 
     private void ChooseFile ( )
@@ -342,17 +343,7 @@ public partial class MainView : UserControl
     }
 
 
-    internal void DropDownOrPickUpPersonListViaLostFocus ( object sender, RoutedEventArgs args )
-    {
-        if ( personListIsDropped )
-        {
-            personList.Height = 0;
-            personListIsDropped = false;
-        }
-    }
-
-
-    internal void DropDownOrPickUpPersonList ( object sender , TappedEventArgs args )
+    internal void DropDownOrPickUpPersonList ( object sender, TappedEventArgs args )
     {
         if ( personListIsDropped )
         {
@@ -361,9 +352,19 @@ public partial class MainView : UserControl
         }
         else
         {
-            personList.Height = CalculatePersonListHeight ( );
+            personTyping.Focus (NavigationMethod.Tab);
+            personList.Height = CalculatePersonListHeight ();
             personListIsDropped = true;
-            //personList.Focus ( NavigationMethod.Unspecified );
+
+            if ( openedViaButton )
+            {
+                openedViaButton = false;
+            }
+            else 
+            {
+                openedViaButton = true;
+            }
+            
         }
     }
 
@@ -371,23 +372,32 @@ public partial class MainView : UserControl
     internal void DropDownOrPickUpPersonListViaKey ( object sender, KeyEventArgs args )
     {
         string key = args.Key.ToString ();
-        bool keyIsNotEnter = key != "Return";
+        bool keyIsEnter = key == "Return";
 
-        if ( keyIsNotEnter )
+        if ( keyIsEnter )
         {
+            if ( personListIsDropped )
+            {
+                personList.Height = 0;
+                personListIsDropped = false;
+            }
+            else
+            {
+                personList.Height = CalculatePersonListHeight ();
+                personListIsDropped = true;
+                openedViaButton = false;
+            }
+
             return;
         }
 
-        if ( personListIsDropped )
-        {
-            personList.Height = 0;
-            personListIsDropped = false;
-        }
-        else
-        {
-            personList.Height = CalculatePersonListHeight ( );
-            personListIsDropped = true;
-        }
+        //bool keyIsTab = key == "Tab";
+
+        //if ( keyIsTab )
+        //{
+        //    personTyping.Focus (NavigationMethod.Tab);
+        //    return;
+        //}
     }
 
 
@@ -401,31 +411,56 @@ public partial class MainView : UserControl
     }
 
 
-    internal void HandlePersonChoosingViaTapping ( object sender , TappedEventArgs args )
+    internal void HandlePersonChoosingViaTapping ( object sender, TappedEventArgs args )
     {
-        if ( personListIsDropped )
+        //personChoosingIsTapped = true;
+        
+
+        if ( personListIsDropped   &&   selectionIsChanged )
         {
             personList.Height = 0;
             personListIsDropped = false;
+            selectionIsChanged = false;
         }
+
+        int fdf = 0;
     }
 
 
-    internal void HandleSelectionChanged ( object sender , SelectionChangedEventArgs args )
+    internal void HandleSelectionChanged ( object sender, SelectionChangedEventArgs args )
     {
-        //Person previousSelectedPerson = selectedPerson;
-        //selectedPerson = ( Person ) personList.SelectedItem;
         viewModel.chosenPerson = ( Person ) personList.SelectedItem;
         Person person = ( Person ) personList.SelectedItem;
 
         if (person != null) 
         {
             personTyping.Text = person.StringPresentation;
+            singlePersonIsSelected = true;
+            entirePersonListIsSelected = false;
+            TryToEnableBadgeCreationButton ();
+            selectionIsChanged = true;
         }
 
-        singlePersonIsSelected = true;
-        entirePersonListIsSelected = false;
-        TryToEnableBadgeCreationButton ();
+        //if ( personListIsDropped   &&   ! personChoosingIsTapped )
+        //{
+        //    personList.Height = 0;
+        //    personListIsDropped = false;
+        //    personChoosingIsTapped = false;
+        //}
+
+        int fdf = 0;
+    }
+
+
+    internal void CursorIsOverPersonList ( object sender, PointerEventArgs args )
+    {
+        cursorIsOverPersonList = true;
+    }
+
+
+    internal void CursorIsOutOfPersonList ( object sender, PointerEventArgs args )
+    {
+        cursorIsOverPersonList = false;
     }
 
 
@@ -490,6 +525,11 @@ public partial class MainView : UserControl
             return;
         }
 
+        //if ( key == "Tab" ) 
+        //{
+        //    personTyping.Focus (NavigationMethod.Tab);
+        //}
+
         buildBadges.IsEnabled = false;
         clearBadges.IsEnabled = false;
         save.IsEnabled = false;
@@ -529,11 +569,61 @@ public partial class MainView : UserControl
     }
 
 
+    internal void SetFocusOnPersonTyping ( object sender, KeyEventArgs args )
+    {
+        string key = args.Key.ToString ();
+        bool keyIsUnimpacting = key != "Tab";
+        bool personListIsFocused = personList.IsFocused;
+
+        if ( keyIsUnimpacting  && ! personListIsFocused )
+        {
+            return;
+        }
+
+        personTyping.Focus (NavigationMethod.Tab);
+    }
+
+
     private void RecoverVisiblePeople ()
     {
         List<Person> people = viewModel. people;
         viewModel. visiblePeople = new ();
         viewModel.visiblePeople.AddRange (people);
+    }
+
+
+    private void HideCoveredButtons ()
+    {
+        int peopleCount = viewModel.visiblePeople.Count;
+
+        if ( peopleCount == 1 ) 
+        {
+            buildBadges.IsEnabled = false;
+            clearBadges.IsEnabled = false;
+            save.IsEnabled = false;
+            print.IsEnabled = false;
+        }
+
+        if ( peopleCount > 1 )
+        {
+            buildBadges.IsEnabled = false;
+            clearBadges.IsEnabled = false;
+            save.IsEnabled = false;
+            print.IsEnabled = false;
+        }
+
+    }
+
+
+    private void ShowButtons () 
+    {
+        buildBadges.IsEnabled = false;
+        clearBadges.IsEnabled = false;
+        save.IsEnabled = false;
+        print.IsEnabled = false;
+
+
+
     }
 
 
