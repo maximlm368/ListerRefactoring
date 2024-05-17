@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using ContentAssembler;
+using DataGateway;
 using Lister.ViewModels;
 
 namespace Lister.Views;
@@ -13,7 +14,7 @@ public partial class MainWindow : Window
     private double currentHeight;
 
 
-    public MainWindow (IUniformDocumentAssembler docAssembler)
+    public MainWindow ( )
     {
         InitializeComponent();
 
@@ -32,6 +33,12 @@ public partial class MainWindow : Window
         //textBox.FontSize *= scaleFactor;
         //// ... Adjust other controls accordingly
         ///
+
+        string badgeTemplatesFolderPath = @"./";
+        IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource (badgeTemplatesFolderPath);
+        IPeopleDataSource peopleDataSource = new PeopleSource ();
+        IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
+        IUniformDocumentAssembler docAssembler = new UniformDocAssembler (converter, badgeAppearenceDataSource, peopleDataSource);
 
 
         this.Opened += OnOpened;

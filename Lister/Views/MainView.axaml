@@ -422,6 +422,7 @@ Content="{Binding  Content}"
 				   <ColumnDefinition Width="100"></ColumnDefinition>
 				   <ColumnDefinition Width="100"></ColumnDefinition>
 				   <ColumnDefinition Width="100"></ColumnDefinition>
+				   <ColumnDefinition Width="100"></ColumnDefinition>
 				   <ColumnDefinition ></ColumnDefinition>
 			   </Grid.ColumnDefinitions>
 			   <Grid.RowDefinitions>
@@ -448,7 +449,19 @@ Content="{Binding  Content}"
 			   <Button  Name="save" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
 												                  IsEnabled="False" Tapped="GeneratePdf" />
 			   <Button Name="print" Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  
-					   Tapped="Print" IsEnabled="False"/>	   
+					   Tapped="Print" IsEnabled="False"/>	
+		   
+		   <ComboBox Name="templateChoosing2" SelectedIndex="1"  MaxDropDownHeight="100"  Grid.Column="6"  Width="230"
+						       VerticalAlignment="Center" SelectionChanged="HandleTemplateChoosing" IsTextSearchEnabled="True"
+			             ItemsSource="{ Binding   Path = templates,   Mode = OneWay }">
+				   <ComboBox.ItemTemplate>
+					   <DataTemplate>
+						   <TextBlock  Text="{Binding  Path = Name, Mode=OneWay  }"  FontSize="14"
+										   Padding="0,0,0,0"></TextBlock>
+					   </DataTemplate>
+				   </ComboBox.ItemTemplate>
+			   </ComboBox>
+		   
 		   </Grid>
 
 	   <Grid Name="zoomAndNavigation" Margin="0,-1">

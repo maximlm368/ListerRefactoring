@@ -35,9 +35,16 @@ class ConverterToPdf
     public IEnumerable<byte []> bytes = null;
     public List<string> intermidiateFiles = new ();
 
-    internal void SaveAsFile (List<VMBadge> items, string filePathToSave)
+    internal bool SaveAsFile (List<VMBadge> items, string filePathToSave)
     {
-        if ( items.Count == 0 ) return;
+        bool result = true;
+
+        if ( ( items == null )   ||   (filePathToSave == null) ) 
+        {
+            result = false;
+            return result;
+        }
+
         Settings.License = LicenseType.Community;
         List<VMBadge []> pairs = items.SeparateIntoPairs ();
 
@@ -73,13 +80,23 @@ class ConverterToPdf
                                 }
                             );
                         }
-
                     }
                 );
             });
         });
 
-        doc.GeneratePdf (filePathToSave);
+        try 
+        {
+            doc.GeneratePdf (filePathToSave);
+        }
+        catch ( IOException ex ) 
+        {
+            result = false;
+        }
+
+        return result;
+        
+
 
         //ImageGenerationSettings imageGenerationSettings = new ImageGenerationSettings ();
         //imageGenerationSettings.RasterDpi = 96;
@@ -114,8 +131,6 @@ class ConverterToPdf
             int stp = step;
         }
 
-
-       
         float badgeHeight = ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. outlineSize. height;
         float personDataBlockInBadgeWidth = 
                                   ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. personTextAreaSize. width;
@@ -245,9 +260,11 @@ class ConverterToPdf
     {
         string departmentName = beingRenderedItem.departmentName;
         float fontSize = ( float ) beingRenderedItem.thirdLevelFontSize;
+        int topPadding = ( int ) beingRenderedItem.DepartmentTopPadding;
 
         column
        .Item ()
+       .PaddingTop (topPadding)
        .AlignCenter ()
        .Text (departmentName)
        .FontFamily ("Arial")
@@ -273,9 +290,11 @@ class ConverterToPdf
     {
         string positionName = beingRenderedItem.positionName;
         float fontSize = ( float ) beingRenderedItem.thirdLevelFontSize;
+        int topPadding = ( int ) beingRenderedItem.PostTopPadding;
 
         column
        .Item ()
+       .PaddingTop (topPadding)
        .AlignCenter ()
        .Text (positionName)
        .FontFamily ("Arial")

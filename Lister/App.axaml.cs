@@ -18,12 +18,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        string badgeTemplatesFolderPath = @"./";
-        IBadgeAppearenceDataSource badgeAppearenceDataSource = new ConfigFileBasedDataSource(badgeTemplatesFolderPath);
-        IPeopleDataSource peopleDataSource = new PeopleSource();
-        IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
-        IUniformDocumentAssembler docAssembler = new UniformDocAssembler(converter, badgeAppearenceDataSource, peopleDataSource);
-        MainWindow mainWindow = new MainWindow (docAssembler);
+        MainWindow mainWindow = new MainWindow ();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -34,7 +29,7 @@ public partial class App : Application
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {
-            singleViewPlatform.MainView = new MainView (mainWindow, docAssembler);
+            //singleViewPlatform.MainView = new MainView (mainWindow);
         }
 
 

@@ -539,7 +539,7 @@ class VMBadge : ViewModelBase
 
         while ( lineIsOverflow )
         {
-            List<string> splited = beingProcessedLine.SplitIntoRestAndLastWord ();
+            List<string> splited = beingProcessedLine.SeparateIntoMainAndTailViaLastSeparator (new List<char> {'/', '\\'});
 
             if ( splited.Count > 0 )
             {

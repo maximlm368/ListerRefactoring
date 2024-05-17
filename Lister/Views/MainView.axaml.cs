@@ -25,6 +25,7 @@ using Avalonia.Layout;
 using static QuestPDF.Helpers.Colors;
 using DynamicData;
 using System.Runtime.InteropServices;
+using ExtentionsAndAuxiliary;
 
 namespace Lister.Views;
 
@@ -58,14 +59,14 @@ public partial class MainView : UserControl
     private double minPersonListHeight;
 
 
-    public MainView (Window owner,  IUniformDocumentAssembler docAssembler)
+    public MainView ( Window owner, IUniformDocumentAssembler docAssembler )
     {
-        InitializeComponent();
+        InitializeComponent ();
         this.owner = owner;
         pageBorder.Width = 794;
         pageBorder.Height = 1123;
-        Size pageSize = new Size(pageBorder.Width, pageBorder.Height);
-        this.DataContext = new MainViewModel(docAssembler, pageSize);
+        Size pageSize = new Size (pageBorder.Width, pageBorder.Height);
+        this.DataContext = new MainViewModel (docAssembler, pageSize);
         this.viewModel = ( MainViewModel ) this.DataContext;
         this.incorrectBadges = new List<VMBadge> ();
         scroller.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
@@ -79,13 +80,13 @@ public partial class MainView : UserControl
     }
 
 
-    internal void SetWidth (int screenSize)
+    internal void SetWidth ( int screenSize )
     {
         viewModel.SetWidth (screenSize);
     }
 
 
-    internal Size GetCustomComboboxDimensions ( )
+    internal Size GetCustomComboboxDimensions ()
     {
         double height = personTyping.DesiredSize.Height + personList.Height;
         double width = personList.Width;
@@ -94,21 +95,21 @@ public partial class MainView : UserControl
     }
 
 
-    internal void CloseCustomCombobox () 
+    internal void CloseCustomCombobox ()
     {
-        
-        if ( personListIsDropped   &&   ! openedViaButton   &&   ! cursorIsOverPersonList )
+
+        if ( personListIsDropped && !openedViaButton && !cursorIsOverPersonList )
         {
             personList.Height = 0;
             personListIsDropped = false;
-            
+
         }
 
         openedViaButton = false;
     }
 
 
-    internal void GeneratePdf( object sender, TappedEventArgs args ) 
+    internal void GeneratePdf ( object sender, TappedEventArgs args )
     {
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add (FilePickerFileTypes.Pdf);
@@ -127,25 +128,61 @@ public partial class MainView : UserControl
                    {
                        string result = task.Result.Path.ToString ();
                        result = result.Substring (8, result.Length - 8);
-                       Task pdf = viewModel.GeneratePdf (result);
-
+                       Task<bool> pdf = viewModel.GeneratePdf (result);
                        pdf.ContinueWith
                            (
                            task =>
                            {
-                               Process fileExplorer = new Process ();
-                               fileExplorer.StartInfo.FileName = "explorer.exe";
-                               fileExplorer.StartInfo.Arguments = @"D:/MML/MyPdf.pdf";
-                               fileExplorer.StartInfo.UseShellExecute = true;
-                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                               fileExplorer.Start ();
+                               if ( pdf.Result == false )
+                               {
+                                   string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
+
+                                   int idOk = Winapi.MessageBox (0, message, "", 0);
+                                   //GeneratePdf (result);
+                               }
+                               else
+                               {
+                                   Process fileExplorer = new Process ();
+                                   fileExplorer.StartInfo.FileName = "explorer.exe";
+                                   result = result.ExtractPathWithoutFileName ();
+                                   result = result.Replace ('/', '\\');
+                                   fileExplorer.StartInfo.Arguments = result;
+                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                                   fileExplorer.Start ();
+                               }
                            }
-                           , uiScheduler
                            );
                    }
                }
-               , uiScheduler
             );
+    }
+
+
+    private void GeneratePdf ( string result ) 
+    {
+        Task<bool> pdf = viewModel.GeneratePdf (result);
+
+        pdf.ContinueWith
+                           (
+                           task =>
+                           {
+                               if ( pdf.Result == false )
+                               {
+                                   string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
+                                   int idOk = Winapi.MessageBox (0, message, "", 0);
+                               }
+                               else 
+                               {
+                                   Process fileExplorer = new Process ();
+                                   fileExplorer.StartInfo.FileName = "explorer.exe";
+                                   result = result.ExtractPathWithoutFileName ();
+                                   result = result.Replace ('/', '\\');
+                                   fileExplorer.StartInfo.Arguments = result;
+                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                                   fileExplorer.Start ();
+                               }
+                           }
+                           );
     }
 
 
@@ -800,8 +837,14 @@ public partial class MainView : UserControl
         
     }
 
+}
 
 
+
+public static class Winapi
+{
+    [DllImport ("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern int MessageBox ( IntPtr hWnd, string lpText, string lpCaption, uint uType );
 }
 
 
