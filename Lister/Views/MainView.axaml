@@ -442,13 +442,13 @@ Content="{Binding  Content}"
 			   </ComboBox>
 			   
 			   <Button  Name="buildBadges"  Width="100" Content="Построить" Grid.Column="2"  Tapped="BuildBadges"
-						      HorizontalContentAlignment="Center" IsEnabled="False"  HorizontalAlignment="Center"/>
+						                                          IsEnabled="False"  HorizontalAlignment="Center"/>
 			   <Button  Name="clearBadges"  Width="96" Content="Очистить" Grid.Column="3"  Tapped="ClearBadges"
-						      HorizontalContentAlignment="Center" IsEnabled="False" HorizontalAlignment="Center"/>
+						                                          IsEnabled="False" HorizontalAlignment="Center"/>
 			   <Button  Name="save" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
-									HorizontalContentAlignment="Center" IsEnabled="False" Tapped="GeneratePdf" />
+												                  IsEnabled="False" Tapped="GeneratePdf" />
 			   <Button Name="print" Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  
-					        HorizontalContentAlignment="Center" Tapped="Print" IsEnabled="False"/>	   
+					   Tapped="Print" IsEnabled="False"/>	   
 		   </Grid>
 
 	   <Grid Name="zoomAndNavigation" Margin="0,-1">
@@ -470,23 +470,23 @@ Content="{Binding  Content}"
 		   </Grid.RowDefinitions>
 		   
 		   <Button Name="firstPage"  Content="z" Grid.Column="1"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
-																						 HorizontalContentAlignment="Center"  Tapped="ToFirstPage" />
+																						  Tapped="ToFirstPage" />
 		   <Button  Name="previousPage" Content="b" Grid.Column="2"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
-																						  HorizontalContentAlignment="Center"  Tapped="ToPreviousPage" />
+																						   Tapped="ToPreviousPage" />
 
 		   <TextBox  Name="visiblePageNumber"  Width="60"  FontSize="14"  Grid.Column="3"  MaxHeight="30" Margin="0,3"
 						  TextChanged="StepOnPage" Text="{Binding   Path = visiblePageNumber,   Mode=OneWay}"/>
 
 		   <Button Name="nextPage"  Content="f" Grid.Column="4"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
-																						  HorizontalContentAlignment="Center"  Tapped="ToNextPage" />
+																						   Tapped="ToNextPage" />
 		   <Button Name="lastPage"  Content="l" Grid.Column="5"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
-																						  HorizontalContentAlignment="Center"  Tapped="ToLastPage" />
+																						   Tapped="ToLastPage" />
 		   <Button  Name="zoomOn" Content="+" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
-																		 HorizontalContentAlignment="Center"	 Tapped="ZoomOn" IsEnabled="False" />
+																			 Tapped="ZoomOn" IsEnabled="False" />
 		   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
 				     IsReadOnly="True" KeyUp="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
 		   <Button  Name="zoomOut"  Content="-" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
-																		 HorizontalContentAlignment="Center"  Tapped="ZoomOut" IsEnabled="False" />
+																		  Tapped="ZoomOut" IsEnabled="False" />
 	   </Grid>
    </StackPanel>
        

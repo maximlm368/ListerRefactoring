@@ -569,19 +569,19 @@ public partial class MainView : UserControl
     }
 
 
-    //internal void SetFocusOnPersonTyping ( object sender, KeyEventArgs args )
-    //{
-    //    string key = args.Key.ToString ();
-    //    bool keyIsUnimpacting = key != "Tab";
-    //    bool personListIsFocused = personList.IsFocused;
+    internal void SetFocusOnPersonTyping ( object sender, KeyEventArgs args )
+    {
+        string key = args.Key.ToString ();
+        bool keyIsUnimpacting = key != "Tab";
+        bool personListIsFocused = personList.IsFocused;
 
-    //    if ( keyIsUnimpacting  && ! personListIsFocused )
-    //    {
-    //        return;
-    //    }
+        if ( keyIsUnimpacting  && ! personListIsFocused )
+        {
+            return;
+        }
 
-    //    personTyping.Focus (NavigationMethod.Tab);
-    //}
+        personTyping.Focus (NavigationMethod.Tab);
+    }
 
 
     private void RecoverVisiblePeople ()
