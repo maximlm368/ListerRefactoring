@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace ExtentionsAndAuxiliary
 {
@@ -9,9 +10,9 @@ namespace ExtentionsAndAuxiliary
             string result;
             var builder = new StringBuilder ();
 
-            for ( var charCounter = path.Length - 1; charCounter >= 0; charCounter-- )
+            for ( var charCounter = path.Length - 1;   charCounter >= 0;   charCounter-- )
             {
-                if ( path [charCounter] != '/' && path [charCounter] != '\\' )
+                if ( (path [charCounter] != '/')   &&   (path [charCounter] != '\\') )
                 {
                     builder.Append (path [charCounter]);
                 }
@@ -31,7 +32,7 @@ namespace ExtentionsAndAuxiliary
             string result;
             var builder = new StringBuilder ();
 
-            for ( var charCounter = str.Length - 1; charCounter >= 0; charCounter-- )
+            for ( var charCounter = str.Length - 1;   charCounter >= 0;   charCounter-- )
             {
                 builder.Append (str [charCounter]);
             }
@@ -41,23 +42,80 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SplitIntoRestAndLastWord ( this string str )
+        public static List<string> SeparateIntoMainAndTailViaLastSeparator ( this string str, List<char> separators )
         {
             List<string> result = new List<string> ();
 
-            for ( var charCounter = str.Length - 1; charCounter >= 0; charCounter-- )
+            if ( (str == null)   ||   (separators == null) ) 
             {
-                if ( str [charCounter] == ' ' || str [charCounter] == '-' )
+                return result;
+            }
+
+            for ( var index = str.Length - 1;   index >= 0;   index-- )
+            {
+                if ( (str [index] == ' ')   ||   (str [index] == '-') )
                 {
                     int gapLength = 1;
-                    int endPartLength = str.Length - charCounter - gapLength;
-                    string secondPart = str.Substring (charCounter + 1, endPartLength);
-                    string firstPart = str.Substring (0, charCounter);
+                    int endPartLength = str.Length - index - gapLength;
+                    string secondPart = str.Substring (index + 1, endPartLength);
+                    string firstPart = str.Substring (0, index);
                     result.Add (firstPart);
                     result.Add (secondPart);
 
                     break;
                 }
+            }
+
+            return result;
+        }
+
+
+        public static List<string> SeparateIntoMainAndTailViaLastSeparators ( this string str, List<char> separators )
+        {
+            List<string> result = new List<string> ();
+
+            if ( ( str == null ) || ( separators == null ) )
+            {
+                return result;
+            }
+
+            List<short> mask = GetMaskOf (separators);
+
+            for ( int index = str.Length - 1;   index >= 0;   index-- )
+            {
+                short shortPresentation = (short) str[index];
+
+                if ( shortPresentation == mask [shortPresentation] )
+                {
+                    int gapLength = 1;
+                    int endPartLength = str.Length - index - gapLength;
+                    string secondPart = str.Substring (index + 1, endPartLength);
+                    string firstPart = str.Substring (0, index);
+                    result.Add (firstPart);
+                    result.Add (secondPart);
+
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+
+        private static List<short> GetMaskOf ( List<char> chars ) 
+        {
+            List<short> result = new List<short>();
+            short counter = 0;
+
+            while ( counter < short.MaxValue ) 
+            {
+                result.Add (0);
+                counter++;
+            }
+
+            for ( int index = 0; index < chars.Count; index++ )
+            {
+                result [( short ) chars [index]] = ( short ) chars [index];
             }
 
             return result;
@@ -95,6 +153,26 @@ namespace ExtentionsAndAuxiliary
             }
 
             return result;
+        }
+
+
+        public static string ExtractPathWithoutFileName ( this string wholePath )
+        {
+            var builder = new StringBuilder ();
+            string goalPath = string.Empty;
+
+            for ( var index = wholePath.Length - 1;   index >= 0;   index-- )
+            {
+                bool fileNameIsAchieved = (wholePath [index] == '/')   ||   (wholePath [index] == '\\');
+
+                if ( fileNameIsAchieved )
+                {
+                    goalPath = wholePath.Substring (0, index);
+                    break;
+                }
+            }
+
+            return goalPath;
         }
 
     }

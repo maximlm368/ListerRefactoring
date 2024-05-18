@@ -206,7 +206,7 @@ class MainViewModel : ViewModelBase
             }
             catch ( IOException ex )
             {
-                int idOk = MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+                int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
                 return string.Empty;
             }
         }
@@ -221,11 +221,10 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal Task GeneratePdf ( string fileToSave )
+    internal Task<bool> GeneratePdf ( string fileToSave )
     {
         List<VMBadge> allBadges = GetAllBadges ();
-        Task task = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
-        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+        Task<bool> task = new Task<bool> (() => { return converter.SaveAsFile (allBadges, fileToSave); });
         task.Start ();
         return task;
     }
