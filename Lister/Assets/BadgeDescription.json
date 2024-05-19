@@ -4,7 +4,7 @@
   "Width" : "350",
   "Height" : "212",
 
-  "FamilyNameBlock": {
+  "FamilyName": {
     "Width" : "220",
     "Height" : "37",
     "TopOffset" : "65",
@@ -14,7 +14,7 @@
     "FontFamily" : "Arial"
   },
 
-  "FirstNameBlock": {
+  "FirstName": {
     "Width": "220",
     "Height": "20",
     "TopOffset": "102",
@@ -24,7 +24,7 @@
     "FontFamily": "Arial"
   },
 
-  "PatronymicNameBlock": {
+  "PatronymicName": {
     "Width": "220",
     "Height": "20",
     "TopOffset": "102",
@@ -34,7 +34,7 @@
     "FontFamily": "Arial"
   },
 
-  "PostBlock": {
+  "Post": {
     "Width": "220",
     "Height": "14",
     "TopOffset": "122",
@@ -58,8 +58,8 @@
     "Items": [
       {
         "United": {
-          "Block_0": "FirstNameBlock",
-          "Block_1": "PatronymicNameBlock"
+          "Block_0": "FirstName",
+          "Block_1": "PatronymicName"
         },
         "Name" : "FirstAndPatronymic",
         "Width": "220",

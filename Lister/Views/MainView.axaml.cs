@@ -59,15 +59,11 @@ public partial class MainView : UserControl
     private double minPersonListHeight;
 
 
-    public MainView ( Window owner, IUniformDocumentAssembler docAssembler )
+    public MainView ( )
     {
         InitializeComponent ();
-        this.owner = owner;
         pageBorder.Width = 794;
         pageBorder.Height = 1123;
-        Size pageSize = new Size (pageBorder.Width, pageBorder.Height);
-        this.DataContext = new MainViewModel (docAssembler, pageSize);
-        this.viewModel = ( MainViewModel ) this.DataContext;
         this.incorrectBadges = new List<VMBadge> ();
         scroller.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto;
         scalabilityDepth = 0;
@@ -77,6 +73,20 @@ public partial class MainView : UserControl
         personContainerHeight = 38.5;
         maxPersonListHeight = personContainerHeight * 4;
         minPersonListHeight = 5;
+    }
+
+
+    internal void SetOwner ( Window owner )
+    {
+        this.owner = owner;
+    }
+
+
+    internal void PassAssembler ( IUniformDocumentAssembler docAssembler )
+    {
+        Size pageSize = new Size ( pageBorder.Width , pageBorder.Height );
+        this.DataContext = new MainViewModel ( docAssembler , pageSize );
+        this.viewModel = ( MainViewModel ) this.DataContext;
     }
 
 
@@ -158,80 +168,52 @@ public partial class MainView : UserControl
     }
 
 
-    private void GeneratePdf ( string result ) 
-    {
-        Task<bool> pdf = viewModel.GeneratePdf (result);
-
-        pdf.ContinueWith
-                           (
-                           task =>
-                           {
-                               if ( pdf.Result == false )
-                               {
-                                   string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
-                                   int idOk = Winapi.MessageBox (0, message, "", 0);
-                               }
-                               else 
-                               {
-                                   Process fileExplorer = new Process ();
-                                   fileExplorer.StartInfo.FileName = "explorer.exe";
-                                   result = result.ExtractPathWithoutFileName ();
-                                   result = result.Replace ('/', '\\');
-                                   fileExplorer.StartInfo.Arguments = result;
-                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                                   fileExplorer.Start ();
-                               }
-                           }
-                           );
-    }
-
-
     internal void Print ( object sender, TappedEventArgs args )
     {
         viewModel.Print ();
     }
 
 
-    internal void OpenEditor ( object sender, TappedEventArgs args )
+    internal void OpenEditor ( object sender , TappedEventArgs args )
     {
         string filePath = personsSourceFile.Text;
 
-        if ( string.IsNullOrWhiteSpace(filePath) ) 
+        if ( string.IsNullOrWhiteSpace ( filePath ) )
         {
             return;
         }
 
-        ProcessStartInfo procInfo = new ProcessStartInfo () 
+        ProcessStartInfo procInfo = new ProcessStartInfo ( )
         {
-            FileName = filePath,
+            FileName = filePath ,
             UseShellExecute = true
         };
-        try 
+        try
         {
-            Process.Start (procInfo);
+            Process.Start ( procInfo );
         }
-        catch ( System.ComponentModel.Win32Exception ex ) 
+        catch ( System.ComponentModel.Win32Exception ex )
         {
         }
     }
 
 
-    internal void ChooseFile ( object sender, TappedEventArgs args )
+    internal void ChooseFile ( object sender , TappedEventArgs args )
     {
         ChooseFile ( );
     }
 
 
-    internal void ChooseFile ( object sender, KeyEventArgs args )
+    internal void ChooseFile ( object sender , KeyEventArgs args )
     {
-        string key = args.Key.ToString ();
+        string key = args.Key.ToString ( );
 
         if ( key != "Q" )
         {
             return;
         }
 
-        ChooseFile ();
+        ChooseFile ( );
     }
 
 
@@ -266,7 +248,7 @@ public partial class MainView : UserControl
                        result = result.Substring ( 8 , result.Length - 8 );
                        vm.sourceFilePath = result;
 
-                       if ( vm.sourceFilePath != string.Empty ) 
+                       if ( vm.sourceFilePath != string.Empty )
                        {
                            editSourceFile.IsEnabled = true;
                            setEntirePersonList.IsEnabled = true;

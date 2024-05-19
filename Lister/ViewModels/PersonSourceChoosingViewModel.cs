@@ -1,4 +1,5 @@
 ﻿using ContentAssembler;
+using Lister.Views;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,19 @@ using static QuestPDF.Helpers.Colors;
 
 namespace Lister.ViewModels
 {
-    internal class PersonSourceFileChoosingUCViewModel : ViewModelBase
+    internal class PersonSourceChoosingViewModel : ViewModelBase
     {
         private IUniformDocumentAssembler uniformAssembler;
         internal List<Person> people { get; private set; }
+        
+        private string sFP;
         internal string sourceFilePath
         {
-            //get { return personsSourceFilePath; }
+            get { return sFP; }
             set
             {
-                SetPersonsFilePath (value);
-                OnPropertyChanged ("sourceFilePath");
+                string path = SetPersonsFilePath ( value );
+                this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( sourceFilePath ) );
             }
         }
 
@@ -36,7 +39,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal PersonSourceFileChoosingUCViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
+        internal PersonSourceChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
         {
             visiblePeople = new ObservableCollection<Person> ();
             people = new List<Person> (); 
@@ -61,26 +64,35 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetPersonsFilePath ( string value )
+        internal string SetPersonsFilePath ( string value )
         {
-            bool valueIsSuitable = value != string.Empty && value != null;
+            bool valueIsSuitable = ( value != null ) && ( value != string.Empty );
 
             if ( valueIsSuitable )
             {
-                value = value.Substring (8, value.Length - 8);
+                visiblePeople.Clear ( );
+                people.Clear ( );
 
-                visiblePeople.Clear ();
-                people.Clear ();
-                var persons = this.uniformAssembler.GetPersons (value);
-
-                foreach ( var person in persons )
+                try
                 {
-                    visiblePeople.Add (person);
-                    people.Add (person);
+                    List<Person> persons = uniformAssembler.GetPersons ( value );
+
+                    foreach ( var person in persons )
+                    {
+                        visiblePeople.Add ( person );
+                        people.Add ( person );
+                    }
+
+                    return value;
+                }
+                catch ( IOException ex )
+                {
+                    int idOk = Winapi.MessageBox ( 0 , "Выбраный файл открыт в другом приложении. Закройте его." , "" , 0 );
+                    return string.Empty;
                 }
             }
+
+            return string.Empty;
         }
-
-
     }
 }

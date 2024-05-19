@@ -35,6 +35,7 @@ class ConverterToPdf
     public IEnumerable<byte []> bytes = null;
     public List<string> intermidiateFiles = new ();
 
+
     internal bool SaveAsFile (List<VMBadge> items, string filePathToSave)
     {
         bool result = true;
@@ -106,14 +107,6 @@ class ConverterToPdf
         //imageGenerationSettings.ImageCompressionQuality = ImageCompressionQuality.VeryLow;
         //bytes = doc.GenerateImages (imageGenerationSettings);
         //FontManager.RegisterFontWithCustomName ("Comic Sans", File.OpenRead (path));
-    }
-
-
-    private string GetFilePath (int index) 
-    {
-        string path = "FromBitmap" + index.ToString() + ".png";
-        intermidiateFiles.Add (path);
-        return path;
     }
 
 

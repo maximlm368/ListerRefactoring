@@ -66,7 +66,7 @@ namespace DataGateway
 
             if ( keyPathInJson.Count > 1 )
             {
-                for ( int step = 1; step < keyPathInJson.Count; step++ )
+                for ( int step = 1;   step < keyPathInJson.Count;   step++ )
                 {
                     sectionName = keyPathInJson [step];
                     section = section.GetSection (sectionName);

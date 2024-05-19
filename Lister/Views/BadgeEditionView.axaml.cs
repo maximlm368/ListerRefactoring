@@ -5,11 +5,17 @@ namespace Lister.Views
 {
     public partial class BadgeEditionView : UserControl
     {
-        internal BadgeEditionView (VMBadge beingEditedBadge)
-        {
-            this.DataContext = new BadgeEditionViewModel (beingEditedBadge);
+        //internal BadgeEditionView (VMBadge beingEditedBadge)
+        //{
+        //    this.DataContext = new BadgeEditionViewModel (beingEditedBadge);
 
-            InitializeComponent();
+        //    InitializeComponent();
+        //}
+
+
+        internal BadgeEditionView ( )
+        {
+            InitializeComponent ( );
         }
     }
 }

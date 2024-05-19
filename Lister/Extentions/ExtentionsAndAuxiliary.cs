@@ -7,57 +7,57 @@ namespace Lister.Extentions
 {
     //public static class StringExtention
     //{
-    //    public static string ExtractFileNameFromPath(this string path)
+    //    public static string ExtractFileNameFromPath ( this string path )
     //    {
     //        string result;
-    //        var builder = new StringBuilder();
+    //        var builder = new StringBuilder ( );
 
-    //        for (var charCounter = path.Length - 1;    charCounter >= 0;    charCounter--)
+    //        for ( var charCounter = path.Length - 1; charCounter >= 0; charCounter-- )
     //        {
-    //            if (path[charCounter] != '/'   &&   path[charCounter] != '\\')
+    //            if ( path [ charCounter ] != '/' && path [ charCounter ] != '\\' )
     //            {
-    //                builder.Append(path[charCounter]);
+    //                builder.Append ( path [ charCounter ] );
     //            }
-    //            else 
+    //            else
     //            {
     //                break;
     //            }
     //        }
 
-    //        result = builder.ToString().ReverseAndReturn();
+    //        result = builder.ToString ( ).ReverseAndReturn ( );
     //        return result;
     //    }
 
 
-    //    public static string ReverseAndReturn(this string str)
+    //    public static string ReverseAndReturn ( this string str )
     //    {
     //        string result;
-    //        var builder = new StringBuilder();
+    //        var builder = new StringBuilder ( );
 
-    //        for (var charCounter = str.Length - 1;   charCounter >= 0;    charCounter--)
+    //        for ( var charCounter = str.Length - 1; charCounter >= 0; charCounter-- )
     //        {
-    //            builder.Append(str[charCounter]);
+    //            builder.Append ( str [ charCounter ] );
     //        }
 
-    //        result = builder.ToString();
+    //        result = builder.ToString ( );
     //        return result;
     //    }
 
 
     //    public static List<string> SplitIntoRestAndLastWord ( this string str )
     //    {
-    //        List<string> result = new List<string>();
+    //        List<string> result = new List<string> ( );
 
-    //        for ( var charCounter = str.Length - 1;   charCounter >= 0;   charCounter-- )
+    //        for ( var charCounter = str.Length - 1; charCounter >= 0; charCounter-- )
     //        {
-    //            if ( str [charCounter] == ' '   ||   str [charCounter] == '-' ) 
+    //            if ( str [ charCounter ] == ' ' || str [ charCounter ] == '-' )
     //            {
     //                int gapLength = 1;
     //                int endPartLength = str.Length - charCounter - gapLength;
-    //                string secondPart = str.Substring (charCounter + 1, endPartLength);
-    //                string firstPart = str.Substring (0, charCounter);
-    //                result.Add (firstPart);
-    //                result.Add (secondPart);
+    //                string secondPart = str.Substring ( charCounter + 1 , endPartLength );
+    //                string firstPart = str.Substring ( 0 , charCounter );
+    //                result.Add ( firstPart );
+    //                result.Add ( secondPart );
 
     //                break;
     //            }
@@ -67,13 +67,13 @@ namespace Lister.Extentions
     //    }
 
 
-    //    public static bool IsAllEmpty ( this string target, string [] parts )
+    //    public static bool IsAllEmpty ( this string target , string [ ] parts )
     //    {
     //        bool result = true;
 
-    //        for ( int index = 0;   index < parts.Length;   index++ )
+    //        for ( int index = 0; index < parts.Length; index++ )
     //        {
-    //            if ( !string.IsNullOrWhiteSpace (parts [index]) )
+    //            if ( !string.IsNullOrWhiteSpace ( parts [ index ] ) )
     //            {
     //                result = false;
     //                break;
@@ -90,7 +90,7 @@ namespace Lister.Extentions
 
     //        try
     //        {
-    //            result = Double.Parse (possibleDouble);
+    //            result = Double.Parse ( possibleDouble );
     //        }
     //        catch ( FormatException ex )
     //        {
@@ -104,24 +104,24 @@ namespace Lister.Extentions
 
 
 
-    //public static class ListExtensions 
+    //public static class ListExtensions
     //{
-    //    public static List<T []> SeparateIntoPairs <T> ( this List<T> items ) where T : class
+    //    public static List<T [ ]> SeparateIntoPairs<T> ( this List<T> items ) where T : class
     //    {
-    //        List<T []> result = new List<T []> ();
+    //        List<T [ ]> result = new List<T [ ]> ( );
     //        int counterInPair = 0;
-    //        T [] pair = [null, null];
+    //        T [ ] pair = [ null , null ];
     //        bool pairIsNotEmptyAlready = false;
 
-    //        for ( int itemCounter = 0;   itemCounter < items.Count;   itemCounter++ )
+    //        for ( int itemCounter = 0; itemCounter < items.Count; itemCounter++ )
     //        {
-    //            pair [counterInPair] = items [itemCounter];
+    //            pair [ counterInPair ] = items [ itemCounter ];
     //            pairIsNotEmptyAlready = true;
 
     //            if ( counterInPair == 1 )
     //            {
-    //                result.Add (pair);
-    //                pair = [null, null];
+    //                result.Add ( pair );
+    //                pair = [ null , null ];
     //                counterInPair = 0;
     //                pairIsNotEmptyAlready = false;
     //            }
@@ -130,11 +130,11 @@ namespace Lister.Extentions
     //                counterInPair++;
     //            }
 
-    //            bool isLastPair = (itemCounter == items.Count - 1);
+    //            bool isLastPair = ( itemCounter == items.Count - 1 );
 
-    //            if ( isLastPair   &&   pairIsNotEmptyAlready ) 
+    //            if ( isLastPair && pairIsNotEmptyAlready )
     //            {
-    //                result.Add (pair);
+    //                result.Add ( pair );
     //            }
     //        }
 
@@ -146,10 +146,10 @@ namespace Lister.Extentions
 
     //public static class ArrayExtensions
     //{
-    //    public static T [] SubArray<T> ( this T [] array, int offset, int length )
+    //    public static T [ ] SubArray<T> ( this T [ ] array , int offset , int length )
     //    {
-    //        T [] result = new T [length];
-    //        Array.Copy (array, offset, result, 0, length);
+    //        T [ ] result = new T [ length ];
+    //        Array.Copy ( array , offset , result , 0 , length );
     //        return result;
     //    }
     //}

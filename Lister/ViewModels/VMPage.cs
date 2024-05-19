@@ -127,22 +127,22 @@ class VMPage : ViewModelBase
     }
 
 
-    internal static List<VMPage> PlaceIntoPages ( List<VMBadge> splitableList,  Size pageSize,  double desiredScale
+    internal static List<VMPage> PlaceIntoPages ( List<VMBadge> placebleBadges,  Size pageSize,  double desiredScale
                                                                                             , VMPage ? scratchPage ) 
     {
         List<VMPage> result = new List<VMPage> ();
 
-        if ( splitableList.Count == 0 )
+        if ( placebleBadges.Count == 0 )
         {
             return result;
         }
 
-        VMBadge badgeExample = splitableList [0].Clone ();
+        VMBadge badgeExample = placebleBadges [0].Clone ();
         VMPage fillablePage = scratchPage ?? new VMPage ( pageSize, badgeExample, desiredScale );
        
-        for ( int badgeCounter = 0;   badgeCounter < splitableList.Count;   badgeCounter++ ) 
+        for ( int badgeCounter = 0;   badgeCounter < placebleBadges.Count;   badgeCounter++ ) 
         {
-            VMBadge beingProcessedBadge = splitableList [badgeCounter];
+            VMBadge beingProcessedBadge = placebleBadges [badgeCounter];
             beingProcessedBadge.Zoom (desiredScale);
             VMPage posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
             bool timeToAddNewPage = ! posibleNewPadge.Equals(fillablePage);
@@ -153,7 +153,7 @@ class VMPage : ViewModelBase
                 fillablePage = posibleNewPadge;
             }
 
-            if(badgeCounter == splitableList.Count - 1 ) 
+            if(badgeCounter == placebleBadges.Count - 1 ) 
             {
                 result.Add (fillablePage);
             }

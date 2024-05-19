@@ -51,61 +51,6 @@ namespace ContentAssembler
 
 
 
-    public class BadgeDimensionss
-    {
-        public Size outlineSize { get;  private set; }
-        public Size personTextAreaSize { get; private set; }
-        public double personTextAreaTopShiftOnBackground { get; private set; }
-        public double personTextAreaLeftShiftOnBackground { get; private set; }
-        public double textAreaWidth { get; private set; }
-        public double secondLevelFontSize { get; private set; }
-        public double firstLevelFontSize { get; private set; }
-        public double thirdLevelFontSize { get; private set; }
-        public double firstLevelTBHeight { get; private set; }
-        public double secondLevelTBHeight { get; private set; }
-        public double thirdLevelTBHeight { get; private set; }
-
-        public BadgeDimensionss(Size outlineSize, Size personTextAreaSize
-                                  , double personTextAreaTopShiftOnBackground
-                                  , double personTextAreaLeftShiftOnBackground
-                                  , double firstLevelFontSize
-                                  , double secondLevelFontSize
-                                  , double thirdLevelFontSize
-                                  , double firstLevelTBHeight
-                                  , double secondLevelTBHeight
-                                  , double thirdLevelTBHeight
-            )
-        {
-            this.outlineSize = outlineSize;
-            this.personTextAreaSize = personTextAreaSize;
-            this.personTextAreaTopShiftOnBackground = personTextAreaTopShiftOnBackground;
-            this.personTextAreaLeftShiftOnBackground = personTextAreaLeftShiftOnBackground;
-            this.firstLevelFontSize = firstLevelFontSize;
-            this.secondLevelFontSize = secondLevelFontSize;
-            this.thirdLevelFontSize = thirdLevelFontSize;
-            this.firstLevelTBHeight = firstLevelTBHeight;
-            this.secondLevelTBHeight = secondLevelTBHeight;
-            this.thirdLevelTBHeight = thirdLevelTBHeight;
-        }
-    }
-
-
-
-    //public class BadgeDimensions
-    //{
-    //    public Size OutlineSize { get; private set; }
-    //    public List<TextualAtom> TextualBlockDimensions { get; private set; }
-       
-
-    //    public BadgeDimensions ( Size outlineSize, List<TextualAtom> textualBlockDimensions )
-    //    {
-    //        OutlineSize = outlineSize;
-    //        TextualBlockDimensions = textualBlockDimensions;
-    //    }
-    //}
-
-
-
     public class BadgeDimensions
     {
         public Size outlineSize { get; private set; }
@@ -148,17 +93,22 @@ namespace ContentAssembler
 
     public class InsideImage 
     {
-        public string path { get; private set; }
-        public Size size { get; private set; }
-        public double relativeTopShiftOnBackground { get; private set; }
-        public double relativeLeftShiftOnBackground { get; private set; }
+        public string Path { get; private set; }
+        public Size Size { get; private set; }
+        public string Color { get; private set; }
+        public string GeometryElementName { get; private set; }
+        public double TopShiftOnBackground { get; private set; }
+        public double LeftShiftOnBackground { get; private set; }
 
-        public InsideImage(string path, Size size, double relativeTopShiftOnBackground, double relativeLeftShiftOnBackground)
+        public InsideImage(string path, Size size, string color, 
+                           string geometryElementName, double topShiftOnBackground, double leftShiftOnBackground)
         {
-            this.path = path;
-            this.size = size;
-            this.relativeTopShiftOnBackground = relativeTopShiftOnBackground;
-            this.relativeLeftShiftOnBackground = relativeLeftShiftOnBackground;
+            Path = path;
+            Size = size;
+            Color = color;
+            GeometryElementName = geometryElementName;
+            TopShiftOnBackground = topShiftOnBackground;
+            LeftShiftOnBackground = leftShiftOnBackground;
         }
     }
 
@@ -189,10 +139,31 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFamily { get; private set; }
+        public string Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                if ( ! string.IsNullOrWhiteSpace(value) ) 
+                {
+                    content = value;
+                    contentIsSet = true;
+                }
+            }
+        }
+        public List<string> IncludedAtoms { get; private set; }
+        public bool contentIsSet { get; private set; }
+        private string content;
+
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset
-                           , string alignment, double fontSize, string fontFamily )
+                           , string alignment, double fontSize, string fontFamily, List<string> ? includedAtoms )
         {
+            content = "";
+            contentIsSet = false;
             Name = name;
             Width = width;
             Height = height;
@@ -201,6 +172,7 @@ namespace ContentAssembler
             Alignment = alignment;
             FontSize = fontSize;
             FontFamily = fontFamily;
+            IncludedAtoms = includedAtoms ?? new List<string> ( );
         }
 
     }

@@ -88,6 +88,19 @@ namespace ContentAssembler
         }
 
 
+        public Dictionary<string, string> GetProperties ()
+        {
+            Dictionary<string, string> result = new ( );
+
+            result.Add ( "FamilyName", FamilyName );
+            result.Add ( "FirstName", FirstName );
+            result.Add ( "PatronymicName", PatronymicName );
+            result.Add ( "Post", Post );
+            result.Add ( "Department", Department );
+            return result;
+        }
+
+
         private void AppendNameInView ( string name, ref string view ) 
         {
             if ( ! string.IsNullOrWhiteSpace (name) )

@@ -38,8 +38,6 @@ class MainViewModel : ViewModelBase
 {
     private IUniformDocumentAssembler uniformAssembler;
     ConverterToPdf converter;
-    private string personsSourceFilePath;
-    private string chosenTemplateFilePath;
     internal List<Person> people { get; private set; }
     internal List<VMBadge> incorrectBadges { get; private set; }
 
@@ -100,8 +98,8 @@ class MainViewModel : ViewModelBase
         get { return sFP; }
         set
         {
-            string path = SetPersonsFilePath (value);
-            this.RaiseAndSetIfChanged (ref sFP, path, nameof (sourceFilePath));
+            string path = SetPersonsFilePath ( value );
+            this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( sourceFilePath ) );
         }
     }
 
@@ -189,24 +187,24 @@ class MainViewModel : ViewModelBase
 
         if ( valueIsSuitable )
         {
-            visiblePeople.Clear ();
-            people.Clear ();
+            visiblePeople.Clear ( );
+            people.Clear ( );
 
             try
             {
-                List<Person> persons = uniformAssembler.GetPersons (value);
+                List<Person> persons = uniformAssembler.GetPersons ( value );
 
                 foreach ( var person in persons )
                 {
-                    visiblePeople.Add (person);
-                    people.Add (person);
+                    visiblePeople.Add ( person );
+                    people.Add ( person );
                 }
 
                 return value;
             }
             catch ( IOException ex )
             {
-                int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+                int idOk = Winapi.MessageBox ( 0 , "Выбраный файл открыт в другом приложении. Закройте его." , "" , 0 );
                 return string.Empty;
             }
         }

@@ -43,4 +43,10 @@
   <ItemGroup>
     <Folder Include="PartsOfMainView\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\PersonSourceChoosingUC.axaml.cs">
+      <DependentUpon>PersonSourceChoosingUC.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
