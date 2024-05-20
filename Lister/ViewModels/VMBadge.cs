@@ -19,216 +19,216 @@ namespace Lister.ViewModels;
 class VMBadge : ViewModelBase
 {
     private const double coefficient = 1.1;
-    internal Badge badgeModel { get; private set; }
-    internal Bitmap imageBitmap { get; private set; }
+    internal Badge BadgeModel { get; private set; }
+    internal Bitmap ImageBitmap { get; private set; }
 
     private string lN;
-    internal string lastName
+    internal string LastName
     {
         get { return lN; }
         set
         {
-            this.RaiseAndSetIfChanged (ref lN, value, nameof (lastName));
+            this.RaiseAndSetIfChanged (ref lN, value, nameof (LastName));
         }
     }
 
     private string fsN;
-    internal string firstAndSecondName
+    internal string FirstAndSecondName
     {
         get { return fsN; }
         set
         {
-            this.RaiseAndSetIfChanged (ref fsN, value, nameof (firstAndSecondName));
+            this.RaiseAndSetIfChanged (ref fsN, value, nameof (FirstAndSecondName));
         }
     }
 
     private string dN;
-    internal string departmentName
+    internal string DepartmentName
     {
         get { return dN; }
         set
         {
-            this.RaiseAndSetIfChanged (ref dN, value, nameof (departmentName));
+            this.RaiseAndSetIfChanged (ref dN, value, nameof (DepartmentName));
         }
     }
 
     private string pN;
-    internal string positionName
+    internal string PositionName
     {
         get { return pN; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pN, value, nameof (positionName));
+            this.RaiseAndSetIfChanged (ref pN, value, nameof (PositionName));
         }
     }
 
     private ObservableCollection<string> rL;
-    internal ObservableCollection<string> reserveLastNameTextBlocks
+    internal ObservableCollection<string> ReserveLastNameTextBlocks
     {
         get { return rL; }
         set
         {
-            this.RaiseAndSetIfChanged (ref rL, value, nameof (reserveLastNameTextBlocks));
+            this.RaiseAndSetIfChanged (ref rL, value, nameof (ReserveLastNameTextBlocks));
         }
     }
 
     private ObservableCollection<string> rFM;
-    internal ObservableCollection<string> reserveFirstAndMiddleNamesTextBlocks
+    internal ObservableCollection<string> ReserveFirstAndMiddleNamesTextBlocks
     {
         get { return rFM; }
         set
         {
-            this.RaiseAndSetIfChanged (ref rFM, value, nameof (reserveFirstAndMiddleNamesTextBlocks));
+            this.RaiseAndSetIfChanged (ref rFM, value, nameof (ReserveFirstAndMiddleNamesTextBlocks));
         }
     }
 
     private ObservableCollection<string> rd;
-    internal ObservableCollection<string> reserveDepartmentTextBlocks
+    internal ObservableCollection<string> ReserveDepartmentTextBlocks
     {
         get { return rd; }
         set
         {
-            this.RaiseAndSetIfChanged (ref rd, value, nameof (reserveDepartmentTextBlocks));
+            this.RaiseAndSetIfChanged (ref rd, value, nameof (ReserveDepartmentTextBlocks));
         }
     }
 
     private ObservableCollection<string> rp;
-    internal ObservableCollection<string> reservePositionTextBlocks
+    internal ObservableCollection<string> ReservePositionTextBlocks
     {
         get { return rp; }
         set
         {
-            this.RaiseAndSetIfChanged (ref rp, value, nameof (reservePositionTextBlocks));
+            this.RaiseAndSetIfChanged (ref rp, value, nameof (ReservePositionTextBlocks));
         }
     }
 
     private double pH;
-    internal double personalTextContainerHeight
+    internal double PersonalTextContainerHeight
     {
         get { return pH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pH, value, nameof (personalTextContainerHeight));
+            this.RaiseAndSetIfChanged (ref pH, value, nameof (PersonalTextContainerHeight));
         }
     }
 
     private double bW;
-    internal double badgeWidth
+    internal double BadgeWidth
     {
         get { return bW; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bW, value, nameof (badgeWidth));
+            this.RaiseAndSetIfChanged (ref bW, value, nameof (BadgeWidth));
         }
     }
 
     private double bH;
-    internal double badgeHeight
+    internal double BadgeHeight
     {
         get { return bH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bH, value, nameof (badgeHeight));
+            this.RaiseAndSetIfChanged (ref bH, value, nameof (BadgeHeight));
         }
     }
 
     private double tS;
-    internal double textAreaTopShift
+    internal double TextAreaTopShift
     {
         get { return tS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref tS, value, nameof (textAreaTopShift));
+            this.RaiseAndSetIfChanged (ref tS, value, nameof (TextAreaTopShift));
         }
     }
 
     private double lS;
-    internal double textAreaLeftShift
+    internal double TextAreaLeftShift
     {
         get { return lS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref lS, value, nameof (textAreaLeftShift));
+            this.RaiseAndSetIfChanged (ref lS, value, nameof (TextAreaLeftShift));
         }
     }
 
     private double tW;
-    internal double textAreaWidth
+    internal double TextAreaWidth
     {
         get { return tW; }
         set
         {
-            this.RaiseAndSetIfChanged (ref tW, value, nameof (textAreaWidth));
+            this.RaiseAndSetIfChanged (ref tW, value, nameof (TextAreaWidth));
         }
     }
 
     private double tH;
-    internal double textAreaHeight
+    internal double TextAreaHeight
     {
         get { return tH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref tH, value, nameof (textAreaHeight));
+            this.RaiseAndSetIfChanged (ref tH, value, nameof (TextAreaHeight));
         }
     }
 
     private double fFS;
-    internal double firstLevelFontSize
+    internal double FirstLevelFontSize
     {
         get { return fFS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref fFS, value, nameof (firstLevelFontSize));
+            this.RaiseAndSetIfChanged (ref fFS, value, nameof (FirstLevelFontSize));
         }
     }
 
     private double sFS;
-    internal double secondLevelFontSize
+    internal double SecondLevelFontSize
     {
         get { return sFS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref sFS, value, nameof (secondLevelFontSize));
+            this.RaiseAndSetIfChanged (ref sFS, value, nameof (SecondLevelFontSize));
         }
     }
 
     private double tFS;
-    internal double thirdLevelFontSize
+    internal double ThirdLevelFontSize
     {
         get { return tFS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref tFS, value, nameof (thirdLevelFontSize));
+            this.RaiseAndSetIfChanged (ref tFS, value, nameof (ThirdLevelFontSize));
         }
     }
 
     private double fH;
-    internal double firstLevelTBHeight
+    internal double FirstLevelTBHeight
     {
         get { return fH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref fH, value, nameof (firstLevelTBHeight));
+            this.RaiseAndSetIfChanged (ref fH, value, nameof (FirstLevelTBHeight));
         }
     }
 
     private double sH;
-    internal double secondLevelTBHeight
+    internal double SecondLevelTBHeight
     {
         get { return sH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref sH, value, nameof (secondLevelTBHeight));
+            this.RaiseAndSetIfChanged (ref sH, value, nameof (SecondLevelTBHeight));
         }
     }
 
     private double thH;
-    internal double thirdLevelTBHeight
+    internal double ThirdLevelTBHeight
     {
         get { return thH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref thH, value, nameof (thirdLevelTBHeight));
+            this.RaiseAndSetIfChanged (ref thH, value, nameof (ThirdLevelTBHeight));
         }
     }
 
@@ -263,39 +263,39 @@ class VMBadge : ViewModelBase
         }
     }
 
-    internal bool isCorrect { get; private set; }
+    internal bool IsCorrect { get; private set; }
 
 
     internal VMBadge ( Badge badgeModel )
     {
-        this.badgeModel = badgeModel;
-        badgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. width;
-        badgeHeight = badgeModel.badgeDescription. badgeDimensions. outlineSize. height;
-        textAreaTopShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaTopShiftOnBackground;
-        textAreaLeftShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaLeftShiftOnBackground;
-        textAreaWidth = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. width;
-        textAreaHeight = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. height;
-        firstLevelFontSize = badgeModel.badgeDescription. badgeDimensions. firstLevelFontSize;
-        secondLevelFontSize = badgeModel.badgeDescription. badgeDimensions. secondLevelFontSize;
-        thirdLevelFontSize = badgeModel.badgeDescription. badgeDimensions. thirdLevelFontSize;
-        firstLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. firstLevelTBHeight;
-        secondLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. secondLevelTBHeight;
-        thirdLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.thirdLevelTBHeight;
+        this.BadgeModel = badgeModel;
+        BadgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. width;
+        BadgeHeight = badgeModel.badgeDescription. badgeDimensions. outlineSize. height;
+        TextAreaTopShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaTopShiftOnBackground;
+        TextAreaLeftShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaLeftShiftOnBackground;
+        TextAreaWidth = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. width;
+        TextAreaHeight = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. height;
+        FirstLevelFontSize = badgeModel.badgeDescription. badgeDimensions. firstLevelFontSize;
+        SecondLevelFontSize = badgeModel.badgeDescription. badgeDimensions. secondLevelFontSize;
+        ThirdLevelFontSize = badgeModel.badgeDescription. badgeDimensions. thirdLevelFontSize;
+        FirstLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. firstLevelTBHeight;
+        SecondLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. secondLevelTBHeight;
+        ThirdLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.thirdLevelTBHeight;
 
         DepartmentTopPadding = 10;
         PostTopPadding = 5;
 
-        lastName = badgeModel.person. FamilyName;
-        firstAndSecondName = badgeModel.person. FirstName + " " + badgeModel.person. PatronymicName;
-        departmentName = badgeModel.person. Department;
-        positionName = badgeModel.person. Post;
-        reserveLastNameTextBlocks = new ObservableCollection<string> ();
-        reserveFirstAndMiddleNamesTextBlocks = new ObservableCollection<string> ();
-        reserveDepartmentTextBlocks = new ObservableCollection<string> ();
-        reservePositionTextBlocks = new ObservableCollection<string> ();
+        LastName = badgeModel.person. FamilyName;
+        FirstAndSecondName = badgeModel.person. FirstName + " " + badgeModel.person. PatronymicName;
+        DepartmentName = badgeModel.person. Department;
+        PositionName = badgeModel.person. Post;
+        ReserveLastNameTextBlocks = new ObservableCollection<string> ();
+        ReserveFirstAndMiddleNamesTextBlocks = new ObservableCollection<string> ();
+        ReserveDepartmentTextBlocks = new ObservableCollection<string> ();
+        ReservePositionTextBlocks = new ObservableCollection<string> ();
 
-        personalTextContainerHeight = 0;
-        isCorrect = true;
+        PersonalTextContainerHeight = 0;
+        IsCorrect = true;
         borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (borderThickness);
 
@@ -307,31 +307,31 @@ class VMBadge : ViewModelBase
 
     internal void ShowBackgroundImage () 
     {
-        string path = badgeModel. backgroundImagePath;
+        string path = BadgeModel. backgroundImagePath;
         Uri uri = new Uri (path);
-        this.imageBitmap = ImageHelper.LoadFromResource (uri);
+        this.ImageBitmap = ImageHelper.LoadFromResource (uri);
     }
 
 
     internal void HideBackgroundImage ()
     {
-        this.imageBitmap = null;
+        this.ImageBitmap = null;
     }
 
     internal void ZoomOn ( double coefficient )
     {
-        badgeWidth *= coefficient;
-        badgeHeight *= coefficient;
-        textAreaLeftShift *= coefficient;
-        textAreaTopShift *= coefficient;
-        textAreaWidth *= coefficient;
-        textAreaHeight *= coefficient;
-        firstLevelFontSize *= coefficient;
-        secondLevelFontSize *= coefficient;
-        thirdLevelFontSize *= coefficient;
-        firstLevelTBHeight *= coefficient;
-        secondLevelTBHeight *= coefficient;
-        thirdLevelTBHeight *= coefficient;
+        BadgeWidth *= coefficient;
+        BadgeHeight *= coefficient;
+        TextAreaLeftShift *= coefficient;
+        TextAreaTopShift *= coefficient;
+        TextAreaWidth *= coefficient;
+        TextAreaHeight *= coefficient;
+        FirstLevelFontSize *= coefficient;
+        SecondLevelFontSize *= coefficient;
+        ThirdLevelFontSize *= coefficient;
+        FirstLevelTBHeight *= coefficient;
+        SecondLevelTBHeight *= coefficient;
+        ThirdLevelTBHeight *= coefficient;
         DepartmentTopPadding *= coefficient;
         PostTopPadding *= coefficient;
 
@@ -342,18 +342,18 @@ class VMBadge : ViewModelBase
 
     internal void ZoomOut ( double coefficient )
     {
-        badgeWidth /= coefficient;
-        badgeHeight /= coefficient;
-        textAreaLeftShift /= coefficient;
-        textAreaTopShift /= coefficient;
-        textAreaWidth /= coefficient;
-        textAreaHeight /= coefficient;
-        firstLevelFontSize /= coefficient;
-        secondLevelFontSize /= coefficient;
-        thirdLevelFontSize /= coefficient;
-        firstLevelTBHeight /= coefficient;
-        secondLevelTBHeight /= coefficient;
-        thirdLevelTBHeight /= coefficient;
+        BadgeWidth /= coefficient;
+        BadgeHeight /= coefficient;
+        TextAreaLeftShift /= coefficient;
+        TextAreaTopShift /= coefficient;
+        TextAreaWidth /= coefficient;
+        TextAreaHeight /= coefficient;
+        FirstLevelFontSize /= coefficient;
+        SecondLevelFontSize /= coefficient;
+        ThirdLevelFontSize /= coefficient;
+        FirstLevelTBHeight /= coefficient;
+        SecondLevelTBHeight /= coefficient;
+        ThirdLevelTBHeight /= coefficient;
         DepartmentTopPadding /= coefficient;
         PostTopPadding /= coefficient;
 
@@ -364,7 +364,7 @@ class VMBadge : ViewModelBase
 
     internal VMBadge Clone () 
     {
-        VMBadge clone = new VMBadge (this.badgeModel);
+        VMBadge clone = new VMBadge (this.BadgeModel);
         return clone;
     }
 
@@ -385,45 +385,45 @@ class VMBadge : ViewModelBase
         FitDepartmentInContainer ();
         FitPositionInContainer ();
 
-        personalTextContainerHeight = personalTextContainerHeight + firstLevelTBHeight + secondLevelTBHeight
-                                                                  + thirdLevelTBHeight * 2;
+        PersonalTextContainerHeight = PersonalTextContainerHeight + FirstLevelTBHeight + SecondLevelTBHeight
+                                                                  + ThirdLevelTBHeight * 2;
 
-        for ( int lineCounter = 0; lineCounter < reserveLastNameTextBlocks.Count; lineCounter++ )
+        for ( int lineCounter = 0; lineCounter < ReserveLastNameTextBlocks.Count; lineCounter++ )
         {
-            personalTextContainerHeight += firstLevelTBHeight;
+            PersonalTextContainerHeight += FirstLevelTBHeight;
         }
 
-        for ( int lineCounter = 0; lineCounter < reserveFirstAndMiddleNamesTextBlocks.Count; lineCounter++ )
+        for ( int lineCounter = 0; lineCounter < ReserveFirstAndMiddleNamesTextBlocks.Count; lineCounter++ )
         {
-            personalTextContainerHeight += secondLevelTBHeight;
+            PersonalTextContainerHeight += SecondLevelTBHeight;
         }
 
-        for ( int lineCounter = 0; lineCounter < reserveDepartmentTextBlocks.Count; lineCounter++ )
+        for ( int lineCounter = 0; lineCounter < ReserveDepartmentTextBlocks.Count; lineCounter++ )
         {
-            personalTextContainerHeight += thirdLevelTBHeight;
+            PersonalTextContainerHeight += ThirdLevelTBHeight;
         }
 
-        for ( int lineCounter = 0; lineCounter < reservePositionTextBlocks.Count; lineCounter++ )
+        for ( int lineCounter = 0; lineCounter < ReservePositionTextBlocks.Count; lineCounter++ )
         {
-            personalTextContainerHeight += thirdLevelTBHeight;
+            PersonalTextContainerHeight += ThirdLevelTBHeight;
         }
 
-        if ( personalTextContainerHeight >= textAreaHeight )
+        if ( PersonalTextContainerHeight >= TextAreaHeight )
         {
-            isCorrect = false;
+            IsCorrect = false;
         }
     }
 
 
     private void FitLastNameInContainer ()
     {
-        string beingProcessedLine = lastName;
+        string beingProcessedLine = LastName;
         List<string> stack = new List<string> ();
         stack.Add (beingProcessedLine);
 
         while ( true )
         {
-            string additionalLine = AddLineIfCurrentOverFlow (firstLevelFontSize, stack);
+            string additionalLine = AddLineIfCurrentOverFlow (FirstLevelFontSize, stack);
 
             if ( additionalLine == string.Empty )
             {
@@ -433,11 +433,11 @@ class VMBadge : ViewModelBase
 
         if ( stack.Count > 1 )
         {
-            lastName = stack [0];
+            LastName = stack [0];
 
             for ( int stepCounter = 1; stepCounter < stack.Count; stepCounter++ )
             {
-                reserveLastNameTextBlocks.Add (stack [stepCounter]);
+                ReserveLastNameTextBlocks.Add (stack [stepCounter]);
             }
         }
     }
@@ -445,13 +445,13 @@ class VMBadge : ViewModelBase
 
     private void FitFirstAndMiddleNamesInContainer ()
     {
-        string beingProcessedLine = firstAndSecondName;
+        string beingProcessedLine = FirstAndSecondName;
         List<string> stack = new List<string> ();
         stack.Add (beingProcessedLine);
 
         while ( true )
         {
-            string additionalLine = AddLineIfCurrentOverFlow (secondLevelFontSize, stack);
+            string additionalLine = AddLineIfCurrentOverFlow (SecondLevelFontSize, stack);
 
             if ( additionalLine == string.Empty )
             {
@@ -461,11 +461,11 @@ class VMBadge : ViewModelBase
 
         if ( stack.Count > 1 )
         {
-            firstAndSecondName = stack [0];
+            FirstAndSecondName = stack [0];
 
             for ( int stepCounter = 1; stepCounter < stack.Count; stepCounter++ )
             {
-                reserveFirstAndMiddleNamesTextBlocks.Add (stack [stepCounter]);
+                ReserveFirstAndMiddleNamesTextBlocks.Add (stack [stepCounter]);
             }
         }
     }
@@ -473,13 +473,13 @@ class VMBadge : ViewModelBase
 
     private void FitDepartmentInContainer ()
     {
-        string beingProcessedLine = departmentName;
+        string beingProcessedLine = DepartmentName;
         List<string> stack = new List<string> ();
         stack.Add (beingProcessedLine);
 
         while ( true )
         {
-            string additionalLine = AddLineIfCurrentOverFlow (thirdLevelFontSize, stack);
+            string additionalLine = AddLineIfCurrentOverFlow (ThirdLevelFontSize, stack);
 
             if ( additionalLine == string.Empty )
             {
@@ -489,11 +489,11 @@ class VMBadge : ViewModelBase
 
         if ( stack.Count > 1 )
         {
-            departmentName = stack [0];
+            DepartmentName = stack [0];
 
             for ( int stepCounter = 1; stepCounter < stack.Count; stepCounter++ )
             {
-                reserveDepartmentTextBlocks.Add (stack [stepCounter]);
+                ReserveDepartmentTextBlocks.Add (stack [stepCounter]);
             }
         }
     }
@@ -501,13 +501,13 @@ class VMBadge : ViewModelBase
 
     private void FitPositionInContainer ()
     {
-        string beingProcessedLine = positionName;
+        string beingProcessedLine = PositionName;
         List<string> stack = new List<string> ();
         stack.Add (beingProcessedLine);
 
         while ( true )
         {
-            string additionalLine = AddLineIfCurrentOverFlow (thirdLevelFontSize, stack);
+            string additionalLine = AddLineIfCurrentOverFlow (ThirdLevelFontSize, stack);
 
             if ( additionalLine == string.Empty )
             {
@@ -517,11 +517,11 @@ class VMBadge : ViewModelBase
 
         if ( stack.Count > 1 )
         {
-            positionName = stack [0];
+            PositionName = stack [0];
 
             for ( int stepCounter = 1; stepCounter < stack.Count; stepCounter++ )
             {
-                reservePositionTextBlocks.Add (stack [stepCounter]);
+                ReservePositionTextBlocks.Add (stack [stepCounter]);
             }
         }
     }
@@ -535,7 +535,7 @@ class VMBadge : ViewModelBase
         FormattedText formatted = new FormattedText
                     (beingProcessedLine, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
         double usefulTextBlockWidth = formatted.Width * coefficient;
-        bool lineIsOverflow = ( usefulTextBlockWidth >= textAreaWidth );
+        bool lineIsOverflow = ( usefulTextBlockWidth >= TextAreaWidth );
 
         while ( lineIsOverflow )
         {
@@ -549,7 +549,7 @@ class VMBadge : ViewModelBase
                 formatted = new FormattedText
                     (beingProcessedLine, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
                 usefulTextBlockWidth = formatted.Width * coefficient;
-                lineIsOverflow = ( usefulTextBlockWidth >= textAreaWidth );
+                lineIsOverflow = ( usefulTextBlockWidth >= TextAreaWidth );
             }
             else
             {

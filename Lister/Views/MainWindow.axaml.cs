@@ -78,7 +78,7 @@ public partial class MainWindow : Window
 
     internal void HandleTapping ( object sender, TappedEventArgs args )
     {
-        MainView mainView = ( MainView ) Content;
+        //MainView mainView = ( MainView ) Content;
 
         //POINT cursorCoordinates = new POINT ();
         //CursorViaWinapi.GetCursorPos (ref cursorCoordinates);
@@ -103,6 +103,6 @@ public partial class MainWindow : Window
         //    mainView.CloseCustomCombobox ();
         //}
 
-        mainView.CloseCustomCombobox ();
+        //mainView.CloseCustomCombobox ();
     }
 }

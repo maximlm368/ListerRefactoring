@@ -27,6 +27,7 @@ using DynamicData;
 using System.Runtime.InteropServices;
 using ExtentionsAndAuxiliary;
 
+
 namespace Lister.Views;
 
 public partial class MainView : UserControl
@@ -246,9 +247,9 @@ public partial class MainView : UserControl
                        string result = task.Result [ 0 ].Path.ToString ( );
                        MainViewModel vm = viewModel;
                        result = result.Substring ( 8 , result.Length - 8 );
-                       vm.sourceFilePath = result;
+                       vm.SourceFilePath = result;
 
-                       if ( vm.sourceFilePath != string.Empty )
+                       if ( vm.SourceFilePath != string.Empty )
                        {
                            editSourceFile.IsEnabled = true;
                            setEntirePersonList.IsEnabled = true;
@@ -279,6 +280,8 @@ public partial class MainView : UserControl
             viewModel.BuildBadges();
         }
 
+        incorrectBadges = viewModel. IncorrectBadges;
+
         zoomOn.IsEnabled = true;
         zoomOut.IsEnabled = true;
 
@@ -296,28 +299,28 @@ public partial class MainView : UserControl
 
         if ( pageCount > 1 )
         {
-            if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber == pageCount ) )
+            if ( ( viewModel.VisiblePageNumber > 1 ) && ( viewModel.VisiblePageNumber == pageCount ) )
             {
                 firstPage.IsEnabled = true;
                 previousPage.IsEnabled = true;
                 nextPage.IsEnabled = false;
                 lastPage.IsEnabled = false;
             }
-            else if ( ( viewModel.visiblePageNumber > 1 ) && ( viewModel.visiblePageNumber < pageCount ) )
+            else if ( ( viewModel.VisiblePageNumber > 1 ) && ( viewModel.VisiblePageNumber < pageCount ) )
             {
                 firstPage.IsEnabled = true;
                 previousPage.IsEnabled = true;
                 nextPage.IsEnabled = true;
                 lastPage.IsEnabled = true;
             }
-            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount == 1 ) )
+            else if ( ( viewModel.VisiblePageNumber == 1 ) && ( pageCount == 1 ) )
             {
                 firstPage.IsEnabled = false;
                 previousPage.IsEnabled = false;
                 nextPage.IsEnabled = false;
                 lastPage.IsEnabled = false;
             }
-            else if ( ( viewModel.visiblePageNumber == 1 ) && ( pageCount > 1 ) )
+            else if ( ( viewModel.VisiblePageNumber == 1 ) && ( pageCount > 1 ) )
             {
                 firstPage.IsEnabled = false;
                 previousPage.IsEnabled = false;
@@ -346,7 +349,7 @@ public partial class MainView : UserControl
     internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
     {
         ComboBox comboBox = ( ComboBox ) sender;
-        viewModel.chosenTemplate = ( FileInfo ) comboBox.SelectedItem;
+        viewModel.ChosenTemplate = ( FileInfo ) comboBox.SelectedItem;
         templateIsSelected = true;
         TryToEnableBadgeCreationButton ();
     }
@@ -448,7 +451,7 @@ public partial class MainView : UserControl
 
     internal void HandleSelectionChanged ( object sender, SelectionChangedEventArgs args )
     {
-        viewModel.chosenPerson = ( Person ) personList.SelectedItem;
+        viewModel.ChosenPerson = ( Person ) personList.SelectedItem;
         Person person = ( Person ) personList.SelectedItem;
 
         if (person != null) 
@@ -485,7 +488,7 @@ public partial class MainView : UserControl
 
     private double CalculatePersonListHeight ( )
     {
-        int personCount = viewModel. visiblePeople. Count;
+        int personCount = viewModel. VisiblePeople. Count;
         double personListHeight = personContainerHeight * personCount;
 
         if( personListHeight > maxPersonListHeight )
@@ -528,8 +531,11 @@ public partial class MainView : UserControl
     {
         if (incorrectBadges.Count > 0) 
         {
-            VMBadge beingEdited = incorrectBadges [0];
-            owner.Content = new BadgeEditionView (beingEdited);
+            BadgeEditorView badgeEditor = new BadgeEditorView ();
+            badgeEditor.SetIncorrectBadges (incorrectBadges);
+
+
+            owner.Content = badgeEditor;
         }
     }
 
@@ -561,7 +567,7 @@ public partial class MainView : UserControl
         {
             string partOfName = textBox.Text.ToLower ( );
 
-            List<Person> people = viewModel.people;
+            List<Person> people = viewModel.People;
             ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ( );
 
             foreach ( Person person in people )
@@ -581,7 +587,7 @@ public partial class MainView : UserControl
                 }
             }
 
-            viewModel.visiblePeople = foundVisiblePeople;
+            viewModel.VisiblePeople = foundVisiblePeople;
             personList.Height = CalculatePersonListHeight ( );
             personListIsDropped = true;
         }
@@ -605,15 +611,15 @@ public partial class MainView : UserControl
 
     private void RecoverVisiblePeople ()
     {
-        List<Person> people = viewModel. people;
-        viewModel. visiblePeople = new ();
-        viewModel.visiblePeople.AddRange (people);
+        List<Person> people = viewModel. People;
+        viewModel. VisiblePeople = new ();
+        viewModel.VisiblePeople.AddRange (people);
     }
 
 
     private void HideCoveredButtons ()
     {
-        int peopleCount = viewModel.visiblePeople.Count;
+        int peopleCount = viewModel.VisiblePeople.Count;
 
         if ( peopleCount == 1 ) 
         {
@@ -804,12 +810,12 @@ public partial class MainView : UserControl
         {
             int pageNumber = (int) UInt32.Parse (textBox.Text);
             int visiblePageNum = viewModel.VisualisePageWithNumber (pageNumber);
-            visiblePageNumber.Text = viewModel. visiblePageNumber.ToString ( );
+            visiblePageNumber.Text = viewModel. VisiblePageNumber.ToString ( );
             SetEnablePageNavigation ();
         }
         catch (System.FormatException e)
         {
-            visiblePageNumber.Text = viewModel. visiblePageNumber.ToString ( );
+            visiblePageNumber.Text = viewModel. VisiblePageNumber.ToString ( );
         }
     }
 

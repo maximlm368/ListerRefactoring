@@ -117,18 +117,18 @@ class ConverterToPdf
 
         try 
         {
-            badgeWidth = ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. outlineSize. width;
+            badgeWidth = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. width;
         }
         catch ( Exception ex ) 
         {
             int stp = step;
         }
 
-        float badgeHeight = ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. outlineSize. height;
+        float badgeHeight = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. height;
         float personDataBlockInBadgeWidth = 
-                                  ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. personTextAreaSize. width;
+                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. width;
         float personDataBlockInBadgeHeight = 
-                                  ( float ) pair [0].badgeModel. badgeDescription. badgeDimensions. personTextAreaSize. height;
+                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. height;
         float personDataBlockLeftPadding = badgeWidth - personDataBlockInBadgeWidth;
         float personDataBlockTopPadding = badgeHeight - personDataBlockInBadgeHeight;
 
@@ -140,7 +140,7 @@ class ConverterToPdf
             }
 
             VMBadge beingRenderedBadge = pair [ inPairCounter ];
-            string imagePath = beingRenderedBadge.badgeModel. backgroundImagePath;
+            string imagePath = beingRenderedBadge.BadgeModel. backgroundImagePath;
             bool firstTime = (currentImagePath == null);
             bool itsTimeToSetNewImage = firstTime   ||   ( currentImagePath != imagePath );
 
@@ -195,8 +195,8 @@ class ConverterToPdf
 
     private void RenderLastNameLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )
     {
-        string lastName = beingRenderedItem.lastName;
-        float fontSize = ( float ) beingRenderedItem.firstLevelFontSize;
+        string lastName = beingRenderedItem.LastName;
+        float fontSize = ( float ) beingRenderedItem.FirstLevelFontSize;
 
         column
         .Item ()
@@ -205,11 +205,11 @@ class ConverterToPdf
         .FontFamily ("Arial")
         .FontSize (fontSize);
 
-        int amountOfReserveBlocks = beingRenderedItem.reserveLastNameTextBlocks.Count;
+        int amountOfReserveBlocks = beingRenderedItem.ReserveLastNameTextBlocks.Count;
 
         for ( int reserveBlocksCounter = 0;   reserveBlocksCounter < amountOfReserveBlocks;   reserveBlocksCounter++ )
         {
-            lastName = beingRenderedItem.reserveLastNameTextBlocks [reserveBlocksCounter];
+            lastName = beingRenderedItem.ReserveLastNameTextBlocks [reserveBlocksCounter];
 
             column
             .Item ()
@@ -223,8 +223,8 @@ class ConverterToPdf
 
     private void RenderFirstAndMiddleNamesLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )
     {
-        string firstAndMiddleName = beingRenderedItem.firstAndSecondName;
-        float fontSize = ( float ) beingRenderedItem.secondLevelFontSize;
+        string firstAndMiddleName = beingRenderedItem.FirstAndSecondName;
+        float fontSize = ( float ) beingRenderedItem.SecondLevelFontSize;
 
         column
         .Item ()
@@ -233,11 +233,11 @@ class ConverterToPdf
         .FontFamily ("Arial")
         .FontSize (fontSize);
 
-        int amountOfReserveBlocks = beingRenderedItem.reserveFirstAndMiddleNamesTextBlocks.Count;
+        int amountOfReserveBlocks = beingRenderedItem.ReserveFirstAndMiddleNamesTextBlocks.Count;
 
         for ( int reserveBlocksCounter = 0;   reserveBlocksCounter < amountOfReserveBlocks;   reserveBlocksCounter++ )
         {
-            firstAndMiddleName = beingRenderedItem.reserveFirstAndMiddleNamesTextBlocks [reserveBlocksCounter];
+            firstAndMiddleName = beingRenderedItem.ReserveFirstAndMiddleNamesTextBlocks [reserveBlocksCounter];
 
             column
             .Item ()
@@ -251,8 +251,8 @@ class ConverterToPdf
 
     private void RenderDepartmentLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )
     {
-        string departmentName = beingRenderedItem.departmentName;
-        float fontSize = ( float ) beingRenderedItem.thirdLevelFontSize;
+        string departmentName = beingRenderedItem.DepartmentName;
+        float fontSize = ( float ) beingRenderedItem.ThirdLevelFontSize;
         int topPadding = ( int ) beingRenderedItem.DepartmentTopPadding;
 
         column
@@ -263,11 +263,11 @@ class ConverterToPdf
        .FontFamily ("Arial")
        .FontSize (fontSize);
 
-        int amountOfReserveBlocks = beingRenderedItem.reserveDepartmentTextBlocks.Count;
+        int amountOfReserveBlocks = beingRenderedItem.ReserveDepartmentTextBlocks.Count;
 
         for ( int reserveBlocksCounter = 0;   reserveBlocksCounter < amountOfReserveBlocks;   reserveBlocksCounter++ )
         {
-            departmentName = beingRenderedItem.reserveDepartmentTextBlocks [reserveBlocksCounter];
+            departmentName = beingRenderedItem.ReserveDepartmentTextBlocks [reserveBlocksCounter];
 
             column
            .Item ()
@@ -281,8 +281,8 @@ class ConverterToPdf
 
     private void RenderPositionLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )
     {
-        string positionName = beingRenderedItem.positionName;
-        float fontSize = ( float ) beingRenderedItem.thirdLevelFontSize;
+        string positionName = beingRenderedItem.PositionName;
+        float fontSize = ( float ) beingRenderedItem.ThirdLevelFontSize;
         int topPadding = ( int ) beingRenderedItem.PostTopPadding;
 
         column
@@ -293,11 +293,11 @@ class ConverterToPdf
        .FontFamily ("Arial")
        .FontSize (fontSize);
 
-        int amountOfReserveBlocks = beingRenderedItem.reservePositionTextBlocks.Count;
+        int amountOfReserveBlocks = beingRenderedItem.ReservePositionTextBlocks.Count;
 
         for ( int reserveBlocksCounter = 0;   reserveBlocksCounter < amountOfReserveBlocks;   reserveBlocksCounter++ )
         {
-            positionName = beingRenderedItem.reservePositionTextBlocks [reserveBlocksCounter];
+            positionName = beingRenderedItem.ReservePositionTextBlocks [reserveBlocksCounter];
 
             column
            .Item ()

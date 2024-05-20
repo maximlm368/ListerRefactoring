@@ -116,15 +116,15 @@ namespace DataGateway
                 pictures.Add ( picture );
             }
 
-            
-
-           
 
 
 
 
 
-            return badgeDescriprion;
+
+
+
+            return null;
         }
 
 
@@ -217,8 +217,6 @@ namespace DataGateway
             InsideImage image = 
                        new InsideImage ( path, new Size ( width , height ), color, geometricElement, topOffset, leftOffset );
             return image;
-
-
         }
 
 

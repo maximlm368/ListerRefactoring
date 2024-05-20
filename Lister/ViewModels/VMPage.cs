@@ -24,104 +24,104 @@ class VMPage : ViewModelBase
     internal Size pageSize;
 
     private ObservableCollection<VMBadge> eB;
-    internal ObservableCollection<VMBadge> evenBadges
+    internal ObservableCollection<VMBadge> EvenBadges
     {
         get { return eB; }
         set
         {
-            this.RaiseAndSetIfChanged (ref eB, value, nameof (evenBadges));
+            this.RaiseAndSetIfChanged (ref eB, value, nameof (EvenBadges));
         }
     }
 
     private ObservableCollection<VMBadge> oB;
-    internal ObservableCollection<VMBadge> oddBadges
+    internal ObservableCollection<VMBadge> OddBadges
     {
         get { return oB; }
         set
         {
-            this.RaiseAndSetIfChanged (ref oB, value, nameof (oddBadges));
+            this.RaiseAndSetIfChanged (ref oB, value, nameof (OddBadges));
         }
     }
 
     private double pW;
-    internal double pageWidth
+    internal double PageWidth
     {
         get { return pW; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pW, value, nameof (pageWidth));
+            this.RaiseAndSetIfChanged (ref pW, value, nameof (PageWidth));
         }
     }
 
     private double pH;
-    internal double pageHeight
+    internal double PageHeight
     {
         get { return pH; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pH, value, nameof (pageHeight));
+            this.RaiseAndSetIfChanged (ref pH, value, nameof (PageHeight));
         }
     }
 
     private VMBadge bE;
-    internal VMBadge badgeExample
+    internal VMBadge BadgeExample
     {
         get { return bE; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bE, value, nameof (badgeExample));
+            this.RaiseAndSetIfChanged (ref bE, value, nameof (BadgeExample));
         }
     }
     private VMBadge badgeForVerifying;
 
     private double eLS;
-    internal double evenLeftShift
+    internal double EvenLeftShift
     {
         get { return eLS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref eLS, value, nameof (evenLeftShift));
+            this.RaiseAndSetIfChanged (ref eLS, value, nameof (EvenLeftShift));
         }
     }
 
     private double oLS;
-    internal double oddLeftShift
+    internal double OddLeftShift
     {
         get { return oLS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref oLS, value, nameof (oddLeftShift));
+            this.RaiseAndSetIfChanged (ref oLS, value, nameof (OddLeftShift));
         }
     }
 
     private double bTS;
-    internal double badgeStackTopShift
+    internal double BadgeStackTopShift
     {
         get { return bTS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bTS, value, nameof (badgeStackTopShift));
+            this.RaiseAndSetIfChanged (ref bTS, value, nameof (BadgeStackTopShift));
         }
     }
 
-    internal List<VMBadge> includedBadges { get; private set; }
+    internal List<VMBadge> IncludedBadges { get; private set; }
     private double scale;
 
 
     internal VMPage ( Size pageSize, VMBadge badgeExample, double desiredScale )
     {
-        this.badgeExample = badgeExample;
+        this.BadgeExample = badgeExample;
         this.pageSize = pageSize;
         scale = desiredScale;
         badgeCount = 0;
-        evenBadges = new ObservableCollection<VMBadge> ();
-        oddBadges = new ObservableCollection<VMBadge> ();
-        includedBadges = new List<VMBadge> ();
-        pageWidth = pageSize.width;
-        pageHeight = pageSize.height;
-        evenLeftShift = 46;
-        oddLeftShift = 397;
-        badgeStackTopShift = 20;
+        EvenBadges = new ObservableCollection<VMBadge> ();
+        OddBadges = new ObservableCollection<VMBadge> ();
+        IncludedBadges = new List<VMBadge> ();
+        PageWidth = pageSize.width;
+        PageHeight = pageSize.height;
+        EvenLeftShift = 46;
+        OddLeftShift = 397;
+        BadgeStackTopShift = 20;
         badgeLimit = GetAmountOfBadgesOnPage ( );
         Zoom ();
     }
@@ -185,18 +185,18 @@ class VMPage : ViewModelBase
 
         if ( timeToStartNewPage )
         {
-            beingProcessedPage = new VMPage (pageSize, badgeExample, scale);
+            beingProcessedPage = new VMPage (pageSize, BadgeExample, scale);
         }
 
-        bool shouldPutInOddBadges = (evenBadges. Count) > (oddBadges. Count);
+        bool shouldPutInOddBadges = (EvenBadges. Count) > (OddBadges. Count);
 
         if ( shouldPutInOddBadges )
         {
-            beingProcessedPage.oddBadges.Add (badge);
+            beingProcessedPage.OddBadges.Add (badge);
         }
         else
         {
-            beingProcessedPage.evenBadges.Add (badge);
+            beingProcessedPage.EvenBadges.Add (badge);
         }
 
         beingProcessedPage.badgeCount++;
@@ -206,21 +206,21 @@ class VMPage : ViewModelBase
 
     internal void Clear () 
     {
-        evenBadges.Clear ();
-        oddBadges.Clear ();
+        EvenBadges.Clear ();
+        OddBadges.Clear ();
         badgeCount = 0;
     }
 
 
     private void VerifyBadgeSizeAccordence ( VMBadge badge ) 
     {
-        Size verifiebleSize = badge.badgeModel. badgeDescription. badgeDimensions. outlineSize;
+        Size verifiebleSize = badge.BadgeModel. badgeDescription. badgeDimensions. outlineSize;
         int verifiebleWidth = (int) (scale * verifiebleSize.width);
         int verifiebleHeight = (int) (scale * verifiebleSize.height);
 
-        bool isNotAccordent = ( verifiebleWidth != (int) this.badgeExample.badgeWidth ) 
+        bool isNotAccordent = ( verifiebleWidth != (int) this.BadgeExample.BadgeWidth ) 
                               ||
-                              ( verifiebleHeight != (int) this.badgeExample.badgeHeight );
+                              ( verifiebleHeight != (int) this.BadgeExample.BadgeHeight );
 
         int dffd = 0;
 
@@ -233,8 +233,8 @@ class VMPage : ViewModelBase
 
     private int GetAmountOfBadgesOnPage ( )
     {
-        int amountInRow = ( int ) ( scale * pageSize.width / badgeExample. badgeWidth );
-        int amountOfRows = ( int ) ( scale * pageSize.height / badgeExample. badgeHeight );
+        int amountInRow = ( int ) ( scale * pageSize.width / BadgeExample. BadgeWidth );
+        int amountOfRows = ( int ) ( scale * pageSize.height / BadgeExample. BadgeHeight );
         int resultAmount = amountInRow * amountOfRows;
         return resultAmount;
     }
@@ -243,25 +243,25 @@ class VMPage : ViewModelBase
     internal void ZoomOn ( double scaleCoefficient ) 
     {
         this.scale *= scaleCoefficient;
-        pageHeight *= scaleCoefficient;
-        pageWidth *= scaleCoefficient;
-        evenLeftShift *= scaleCoefficient;
-        oddLeftShift *= scaleCoefficient;
-        badgeStackTopShift *= scaleCoefficient;
+        PageHeight *= scaleCoefficient;
+        PageWidth *= scaleCoefficient;
+        EvenLeftShift *= scaleCoefficient;
+        OddLeftShift *= scaleCoefficient;
+        BadgeStackTopShift *= scaleCoefficient;
 
-        if ( evenBadges.Count > 0 ) 
+        if ( EvenBadges.Count > 0 ) 
         {
-            for( int badgeCounter = 0;   badgeCounter < evenBadges. Count;   badgeCounter++ ) 
+            for( int badgeCounter = 0;   badgeCounter < EvenBadges. Count;   badgeCounter++ ) 
             {
-                evenBadges [badgeCounter].ZoomOn ( scaleCoefficient );
+                EvenBadges [badgeCounter].ZoomOn ( scaleCoefficient );
             }
         }
 
-        if ( oddBadges.Count > 0 )
+        if ( OddBadges.Count > 0 )
         {
-            for ( int badgeCounter = 0;   badgeCounter < oddBadges. Count;   badgeCounter++ )
+            for ( int badgeCounter = 0;   badgeCounter < OddBadges. Count;   badgeCounter++ )
             {
-                oddBadges [badgeCounter].ZoomOn (scaleCoefficient);
+                OddBadges [badgeCounter].ZoomOn (scaleCoefficient);
             }
         }
     }
@@ -270,25 +270,25 @@ class VMPage : ViewModelBase
     internal void ZoomOut ( double scaleCoefficient )
     {
         scale /= scaleCoefficient;
-        pageHeight /= scaleCoefficient;
-        pageWidth /= scaleCoefficient;
-        evenLeftShift /= scaleCoefficient;
-        oddLeftShift /= scaleCoefficient;
-        badgeStackTopShift /= scaleCoefficient;
+        PageHeight /= scaleCoefficient;
+        PageWidth /= scaleCoefficient;
+        EvenLeftShift /= scaleCoefficient;
+        OddLeftShift /= scaleCoefficient;
+        BadgeStackTopShift /= scaleCoefficient;
 
-        if ( evenBadges.Count > 0 )
+        if ( EvenBadges.Count > 0 )
         {
-            for ( int badgeCounter = 0; badgeCounter < evenBadges.Count; badgeCounter++ )
+            for ( int badgeCounter = 0; badgeCounter < EvenBadges.Count; badgeCounter++ )
             {
-                evenBadges [badgeCounter].ZoomOut (scaleCoefficient);
+                EvenBadges [badgeCounter].ZoomOut (scaleCoefficient);
             }
         }
 
-        if ( oddBadges.Count > 0 )
+        if ( OddBadges.Count > 0 )
         {
-            for ( int badgeCounter = 0; badgeCounter < oddBadges.Count; badgeCounter++ )
+            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
             {
-                oddBadges [badgeCounter].ZoomOut (scaleCoefficient);
+                OddBadges [badgeCounter].ZoomOut (scaleCoefficient);
             }
         }
     }
@@ -296,13 +296,13 @@ class VMPage : ViewModelBase
 
     internal void ZoomOnExampleBadge ( double scaleCoefficient )
     {
-        badgeExample.ZoomOn (scaleCoefficient);
+        BadgeExample.ZoomOn (scaleCoefficient);
     }
 
 
     internal void ZoomOutExampleBadge ( double scaleCoefficient )
     {
-        badgeExample.ZoomOut (scaleCoefficient);
+        BadgeExample.ZoomOut (scaleCoefficient);
     }
 
 
@@ -310,33 +310,33 @@ class VMPage : ViewModelBase
     {
         if ( scale != 1 ) 
         {
-            pageHeight *= scale;
-            pageWidth *= scale;
-            evenLeftShift *= scale;
-            oddLeftShift *= scale;
-            badgeStackTopShift *= scale;
+            PageHeight *= scale;
+            PageWidth *= scale;
+            EvenLeftShift *= scale;
+            OddLeftShift *= scale;
+            BadgeStackTopShift *= scale;
         }
     }
 
 
     internal void ShowBadges ()
     {
-        bool evenStackIsNotEmpty = evenBadges. Count > 0;
-        bool oddStackIsNotEmpty = oddBadges. Count > 0;
+        bool evenStackIsNotEmpty = EvenBadges. Count > 0;
+        bool oddStackIsNotEmpty = OddBadges. Count > 0;
 
         if( evenStackIsNotEmpty ) 
         {
-            for ( int badgeCounter = 0;   badgeCounter < evenBadges.Count;   badgeCounter++ )
+            for ( int badgeCounter = 0;   badgeCounter < EvenBadges.Count;   badgeCounter++ )
             {
-                evenBadges [badgeCounter].ShowBackgroundImage ();
+                EvenBadges [badgeCounter].ShowBackgroundImage ();
             }
         }
 
         if ( oddStackIsNotEmpty )
         {
-            for ( int badgeCounter = 0; badgeCounter < oddBadges.Count; badgeCounter++ )
+            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
             {
-                oddBadges [badgeCounter].ShowBackgroundImage ();
+                OddBadges [badgeCounter].ShowBackgroundImage ();
             }
         }
     }
@@ -344,22 +344,22 @@ class VMPage : ViewModelBase
 
     internal void HideBadges ()
     {
-        bool evenStackIsNotEmpty = evenBadges.Count > 0;
-        bool oddStackIsNotEmpty = oddBadges.Count > 0;
+        bool evenStackIsNotEmpty = EvenBadges.Count > 0;
+        bool oddStackIsNotEmpty = OddBadges.Count > 0;
 
         if ( evenStackIsNotEmpty ) 
         {
-            for ( int badgeCounter = 0;   badgeCounter < evenBadges.Count;   badgeCounter++ )
+            for ( int badgeCounter = 0;   badgeCounter < EvenBadges.Count;   badgeCounter++ )
             {
-                evenBadges [badgeCounter].HideBackgroundImage ();
+                EvenBadges [badgeCounter].HideBackgroundImage ();
             }
         }
 
         if ( oddStackIsNotEmpty ) 
         {
-            for ( int badgeCounter = 0; badgeCounter < oddBadges.Count; badgeCounter++ )
+            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
             {
-                oddBadges [badgeCounter].HideBackgroundImage ();
+                OddBadges [badgeCounter].HideBackgroundImage ();
             }
         }
     }

@@ -1,5 +1,4 @@
 <!-- 
-			
 		 -->
 
 
@@ -8,20 +7,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Lister.ViewModels"
-			       xmlns:uc="clr-namespace: Lister.Views"
-             mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
+			 xmlns:uc="clr-namespace:Lister.Views"
+             mc:Ignorable="d"  d:DesignWidth="1366" d:DesignHeight="768"
              x:Class="Lister.Views.MainView"
-             x:DataType="vm:MainViewModel"  >
+             x:DataType="vm:MainViewModel">
   
 
 
    <StackPanel   ZIndex="0" >
 	   <StackPanel ZIndex="1" >
 
-
-       
-       
-       
 		   <Grid Name="source"  Height="40" Margin="0,0">
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition Width="100" ></ColumnDefinition>
@@ -31,7 +26,7 @@
 			   </Grid.ColumnDefinitions>
 
 			   <Label Content="Источник:" Grid.Column="0"  Padding="10"></Label>
-			   <TextBox  Name="personsSourceFile"  Text="{ Binding   Path = sourceFilePath,   Mode=OneWay }"  IsReadOnly="True"
+			   <TextBox  Name="personsSourceFile"  Text="{ Binding   Path = SourceFilePath,   Mode=OneWay }"  IsReadOnly="True"
 						VerticalAlignment="Center" Grid.Column="1"  Height="20"  FontSize="14" />
 			   <Button Name="chooseFile"  Tapped="ChooseFile"  Content="Выбрать файл"  Grid.Column="2" 
 					   HorizontalAlignment="Center" KeyDown="ChooseFile"/>
@@ -45,38 +40,38 @@
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
 				   <ColumnDefinition ></ColumnDefinition>
-           <ColumnDefinition  Width="30" ></ColumnDefinition>
+                   <ColumnDefinition  Width="30" ></ColumnDefinition>
 				   <ColumnDefinition  Width="100" ></ColumnDefinition>
 				   <ColumnDefinition  Width="130" ></ColumnDefinition>
 			   </Grid.ColumnDefinitions>
 
 			   <Label  Name="fio"  Content="По ФИО:" Grid.Column="0"  Padding="10" ></Label>
          
-         <Canvas  Name="customCombobox"  Grid.Column="1" >
+               <Canvas  Name="customCombobox"  Grid.Column="1" >
            
-         <TextBox Name="comboboxFrame"  Focusable="False"  Margin="0,1"  Grid.Column="1"  Width="871" />
-         <TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  Width="840"
-                   KeyDown="DropDownOrPickUpPersonListViaKey" KeyUp="HandlePersonListReduction"
-				   FontSize="14"/>
+               <TextBox Name="comboboxFrame"  Focusable="False"  Margin="0,1"  Grid.Column="1"  Width="871" />
+               <TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  Width="840"
+                         KeyDown="DropDownOrPickUpPersonListViaKey" KeyUp="HandlePersonListReduction"
+				         FontSize="14"/>
+
+				   <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
+							ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="871"  ZIndex="9"
+							BorderBrush="Gray"  BorderThickness="1"  Canvas.Top="33"
+							Tapped="HandlePersonChoosingViaTapping"
+							SelectionChanged="HandleSelectionChanged"
+							KeyDown="DropDownOrPickUpPersonListViaKey"
+							PointerEntered="CursorIsOverPersonList"
+							PointerExited="CursorIsOutOfPersonList"
+							ItemsSource="{Binding   Path = VisiblePeople,   Mode=OneWay }"
+							SelectedItem="{Binding   Path = ChosenPerson,   Mode=OneWayToSource }" > 
            
-         <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
-             ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="871"  ZIndex="9"
-             BorderBrush="Gray"  BorderThickness="1"  Canvas.Top="33"
-             Tapped="HandlePersonChoosingViaTapping"
-             SelectionChanged="HandleSelectionChanged"
-             KeyDown="DropDownOrPickUpPersonListViaKey"
-		     PointerEntered="CursorIsOverPersonList"
-		     PointerExited="CursorIsOutOfPersonList"
-             ItemsSource="{Binding   Path = visiblePeople,   Mode=OneWay }"
-             SelectedItem="{Binding   Path = chosenPerson,   Mode=OneWayToSource }" >
-           
-           <ListBox.ItemTemplate >
-             <DataTemplate >
-               <TextBlock Text="{Binding  Path = StringPresentation,  Mode=OneWay}"  FontSize="14"
-                          Padding="0,0,0,0"></TextBlock>
-             </DataTemplate>
-           </ListBox.ItemTemplate>
-         </ListBox>
+			   <ListBox.ItemTemplate >
+				 <DataTemplate >
+				   <TextBlock Text="{Binding  Path = StringPresentation,  Mode=OneWay}"  FontSize="14"
+							  Padding="0,0,0,0"></TextBlock>
+				 </DataTemplate>
+			   </ListBox.ItemTemplate>
+			 </ListBox>
          </Canvas>
              
                <Button  Name="toDropDownOrPickUpPersonList"  FontSize="14" Grid.Column="2" Background="White" BorderBrush="Gray"
@@ -92,10 +87,11 @@
 			   <Grid.ColumnDefinitions>
 				   <ColumnDefinition  Width="100"></ColumnDefinition>
 				   <ColumnDefinition  Width="233"></ColumnDefinition>
-				   <ColumnDefinition  Width="100"></ColumnDefinition>
-				   <ColumnDefinition Width="100"></ColumnDefinition>
-				   <ColumnDefinition Width="100"></ColumnDefinition>
-           <ColumnDefinition Width="100"></ColumnDefinition>
+				   <ColumnDefinition  Width="90"></ColumnDefinition>
+				   <ColumnDefinition Width="90"></ColumnDefinition>
+				   <ColumnDefinition Width="95"></ColumnDefinition>
+                   <ColumnDefinition Width="75"></ColumnDefinition>
+				   <ColumnDefinition Width="130"></ColumnDefinition>
 				   <ColumnDefinition ></ColumnDefinition>
 			   </Grid.ColumnDefinitions>
 			   <Grid.RowDefinitions>
@@ -105,8 +101,8 @@
 			   <Label Content="Шаблон:" Grid.Column="0"   Padding="10"></Label>
 
 			   <ComboBox Name="templateChoosing" SelectedIndex="1"  MaxDropDownHeight="100"  Grid.Column="1"  Width="230"
-						       VerticalAlignment="Center" SelectionChanged="HandleTemplateChoosing" IsTextSearchEnabled="True"
-			             ItemsSource="{ Binding   Path = templates,   Mode = OneWay }">
+						 VerticalAlignment="Center" SelectionChanged="HandleTemplateChoosing" IsTextSearchEnabled="True"
+			             ItemsSource="{ Binding   Path = Templates,   Mode = OneWay }">
 				   <ComboBox.ItemTemplate>
 					   <DataTemplate>
 						   <TextBlock  Text="{Binding  Path = Name, Mode=OneWay  }"  FontSize="14"
@@ -115,14 +111,16 @@
 				   </ComboBox.ItemTemplate>
 			   </ComboBox>
 			   
-			   <Button  Name="buildBadges"  Width="100" Content="Построить" Grid.Column="2"  Tapped="BuildBadges"
+			   <Button  Name="buildBadges"  Width="86" Content="Построить" Grid.Column="2"  Tapped="BuildBadges"
 						                                          IsEnabled="False"  HorizontalAlignment="Center"/>
-			   <Button  Name="clearBadges"  Width="96" Content="Очистить" Grid.Column="3"  Tapped="ClearBadges"
+			   <Button  Name="clearBadges"  Width="86" Content="Очистить" Grid.Column="3"  Tapped="ClearBadges"
 						                                          IsEnabled="False" HorizontalAlignment="Center"/>
-			   <Button  Name="save" Content="Сохранить" Width="96" Grid.Column="4" HorizontalAlignment="Center"
+			   <Button  Name="save" Content="Сохранить" Width="91" Grid.Column="4" HorizontalAlignment="Center"
 												                  IsEnabled="False" Tapped="GeneratePdf" />
-			   <Button Name="print" Content="Печать" Width="96" Grid.Column="5" HorizontalAlignment="Center"  
-					   Tapped="Print" IsEnabled="False"/>	
+			   <Button Name="print" Content="Печать" Width="71" Grid.Column="5" HorizontalAlignment="Center"  
+					   Tapped="Print" IsEnabled="False"/>
+			   <Button Name="edit" Content="Редактировать" Width="126" Grid.Column="6" HorizontalAlignment="Center"
+					   Tapped="EditIncorrectBadges" />
 		   
 		   </Grid>
 
@@ -150,7 +148,7 @@
 																						   Tapped="ToPreviousPage" />
 
 		   <TextBox  Name="visiblePageNumber"  Width="60"  FontSize="14"  Grid.Column="3"  MaxHeight="30" Margin="0,3"
-						  TextChanged="StepOnPage" Text="{Binding   Path = visiblePageNumber,   Mode=OneWay}"/>
+						  TextChanged="StepOnPage" Text="{Binding   Path = VisiblePageNumber,   Mode=OneWay}"/>
 
 		   <Button Name="nextPage"  Content="f" Grid.Column="4"  HorizontalAlignment="Center" Width="28" IsEnabled="False"
 																						   Tapped="ToNextPage" />
@@ -159,7 +157,7 @@
 		   <Button  Name="zoomOn" Content="+" Grid.Column="7"  HorizontalAlignment="Center" Width="28"
 																			 Tapped="ZoomOn" IsEnabled="False" />
 		   <TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="8"  MaxHeight="30" Margin="0,3"
-				     IsReadOnly="True" KeyUp="SetNewScale" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
+				     IsReadOnly="True" KeyUp="SetNewScale" Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
 		   <Button  Name="zoomOut"  Content="-" Grid.Column="9"  HorizontalAlignment="Center" Width="28"
 																		  Tapped="ZoomOut" IsEnabled="False" />
 	   </Grid>
@@ -170,12 +168,12 @@
 	   <ScrollViewer  Name="scroller" AllowAutoHide="True"    Background="AliceBlue">
 
 		   <Border Name="pageBorder"   BorderBrush="LightBlue"  BorderThickness="1"  Margin="20"
-				   DataContext="{Binding   Path = visiblePage,   Mode=OneWay }"
-			       Width= "{Binding   Path = pageWidth,   Mode=OneWay }"
-			       Height="{Binding   Path = pageHeight,   Mode=OneWay }"
+				   DataContext="{Binding   Path = VisiblePage,   Mode=OneWay }"
+			       Width= "{Binding   Path = PageWidth,   Mode=OneWay }"
+			       Height="{Binding   Path = PageHeight,   Mode=OneWay }"
 			       ScrollViewer.VerticalScrollBarVisibility="Auto"
 				   ScrollViewer.HorizontalScrollBarVisibility="Auto">
-			   <Canvas  Name="A4"   Background="White">
+			   <Canvas  Name="A4"   Background="White" Height="600" VerticalAlignment="Top" >
 				   
 				   <Canvas.Styles>
 					   <Style Selector="TextBlock">
@@ -183,47 +181,47 @@
 					   </Style>
 					   <Style Selector="TextBlock.FirstLevel">
 						   <Setter Property="FontSize" 
-								   Value="{Binding ElementName=pageBorder, Path =DataContext.badgeExample.firstLevelFontSize, Mode=OneWay }"/>
+								   Value="{Binding ElementName=pageBorder, Path =DataContext.BadgeExample.FirstLevelFontSize, Mode=OneWay }"/>
 						   <Setter Property="Height" 
-								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.firstLevelTBHeight, Mode=OneWay }" />
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.BadgeExample.FirstLevelTBHeight, Mode=OneWay }" />
 					   </Style>
 					   <Style Selector="TextBlock.SecondLevel">
 						   <Setter Property="FontSize" 
-								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.secondLevelFontSize, Mode=OneWay }"/>
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.BadgeExample.SecondLevelFontSize, Mode=OneWay }"/>
 						   <Setter Property="Height" 
-								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.secondLevelTBHeight, Mode=OneWay }"/>
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.BadgeExample.SecondLevelTBHeight, Mode=OneWay }"/>
 					   </Style>
 					   <Style Selector="TextBlock.ThirdLevel">
 						   <Setter Property="FontSize" 
-								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.thirdLevelFontSize, Mode=OneWay }"/>
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.BadgeExample.ThirdLevelFontSize, Mode=OneWay }"/>
 						   <Setter Property="Height" 
-								   Value="{Binding ElementName=pageBorder, Path = DataContext.badgeExample.thirdLevelTBHeight, Mode=OneWay }"/>
+								   Value="{Binding ElementName=pageBorder, Path = DataContext.BadgeExample.ThirdLevelTBHeight, Mode=OneWay }"/>
 					   </Style>
 				   </Canvas.Styles>
 				   
 				   <ItemsControl  Name="evens"
-								  ItemsSource="{Binding   Path = evenBadges,  Mode=OneWay }"
-								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.evenLeftShift, Mode=OneWay }"
-								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.badgeStackTopShift, Mode=OneWay }">
+								  ItemsSource="{Binding   Path = EvenBadges,  Mode=OneWay }"
+								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.EvenLeftShift, Mode=OneWay }"
+								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.BadgeStackTopShift, Mode=OneWay }">
 					   <ItemsControl.ItemTemplate>
 						   <DataTemplate>
 
 							   <Border  BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }" BorderBrush="Gray">
 
-								   <Canvas  Name="badgeInEvens"  Width="{Binding  Path = badgeWidth,  Mode=OneWay }" 
-											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
+								   <Canvas  Name="badgeInEvens"  Width="{Binding  Path = BadgeWidth,  Mode=OneWay }" 
+											Height="{Binding   Path = BadgeHeight,   Mode=OneWay }" >
 
-									   <Image  Source = "{Binding   Path = imageBitmap,  Mode=OneWay }"
-								               Width="{Binding   Path = badgeWidth,   Mode=OneWay }"/>
+									   <Image  Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+								               Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
 									  
-									   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }"
-										            Canvas.Left="{Binding Path = textAreaLeftShift, Mode=OneWay }"
-									                Canvas.Top="{Binding Path = textAreaTopShift, Mode=OneWay }"	>
+									   <StackPanel  Width="{Binding   Path = TextAreaWidth,   Mode=OneWay }"
+										            Canvas.Left="{Binding Path = TextAreaLeftShift, Mode=OneWay }"
+									                Canvas.Top="{Binding Path = TextAreaTopShift, Mode=OneWay }"	>
 
 										   <TextBlock  Classes ="FirstLevel"
-													   Text="{Binding   Path = lastName,  Mode=OneWay }" />
+													   Text="{Binding   Path = LastName,  Mode=OneWay }" />
 
-										   <ItemsControl ItemsSource="{Binding Path = reserveLastNameTextBlocks, Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding Path = ReserveLastNameTextBlocks, Mode=OneWay }" >
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -234,10 +232,10 @@
 										   </ItemsControl>
 
 										   <TextBlock  Classes ="SecondLevel"
-											           Text="{Binding   Path = firstAndSecondName,   Mode=OneWay }" />
+											           Text="{Binding   Path = FirstAndSecondName,   Mode=OneWay }" />
 
 										   <ItemsControl
-											   ItemsSource="{Binding   Path = reserveFirstAndMiddleNamesTextBlocks,  Mode=OneWay }" >
+											   ItemsSource="{Binding   Path = ReserveFirstAndMiddleNamesTextBlocks,  Mode=OneWay }" >
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -251,9 +249,9 @@
 										   <Label  Width="220" Height="{Binding  Path = DepartmentTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
-											           Text="{Binding   Path = departmentName,  Mode=OneWay }" />
+											           Text="{Binding   Path = DepartmentName,  Mode=OneWay }" />
 
-										   <ItemsControl ItemsSource="{Binding Path = reserveDepartmentTextBlocks, Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding Path = ReserveDepartmentTextBlocks, Mode=OneWay }" >
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -268,9 +266,9 @@
                                            <Label  Width="220" Height="{Binding  Path = PostTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
-											           Text="{Binding   Path = positionName,  Mode=OneWay }" />
+											           Text="{Binding   Path = PositionName,  Mode=OneWay }" />
 
-										   <ItemsControl ItemsSource="{Binding Path = reservePositionTextBlocks, Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding Path = ReservePositionTextBlocks, Mode=OneWay }" >
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -290,28 +288,28 @@
 				   </ItemsControl>
 
 				   <ItemsControl  Name="odds"
-								  ItemsSource="{Binding   Path = oddBadges,   Mode=OneWay }"
-								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.oddLeftShift, Mode=OneWay }"
-								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.badgeStackTopShift, Mode=OneWay }" >
+								  ItemsSource="{Binding   Path = OddBadges,   Mode=OneWay }"
+								  Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.OddLeftShift, Mode=OneWay }"
+								  Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.BadgeStackTopShift, Mode=OneWay }" >
 					   <ItemsControl.ItemTemplate>
 						   <DataTemplate>
 
 							   <Border  BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }"  BorderBrush="Gray" >
 
-								   <Canvas  Name="badgeInOdds"  Width="{Binding   Path = badgeWidth,   Mode=OneWay }"
-											Height="{Binding   Path = badgeHeight,   Mode=OneWay }" >
+								   <Canvas  Name="badgeInOdds"  Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"
+											Height="{Binding   Path = BadgeHeight,   Mode=OneWay }" >
 
-									   <Image  Source = "{Binding   Path = imageBitmap,   Mode=OneWay }"
-											   Width="{Binding   Path = badgeWidth,   Mode=OneWay }" />
+									   <Image  Source = "{Binding   Path = ImageBitmap,   Mode=OneWay }"
+											   Width="{Binding   Path = BadgeWidth,   Mode=OneWay }" />
 
-									   <StackPanel  Width="{Binding   Path = textAreaWidth,   Mode=OneWay }"
-													Canvas.Left="{Binding   Path = textAreaLeftShift,   Mode=OneWay }"
-													Canvas.Top="{Binding   Path = textAreaTopShift,   Mode=OneWay }">
+									   <StackPanel  Width="{Binding   Path = TextAreaWidth,   Mode=OneWay }"
+													Canvas.Left="{Binding   Path = TextAreaLeftShift,   Mode=OneWay }"
+													Canvas.Top="{Binding   Path = TextAreaTopShift,   Mode=OneWay }">
 
 										   <TextBlock  Classes ="FirstLevel"
-													   Text="{Binding   Path = lastName,   Mode=OneWay }" />
+													   Text="{Binding   Path = LastName,   Mode=OneWay }" />
 
-										   <ItemsControl ItemsSource="{Binding Path = reserveLastNameTextBlocks, Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding Path = ReserveLastNameTextBlocks, Mode=OneWay }" >
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -324,16 +322,16 @@
 										   </ItemsControl>
 
 										   <TextBlock  Classes ="SecondLevel"
-													   Text="{Binding   Path = firstAndSecondName,   Mode=OneWay }" />
+													   Text="{Binding   Path = FirstAndSecondName,  Mode=OneWay }" />
 
 										   <ItemsControl
-												   ItemsSource="{Binding Path = reserveFirstAndMiddleNamesTextBlocks, Mode=OneWay }">
+												   ItemsSource="{Binding Path = ReserveFirstAndMiddleNamesTextBlocks, Mode=OneWay }">
 
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
 
 													   <TextBlock Classes ="SecondLevel"
-																  Text="{Binding   Mode=OneWay }" />
+																  Text="{Binding  Mode=OneWay }" />
 
 												   </DataTemplate>
 											   </ItemsControl.ItemTemplate>
@@ -342,9 +340,9 @@
                        <Label  Width="220" Height="{Binding  Path = DepartmentTopPadding,  Mode=OneWay }" />
                        
 										   <TextBlock  Classes ="ThirdLevel"
-													   Text="{Binding   Path = departmentName,   Mode=OneWay }" />
+													   Text="{Binding   Path = DepartmentName,   Mode=OneWay }" />
 
-										   <ItemsControl ItemsSource="{Binding Path = reserveDepartmentTextBlocks, Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding Path = ReserveDepartmentTextBlocks, Mode=OneWay }" >
 											   
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>
@@ -359,10 +357,9 @@
                        <Label  Width="220" Height="{Binding  Path = PostTopPadding,  Mode=OneWay }" />
 
                        <TextBlock  Classes ="ThirdLevel"
-													   Text="{Binding   Path = positionName,   Mode=OneWay }" />
+													   Text="{Binding   Path = PositionName,   Mode=OneWay }" />
 
-
-										   <ItemsControl ItemsSource="{Binding  Path = reservePositionTextBlocks,  Mode=OneWay }" >
+										   <ItemsControl ItemsSource="{Binding  Path = ReservePositionTextBlocks,  Mode=OneWay }" >
 											   
 											   <ItemsControl.ItemTemplate>
 												   <DataTemplate>

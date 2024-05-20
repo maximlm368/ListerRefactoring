@@ -38,31 +38,31 @@ class MainViewModel : ViewModelBase
 {
     private IUniformDocumentAssembler uniformAssembler;
     ConverterToPdf converter;
-    internal List<Person> people { get; private set; }
-    internal List<VMBadge> incorrectBadges { get; private set; }
+    internal List<Person> People { get; private set; }
+    internal List<VMBadge> IncorrectBadges { get; private set; }
 
     private ObservableCollection<Person> vP;
-    internal ObservableCollection<Person> visiblePeople 
+    internal ObservableCollection<Person> VisiblePeople 
     {
         get {  return vP; }
         set 
         {
-            this.RaiseAndSetIfChanged (ref vP, value, nameof (visiblePeople));
+            this.RaiseAndSetIfChanged (ref vP, value, nameof (VisiblePeople));
         }
     }
 
     private Person cP;
-    internal Person chosenPerson 
+    internal Person ChosenPerson 
     {
         get {  return cP; }
         set 
         {
-            this.RaiseAndSetIfChanged (ref cP, value, nameof (chosenPerson));
+            this.RaiseAndSetIfChanged (ref cP, value, nameof (ChosenPerson));
         }
     }
 
     private List<FileInfo> templatesField;
-    internal List<FileInfo> templates 
+    internal List<FileInfo> Templates 
     {
         get 
         {
@@ -70,12 +70,12 @@ class MainViewModel : ViewModelBase
         }
         set 
         {
-            this.RaiseAndSetIfChanged (ref templatesField, value, nameof (templates));
+            this.RaiseAndSetIfChanged (ref templatesField, value, nameof (Templates));
         }
     }
 
     private FileInfo cT;
-    internal FileInfo chosenTemplate 
+    internal FileInfo ChosenTemplate 
     {
         set 
         {
@@ -83,7 +83,7 @@ class MainViewModel : ViewModelBase
 
             if (valueIsSuitable)
             {
-                this.RaiseAndSetIfChanged (ref cT, value, nameof (chosenTemplate));
+                this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
             }
         }
         get 
@@ -93,45 +93,46 @@ class MainViewModel : ViewModelBase
     }
 
     private string sFP;
-    internal string sourceFilePath
+    internal string SourceFilePath
     {
         get { return sFP; }
         set
         {
             string path = SetPersonsFilePath ( value );
-            this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( sourceFilePath ) );
+            this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( SourceFilePath ) );
         }
     }
 
     private List<VMPage> allPages;
     private VMPage lastPage;
+
     private VMPage vPage;
-    internal VMPage visiblePage
+    internal VMPage VisiblePage
     {
         get { return vPage; }
         set
         {
-            this.RaiseAndSetIfChanged (ref vPage, value, nameof (visiblePage));
+            this.RaiseAndSetIfChanged (ref vPage, value, nameof (VisiblePage));
         }
     }
 
     private int vpN;
-    internal int visiblePageNumber
+    internal int VisiblePageNumber
     {
         get { return vpN; }
         set
         {
-            this.RaiseAndSetIfChanged (ref vpN, value, nameof (visiblePageNumber));
+            this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
         }
     }
 
     private string zoomDV;
-    internal string zoomDegreeInView
+    internal string ZoomDegreeInView
     {
         get { return zoomDV; }
         set
         {
-            this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (zoomDegreeInView));
+            this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
         }
     }
     private double zoomDegree;
@@ -143,12 +144,12 @@ class MainViewModel : ViewModelBase
     private List<int> scaleCorrespondingPages;
 
     private int sw;
-    internal int screenWidth
+    internal int ScreenWidth
     {
         get { return sw; }
         set
         {
-            this.RaiseAndSetIfChanged (ref sw, value, nameof (screenWidth));
+            this.RaiseAndSetIfChanged (ref sw, value, nameof (ScreenWidth));
         }
     }
 
@@ -157,16 +158,16 @@ class MainViewModel : ViewModelBase
     {
         this.uniformAssembler = singleTypeDocumentAssembler;
         converter = new ConverterToPdf ();
-        templates = uniformAssembler.GetBadgeModels();
-        visiblePeople = new ObservableCollection<Person>();
-        people = new List<Person>();
-        incorrectBadges = new List<VMBadge> ();
+        Templates = uniformAssembler.GetBadgeModels();
+        VisiblePeople = new ObservableCollection<Person>();
+        People = new List<Person>();
+        IncorrectBadges = new List<VMBadge> ();
         allPages = new List<VMPage>();
         this.pageSize = pageSize;
-        visiblePageNumber = 1;
+        VisiblePageNumber = 1;
         procentSymbol = "%";
         zoomDegree = 100;
-        zoomDegreeInView = zoomDegree.ToString () + " " + procentSymbol;
+        ZoomDegreeInView = zoomDegree.ToString () + " " + procentSymbol;
         documentScale = 1;
         scalabilityCoefficient = 1.25;
         scaleCorrespondingPages = new List<int> ();
@@ -187,8 +188,8 @@ class MainViewModel : ViewModelBase
 
         if ( valueIsSuitable )
         {
-            visiblePeople.Clear ( );
-            people.Clear ( );
+            VisiblePeople.Clear ( );
+            People.Clear ( );
 
             try
             {
@@ -196,8 +197,8 @@ class MainViewModel : ViewModelBase
 
                 foreach ( var person in persons )
                 {
-                    visiblePeople.Add ( person );
-                    people.Add ( person );
+                    VisiblePeople.Add ( person );
+                    People.Add ( person );
                 }
 
                 return value;
@@ -215,7 +216,7 @@ class MainViewModel : ViewModelBase
 
     internal void SetWidth ( int screenWidth )
     {
-        this.screenWidth = screenWidth;
+        this.ScreenWidth = screenWidth;
     }
 
 
@@ -269,8 +270,8 @@ class MainViewModel : ViewModelBase
             {
                 try
                 {
-                    allBadges.Add (allPages [pageCounter].evenBadges [badgePairCounter]);
-                    allBadges.Add (allPages [pageCounter].oddBadges [badgePairCounter]);
+                    allBadges.Add (allPages [pageCounter].EvenBadges [badgePairCounter]);
+                    allBadges.Add (allPages [pageCounter].OddBadges [badgePairCounter]);
                     badgePairCounter++;
                 }
                 catch ( ArgumentOutOfRangeException e )
@@ -476,64 +477,64 @@ class MainViewModel : ViewModelBase
 
     internal void VisualiseNextPage ( )
     {
-        if ( visiblePageNumber < allPages.Count )
+        if ( VisiblePageNumber < allPages.Count )
         {
-            visiblePage.HideBadges ();
-            visiblePageNumber++;
-            visiblePage = allPages [visiblePageNumber - 1];
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePageNumber++;
+            VisiblePage = allPages [VisiblePageNumber - 1];
+            VisiblePage.ShowBadges ();
         }
     }
 
 
     internal void VisualisePreviousPage ( )
     {
-        if (visiblePageNumber > 1) 
+        if (VisiblePageNumber > 1) 
         {
-            visiblePage.HideBadges ();
-            visiblePageNumber--;
-            visiblePage = allPages [visiblePageNumber - 1];
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePageNumber--;
+            VisiblePage = allPages [VisiblePageNumber - 1];
+            VisiblePage.ShowBadges ();
         }
     }
 
 
     internal void VisualiseLastPage ()
     {
-        if ( visiblePageNumber < allPages.Count )
+        if ( VisiblePageNumber < allPages.Count )
         {
-            visiblePage.HideBadges ();
-            visiblePageNumber = allPages.Count;
-            visiblePage = allPages [visiblePageNumber - 1]; 
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePageNumber = allPages.Count;
+            VisiblePage = allPages [VisiblePageNumber - 1]; 
+            VisiblePage.ShowBadges ();
         }
     }
 
 
     internal void VisualiseFirstPage ()
     {
-        if ( visiblePageNumber > 1 )
+        if ( VisiblePageNumber > 1 )
         {
-            visiblePage.HideBadges ();
-            visiblePageNumber = 1;
-            visiblePage = allPages [visiblePageNumber - 1];
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePageNumber = 1;
+            VisiblePage = allPages [VisiblePageNumber - 1];
+            VisiblePage.ShowBadges ();
         }
     }
 
 
     internal int VisualisePageWithNumber ( int pageNumber )
     {
-        int result = visiblePageNumber;
-        bool notTheSamePage = visiblePageNumber != pageNumber;
+        int result = VisiblePageNumber;
+        bool notTheSamePage = VisiblePageNumber != pageNumber;
         bool inRange = pageNumber <= allPages.Count;
 
         if ( notTheSamePage && inRange )
         {
-            visiblePage.HideBadges ();
-            visiblePageNumber = pageNumber;
-            visiblePage = allPages [visiblePageNumber - 1];
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePageNumber = pageNumber;
+            VisiblePage = allPages [VisiblePageNumber - 1];
+            VisiblePage.ShowBadges ();
             result = pageNumber;
         }
 
@@ -545,12 +546,12 @@ class MainViewModel : ViewModelBase
     {
         string pathInAvalonia = "avares://Lister/Assets";
 
-        if ( chosenTemplate == null )
+        if ( ChosenTemplate == null )
         {
             return;
         }
 
-        string fileName = chosenTemplate. FullName.ExtractFileNameFromPath ();
+        string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
         List<Badge> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
 
@@ -563,9 +564,9 @@ class MainViewModel : ViewModelBase
                 VMBadge beingProcessedVMBadge = new VMBadge (requiredBadges [badgeCounter]);
                 allBadges.Add (beingProcessedVMBadge);
 
-                if ( ! beingProcessedVMBadge.isCorrect ) 
+                if ( ! beingProcessedVMBadge.IsCorrect ) 
                 {
-                    incorrectBadges.Add (beingProcessedVMBadge);
+                    IncorrectBadges.Add (beingProcessedVMBadge);
                 }
             }
 
@@ -574,7 +575,7 @@ class MainViewModel : ViewModelBase
 
             if (placingStartedOnLastPage) 
             {
-                visiblePageNumber = allPages.Count;
+                VisiblePageNumber = allPages.Count;
 
                 // page number 0 corresponds last page of previous building,  VMPage.PlaceIntoPages() method
                 // added badges on it
@@ -583,8 +584,8 @@ class MainViewModel : ViewModelBase
 
             allPages.AddRange (newPages);
             lastPage = allPages.Last ();
-            visiblePage = allPages [visiblePageNumber - 1];
-            visiblePage.ShowBadges ();
+            VisiblePage = allPages [VisiblePageNumber - 1];
+            VisiblePage.ShowBadges ();
         }  
     }
 
@@ -592,34 +593,34 @@ class MainViewModel : ViewModelBase
     internal void BuildSingleBadge ()
     {
         string pathInAvalonia = "avares://Lister/Assets";
-        string fileName = chosenTemplate. FullName.ExtractFileNameFromPath ();
+        string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
-        Person goalPerson = chosenPerson;
+        Person goalPerson = ChosenPerson;
         Badge requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
         VMBadge goalVMBadge = new VMBadge (requiredBadge);
 
-        if ( ! goalVMBadge.isCorrect )
+        if ( ! goalVMBadge.IsCorrect )
         {
-            incorrectBadges.Add (goalVMBadge);
+            IncorrectBadges.Add (goalVMBadge);
         }
 
-        bool itIsFirstBadgeBuildingInCurrentAppRun = (visiblePage==null);
+        bool itIsFirstBadgeBuildingInCurrentAppRun = (VisiblePage==null);
 
         if ( itIsFirstBadgeBuildingInCurrentAppRun ) 
         {
             VMBadge badgeExample = goalVMBadge.Clone ();
-            visiblePage = new VMPage (pageSize, badgeExample, documentScale);
-            lastPage = visiblePage;
-            allPages.Add (visiblePage);
+            VisiblePage = new VMPage (pageSize, badgeExample, documentScale);
+            lastPage = VisiblePage;
+            allPages.Add (VisiblePage);
         }
 
-        bool placingStartedAfterEntireListAddition = ! lastPage.Equals (visiblePage);
+        bool placingStartedAfterEntireListAddition = ! lastPage.Equals (VisiblePage);
 
         if (placingStartedAfterEntireListAddition) 
         {
-            visiblePage.HideBadges ();
-            visiblePage = lastPage;
-            visiblePage.ShowBadges ();
+            VisiblePage.HideBadges ();
+            VisiblePage = lastPage;
+            VisiblePage.ShowBadges ();
         }
 
         VMPage possibleNewVisiblePage = lastPage.AddBadge (goalVMBadge, true);
@@ -627,14 +628,14 @@ class MainViewModel : ViewModelBase
 
         if ( timeToIncrementVisiblePageNumber ) 
         {
-            visiblePage.HideBadges ();
-            visiblePage = possibleNewVisiblePage;
-            lastPage = visiblePage;
+            VisiblePage.HideBadges ();
+            VisiblePage = possibleNewVisiblePage;
+            lastPage = VisiblePage;
             allPages.Add (possibleNewVisiblePage);
-            visiblePage.ShowBadges ();
+            VisiblePage.ShowBadges ();
         }
 
-        visiblePageNumber = allPages.Count;
+        VisiblePageNumber = allPages.Count;
         goalVMBadge.ShowBackgroundImage ();
     }
 
@@ -694,11 +695,11 @@ class MainViewModel : ViewModelBase
                 allPages [pageCounter].Clear ();
             }
 
-            visiblePage = allPages [0];
+            VisiblePage = allPages [0];
             allPages = new List<VMPage> ();
-            lastPage = visiblePage;
+            lastPage = VisiblePage;
             allPages.Add (lastPage);
-            visiblePageNumber = 1;
+            VisiblePageNumber = 1;
         }
     }
 
@@ -707,17 +708,17 @@ class MainViewModel : ViewModelBase
     {
         documentScale *= scalabilityCoefficient;
 
-        if ( visiblePage != null )
+        if ( VisiblePage != null )
         {
             for ( int pageCounter = 0;   pageCounter < allPages.Count;   pageCounter++ )
             {
                 allPages [pageCounter].ZoomOn (scalabilityCoefficient);
             }
 
-            visiblePage.ZoomOnExampleBadge (scalabilityCoefficient);
+            VisiblePage.ZoomOnExampleBadge (scalabilityCoefficient);
             zoomDegree *= scalabilityCoefficient;
             short zDegree = ( short ) zoomDegree;
-            zoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+            ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
         }
     }
 
@@ -726,17 +727,17 @@ class MainViewModel : ViewModelBase
     {
         documentScale /= scalabilityCoefficient;
 
-        if ( visiblePage != null )
+        if ( VisiblePage != null )
         {
             for ( int pageCounter = 0;   pageCounter < allPages.Count;   pageCounter++ )
             {
                 allPages [pageCounter].ZoomOut (scalabilityCoefficient);
             }
 
-            visiblePage.ZoomOutExampleBadge (scalabilityCoefficient);
+            VisiblePage.ZoomOutExampleBadge (scalabilityCoefficient);
             zoomDegree /= scalabilityCoefficient;
             short zDegree = ( short ) zoomDegree;
-            zoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+            ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
         }
     }
 

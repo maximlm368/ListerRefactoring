@@ -15,16 +15,36 @@
     <Deterministic>False</Deterministic>
   </PropertyGroup>
 
-  
+
+	<PropertyGroup>
+		<AvaloniaNameGeneratorBehavior>InitializeComponent</AvaloniaNameGeneratorBehavior>
+		<AvaloniaNameGeneratorDefaultFieldModifier>internal</AvaloniaNameGeneratorDefaultFieldModifier>
+		<AvaloniaNameGeneratorFilterByPath>*</AvaloniaNameGeneratorFilterByPath>
+		<AvaloniaNameGeneratorFilterByNamespace>*</AvaloniaNameGeneratorFilterByNamespace>
+		<AvaloniaNameGeneratorViewFileNamingStrategy>NamespaceAndClassName</AvaloniaNameGeneratorViewFileNamingStrategy>
+	</PropertyGroup>
+	
+
+	
+	
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+
+	
+	<ItemGroup>
+		<AvaloniaXaml Remove="PartsOfMainView\**" />
+		<Compile Remove="PartsOfMainView\**" />
+		<EmbeddedResource Remove="PartsOfMainView\**" />
+		<None Remove="PartsOfMainView\**" />
+	</ItemGroup>
 
   
   <ItemGroup>
     <None Remove="Assets\BadgeDescription.json" />
   </ItemGroup>
 
+	
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
@@ -34,19 +54,10 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
+	
   <ItemGroup>
     <ProjectReference Include="..\ContentAssembler\ContentAssembler.csproj" />
     <ProjectReference Include="..\DataGateway\DataGateway.csproj" />
     <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PartsOfMainView\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\PersonSourceChoosingUC.axaml.cs">
-      <DependentUpon>PersonSourceChoosingUC.axaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>
