@@ -116,15 +116,15 @@ namespace DataGateway
                 pictures.Add ( picture );
             }
 
-            
-
-           
 
 
 
 
 
-            return badgeDescriprion;
+
+
+
+            return null;
         }
 
 
