@@ -12,7 +12,7 @@ using static QuestPDF.Helpers.Colors;
 
 namespace Lister.ViewModels
 {
-    internal class PersonSourceChoosingViewModel : ViewModelBase
+    internal class PersonSourceViewModel : ViewModelBase
     {
         private IUniformDocumentAssembler uniformAssembler;
         internal List<Person> people { get; private set; }
@@ -39,12 +39,11 @@ namespace Lister.ViewModels
         }
 
 
-        internal PersonSourceChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
+        internal PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
         {
             visiblePeople = new ObservableCollection<Person> ();
-            people = new List<Person> (); 
+            people = new List<Person> ();
             this.uniformAssembler = singleTypeDocumentAssembler;
-            
         }
 
 

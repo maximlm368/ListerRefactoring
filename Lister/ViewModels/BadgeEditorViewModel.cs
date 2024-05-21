@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class BadgeEditorViewModel : ViewModelBase
+    public class BadgeEditorViewModel : ViewModelBase
     {
         private List<VMBadge> incorrectBadges;
         internal List<VMBadge> IncorrectBadges
@@ -37,7 +37,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeEditorViewModel ( )
+        public BadgeEditorViewModel ( )
         {
             
         }

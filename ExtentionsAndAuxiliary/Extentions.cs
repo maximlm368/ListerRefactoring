@@ -175,6 +175,25 @@ namespace ExtentionsAndAuxiliary
             return goalPath;
         }
 
+
+        public static string TrimLastSpaceOrQuoting ( this string beingProcessed )
+        {
+            bool isNotEmpty = ! string.IsNullOrEmpty (beingProcessed);
+
+            if ( isNotEmpty ) 
+            {
+                char lastChar = beingProcessed [beingProcessed.Length - 1];
+                bool isGoal = ( lastChar == ' ' )   ||   ( lastChar == '"' );
+
+                if ( isGoal )
+                {
+                    beingProcessed = beingProcessed.Substring (0, beingProcessed.Length - 2);
+                }
+            }
+
+            return beingProcessed;
+        }
+
     }
 
 

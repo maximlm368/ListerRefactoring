@@ -16,7 +16,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 
-class VMBadge : ViewModelBase
+class BadgeViewModel : ViewModelBase
 {
     private const double coefficient = 1.1;
     internal Badge BadgeModel { get; private set; }
@@ -266,29 +266,29 @@ class VMBadge : ViewModelBase
     internal bool IsCorrect { get; private set; }
 
 
-    internal VMBadge ( Badge badgeModel )
+    internal BadgeViewModel ( Badge badgeModel )
     {
         this.BadgeModel = badgeModel;
-        BadgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. width;
-        BadgeHeight = badgeModel.badgeDescription. badgeDimensions. outlineSize. height;
-        TextAreaTopShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaTopShiftOnBackground;
-        TextAreaLeftShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaLeftShiftOnBackground;
-        TextAreaWidth = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. width;
-        TextAreaHeight = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. height;
-        FirstLevelFontSize = badgeModel.badgeDescription. badgeDimensions. firstLevelFontSize;
-        SecondLevelFontSize = badgeModel.badgeDescription. badgeDimensions. secondLevelFontSize;
-        ThirdLevelFontSize = badgeModel.badgeDescription. badgeDimensions. thirdLevelFontSize;
-        FirstLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. firstLevelTBHeight;
-        SecondLevelTBHeight = badgeModel.badgeDescription. badgeDimensions. secondLevelTBHeight;
+        BadgeWidth = badgeModel.badgeDescription.badgeDimensions.outlineSize.width;
+        BadgeHeight = badgeModel.badgeDescription.badgeDimensions.outlineSize.height;
+        TextAreaTopShift = badgeModel.badgeDescription.badgeDimensions.personTextAreaTopShiftOnBackground;
+        TextAreaLeftShift = badgeModel.badgeDescription.badgeDimensions.personTextAreaLeftShiftOnBackground;
+        TextAreaWidth = badgeModel.badgeDescription.badgeDimensions.personTextAreaSize.width;
+        TextAreaHeight = badgeModel.badgeDescription.badgeDimensions.personTextAreaSize.height;
+        FirstLevelFontSize = badgeModel.badgeDescription.badgeDimensions.firstLevelFontSize;
+        SecondLevelFontSize = badgeModel.badgeDescription.badgeDimensions.secondLevelFontSize;
+        ThirdLevelFontSize = badgeModel.badgeDescription.badgeDimensions.thirdLevelFontSize;
+        FirstLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.firstLevelTBHeight;
+        SecondLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.secondLevelTBHeight;
         ThirdLevelTBHeight = badgeModel.badgeDescription.badgeDimensions.thirdLevelTBHeight;
 
         DepartmentTopPadding = 10;
         PostTopPadding = 5;
 
-        LastName = badgeModel.person. FamilyName;
-        FirstAndSecondName = badgeModel.person. FirstName + " " + badgeModel.person. PatronymicName;
-        DepartmentName = badgeModel.person. Department;
-        PositionName = badgeModel.person. Post;
+        LastName = badgeModel.person.FamilyName;
+        FirstAndSecondName = badgeModel.person.FirstName + " " + badgeModel.person.PatronymicName;
+        DepartmentName = badgeModel.person.Department;
+        PositionName = badgeModel.person.Post;
         ReserveLastNameTextBlocks = new ObservableCollection<string> ();
         ReserveFirstAndMiddleNamesTextBlocks = new ObservableCollection<string> ();
         ReserveDepartmentTextBlocks = new ObservableCollection<string> ();
@@ -305,9 +305,9 @@ class VMBadge : ViewModelBase
     public event PropertyChangedEventHandler? PropertyChanged;
 
 
-    internal void ShowBackgroundImage () 
+    internal void ShowBackgroundImage ()
     {
-        string path = BadgeModel. backgroundImagePath;
+        string path = BadgeModel.backgroundImagePath;
         Uri uri = new Uri (path);
         this.ImageBitmap = ImageHelper.LoadFromResource (uri);
     }
@@ -337,7 +337,7 @@ class VMBadge : ViewModelBase
         PostTopPadding *= coefficient;
 
         borderThickness *= coefficient;
-        BorderThickness = new Avalonia.Thickness(borderThickness);
+        BorderThickness = new Avalonia.Thickness (borderThickness);
     }
 
 
@@ -363,7 +363,7 @@ class VMBadge : ViewModelBase
     }
 
 
-    internal VMBadge Clone () 
+    internal VMBadge Clone ()
     {
         VMBadge clone = new VMBadge (this.BadgeModel);
         return clone;
@@ -372,7 +372,7 @@ class VMBadge : ViewModelBase
 
     internal void Zoom ( double coefficient )
     {
-        if (coefficient != 1) 
+        if ( coefficient != 1 )
         {
             ZoomOn (coefficient);
         }
@@ -540,7 +540,7 @@ class VMBadge : ViewModelBase
 
         while ( lineIsOverflow )
         {
-            List<string> splited = beingProcessedLine.SeparateIntoMainAndTailViaLastSeparator (new List<char> {'/', '\\'});
+            List<string> splited = beingProcessedLine.SeparateIntoMainAndTailViaLastSeparator (new List<char> { '/', '\\' });
 
             if ( splited.Count > 0 )
             {

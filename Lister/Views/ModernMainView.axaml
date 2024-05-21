@@ -2,12 +2,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:vm="clr-namespace:Lister.ViewModels"
+			 xmlns:uc="clr-namespace:Lister.Views"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Lister.Views.ModernMainView"
 			 x:DataType="vm:MainViewModel" >
 
-
+    <StackPanel>
+		<uc:PersonSourceUserControl/>
+		<uc:PersonChoosingUserControl/>
+		
+	</StackPanel>
 	
 	
 </UserControl>

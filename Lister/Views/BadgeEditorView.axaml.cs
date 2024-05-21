@@ -3,9 +3,9 @@ using Lister.ViewModels;
 
 namespace Lister.Views
 {
-    internal partial class BadgeEditorView : UserControl
+    public partial class BadgeEditorView : UserControl
     {
-        internal BadgeEditorView ()
+        public BadgeEditorView ()
         {
             InitializeComponent ();
             this.DataContext = new BadgeEditorViewModel ();

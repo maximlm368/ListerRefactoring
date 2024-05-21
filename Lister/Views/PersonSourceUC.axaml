@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+			 xmlns:vm="clr-namespace:Lister.ViewModels"
+             x:Class="Lister.Views.PersonSourceUserControl"
+			 x:DataType="vm:PersonSourceViewModel">
+
+
+	<Grid Name="source"  Height="40" Margin="0,0">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="100" ></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition Width="130" ></ColumnDefinition>
+			<ColumnDefinition Width="200" ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+
+		<Label 
+			Grid.Column="0"
+			Padding="10"
+			Content="Источник:"/>
+		
+		<TextBox  
+			Name="personsSourceFile"
+			Grid.Column="1"
+			VerticalAlignment="Center"
+			Height="20"
+			FontSize="14"
+			IsReadOnly="True"
+			Text="{ Binding   Path = SourceFilePath,   Mode=OneWay }" />
+		
+		<Button 
+			Name="chooseFile"
+			Grid.Column="2"
+			HorizontalAlignment="Center"
+			Tapped="ChooseFile"
+            KeyDown="ChooseFile"
+			Content="Выбрать файл" />
+		
+		<Button
+			Name="editSourceFile"
+			Grid.Column="3"
+			HorizontalAlignment="Center"
+			Tapped="OpenEditor"
+			IsEnabled="False"
+		    Content="Редактировать файл" />
+	</Grid>
+	
+	
+</UserControl>

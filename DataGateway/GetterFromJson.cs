@@ -43,21 +43,6 @@ namespace DataGateway
         }
 
 
-        //internal static List<string> GetChildrenValues ( IConfigurationSection section )
-        //{
-        //    List<string> values = new List<string> ();
-        //    IEnumerable<IConfigurationSection> targetChildren = section.GetChildren ();
-
-        //    foreach ( IConfigurationSection child in targetChildren ) 
-        //    {
-                
-        //    }
-
-        //    string templateName = section.Value;
-        //    return templateName;
-        //}
-
-
         internal static IEnumerable<IConfigurationSection> GetIncludedItemsOfSection ( List<string> keyPathInJson, string jsonPath )
         {
             IConfigurationRoot configRoot = GetConfigRoot (jsonPath);

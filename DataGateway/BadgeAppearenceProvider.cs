@@ -5,16 +5,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataGateway
 {
-    public class ConfigFileBasedDataSource : IBadgeAppearenceDataSource
+    public class BadgeAppearenceProvider : IBadgeAppearenceProvider
     {
         private string templatesFolderPath;
         private List<string> textualAtomNames;
         private Dictionary<string, string> nameAndJson;
 
 
-        public ConfigFileBasedDataSource ( string templatesPath )
+        public BadgeAppearenceProvider ( string templatesPath )
         {
-            textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post","Department"};
+            textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
             this.templatesFolderPath = templatesPath;
             DirectoryInfo containingDirectory = new DirectoryInfo ( templatesFolderPath );
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
@@ -24,9 +24,9 @@ namespace DataGateway
             {
                 string jsonPath = fileInfo.FullName;
                 string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath );
-                bool nameExists = ! string.IsNullOrEmpty ( templateName );
+                bool hasNameExist = ! string.IsNullOrEmpty ( templateName );
 
-                if ( nameExists )
+                if ( hasNameExist )
                 {
                     nameAndJson.Add ( templateName, jsonPath );
                 }
@@ -66,9 +66,8 @@ namespace DataGateway
         }
 
 
-        public BadgeLayout GetBadgeDatas ( string badgeTemplateName )
+        public BadgeLayout GetBadgeLayout ( string badgeTemplateName )
         {
-            List<TextualAtom> textAtoms = new ( );
             string jsonPath = nameAndJson [ badgeTemplateName ];
 
             double badgeWidth = GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateIntoDouble ( );
@@ -76,68 +75,66 @@ namespace DataGateway
             GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateIntoDouble ( );
             Size badgeSize = new Size ( badgeWidth, badgeHeight );
 
-            textAtoms.Add ( BuildTextualAtom ( "FamilyName" , jsonPath ) );
-            textAtoms.Add ( BuildTextualAtom ( "FirstName" , jsonPath ) );
-            textAtoms.Add ( BuildTextualAtom ( "PatronymicName" , jsonPath ) );
-            textAtoms.Add ( BuildTextualAtom ( "Post" , jsonPath ) );
-            textAtoms.Add ( BuildTextualAtom ( "Department" , jsonPath ) );
+            List<TextualAtom> atoms = GetAtoms ( jsonPath );
+            SetUnitingAtoms (atoms, jsonPath);
 
-            IEnumerable<IConfigurationSection> unitings =
-                          GetterFromJson.GetIncludedItemsOfSection ( new List<string> { "UnitedTextBlocks : Items" }, jsonPath );
-            List<List<string>> allUnited = new ( );
+            List<InsideImage> pictures = GetImages ( jsonPath );
+            BadgeLayout result = new BadgeLayout (badgeSize, atoms, pictures);
 
-            foreach ( IConfigurationSection unit in unitings )
-            {
-                IConfigurationSection unitedSection = unit.GetSection ( "United" );
-                IEnumerable<IConfigurationSection> unitedSections = GetterFromJson.GetChildrenOfSection ( unitedSection );
-                List<string> united = new List<string> ( );
-
-                foreach ( IConfigurationSection name   in   unitedSections )
-                {
-                    united.Add ( name.Value );
-                }
-
-                allUnited.Add ( united );
-
-                TextualAtom unitingAtom = BuildTextualAtom ( unit, united );
-            }
-
-
-
-
-            IEnumerable<IConfigurationSection> images =
-                          GetterFromJson.GetIncludedItemsOfSection ( new List<string> { "InsideImages : Items" } , jsonPath );
-
-            List<InsideImage> pictures = new ( );
-
-            foreach ( IConfigurationSection image   in   images )
-            {
-                InsideImage picture = BuildInsideImage ( image );
-                pictures.Add ( picture );
-            }
-
-
-
-
-
-
-
-
-
-            return null;
+            return result;
         }
 
 
-        public List<string> GetBadgeTemplateNames ()
+        private List<TextualAtom> GetAtoms ( string jsonPath ) 
         {
-            List<string> templateNames = new ();
+            List<TextualAtom> atoms = new ();
 
-            foreach ( KeyValuePair <string, string> template   in   nameAndJson )
+            atoms.Add (BuildTextualAtom ("FamilyName", jsonPath));
+            atoms.Add (BuildTextualAtom ("FirstName", jsonPath));
+            atoms.Add (BuildTextualAtom ("PatronymicName", jsonPath));
+            atoms.Add (BuildTextualAtom ("Post", jsonPath));
+            atoms.Add (BuildTextualAtom ("Department", jsonPath));
+
+            return atoms;
+        }
+
+
+        private void SetUnitingAtoms ( List<TextualAtom> atoms, string jsonPath ) 
+        {
+            IEnumerable<IConfigurationSection> unitings =
+                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks : Items" }, jsonPath);
+
+            foreach ( IConfigurationSection unit in unitings )
             {
-                templateNames.Add (template.Key);
+                IConfigurationSection unitedSection = unit.GetSection ("United");
+                IEnumerable<IConfigurationSection> unitedSections = GetterFromJson.GetChildrenOfSection (unitedSection);
+                List<string> unitedAtomsNames = new List<string> ();
+
+                foreach ( IConfigurationSection name in unitedSections )
+                {
+                    unitedAtomsNames.Add (name.Value);
+                }
+
+                TextualAtom unitingAtom = BuildTextualAtom (unit, unitedAtomsNames);
+                atoms.Add (unitingAtom);
+            }
+        }
+
+
+        private List<InsideImage> GetImages ( string jsonPath ) 
+        {
+            List<InsideImage> pictures = new ();
+
+            IEnumerable<IConfigurationSection> images =
+                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "InsideImages : Items" }, jsonPath);
+
+            foreach ( IConfigurationSection image in images )
+            {
+                InsideImage picture = BuildInsideImage (image);
+                pictures.Add (picture);
             }
 
-            return templateNames;
+            return pictures;
         }
 
 
@@ -220,6 +217,19 @@ namespace DataGateway
         }
 
 
+        public List<string> GetBadgeTemplateNames ()
+        {
+            List<string> templateNames = new ();
+
+            foreach ( KeyValuePair<string, string> template in nameAndJson )
+            {
+                templateNames.Add (template.Key);
+            }
+
+            return templateNames;
+        }
+
+
         public List<FileInfo> GetBadgeModelsNames ()
         {
             string badgeModelsFolderPath = @"./";
@@ -236,7 +246,23 @@ namespace DataGateway
         }
 
 
-        
+        public List<FileInfo> GetBadgeModelsNamess ()
+        {
+            string badgeModelsFolderPath = @"./";
+            DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
+            FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
+            List<FileInfo> modelNames = new List<FileInfo> ();
+
+            foreach ( FileInfo file in Files )
+            {
+                modelNames.Add (file);
+            }
+
+            return modelNames;
+        }
+
+
+
 
     }
 }

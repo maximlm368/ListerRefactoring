@@ -139,6 +139,7 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFamily { get; private set; }
+        private string content;
         public string Content
         {
             get
@@ -150,20 +151,20 @@ namespace ContentAssembler
                 if ( ! string.IsNullOrWhiteSpace(value) ) 
                 {
                     content = value;
-                    contentIsSet = true;
+                    ContentIsSet = true;
                 }
             }
         }
         public List<string> IncludedAtoms { get; private set; }
-        public bool contentIsSet { get; private set; }
-        private string content;
+        public bool ContentIsSet { get; private set; }
+        public bool isNeeded;
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset
                            , string alignment, double fontSize, string fontFamily, List<string> ? includedAtoms )
         {
             content = "";
-            contentIsSet = false;
+            ContentIsSet = false;
             Name = name;
             Width = width;
             Height = height;
@@ -173,6 +174,19 @@ namespace ContentAssembler
             FontSize = fontSize;
             FontFamily = fontFamily;
             IncludedAtoms = includedAtoms ?? new List<string> ( );
+            isNeeded = true;
+        }
+
+
+        internal void TrimUnneededEdgeChar ( List<char> unNeeded ) 
+        {
+            bool charsAndContentExist = ( unNeeded != null )   &&   ( unNeeded.Count > 0 )   &&   ( unNeeded.Count > 0 );
+
+            foreach ( char symbol in unNeeded )
+            {
+                content.TrimStart ( symbol );
+                content.TrimEnd ( symbol );
+            }
         }
 
     }

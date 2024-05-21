@@ -31,17 +31,17 @@ namespace ContentAssembler
     public class UniformDocAssembler : IUniformDocumentAssembler
     {
         private IResultOfSessionSaver converter;
-        private IBadgeAppearenceDataSource badgeAppearenceDataSource;
+        private IBadgeAppearenceProvider badgeAppearenceProvider;
         private IPeopleDataSource peopleDataSource;
         private List<Person> people;
 
 
         public UniformDocAssembler(IResultOfSessionSaver converter
-                                      , IBadgeAppearenceDataSource badgeAppearenceDataSource
+                                      , IBadgeAppearenceProvider badgeAppearenceDataSource
                                                           , IPeopleDataSource peopleDataSource)
         {
             this.converter = converter;
-            this.badgeAppearenceDataSource = badgeAppearenceDataSource;
+            this.badgeAppearenceProvider = badgeAppearenceDataSource;
             this.peopleDataSource = peopleDataSource;
             people = new List<Person>();
         }
@@ -55,7 +55,7 @@ namespace ContentAssembler
             }
 
             List<Badge> badges = new List<Badge>();
-            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceDataSource.GetBadgeData(badgeModelName);
+            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceProvider.GetBadgeData(badgeModelName);
 
             foreach ( var person in people ) 
             {    
@@ -79,7 +79,7 @@ namespace ContentAssembler
                 throw new ArgumentNullException("arguments must be not null");
             }
 
-            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceDataSource.GetBadgeData(badgeModelName);
+            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceProvider.GetBadgeData(badgeModelName);
 
             Badge badge = new Badge ( person, badgeModelName, badgeOrganizationalData );
 
@@ -100,7 +100,7 @@ namespace ContentAssembler
 
         public List<FileInfo> GetBadgeModels()
         {
-            return badgeAppearenceDataSource.GetBadgeModelsNames();
+            return badgeAppearenceProvider.GetBadgeModelsNames();
         }
 
 

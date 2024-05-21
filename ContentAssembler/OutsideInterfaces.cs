@@ -1,6 +1,6 @@
 ﻿namespace ContentAssembler 
 {
-    public interface IBadgeAppearenceDataSource
+    public interface IBadgeAppearenceProvider
     {
         //public BadgeDimensions GetMainBadgeDimesions(string BadgeTemplateName);
 

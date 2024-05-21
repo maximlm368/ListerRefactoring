@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             x:Class="Lister.Views.PersonChoosingUserControl"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 x:DataType="vm:PersonChoosingViewModel">
+
+
+	<Grid Name="personChoosingBlock"  ZIndex="2"   Height="35">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition  Width="100" ></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition  Width="30" ></ColumnDefinition>
+			<ColumnDefinition  Width="100" ></ColumnDefinition>
+			<ColumnDefinition  Width="130" ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+
+		<Label
+			Name="fio"
+			Grid.Column="0"
+			Padding="10"
+			Content="По ФИО:"/>
+
+		<Canvas
+			Name="customCombobox"
+			Grid.Column="1" >
+
+			<TextBox Name="comboboxFrame"  Focusable="False"  Margin="0,1"  Grid.Column="1"  Width="871" />
+			<TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  Width="840"
+					  FontSize="14"/>
+
+			<ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="871"  ZIndex="9"
+					 BorderBrush="Gray"  BorderThickness="1"  Canvas.Top="33"
+					 ItemsSource="{Binding   Path = VisiblePeople,   Mode=OneWay }"
+					 SelectedItem="{Binding   Path = ChosenPerson,   Mode=OneWayToSource }" >
+
+				<ListBox.ItemTemplate >
+					<DataTemplate >
+						<TextBlock Text="{Binding  Path = StringPresentation,  Mode=OneWay}"  FontSize="14"
+								   Padding="0,0,0,0"></TextBlock>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Canvas>
+
+		<Button  Name="toDropDownOrPickUpPersonList"  FontSize="14" Grid.Column="2" Background="White" BorderBrush="Gray"
+				 Width="30"  Focusable="False"
+				 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"> v </Button>
+		<Label  Name="or"  Content="ИЛИ"  Grid.Column="3"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
+		<Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="4"
+				 IsEnabled="False" />
+	</Grid>
+	
+	
+</UserControl>

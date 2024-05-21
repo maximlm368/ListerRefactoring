@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.ReactiveUI;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ContentAssembler;
@@ -6,6 +7,7 @@ using DataGateway;
 
 using Lister.ViewModels;
 using Lister.Views;
+using Splat;
 
 namespace Lister;
 
@@ -19,6 +21,9 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         MainWindow mainWindow = new MainWindow ();
+
+        Locator
+
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
