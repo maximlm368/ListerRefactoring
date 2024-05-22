@@ -69,7 +69,7 @@ namespace Lister.Views
                            if ( vm.SourceFilePath != string.Empty )
                            {
                                editSourceFile.IsEnabled = true;
-                               //setEntirePersonList.IsEnabled = true;
+                               //setEntirePersonList.IsEnabled = true;   ///////////////////////////////////////////
                            }
                        }
                    }

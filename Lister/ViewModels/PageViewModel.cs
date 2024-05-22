@@ -14,34 +14,17 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SkiaSharp;
 using QuestPDF.Helpers;
+using DynamicData;
+using System.Collections.Generic;
 
 namespace Lister.ViewModels;
 
 class PageViewModel : ViewModelBase
 {
-    private readonly int badgeLimit;
+    private readonly int lineLimit;
     private int badgeCount;
     internal Size pageSize;
 
-    private ObservableCollection<VMBadge> eB;
-    internal ObservableCollection<VMBadge> EvenBadges
-    {
-        get { return eB; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref eB, value, nameof (EvenBadges));
-        }
-    }
-
-    private ObservableCollection<VMBadge> oB;
-    internal ObservableCollection<VMBadge> OddBadges
-    {
-        get { return oB; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref oB, value, nameof (OddBadges));
-        }
-    }
 
     private double pW;
     internal double PageWidth
@@ -63,8 +46,8 @@ class PageViewModel : ViewModelBase
         }
     }
 
-    private VMBadge bE;
-    internal VMBadge BadgeExample
+    private BadgeViewModel bE;
+    internal BadgeViewModel BadgeExample
     {
         get { return bE; }
         set
@@ -74,74 +57,68 @@ class PageViewModel : ViewModelBase
     }
     private VMBadge badgeForVerifying;
 
-    private double eLS;
-    internal double EvenLeftShift
-    {
-        get { return eLS; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref eLS, value, nameof (EvenLeftShift));
-        }
-    }
 
-    private double oLS;
-    internal double OddLeftShift
-    {
-        get { return oLS; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref oLS, value, nameof (OddLeftShift));
-        }
-    }
-
-    private double bTS;
-    internal double BadgeStackTopShift
-    {
-        get { return bTS; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref bTS, value, nameof (BadgeStackTopShift));
-        }
-    }
 
     internal List<VMBadge> IncludedBadges { get; private set; }
     private double scale;
 
+    /// <summary>
+    /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// </summary>
 
 
-
-
-    private ObservableCollection<BadgeLine> badges;
-    internal ObservableCollection<BadgeLine> Badges
+    private double lCLS;
+    internal double LinesContainerLeftShift
     {
-        get { return badges; }
+        get { return lCLS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref badges, value, nameof (Badges));
+            this.RaiseAndSetIfChanged (ref lCLS, value, nameof (LinesContainerLeftShift));
         }
     }
 
-
-    internal PageViewModel ( Size pageSize, VMBadge badgeExample, double desiredScale )
+    private double lCTS;
+    internal double LinesContainerTopShift
     {
-        this.BadgeExample = badgeExample;
-        this.pageSize = pageSize;
+        get { return lCTS; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref lCTS, value, nameof (LinesContainerTopShift));
+        }
+    }
+
+    private ObservableCollection<BadgeLine> llines;
+    internal ObservableCollection<BadgeLine> Lines
+    {
+        get { return llines; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref llines, value, nameof (Lines));
+        }
+    }
+
+    private BadgeLine currentLine;
+
+
+    internal PageViewModel ( Size pageSize, BadgeViewModel badgeExample, double desiredScale )
+    {
+        Lines = new ObservableCollection<BadgeLine> ();
+        currentLine = new BadgeLine ();
+        Lines.Add (currentLine);
+        BadgeExample = badgeExample;
         scale = desiredScale;
         badgeCount = 0;
-        EvenBadges = new ObservableCollection<VMBadge> ();
-        OddBadges = new ObservableCollection<VMBadge> ();
         IncludedBadges = new List<VMBadge> ();
         PageWidth = pageSize.width;
         PageHeight = pageSize.height;
-        EvenLeftShift = 46;
-        OddLeftShift = 397;
-        BadgeStackTopShift = 20;
-        badgeLimit = GetAmountOfBadgesOnPage ();
+        LinesContainerLeftShift = CalculateLeftShift ();
+        LinesContainerTopShift = CalculateTopShift ();
+        lineLimit = GetMaxLineAmount ();
         Zoom ();
     }
 
 
-    internal static List<PageViewModel> PlaceIntoPages ( List<BadgeLine> placebleBadges, Size pageSize, double desiredScale
+    internal static List<PageViewModel> PlaceIntoPagesss ( List<BadgeLine> placebleBadges, Size pageSize, double desiredScale
                                                                                             , PageViewModel ? scratchPage )
     {
         List<PageViewModel> result = new ();
@@ -177,7 +154,27 @@ class PageViewModel : ViewModelBase
     }
 
 
-    internal PageViewModel AddBadge ( VMBadge badge, bool mustBeZoomed )
+    internal static List<PageViewModel> ? PlaceIntoPages ( List<BadgeViewModel> placebleBadges,
+                                                         Size pageSize, double desiredScale, PageViewModel ? scratchPage )
+    {
+        bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, pageSize, desiredScale);
+
+        if ( areArgumentsInvalid )
+        {
+            return null;
+        }
+
+        BadgeViewModel badgeExample = placebleBadges [0].Clone ();
+        
+        //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
+
+        PageViewModel fillablePage = DefineFillablePage(scratchPage, pageSize, desiredScale, badgeExample);
+
+        return Place (placebleBadges, desiredScale, fillablePage);
+    }
+
+
+    internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
     {
         VerifyBadgeSizeAccordence (badge);
 
@@ -187,22 +184,27 @@ class PageViewModel : ViewModelBase
         }
 
         PageViewModel beingProcessedPage = this;
-        bool timeToStartNewPage = ( beingProcessedPage.badgeCount == badgeLimit );
 
-        if ( timeToStartNewPage )
-        {
-            beingProcessedPage = new PageViewModel (pageSize, BadgeExample, scale);
-        }
+        ActionSuccess additionSuccess = currentLine.AddBadge (badge);
 
-        bool shouldPutInOddBadges = ( EvenBadges.Count ) > ( OddBadges.Count );
+        if ( additionSuccess == ActionSuccess.Failure ) 
+        {
+            currentLine = new BadgeLine ();
+            additionSuccess = currentLine.AddBadge (badge);
 
-        if ( shouldPutInOddBadges )
-        {
-            beingProcessedPage.OddBadges.Add (badge);
-        }
-        else
-        {
-            beingProcessedPage.EvenBadges.Add (badge);
+            if ( additionSuccess == ActionSuccess.Failure )
+            {
+                throw new PageException ( "Badge has width succeeds pages width" );
+            }
+
+            bool timeToStartNewPage = ( Lines. Count == lineLimit );
+
+            if ( timeToStartNewPage )
+            {
+                beingProcessedPage = new PageViewModel (pageSize, BadgeExample, scale);
+            }
+
+            beingProcessedPage.Lines.Add (currentLine);
         }
 
         beingProcessedPage.badgeCount++;
@@ -212,8 +214,6 @@ class PageViewModel : ViewModelBase
 
     internal void Clear ()
     {
-        EvenBadges.Clear ();
-        OddBadges.Clear ();
         badgeCount = 0;
     }
 
@@ -228,8 +228,6 @@ class PageViewModel : ViewModelBase
                               ||
                               ( verifiebleHeight != ( int ) this.BadgeExample.BadgeHeight );
 
-        int dffd = 0;
-
         if ( isNotAccordent )
         {
             throw new Exception ("Size of passed on badge is not according set for this page");
@@ -237,12 +235,9 @@ class PageViewModel : ViewModelBase
     }
 
 
-    private int GetAmountOfBadgesOnPage ()
+    private int GetMaxLineAmount ()
     {
-        int amountInRow = ( int ) ( scale * pageSize.width / BadgeExample.BadgeWidth );
-        int amountOfRows = ( int ) ( scale * pageSize.height / BadgeExample.BadgeHeight );
-        int resultAmount = amountInRow * amountOfRows;
-        return resultAmount;
+        return ( int ) ( PageHeight / BadgeExample.BadgeHeight );
     }
 
 
@@ -251,24 +246,12 @@ class PageViewModel : ViewModelBase
         this.scale *= scaleCoefficient;
         PageHeight *= scaleCoefficient;
         PageWidth *= scaleCoefficient;
-        EvenLeftShift *= scaleCoefficient;
-        OddLeftShift *= scaleCoefficient;
-        BadgeStackTopShift *= scaleCoefficient;
+        LinesContainerLeftShift *= scaleCoefficient;
+        LinesContainerTopShift *= scaleCoefficient;
 
-        if ( EvenBadges.Count > 0 )
+        for ( int index = 0;   index < Lines. Count;   index++ )
         {
-            for ( int badgeCounter = 0; badgeCounter < EvenBadges.Count; badgeCounter++ )
-            {
-                EvenBadges [badgeCounter].ZoomOn (scaleCoefficient);
-            }
-        }
-
-        if ( OddBadges.Count > 0 )
-        {
-            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
-            {
-                OddBadges [badgeCounter].ZoomOn (scaleCoefficient);
-            }
+            Lines [index].ZoomOn (scaleCoefficient);
         }
     }
 
@@ -278,24 +261,12 @@ class PageViewModel : ViewModelBase
         scale /= scaleCoefficient;
         PageHeight /= scaleCoefficient;
         PageWidth /= scaleCoefficient;
-        EvenLeftShift /= scaleCoefficient;
-        OddLeftShift /= scaleCoefficient;
-        BadgeStackTopShift /= scaleCoefficient;
+        LinesContainerLeftShift /= scaleCoefficient;
+        LinesContainerTopShift /= scaleCoefficient;
 
-        if ( EvenBadges.Count > 0 )
+        for ( int index = 0;   index < Lines. Count;   index++ )
         {
-            for ( int badgeCounter = 0; badgeCounter < EvenBadges.Count; badgeCounter++ )
-            {
-                EvenBadges [badgeCounter].ZoomOut (scaleCoefficient);
-            }
-        }
-
-        if ( OddBadges.Count > 0 )
-        {
-            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
-            {
-                OddBadges [badgeCounter].ZoomOut (scaleCoefficient);
-            }
+            Lines [index].ZoomOut (scaleCoefficient);
         }
     }
 
@@ -318,9 +289,8 @@ class PageViewModel : ViewModelBase
         {
             PageHeight *= scale;
             PageWidth *= scale;
-            EvenLeftShift *= scale;
-            OddLeftShift *= scale;
-            BadgeStackTopShift *= scale;
+            LinesContainerLeftShift *= scale;
+            LinesContainerTopShift *= scale;
         }
     }
 
@@ -368,5 +338,88 @@ class PageViewModel : ViewModelBase
                 OddBadges [badgeCounter].HideBackgroundImage ();
             }
         }
+    }
+
+
+    private double CalculateLeftShift () 
+    {
+        double shift = 0;
+
+        return shift;
+    }
+
+
+    private double CalculateTopShift ()
+    {
+        double shift = 0;
+
+        return shift;
+    }
+
+
+    private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, Size pageSize, double desiredScale )
+    {
+        bool areArgumentsInvalid = ( placebleBadges == null );
+        areArgumentsInvalid = areArgumentsInvalid || ( placebleBadges.Count < 1 );
+        areArgumentsInvalid = areArgumentsInvalid || ( pageSize == null );
+        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.width == 0 );
+        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.height == 0 );
+        areArgumentsInvalid = areArgumentsInvalid || ( desiredScale == 0 );
+
+        return areArgumentsInvalid;
+    }
+
+
+    private static PageViewModel DefineFillablePage ( PageViewModel? scratchPage, Size pageSize, double desiredScale,
+                                                      BadgeViewModel badgeExample ) 
+    {
+        bool isBadgeInsertionFirstTime = (scratchPage == null);
+
+        if ( isBadgeInsertionFirstTime ) 
+        {
+            return new PageViewModel (pageSize, badgeExample, desiredScale);
+        }
+        else 
+        {
+            return scratchPage;
+        }
+    }
+
+
+    private static List<PageViewModel> Place ( List<BadgeViewModel> placebleBadges, double desiredScale
+                                             , PageViewModel fillablePage ) 
+    {
+        List<PageViewModel> result = new ();
+
+        for ( int index = 0;   index < placebleBadges.Count;   index++ )
+        {
+            BadgeViewModel beingProcessedBadge = placebleBadges [index];
+            beingProcessedBadge.Zoom (desiredScale);
+            PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
+            bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
+
+            if ( timeToAddNewPage )
+            {
+                result.Add (fillablePage);
+                fillablePage = posibleNewPadge;
+            }
+
+            if ( index == placebleBadges.Count - 1 )
+            {
+                result.Add (fillablePage);
+            }
+        }
+
+        return result;
+    }
+}
+
+
+
+public class PageException : Exception 
+{
+    public PageException ( string message ) 
+    {
+        base.Message = message ?? string.Empty;
     }
 }

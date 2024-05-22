@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Media;
 
 namespace Lister.Views
 {
@@ -7,6 +8,8 @@ namespace Lister.Views
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
+
+            //listFrame.Clip = new RectangleGeometry (new Avalonia.Rect());
         }
     }
 }

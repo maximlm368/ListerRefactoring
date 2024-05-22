@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="330"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 x:DataType="vm:SceneViewModel"
+             x:Class="Lister.Views.SceneUserControl">
+
+	<Border
+		Name="workArea"
+		HorizontalAlignment="Left"
+		Margin="18,0"
+		Width="1330"
+		Height="310"
+		BorderBrush="Brown"
+		BorderThickness="1">
+		
+		<ScrollViewer
+			Name="scroller"
+			
+			AllowAutoHide="True"
+			Background="AliceBlue">
+
+			<Border
+				Name="pageBorder"
+				Margin="0,20"
+				BorderBrush="LightBlue"
+				BorderThickness="1"  
+				Width="794"
+				Height="1123"
+				ScrollViewer.VerticalScrollBarVisibility="Auto"
+				ScrollViewer.HorizontalScrollBarVisibility="Auto"
+				DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
+
+				<Canvas
+					Name="A4"
+					VerticalAlignment="Top"
+					Width="792"
+					Height="1121"
+					Background="White">
+
+					<ItemsControl
+						Name="lines"
+						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }"
+						Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.LinesContainerLeftShift, Mode=OneWay }"
+						Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.LinesContainerTopShift, Mode=OneWay }">
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+
+
+
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+				</Canvas>
+			</Border>
+
+		</ScrollViewer>
+	</Border>
+	
+    
+</UserControl>
+
+
+
+<!--
+			Width= "{Binding   Path = PageWidth,   Mode=OneWay }"
+			    Height="{Binding   Path = PageHeight,   Mode=OneWay }"
+			-->

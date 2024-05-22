@@ -22,7 +22,7 @@ public partial class App : Application
     {
         MainWindow mainWindow = new MainWindow ();
 
-        Locator
+        //Locator
 
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

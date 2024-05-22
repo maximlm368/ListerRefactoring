@@ -2,13 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="340"
              x:Class="Lister.Views.PersonChoosingUserControl"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:PersonChoosingViewModel">
 
 
-	<Grid Name="personChoosingBlock"  ZIndex="2"   Height="35">
+	<Grid Name="personChoosingBlock"
+		  Height="35">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="100" ></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
@@ -18,22 +19,158 @@
 		</Grid.ColumnDefinitions>
 
 		<Label
-			Name="fio"
 			Grid.Column="0"
 			Padding="10"
 			Content="По ФИО:"/>
 
 		<Canvas
 			Name="customCombobox"
-			Grid.Column="1" >
+			Grid.Column="1">
 
-			<TextBox Name="comboboxFrame"  Focusable="False"  Margin="0,1"  Grid.Column="1"  Width="871" />
-			<TextBox  Name="personTyping"  Margin="0,1"  Grid.Column="1"  Width="840"
-					  FontSize="14"/>
+			<TextBox
+				Name="comboboxFrame"
+				Focusable="False"
+				Width="471"
+				/>
 
-			<ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
-					 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="0"  Width="871"  ZIndex="9"
-					 BorderBrush="Gray"  BorderThickness="1"  Canvas.Top="33"
+			<TextBox
+				Name="personTyping"
+				Width="440"
+				FontSize="14"
+				Background="White"/>
+			
+			<Border
+				Canvas.Top="34"
+				Margin="0,-2"
+				BorderThickness="1"
+				Background="Gray">
+				
+				<Viewbox
+					Width="469"
+					Height="89"
+					IsVisible="False">
+
+					<Canvas
+						Name="listFrame"
+						Width="469"
+						Height="89"
+						Background="AliceBlue">
+
+						<Label
+							Margin="0,-10"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Content="Content 1"/>
+
+						<Label
+							Margin="0,12"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Content="Content 2"/>
+
+						<Label
+							Margin="0,34"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Content="Content 3"/>
+
+						<Label
+							Margin="0,56"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Content="Content 4"/>
+
+						<Label
+							Margin="0,78"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Content="Content 5"/>
+
+						<Canvas
+							Canvas.Left="454"
+							Width="15"
+							Height="89"
+							Background="White">
+
+							<Canvas
+								Canvas.Left="0"
+								Canvas.Top="0"
+								Width="15"
+								Height="15"
+								Background="Gray"/>
+
+							<Canvas
+								Name="runner"
+								Canvas.Left="0"
+								Canvas.Top="42"
+								Width="15"
+								Height="20"
+								Background="Gray"/>
+
+							<Canvas
+								Canvas.Left="0"
+								Canvas.Top="74"
+								Width="15"
+								Height="15"
+								Background="Gray"/>
+
+						</Canvas>
+
+					</Canvas>
+				</Viewbox>
+			</Border>
+
+			
+
+		</Canvas>	
+
+		<Button
+			Name="toDropDownOrPickUpPersonList"
+			Grid.Column="2"
+			VerticalAlignment="Top"
+			Margin="0,1"
+			Width="30"
+			Height="30"
+			FontSize="14"
+			VerticalContentAlignment="Center"
+			HorizontalContentAlignment="Center"
+			Focusable="False"
+			Content="v"/>
+		
+		<Label
+			Name="or"
+			Grid.Column="3"
+			HorizontalAlignment="Center"
+			Padding="0,10"
+			Content="ИЛИ" />
+		
+		<Button
+			Name="setEntirePersonList"
+			Grid.Column="4"
+			Height="32"
+		    IsEnabled="False"
+			Content="Весь список" />
+	</Grid>
+	
+	
+</UserControl>
+
+
+<!--    
+
+           <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
+					 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="120"  Width="471" 
+					 BorderBrush="Gray"  BorderThickness="1"  Canvas.Top="33"  ZIndex="2"
 					 ItemsSource="{Binding   Path = VisiblePeople,   Mode=OneWay }"
 					 SelectedItem="{Binding   Path = ChosenPerson,   Mode=OneWayToSource }" >
 
@@ -44,15 +181,5 @@
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
-		</Canvas>
 
-		<Button  Name="toDropDownOrPickUpPersonList"  FontSize="14" Grid.Column="2" Background="White" BorderBrush="Gray"
-				 Width="30"  Focusable="False"
-				 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"> v </Button>
-		<Label  Name="or"  Content="ИЛИ"  Grid.Column="3"  HorizontalAlignment="Center"  Padding="0,10" ></Label>
-		<Button  Name="setEntirePersonList"   Content="Весь список" Grid.Column="4"
-				 IsEnabled="False" />
-	</Grid>
-	
-	
-</UserControl>
+-->

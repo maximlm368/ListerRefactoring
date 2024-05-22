@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             x:Class="Lister.Views.ZoomNavigationUserControl"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 x:DataType="vm:ZoomNavigationViewModel">
+
+
+	<Grid Name="zoomAndNavigation" Margin="0,-1">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition  Width="100"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="64"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="64"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="130"></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition ></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Button
+			Name="firstPage"
+			Grid.Column="1"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="z" />
+		
+		<Button
+			Name="previousPage"
+			Grid.Column="2"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="b" />
+
+		<TextBox
+			Name="visiblePageNumber"
+			Grid.Column="3"
+			Margin="0,3"
+			Width="60"
+			MaxHeight="30"
+			FontSize="14"  
+			Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"/>
+
+		<Button
+			Name="nextPage"
+			Grid.Column="4"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="f" />
+		
+		<Button
+			Name="lastPage"
+			Grid.Column="5"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="l" />
+		
+		<Button
+			Name="zoomOn"
+			Grid.Column="7"
+			Margin="0,3"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="+" />
+		
+		<TextBox
+			Name="scalabilityGrade"
+			Grid.Column="8"
+			Width="60"
+			MaxHeight="30"
+			FontSize="14"
+			IsReadOnly="True"
+			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
+		
+		<Button
+			Name="zoomOut" 
+			Grid.Column="9"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="False"
+			Content="-" />
+		
+		<Button
+			Name="edit"
+			Grid.Column="11"
+			HorizontalAlignment="Center"
+			Width="126"
+			Content="Редактировать"/>
+		
+	</Grid>
+	
+</UserControl>

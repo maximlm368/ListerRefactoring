@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             x:Class="Lister.Views.TemplateChoosingUserControl"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 x:DataType="vm:TemplateChoosingViewModel">
+
+	
+	<Grid Name="badgeTemplateChoice" Margin="0,1">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition  Width="100"></ColumnDefinition>
+			<ColumnDefinition  Width="233"></ColumnDefinition>
+			<ColumnDefinition  Width="100"></ColumnDefinition>
+			<ColumnDefinition Width="90"></ColumnDefinition>
+			<ColumnDefinition Width="95"></ColumnDefinition>
+			<ColumnDefinition Width="75"></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition ></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Label
+			Grid.Column="0"
+			Content="Шаблон:"
+			Padding="10"/>
+
+		<ComboBox
+			Name="templateChoosing"
+			Grid.Column="1"
+			VerticalAlignment="Center"
+			Width="230"
+			MaxDropDownHeight="100"
+			SelectedIndex="1"
+		    ItemsSource="{ Binding   Path = Templates,   Mode = OneWay }">
+			
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock
+						Padding="0,0,0,0"
+						FontSize="14"
+						Text="{Binding  Path = Name, Mode=OneWay}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+		<Button
+			Name="buildBadges"
+			Grid.Column="2"
+			HorizontalAlignment="Center"
+			Width="96"
+			IsEnabled="False"
+			Content="Построить"/>
+		
+		<Button
+			Name="clearBadges"
+			Grid.Column="3"
+			HorizontalAlignment="Center"
+			Width="86"
+			IsEnabled="False"
+			Content="Очистить" />
+
+		<Button
+			Name="save"
+			Grid.Column="4"
+			HorizontalAlignment="Center"
+			Width="91"
+			IsEnabled="False"
+			Content="Сохранить" />
+		
+		<Button
+			Name="print"
+			Grid.Column="5"
+			HorizontalAlignment="Center"
+			Width="71"
+			IsEnabled="False"
+			Content="Печать"/>
+	</Grid>
+  
+</UserControl>

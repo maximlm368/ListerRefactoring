@@ -4,13 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
              x:Class="Lister.Views.ModernMainView"
-			 x:DataType="vm:MainViewModel" >
+			 x:DataType="vm:MainViewModel">
 
-    <StackPanel>
+    <StackPanel ZIndex="1" >
 		<uc:PersonSourceUserControl/>
-		<uc:PersonChoosingUserControl/>
+		
+		<uc:PersonChoosingUserControl
+			ZIndex="3"
+			Margin="0,-132"
+			Height="300"/>
+		
+		<uc:TemplateChoosingUserControl
+			Margin="0,-3"/>
+		
+		<uc:ZoomNavigationUserControl
+			Margin="0,1"/>
+		
+		<uc:SceneUserControl Margin="0,0"/>
 		
 	</StackPanel>
 	
