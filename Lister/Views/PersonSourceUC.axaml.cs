@@ -9,6 +9,12 @@ namespace Lister.Views
 {
     public partial class PersonSourceUserControl : UserControl
     {
+        private TemplateChoosingUserControl _templateChoosingUserControl;
+        private ZoomNavigationUserControl _zoomNavigationUserControl;
+        private SceneUserControl _sceneUserControl;
+        private PersonChoosingUserControl _personChoosingUserControl;
+
+
         public PersonSourceUserControl ()
         {
             InitializeComponent ();

@@ -117,18 +117,18 @@ class ConverterToPdf
 
         try 
         {
-            badgeWidth = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. width;
+            badgeWidth = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. Width;
         }
         catch ( Exception ex ) 
         {
             int stp = step;
         }
 
-        float badgeHeight = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. height;
+        float badgeHeight = ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. outlineSize. Height;
         float personDataBlockInBadgeWidth = 
-                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. width;
+                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. Width;
         float personDataBlockInBadgeHeight = 
-                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. height;
+                                  ( float ) pair [0].BadgeModel. badgeDescription. badgeDimensions. personTextAreaSize. Height;
         float personDataBlockLeftPadding = badgeWidth - personDataBlockInBadgeWidth;
         float personDataBlockTopPadding = badgeHeight - personDataBlockInBadgeHeight;
 

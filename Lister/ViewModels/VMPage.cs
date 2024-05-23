@@ -117,8 +117,8 @@ class VMPage : ViewModelBase
         EvenBadges = new ObservableCollection<VMBadge> ();
         OddBadges = new ObservableCollection<VMBadge> ();
         IncludedBadges = new List<VMBadge> ();
-        PageWidth = pageSize.width;
-        PageHeight = pageSize.height;
+        PageWidth = pageSize.Width;
+        PageHeight = pageSize.Height;
         EvenLeftShift = 46;
         OddLeftShift = 397;
         BadgeStackTopShift = 20;
@@ -215,8 +215,8 @@ class VMPage : ViewModelBase
     private void VerifyBadgeSizeAccordence ( VMBadge badge ) 
     {
         Size verifiebleSize = badge.BadgeModel. badgeDescription. badgeDimensions. outlineSize;
-        int verifiebleWidth = (int) (scale * verifiebleSize.width);
-        int verifiebleHeight = (int) (scale * verifiebleSize.height);
+        int verifiebleWidth = (int) (scale * verifiebleSize.Width);
+        int verifiebleHeight = (int) (scale * verifiebleSize.Height);
 
         bool isNotAccordent = ( verifiebleWidth != (int) this.BadgeExample.BadgeWidth ) 
                               ||
@@ -233,8 +233,8 @@ class VMPage : ViewModelBase
 
     private int GetAmountOfBadgesOnPage ( )
     {
-        int amountInRow = ( int ) ( scale * pageSize.width / BadgeExample. BadgeWidth );
-        int amountOfRows = ( int ) ( scale * pageSize.height / BadgeExample. BadgeHeight );
+        int amountInRow = ( int ) ( scale * pageSize.Width / BadgeExample. BadgeWidth );
+        int amountOfRows = ( int ) ( scale * pageSize.Height / BadgeExample. BadgeHeight );
         int resultAmount = amountInRow * amountOfRows;
         return resultAmount;
     }

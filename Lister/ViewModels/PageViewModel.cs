@@ -109,8 +109,8 @@ class PageViewModel : ViewModelBase
         scale = desiredScale;
         badgeCount = 0;
         IncludedBadges = new List<VMBadge> ();
-        PageWidth = pageSize.width;
-        PageHeight = pageSize.height;
+        PageWidth = pageSize.Width;
+        PageHeight = pageSize.Height;
         LinesContainerLeftShift = CalculateLeftShift ();
         LinesContainerTopShift = CalculateTopShift ();
         lineLimit = GetMaxLineAmount ();
@@ -221,8 +221,8 @@ class PageViewModel : ViewModelBase
     private void VerifyBadgeSizeAccordence ( VMBadge badge )
     {
         Size verifiebleSize = badge.BadgeModel.badgeDescription.badgeDimensions.outlineSize;
-        int verifiebleWidth = ( int ) ( scale * verifiebleSize.width );
-        int verifiebleHeight = ( int ) ( scale * verifiebleSize.height );
+        int verifiebleWidth = ( int ) ( scale * verifiebleSize.Width );
+        int verifiebleHeight = ( int ) ( scale * verifiebleSize.Height );
 
         bool isNotAccordent = ( verifiebleWidth != ( int ) this.BadgeExample.BadgeWidth )
                               ||
@@ -362,8 +362,8 @@ class PageViewModel : ViewModelBase
         bool areArgumentsInvalid = ( placebleBadges == null );
         areArgumentsInvalid = areArgumentsInvalid || ( placebleBadges.Count < 1 );
         areArgumentsInvalid = areArgumentsInvalid || ( pageSize == null );
-        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.width == 0 );
-        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.height == 0 );
+        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.Width == 0 );
+        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.Height == 0 );
         areArgumentsInvalid = areArgumentsInvalid || ( desiredScale == 0 );
 
         return areArgumentsInvalid;

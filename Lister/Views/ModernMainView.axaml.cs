@@ -15,6 +15,7 @@ namespace Lister.Views
         public ModernMainView ()
         {
             InitializeComponent ();
+            
         }
 
 

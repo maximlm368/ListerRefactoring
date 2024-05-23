@@ -11,7 +11,8 @@
     "LeftOffset" : "130",
     "Alignment" : "Center",
     "FontSize" : "30",
-    "FontFamily" : "Arial"
+    "FontFamily": "Arial",
+    "IsShiftableBelow": "0"
   },
 
   "FirstName": {
@@ -21,7 +22,8 @@
     "LeftOffset": "130",
     "Alignment": "Center",
     "FontSize": "16",
-    "FontFamily": "Arial"
+    "FontFamily": "Arial",
+    "IsShiftableBelow": "0"
   },
 
   "PatronymicName": {
@@ -31,7 +33,8 @@
     "LeftOffset": "130",
     "Alignment": "Center",
     "FontSize": "16",
-    "FontFamily": "Arial"
+    "FontFamily": "Arial",
+    "IsShiftableBelow": "0"
   },
 
   "Post": {
@@ -41,7 +44,8 @@
     "LeftOffset": "130",
     "Alignment": "Center",
     "FontSize": "11",
-    "FontFamily": "Arial"
+    "FontFamily": "Arial",
+    "IsShiftableBelow": "1"
   },
 
   "Department": {
@@ -51,7 +55,8 @@
     "LeftOffset": "130",
     "Alignment": "Center",
     "FontSize": "11",
-    "FontFamily": "Arial"
+    "FontFamily": "Arial",
+    "IsShiftableBelow": "1"
   },
 
   "UnitedTextBlocks" : {
@@ -61,14 +66,15 @@
           "Block_0": "FirstName",
           "Block_1": "PatronymicName"
         },
-        "Name" : "FirstAndPatronymic",
+        "Name": "FirstAndPatronymic",
         "Width": "220",
         "Height": "20",
         "TopOffset": "102",
         "LeftOffset": "130",
         "Alignment": "Center",
         "FontSize": "16",
-        "FontFamily": "Arial"
+        "FontFamily": "Arial",
+        "IsShiftableBelow": "0"
       }
     ]
   },

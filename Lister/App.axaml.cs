@@ -25,33 +25,34 @@ public partial class App : Application
         //Locator
 
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        //if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        //{
+        //    desktop.MainWindow = mainWindow;
+        //    mainWindow.DataContext = new MainWindowViewModel ();
+        //    PixelSize screenSize = desktop.MainWindow.Screens.Primary.Bounds.Size;
+        //    int screenWidth = screenSize.Width;
+        //    mainWindow.SetWidth (screenWidth);
+        //}
+        //else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
+        //{
+        //    singleViewPlatform.MainView = mainWindow;
+        //}
+
+
+        if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
-            desktop.MainWindow = mainWindow;
-            PixelSize screenSize = desktop.MainWindow.Screens.Primary.Bounds.Size;
-            int screenWidth = screenSize.Width;
-            mainWindow.SetWidth (screenWidth);
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = new MainWindowViewModel ()
+            };
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {
-            //singleViewPlatform.MainView = new MainView (mainWindow);
+            singleViewPlatform.MainView = new MainView
+            {
+                DataContext = new MainViewModel (docAssembler)
+            };
         }
-
-
-        //if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
-        //{
-        //    desktop.MainWindow = new MainWindow
-        //    {
-        //        DataContext = new MainWindowViewModel ()
-        //    };
-        //}
-        //else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        //{
-        //    singleViewPlatform.MainView = new MainView
-        //    {
-        //        DataContext = new MainViewModel(docAssembler)
-        //    };
-        //}
 
         base.OnFrameworkInitializationCompleted();
     }

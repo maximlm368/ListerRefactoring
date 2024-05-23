@@ -152,9 +152,18 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
             .TranslateIntoDouble ();
             string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
+            string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsShiftableBelow" }, jsonPath);
+            bool isShiftable = false;
 
-            TextualAtom atom = 
-            new TextualAtom (atomName, width, height, topOffset, leftOffset, alignment, fontSize, fontFamily, null);
+            try 
+            {
+                int shiftableInt = Int32.Parse (shiftableString);
+                isShiftable = Convert.ToBoolean (shiftableInt);
+            }
+            catch (Exception ex) {}
+
+            TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
+                           , alignment, fontSize, fontFamily, null, isShiftable);
 
             return atom;
         }
@@ -162,25 +171,36 @@ namespace DataGateway
 
         private TextualAtom BuildTextualAtom ( IConfigurationSection section, List<string> united )
         {
-            IConfigurationSection childSection = section.GetSection ( "Name" );
-            string atomName = GetterFromJson.GetSectionValue ( childSection );
-            childSection = section.GetSection ( "Width" );
-            double width = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
-            childSection = section.GetSection ( "Height" );
-            double height = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
-            childSection = section.GetSection ( "TopOffset" );
-            double topOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
-            childSection = section.GetSection ( "LeftOffset" );
-            double leftOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
-            childSection = section.GetSection ( "Alignment" );
-            string alignment = GetterFromJson.GetSectionValue ( childSection );
-            childSection = section.GetSection ( "FontSize" );
-            double fontSize = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
-            childSection = section.GetSection ( "FontFamily" );
-            string fontFamily = GetterFromJson.GetSectionValue ( childSection );
+            IConfigurationSection childSection = section.GetSection ("Name");
+            string atomName = GetterFromJson.GetSectionValue (childSection);
+            childSection = section.GetSection ("Width");
+            double width = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            childSection = section.GetSection ("Height");
+            double height = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            childSection = section.GetSection ("TopOffset");
+            double topOffset = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            childSection = section.GetSection ("LeftOffset");
+            double leftOffset = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            childSection = section.GetSection ("Alignment");
+            string alignment = GetterFromJson.GetSectionValue (childSection);
+            childSection = section.GetSection ("FontSize");
+            double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            childSection = section.GetSection ("FontFamily");
+            string fontFamily = GetterFromJson.GetSectionValue (childSection);
+            childSection = section.GetSection ("IsShiftableBelow");
+            string shiftableString = GetterFromJson.GetSectionValue (childSection);
+            bool isShiftable = false;
+
+            try
+            {
+                int shiftableInt = Int32.Parse (shiftableString);
+                isShiftable = Convert.ToBoolean (shiftableInt);
+            }
+            catch ( Exception ex ) { }
+
 
             TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset 
-                                               , alignment, fontSize, fontFamily, united );
+                                               , alignment, fontSize, fontFamily, united, isShiftable );
             return atom;
         }
 

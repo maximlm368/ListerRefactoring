@@ -5,11 +5,15 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
+        private PersonSourceUserControl _personSourceUserControl;
+        private TemplateChoosingUserControl _templateChoosingUserControl;
+        private ZoomNavigationUserControl _zoomNavigationUserControl;
+        private SceneUserControl _sceneUserControl;
+
+
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
-
-            //listFrame.Clip = new RectangleGeometry (new Avalonia.Rect());
         }
     }
 }

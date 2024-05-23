@@ -269,12 +269,12 @@ class VMBadge : ViewModelBase
     internal VMBadge ( Badge badgeModel )
     {
         this.BadgeModel = badgeModel;
-        BadgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. width;
-        BadgeHeight = badgeModel.badgeDescription. badgeDimensions. outlineSize. height;
+        BadgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. Width;
+        BadgeHeight = badgeModel.badgeDescription. badgeDimensions. outlineSize. Height;
         TextAreaTopShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaTopShiftOnBackground;
         TextAreaLeftShift = badgeModel.badgeDescription. badgeDimensions. personTextAreaLeftShiftOnBackground;
-        TextAreaWidth = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. width;
-        TextAreaHeight = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. height;
+        TextAreaWidth = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. Width;
+        TextAreaHeight = badgeModel.badgeDescription. badgeDimensions. personTextAreaSize. Height;
         FirstLevelFontSize = badgeModel.badgeDescription. badgeDimensions. firstLevelFontSize;
         SecondLevelFontSize = badgeModel.badgeDescription. badgeDimensions. secondLevelFontSize;
         ThirdLevelFontSize = badgeModel.badgeDescription. badgeDimensions. thirdLevelFontSize;
@@ -540,7 +540,7 @@ class VMBadge : ViewModelBase
 
         while ( lineIsOverflow )
         {
-            List<string> splited = beingProcessedLine.SeparateIntoMainAndTailViaLastSeparator (new List<char> {'/', '\\'});
+            List<string> splited = beingProcessedLine.SeparateIntoMainAndTail ();
 
             if ( splited.Count > 0 )
             {

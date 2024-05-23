@@ -51,6 +51,76 @@
 
 
 
+
+								<ItemsControl
+									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+
+											<Border
+												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }"
+												BorderBrush="Gray">
+
+												<Canvas
+													Width="{Binding  Path = BadgeWidth,  Mode=OneWay }"
+													Height="{Binding   Path = BadgeHeight,   Mode=OneWay }" >
+
+													<Image
+														Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+														Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
+
+													<ItemsControl
+														ItemsSource="{Binding  Path = textLines,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<TextBlock
+																	Classes ="FirstLevel"
+													                Text="{Binding   Path = Content,  Mode=OneWay }" />
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													<ItemsControl
+														ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Image
+																	Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+																	Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													<ItemsControl
+														ItemsSource="{Binding  Path = Rectangles,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Rectangle Canvas.Top="565" />
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+												</Canvas>
+											</Border>
+
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+								
+								
+								
+								
+
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>

@@ -42,11 +42,11 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SeparateIntoMainAndTailViaLastSeparator ( this string str, List<char> separators )
+        public static List<string> SeparateIntoMainAndTail ( this string str )
         {
             List<string> result = new List<string> ();
 
-            if ( (str == null)   ||   (separators == null) ) 
+            if ( str == null ) 
             {
                 return result;
             }

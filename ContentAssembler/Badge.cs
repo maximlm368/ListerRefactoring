@@ -135,4 +135,130 @@ namespace ContentAssembler
         }
 
     }
+
+
+
+    public class InsideImage
+    {
+        private readonly List<string> _geometryNames;
+        public string Path { get; private set; }
+        public Size Size { get; private set; }
+        public string Color { get; private set; }
+        public string GeometryElementName { get; private set; }
+        public double TopShiftOnBackground { get; private set; }
+        public double LeftShiftOnBackground { get; private set; }
+        public ImageType ImageKind { get; private set; }
+
+        public InsideImage ( string path, Size size, string color,
+                           string geometryElementName, double topShiftOnBackground, double leftShiftOnBackground )
+        {
+            _geometryNames = SetGeometryNames ();
+            Path = path;
+            Size = size;
+            Color = color;
+            GeometryElementName = geometryElementName;
+            TopShiftOnBackground = topShiftOnBackground;
+            LeftShiftOnBackground = leftShiftOnBackground;
+
+            bool isImageAbsent = string.IsNullOrWhiteSpace (Path);
+
+            if ( isImageAbsent )
+            {
+                ImageKind = ImageType.geometricElement;
+                bool areColorOrGeometryNameAbsent = string.IsNullOrWhiteSpace (Color)
+                                                 || string.IsNullOrWhiteSpace (GeometryElementName);
+
+                if ( areColorOrGeometryNameAbsent )
+                {
+                    ImageKind = ImageType.nothing;
+                }
+                else if ( ! _geometryNames.Contains (GeometryElementName) )
+                {
+                    ImageKind = ImageType.nothing;
+                }
+            }
+        }
+
+
+        private List<string> SetGeometryNames ()
+        {
+            List<string> result = new List<string> () { "Rectangle" };
+            return result;
+        }
+    }
+
+
+
+    public class TextualAtom
+    {
+        public string Name { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
+        public double TopOffset { get; private set; }
+        public double LeftOffset { get; private set; }
+        public string Alignment { get; private set; }
+        public double FontSize { get; private set; }
+        public string FontFamily { get; private set; }
+        private string content;
+        public string Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                if ( !string.IsNullOrWhiteSpace (value) )
+                {
+                    content = value;
+                    ContentIsSet = true;
+                }
+            }
+        }
+        public List<string> IncludedAtoms { get; private set; }
+        public bool IsShiftableBelow { get; private set; }
+        public bool ContentIsSet { get; private set; }
+        public bool isNeeded;
+
+
+        public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
+                           , double fontSize, string fontFamily, List<string>? includedAtoms, bool isShiftableBelow )
+        {
+            content = "";
+            ContentIsSet = false;
+            Name = name;
+            Width = width;
+            Height = height;
+            TopOffset = topOffset;
+            LeftOffset = leftOffset;
+            Alignment = alignment;
+            FontSize = fontSize;
+            FontFamily = fontFamily;
+            IncludedAtoms = includedAtoms ?? new List<string> ();
+            IsShiftableBelow = isShiftableBelow;
+            isNeeded = true;
+        }
+
+
+        internal void TrimUnneededEdgeChar ( List<char> unNeeded )
+        {
+            bool charsAndContentExist = ( unNeeded != null ) && ( unNeeded.Count > 0 ) && ( unNeeded.Count > 0 );
+
+            foreach ( char symbol in unNeeded )
+            {
+                content.TrimStart (symbol);
+                content.TrimEnd (symbol);
+            }
+        }
+
+    }
+
+
+
+    public enum ImageType
+    {
+        image = 0,
+        geometricElement = 1,
+        nothing = 2
+    }
 }

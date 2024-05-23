@@ -8,13 +8,27 @@ namespace ContentAssembler
 {
     public class Size
     {
-        public double width { get; private set; }
-        public double height { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
 
         public Size(double width, double height) 
         {
-            this.width = width;
-            this.height = height;
+            this.Width = width;
+            this.Height = height;
+        }
+
+
+        public void ZoomOn ( double coefficient )
+        {
+            Width *= coefficient;
+            Height *= coefficient;
+        }
+
+
+        public void ZoomOut ( double coefficient )
+        {
+            Width /= coefficient;
+            Height /= coefficient;
         }
     }
 
@@ -91,26 +105,7 @@ namespace ContentAssembler
 
 
 
-    public class InsideImage 
-    {
-        public string Path { get; private set; }
-        public Size Size { get; private set; }
-        public string Color { get; private set; }
-        public string GeometryElementName { get; private set; }
-        public double TopShiftOnBackground { get; private set; }
-        public double LeftShiftOnBackground { get; private set; }
 
-        public InsideImage(string path, Size size, string color, 
-                           string geometryElementName, double topShiftOnBackground, double leftShiftOnBackground)
-        {
-            Path = path;
-            Size = size;
-            Color = color;
-            GeometryElementName = geometryElementName;
-            TopShiftOnBackground = topShiftOnBackground;
-            LeftShiftOnBackground = leftShiftOnBackground;
-        }
-    }
 
 
 
@@ -129,67 +124,7 @@ namespace ContentAssembler
 
 
 
-    public class TextualAtom
-    {
-        public string Name { get; private set; }
-        public double Width { get; private set; }
-        public double Height { get; private set; }
-        public double TopOffset { get; private set; }
-        public double LeftOffset { get; private set; }
-        public string Alignment { get; private set; }
-        public double FontSize { get; private set; }
-        public string FontFamily { get; private set; }
-        private string content;
-        public string Content
-        {
-            get
-            {
-                return content;
-            }
-            set
-            {
-                if ( ! string.IsNullOrWhiteSpace(value) ) 
-                {
-                    content = value;
-                    ContentIsSet = true;
-                }
-            }
-        }
-        public List<string> IncludedAtoms { get; private set; }
-        public bool ContentIsSet { get; private set; }
-        public bool isNeeded;
 
-
-        public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset
-                           , string alignment, double fontSize, string fontFamily, List<string> ? includedAtoms )
-        {
-            content = "";
-            ContentIsSet = false;
-            Name = name;
-            Width = width;
-            Height = height;
-            TopOffset = topOffset;
-            LeftOffset = leftOffset;
-            Alignment = alignment;
-            FontSize = fontSize;
-            FontFamily = fontFamily;
-            IncludedAtoms = includedAtoms ?? new List<string> ( );
-            isNeeded = true;
-        }
-
-
-        internal void TrimUnneededEdgeChar ( List<char> unNeeded ) 
-        {
-            bool charsAndContentExist = ( unNeeded != null )   &&   ( unNeeded.Count > 0 )   &&   ( unNeeded.Count > 0 );
-
-            foreach ( char symbol in unNeeded )
-            {
-                content.TrimStart ( symbol );
-                content.TrimEnd ( symbol );
-            }
-        }
-
-    }
 
 
 
