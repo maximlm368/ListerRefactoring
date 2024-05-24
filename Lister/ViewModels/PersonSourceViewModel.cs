@@ -14,52 +14,26 @@ namespace Lister.ViewModels
 {
     internal class PersonSourceViewModel : ViewModelBase
     {
-        private IUniformDocumentAssembler uniformAssembler;
-        internal List<Person> people { get; private set; }
-        
+        private IUniformDocumentAssembler _uniformAssembler;
+        private PersonChoosingViewModel _personChoosingVM;
+
         private string sFP;
-        internal string sourceFilePath
+        internal string SourceFilePath
         {
             get { return sFP; }
             set
             {
                 string path = SetPersonsFilePath ( value );
-                this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( sourceFilePath ) );
+                this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( SourceFilePath ) );
             }
         }
 
-        private ObservableCollection<Person> visibleP;
-        internal ObservableCollection<Person> visiblePeople
+        
+        internal PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
+                                       , PersonChoosingViewModel personChoosing ) 
         {
-            get { return visibleP; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref visibleP, value, nameof (visiblePeople));
-            }
-        }
-
-
-        internal PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler ) 
-        {
-            visiblePeople = new ObservableCollection<Person> ();
-            people = new List<Person> ();
-            this.uniformAssembler = singleTypeDocumentAssembler;
-        }
-
-
-        internal event PropertyChangedEventHandler PropertyChanged;
-
-
-        protected virtual void OnPropertyChanged ( string propertyName )
-        {
-            if ( PropertyChanged != null )
-            {
-                PropertyChanged?.Invoke (this, new System.ComponentModel.PropertyChangedEventArgs (propertyName));
-            }
-            //else
-            //{
-            //    throw new Exception ("empty delegate in mainViewModel  " + propertyName);
-            //}
+            _uniformAssembler = singleTypeDocumentAssembler;
+            _personChoosingVM = personChoosing;
         }
 
 
@@ -69,17 +43,17 @@ namespace Lister.ViewModels
 
             if ( valueIsSuitable )
             {
-                visiblePeople.Clear ( );
-                people.Clear ( );
+                _personChoosingVM.VisiblePeople.Clear ( );
+                _personChoosingVM.People.Clear ( );
 
                 try
                 {
-                    List<Person> persons = uniformAssembler.GetPersons ( value );
+                    List<Person> persons = _uniformAssembler.GetPersons ( value );
 
                     foreach ( var person in persons )
                     {
-                        visiblePeople.Add ( person );
-                        people.Add ( person );
+                        _personChoosingVM.VisiblePeople.Add ( person );
+                        _personChoosingVM.People.Add ( person );
                     }
 
                     return value;

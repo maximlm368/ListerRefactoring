@@ -9,15 +9,27 @@ namespace Lister.Views
 {
     public partial class PersonSourceUserControl : UserControl
     {
-        private TemplateChoosingUserControl _templateChoosingUserControl;
-        private ZoomNavigationUserControl _zoomNavigationUserControl;
-        private SceneUserControl _sceneUserControl;
-        private PersonChoosingUserControl _personChoosingUserControl;
+        private TemplateChoosingUserControl _templateChoosing;
+        private ZoomNavigationUserControl _zoomNavigation;
+        private SceneUserControl _scene;
+        private PersonChoosingUserControl _personChoosing;
+        private PersonSourceViewModel _vm;
 
 
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
+            _vm = (PersonSourceViewModel) DataContext;
+        }
+
+
+        internal void PassNeighbours ( SceneUserControl scene, PersonChoosingUserControl personChoosing
+                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
+        {
+            _personChoosing = personChoosing;
+            _scene = scene;
+            _zoomNavigation = zoomNavigation;
+            _templateChoosing = templateChoosing;
         }
 
 
@@ -67,15 +79,13 @@ namespace Lister.Views
                        if ( task.Result.Count > 0 )
                        {
                            string result = task.Result [0].Path.ToString ();
-                           //MainViewModel vm = viewModel;
-                           MainViewModel vm = null;
                            result = result.Substring (8, result.Length - 8);
-                           vm.SourceFilePath = result;
+                           _vm.SourceFilePath = result;
 
-                           if ( vm.SourceFilePath != string.Empty )
+                           if ( _vm.SourceFilePath != string.Empty )
                            {
                                editSourceFile.IsEnabled = true;
-                               //setEntirePersonList.IsEnabled = true;   ///////////////////////////////////////////
+                               _personChoosing. setEntirePersonList.IsEnabled = true;
                            }
                        }
                    }

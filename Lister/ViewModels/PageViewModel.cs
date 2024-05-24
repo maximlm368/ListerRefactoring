@@ -65,25 +65,26 @@ class PageViewModel : ViewModelBase
     /// <summary>
     /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// </summary>
-
+    
+    private double badgeLineWidth;
 
     private double lCLS;
-    internal double LinesContainerLeftShift
+    internal double LinesLeftShift
     {
         get { return lCLS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref lCLS, value, nameof (LinesContainerLeftShift));
+            this.RaiseAndSetIfChanged (ref lCLS, value, nameof (LinesLeftShift));
         }
     }
 
     private double lCTS;
-    internal double LinesContainerTopShift
+    internal double FirstLineTopShift
     {
         get { return lCTS; }
         set
         {
-            this.RaiseAndSetIfChanged (ref lCTS, value, nameof (LinesContainerTopShift));
+            this.RaiseAndSetIfChanged (ref lCTS, value, nameof (FirstLineTopShift));
         }
     }
 
@@ -103,54 +104,19 @@ class PageViewModel : ViewModelBase
     internal PageViewModel ( Size pageSize, BadgeViewModel badgeExample, double desiredScale )
     {
         Lines = new ObservableCollection<BadgeLine> ();
-        currentLine = new BadgeLine ();
-        Lines.Add (currentLine);
         BadgeExample = badgeExample;
         scale = desiredScale;
         badgeCount = 0;
         IncludedBadges = new List<VMBadge> ();
         PageWidth = pageSize.Width;
         PageHeight = pageSize.Height;
-        LinesContainerLeftShift = CalculateLeftShift ();
-        LinesContainerTopShift = CalculateTopShift ();
+        LinesLeftShift = CalculateLeftShift ();
+        FirstLineTopShift = CalculateTopShift ();
         lineLimit = GetMaxLineAmount ();
-        Zoom ();
-    }
-
-
-    internal static List<PageViewModel> PlaceIntoPagesss ( List<BadgeLine> placebleBadges, Size pageSize, double desiredScale
-                                                                                            , PageViewModel ? scratchPage )
-    {
-        List<PageViewModel> result = new ();
-
-        //if ( placebleBadges.Count == 0 )
-        //{
-        //    return result;
-        //}
-
-        //VMBadge badgeExample = placebleBadges [0].Clone ();
-        //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
-
-        //for ( int badgeCounter = 0; badgeCounter < placebleBadges.Count; badgeCounter++ )
-        //{
-        //    BadgeLine beingProcessedBadge = placebleBadges [badgeCounter];
-        //    beingProcessedBadge.Zoom (desiredScale);
-        //    PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
-        //    bool timeToAddNewPage = !posibleNewPadge.Equals (fillablePage);
-
-        //    if ( timeToAddNewPage )
-        //    {
-        //        result.Add (fillablePage);
-        //        fillablePage = posibleNewPadge;
-        //    }
-
-        //    if ( badgeCounter == placebleBadges.Count - 1 )
-        //    {
-        //        result.Add (fillablePage);
-        //    }
-        //}
-
-        return result;
+        badgeLineWidth = pageSize.Width - 2 * LinesLeftShift;
+        currentLine = new BadgeLine (badgeLineWidth, scale);
+        Lines.Add (currentLine);
+        SetCorrectScale ();
     }
 
 
@@ -176,20 +142,12 @@ class PageViewModel : ViewModelBase
 
     internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
     {
-        VerifyBadgeSizeAccordence (badge);
-
-        if ( mustBeZoomed )
-        {
-            badge.Zoom (scale);
-        }
-
         PageViewModel beingProcessedPage = this;
-
         ActionSuccess additionSuccess = currentLine.AddBadge (badge);
 
         if ( additionSuccess == ActionSuccess.Failure ) 
         {
-            currentLine = new BadgeLine ();
+            currentLine = new BadgeLine (badgeLineWidth, scale);
             additionSuccess = currentLine.AddBadge (badge);
 
             if ( additionSuccess == ActionSuccess.Failure )
@@ -224,9 +182,9 @@ class PageViewModel : ViewModelBase
         int verifiebleWidth = ( int ) ( scale * verifiebleSize.Width );
         int verifiebleHeight = ( int ) ( scale * verifiebleSize.Height );
 
-        bool isNotAccordent = ( verifiebleWidth != ( int ) this.BadgeExample.BadgeWidth )
+        bool isNotAccordent = ( verifiebleWidth != ( int ) BadgeExample. BadgeWidth )
                               ||
-                              ( verifiebleHeight != ( int ) this.BadgeExample.BadgeHeight );
+                              ( verifiebleHeight != ( int ) BadgeExample. BadgeHeight );
 
         if ( isNotAccordent )
         {
@@ -237,7 +195,8 @@ class PageViewModel : ViewModelBase
 
     private int GetMaxLineAmount ()
     {
-        return ( int ) ( PageHeight / BadgeExample.BadgeHeight );
+        double badgeHeight = BadgeExample. BadgeHeight;
+        return ( int ) ( PageHeight / badgeHeight );
     }
 
 
@@ -246,8 +205,8 @@ class PageViewModel : ViewModelBase
         this.scale *= scaleCoefficient;
         PageHeight *= scaleCoefficient;
         PageWidth *= scaleCoefficient;
-        LinesContainerLeftShift *= scaleCoefficient;
-        LinesContainerTopShift *= scaleCoefficient;
+        LinesLeftShift *= scaleCoefficient;
+        FirstLineTopShift *= scaleCoefficient;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {
@@ -261,8 +220,8 @@ class PageViewModel : ViewModelBase
         scale /= scaleCoefficient;
         PageHeight /= scaleCoefficient;
         PageWidth /= scaleCoefficient;
-        LinesContainerLeftShift /= scaleCoefficient;
-        LinesContainerTopShift /= scaleCoefficient;
+        LinesLeftShift /= scaleCoefficient;
+        FirstLineTopShift /= scaleCoefficient;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {
@@ -271,79 +230,39 @@ class PageViewModel : ViewModelBase
     }
 
 
-    internal void ZoomOnExampleBadge ( double scaleCoefficient )
-    {
-        BadgeExample.ZoomOn (scaleCoefficient);
-    }
-
-
-    internal void ZoomOutExampleBadge ( double scaleCoefficient )
-    {
-        BadgeExample.ZoomOut (scaleCoefficient);
-    }
-
-
-    private void Zoom ()
+    private void SetCorrectScale ()
     {
         if ( scale != 1 )
         {
             PageHeight *= scale;
             PageWidth *= scale;
-            LinesContainerLeftShift *= scale;
-            LinesContainerTopShift *= scale;
+            LinesLeftShift *= scale;
+            FirstLineTopShift *= scale;
         }
     }
 
 
-    internal void ShowBadges ()
+    internal void Show ()
     {
-        bool evenStackIsNotEmpty = EvenBadges.Count > 0;
-        bool oddStackIsNotEmpty = OddBadges.Count > 0;
-
-        if ( evenStackIsNotEmpty )
+        for ( int index = 0;   index < Lines. Count;   index++ )
         {
-            for ( int badgeCounter = 0; badgeCounter < EvenBadges.Count; badgeCounter++ )
-            {
-                EvenBadges [badgeCounter].ShowBackgroundImage ();
-            }
-        }
-
-        if ( oddStackIsNotEmpty )
-        {
-            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
-            {
-                OddBadges [badgeCounter].ShowBackgroundImage ();
-            }
+            Lines [index].Show ();
         }
     }
 
 
-    internal void HideBadges ()
+    internal void Hide ()
     {
-        bool evenStackIsNotEmpty = EvenBadges.Count > 0;
-        bool oddStackIsNotEmpty = OddBadges.Count > 0;
-
-        if ( evenStackIsNotEmpty )
+        for ( int index = 0;   index < Lines. Count;   index++ )
         {
-            for ( int badgeCounter = 0; badgeCounter < EvenBadges.Count; badgeCounter++ )
-            {
-                EvenBadges [badgeCounter].HideBackgroundImage ();
-            }
-        }
-
-        if ( oddStackIsNotEmpty )
-        {
-            for ( int badgeCounter = 0; badgeCounter < OddBadges.Count; badgeCounter++ )
-            {
-                OddBadges [badgeCounter].HideBackgroundImage ();
-            }
+            Lines [index].Hide ();
         }
     }
 
 
     private double CalculateLeftShift () 
     {
-        double shift = 0;
+        double shift = 0
 
         return shift;
     }
@@ -351,7 +270,7 @@ class PageViewModel : ViewModelBase
 
     private double CalculateTopShift ()
     {
-        double shift = 0;
+        double shift = 0
 
         return shift;
     }
@@ -394,7 +313,7 @@ class PageViewModel : ViewModelBase
         for ( int index = 0;   index < placebleBadges.Count;   index++ )
         {
             BadgeViewModel beingProcessedBadge = placebleBadges [index];
-            beingProcessedBadge.Zoom (desiredScale);
+            beingProcessedBadge.SetCorrectScale (desiredScale);
             PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
             bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
 

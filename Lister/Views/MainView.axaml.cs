@@ -86,8 +86,8 @@ public partial class MainView : UserControl
     internal void PassAssembler ( IUniformDocumentAssembler docAssembler )
     {
         Size pageSize = new Size ( pageBorder.Width , pageBorder.Height );
-        this.DataContext = new MainViewModel ( docAssembler , pageSize );
-        this.viewModel = ( MainViewModel ) this.DataContext;
+        DataContext = new MainViewModel ( docAssembler , pageSize );
+        viewModel = ( MainViewModel ) this.DataContext;
     }
 
 

@@ -63,12 +63,12 @@ class BadgeViewModel : ViewModelBase
     }
 
     private ObservableCollection <ImageViewModel> rs;
-    internal ObservableCollection <ImageViewModel> InsideRectangles
+    internal ObservableCollection <ImageViewModel> InsideShapes
     {
         get { return rs; }
         set
         {
-            this.RaiseAndSetIfChanged (ref rs, value, nameof (InsideRectangles));
+            this.RaiseAndSetIfChanged (ref rs, value, nameof (InsideShapes));
         }
     }
 
@@ -89,24 +89,25 @@ class BadgeViewModel : ViewModelBase
     internal BadgeViewModel ( Badgee badgeModel )
     {
         BadgeModel = badgeModel;
-        BadgeWidth = badgeModel.BadgeLayout.OutlineSize.Width;
-        BadgeHeight = badgeModel.BadgeLayout.OutlineSize.Height;
+        BadgeLayout layout = badgeModel.BadgeLayout;
+        BadgeWidth = layout.OutlineSize. Width;
+        BadgeHeight = layout.OutlineSize. Height;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
-        InsideRectangles = new ObservableCollection<ImageViewModel> ();
+        InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
         borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (borderThickness);
 
-        List<TextualAtom> atoms = badgeModel.BadgeLayout. TextualFields;
+        List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
         SetUpTextLines (atoms);
-
-
+        List<InsideImage> images = layout.InsideImages;
+        SetUpImagesAndGeometryElements (images);
     }
 
 
-    internal void ShowBackgroundImage ()
+    internal void Show ()
     {
         string path = BadgeModel. BackgroundImagePath;
         Uri uri = new Uri (path);
@@ -114,7 +115,7 @@ class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void HideBackgroundImage ()
+    internal void Hide ()
     {
         this.ImageBitmap = null;
     }
@@ -125,19 +126,20 @@ class BadgeViewModel : ViewModelBase
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
 
+        foreach ( TextLineViewModel line   in   TextLines ) 
+        {
+            line.ZoomOn (coefficient);
+        }
 
-        //TextAreaLeftShift *= coefficient;
-        //TextAreaTopShift *= coefficient;
-        //TextAreaWidth *= coefficient;
-        //TextAreaHeight *= coefficient;
-        //FirstLevelFontSize *= coefficient;
-        //SecondLevelFontSize *= coefficient;
-        //ThirdLevelFontSize *= coefficient;
-        //FirstLevelTBHeight *= coefficient;
-        //SecondLevelTBHeight *= coefficient;
-        //ThirdLevelTBHeight *= coefficient;
-        //DepartmentTopPadding *= coefficient;
-        //PostTopPadding *= coefficient;
+        foreach ( ImageViewModel image   in   InsideImages )
+        {
+            image.ZoomOn (coefficient);
+        }
+
+        foreach ( ImageViewModel shape   in   InsideShapes )
+        {
+            shape.ZoomOn (coefficient);
+        }
 
         borderThickness *= coefficient;
         BorderThickness = new Avalonia.Thickness (borderThickness);
@@ -146,20 +148,23 @@ class BadgeViewModel : ViewModelBase
 
     internal void ZoomOut ( double coefficient )
     {
-        //BadgeWidth /= coefficient;
-        //BadgeHeight /= coefficient;
-        //TextAreaLeftShift /= coefficient;
-        //TextAreaTopShift /= coefficient;
-        //TextAreaWidth /= coefficient;
-        //TextAreaHeight /= coefficient;
-        //FirstLevelFontSize /= coefficient;
-        //SecondLevelFontSize /= coefficient;
-        //ThirdLevelFontSize /= coefficient;
-        //FirstLevelTBHeight /= coefficient;
-        //SecondLevelTBHeight /= coefficient;
-        //ThirdLevelTBHeight /= coefficient;
-        //DepartmentTopPadding /= coefficient;
-        //PostTopPadding /= coefficient;
+        BadgeWidth /= coefficient;
+        BadgeHeight /= coefficient;
+
+        foreach ( TextLineViewModel line   in   TextLines )
+        {
+            line.ZoomOut (coefficient);
+        }
+
+        foreach ( ImageViewModel image   in   InsideImages )
+        {
+            image.ZoomOut (coefficient);
+        }
+
+        foreach ( ImageViewModel shape   in   InsideShapes )
+        {
+            shape.ZoomOut (coefficient);
+        }
 
         borderThickness /= coefficient;
         BorderThickness = new Avalonia.Thickness (borderThickness);
@@ -168,12 +173,12 @@ class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel Clone ()
     {
-        BadgeViewModel clone = new BadgeViewModel (this.BadgeModel);
+        BadgeViewModel clone = new BadgeViewModel (BadgeModel);
         return clone;
     }
 
 
-    internal void Zoom ( double coefficient )
+    internal void SetCorrectScale ( double coefficient )
     {
         if ( coefficient != 1 )
         {
@@ -182,13 +187,13 @@ class BadgeViewModel : ViewModelBase
     }
 
 
-    private void SetUpTextLines ( List<TextualAtom> textualFields )
+    private void SetUpTextLines ( List<TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
 
-        for ( int index = 0;   index < textualFields.Count;   index++ ) 
+        for ( int index = 0;   index < orderedTextualFields.Count;   index++ ) 
         {
-            TextualAtom text = textualFields [index];
+            TextualAtom text = orderedTextualFields [index];
             double fontSize = text.FontSize;
             double lineLength = text.Width;
             double topOffset = text.TopOffset;
@@ -205,18 +210,15 @@ class BadgeViewModel : ViewModelBase
 
                 if ( ! lineIsOverflow ) 
                 {
-                    TextLineViewModel textLine = new TextLineViewModel (text.Width, text.Height, topOffset,
-                                                                        text.LeftOffset, text.Alignment, text.FontSize,
-                                                                        text.FontFamily, beingProcessedLine,
-                                                                        text.IsShiftableBelow);
-                    TextLines.Add(textLine);
-                    summaryVerticalOffset += text.Height;
-                    topOffset += text.Height;
-
-                    if ( text.IsShiftableBelow ) 
+                    if ( text.IsShiftableBelow )
                     {
                         topOffset += summaryVerticalOffset;
                     }
+
+                    text.TopOffset = topOffset;
+                    text.Content = beingProcessedLine;
+                    TextLineViewModel textLine = new TextLineViewModel (text);
+                    TextLines.Add (textLine);
 
                     if ( additionalLine != string.Empty ) 
                     {
@@ -235,6 +237,9 @@ class BadgeViewModel : ViewModelBase
                 {
                     beingProcessedLine = splited [0];
                     additionalLine = splited [1] + " " + additionalLine;
+
+                    summaryVerticalOffset += text.Height;
+                    topOffset += text.Height;
                 }
                 else
                 {
@@ -277,7 +282,7 @@ class BadgeViewModel : ViewModelBase
 
             if ( image.ImageKind == ImageType.geometricElement )
             {
-                InsideRectangles.Add (imageVM);
+                InsideShapes.Add (imageVM);
             }
         }
     }

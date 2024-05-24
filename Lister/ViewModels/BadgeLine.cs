@@ -12,6 +12,7 @@ namespace Lister.ViewModels
     {
         private double _width;
         private double _restWidth;
+        private double _scale;
 
         private ObservableCollection<BadgeViewModel> badges;
         internal ObservableCollection<BadgeViewModel> Badges
@@ -24,15 +25,18 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeLine( double width ) 
+        internal BadgeLine( double width, double scale ) 
         {
             _width = width;
             _restWidth = 0;
+            _scale = scale;
         }
 
 
         internal ActionSuccess AddBadge ( BadgeViewModel badge ) 
         {
+            badge.SetCorrectScale ( _scale );
+
             if ( _restWidth < badge.BadgeWidth ) 
             {
                 return ActionSuccess.Failure;
@@ -50,6 +54,7 @@ namespace Lister.ViewModels
         {
             _width *= scaleCoefficient;
             _restWidth *= scaleCoefficient;
+            _scale *= scaleCoefficient;
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
@@ -62,10 +67,29 @@ namespace Lister.ViewModels
         {
             _width /= scaleCoefficient;
             _restWidth /= scaleCoefficient;
+            _scale /= scaleCoefficient;
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
                 Badges [index].ZoomOut (scaleCoefficient);
+            }
+        }
+
+
+        internal void Show ( )
+        {
+            for ( int index = 0;   index < Badges. Count;   index++ )
+            {
+                Badges [index].Show ();
+            }
+        }
+
+
+        internal void Hide ()
+        {
+            for ( int index = 0;   index < Badges. Count;   index++ )
+            {
+                Badges [index].Hide ();
             }
         }
     }

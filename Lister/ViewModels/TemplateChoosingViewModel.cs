@@ -31,5 +31,42 @@ namespace Lister.ViewModels;
 
 internal class TemplateChoosingViewModel : ViewModelBase
 {
+    private IUniformDocumentAssembler uniformAssembler;
 
+    private List<FileInfo> templatesField;
+    internal List<FileInfo> Templates
+    {
+        get
+        {
+            return templatesField;
+        }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref templatesField, value, nameof (Templates));
+        }
+    }
+
+    private FileInfo cT;
+    internal FileInfo ChosenTemplate
+    {
+        set
+        {
+            bool valueIsSuitable = ( value.Name != string.Empty ) && ( value != null );
+
+            if ( valueIsSuitable )
+            {
+                this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
+            }
+        }
+        get
+        {
+            return cT;
+        }
+    }
+
+
+    internal TemplateChoosingViewModel () 
+    {
+        Templates = uniformAssembler.GetBadgeModels ();
+    }
 }

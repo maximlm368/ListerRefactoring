@@ -27,7 +27,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 
-class ConverterToPdf
+class ConverterToPdf : IResultOfSessionSaver
 {
     private string ? currentImagePath = null;
     private Pdf.Image? image = null;

@@ -25,13 +25,13 @@ public partial class MainWindow : Window
         IUniformDocumentAssembler docAssembler = new UniformDocAssembler (converter, badgeAppearenceDataSource, peopleDataSource);
 
         this.Opened += OnOpened;
-        MainView mainView = new MainView ( );
-        this.Content = mainView;
+        MainView mainView = (MainView) Content;
         mainView.SetOwner ( this );
         mainView.PassAssembler ( docAssembler );
+        
         this.SizeChanged += OnSizeChanged;
-        currentWidth = this.Width;
-        currentHeight = this.Height;
+        currentWidth = Width;
+        currentHeight = Height;
         this.Tapped += HandleTapping;
     }
 

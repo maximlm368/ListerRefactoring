@@ -35,36 +35,36 @@ namespace Lister.ViewModels
 {
     internal class PersonChoosingViewModel : ViewModelBase
     {
-        internal List<Person> people { get; private set; }
-        internal List<VMBadge> incorrectBadges { get; private set; }
+        internal List<Person> People { get; private set; }
+        internal List<VMBadge> IncorrectBadges { get; private set; }
 
         private ObservableCollection<Person> vP;
-        internal ObservableCollection<Person> visiblePeople
+        internal ObservableCollection<Person> VisiblePeople
         {
             get { return vP; }
             set
             {
-                this.RaiseAndSetIfChanged ( ref vP , value , nameof ( visiblePeople ) );
+                this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
             }
         }
 
         private Person cP;
-        internal Person chosenPerson
+        internal Person ChosenPerson
         {
             get { return cP; }
             set
             {
-                this.RaiseAndSetIfChanged ( ref cP , value , nameof ( chosenPerson ) );
+                this.RaiseAndSetIfChanged ( ref cP , value , nameof ( ChosenPerson ) );
             }
         }
 
 
-        internal PersonChoosingViewModel ( )
+        internal PersonChoosingViewModel ( PersonChoosingViewModel personChoosing )
         {
             
-            visiblePeople = new ObservableCollection<Person> ( );
-            people = new List<Person> ( );
-            incorrectBadges = new List<VMBadge> ( );
+            VisiblePeople = new ObservableCollection<Person> ( );
+            People = new List<Person> ( );
+            IncorrectBadges = new List<VMBadge> ( );
         }
 
 

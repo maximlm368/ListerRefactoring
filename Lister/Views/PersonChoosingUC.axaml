@@ -34,7 +34,7 @@
 				/>
 
 			<TextBox
-				Name="personTyping"
+				Name="personTextBox"
 				Width="440"
 				FontSize="14"
 				Background="White"/>
@@ -135,7 +135,7 @@
 		</Canvas>	
 
 		<Button
-			Name="toDropDownOrPickUpPersonList"
+			Name="openListButton"
 			Grid.Column="2"
 			VerticalAlignment="Top"
 			Margin="0,1"
@@ -155,10 +155,11 @@
 			Content="ИЛИ" />
 		
 		<Button
-			Name="setEntirePersonList"
+			Name="setEntirePersonListButton"
 			Grid.Column="4"
 			Height="32"
 		    IsEnabled="False"
+			
 			Content="Весь список" />
 	</Grid>
 	
@@ -182,4 +183,12 @@
 				</ListBox.ItemTemplate>
 			</ListBox>
 
+
+
+
+Tapped="AcceptEntirePersonList"
+			GotFocus="DropDownOrPickUpPersonListViaFocus"
+			
+			
+			
 -->

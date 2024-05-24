@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using ReactiveUI;
+using ContentAssembler;
 
 namespace Lister.ViewModels
 {
-    internal class TextLineViewModel : VisibleMember
+    internal class TextLineViewModel : BadgeMember
     {
         private string al;
         internal string Alignment
@@ -62,17 +63,15 @@ namespace Lister.ViewModels
         }
 
 
-        internal TextLineViewModel ( double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFamily, string content, bool isShiftableBelow )
+        internal TextLineViewModel ( TextualAtom text )
         {
-            
-            Alignment = alignment;
-            FontSize = fontSize;
-            FontFamily = fontFamily;
-            Content = content;
-            IsShiftableBelow = isShiftableBelow;
+            Alignment = text.Alignment;
+            FontSize = text.FontSize;
+            FontFamily = text.FontFamily;
+            Content = text.Content;
+            IsShiftableBelow = text.IsShiftableBelow;
 
-            SetYourself (width, height, topOffset, leftOffset);
+            SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
         }
 
 

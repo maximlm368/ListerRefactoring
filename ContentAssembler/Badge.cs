@@ -194,7 +194,7 @@ namespace ContentAssembler
         public string Name { get; private set; }
         public double Width { get; private set; }
         public double Height { get; private set; }
-        public double TopOffset { get; private set; }
+        public double TopOffset { get; set; }
         public double LeftOffset { get; private set; }
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }

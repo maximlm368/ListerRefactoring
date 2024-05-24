@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    abstract internal class VisibleMember : ViewModelBase
+    abstract internal class BadgeMember : ViewModelBase
     {
         private double wd;
         internal double Width
