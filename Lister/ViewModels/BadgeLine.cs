@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,12 +11,11 @@ namespace Lister.ViewModels
 {
     internal class BadgeLine : ViewModelBase
     {
-        private double _width;
         private double _restWidth;
         private double _scale;
 
-        private ObservableCollection<BadgeViewModel> badges;
-        internal ObservableCollection<BadgeViewModel> Badges
+        private ObservableCollection <BadgeViewModel> badges;
+        internal ObservableCollection <BadgeViewModel> Badges
         {
             get { return badges; }
             set
@@ -24,11 +24,20 @@ namespace Lister.ViewModels
             }
         }
 
+        private ObservableCollection <Thickness> margin;
+        internal ObservableCollection <Thickness> Margin
+        {
+            get { return margin; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
+            }
+        }
+
 
         internal BadgeLine( double width, double scale ) 
         {
-            _width = width;
-            _restWidth = 0;
+            _restWidth = width;
             _scale = scale;
         }
 
@@ -43,7 +52,7 @@ namespace Lister.ViewModels
             }
             else 
             {
-                badges.Add (badge);
+                Badges.Add (badge);
                 _restWidth -= badge.BadgeWidth;
                 return ActionSuccess.Success;
             }
@@ -52,7 +61,6 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ( double scaleCoefficient ) 
         {
-            _width *= scaleCoefficient;
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
 
@@ -65,7 +73,6 @@ namespace Lister.ViewModels
 
         internal void ZoomOut ( double scaleCoefficient )
         {
-            _width /= scaleCoefficient;
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
 

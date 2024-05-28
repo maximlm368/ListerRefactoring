@@ -9,18 +9,34 @@ namespace Lister.Views
 {
     public partial class ModernMainView : UserControl
     {
+        internal List<BadgeViewModel> IncorrectBadges { get; private set; }
+
+
         public ModernMainView ()
         {
             InitializeComponent ();
-
-            zoomNavigation.PassNeighbours (personSource, personChoosing, templateChoosing, scene);
-            scene.PassNeighbours (personSource, personChoosing, zoomNavigation, templateChoosing);
-            personChoosing.PassNeighbours (personSource, scene, zoomNavigation, templateChoosing);
-            personSource.PassNeighbours (scene, personChoosing, zoomNavigation, templateChoosing);
-            templateChoosing.PassNeighbours (personSource, personChoosing, zoomNavigation, scene);
+            IncorrectBadges = new List<BadgeViewModel> ();
         }
 
-
-       
     }
 }
+
+
+
+
+//public void SetChildren ( PersonChoosingUserControl personChoosingUC, PersonSourceUserControl personSourceUC,
+//                          TemplateChoosingUserControl templateChoosingUC , ZoomNavigationUserControl zoomNavigationUC,
+//                          SceneUserControl sceneUC ) 
+//{
+//    personChoosing = personChoosingUC;
+//    personSource = personSourceUC;
+//    templateChoosing = templateChoosingUC;
+//    zoomNavigation = zoomNavigationUC;
+//    scene = sceneUC;
+
+//    zoomNavigation.PassNeighbours (personSource, personChoosing, templateChoosing, scene);
+//    scene.PassNeighbours (personSource, personChoosing, zoomNavigation, templateChoosing);
+//    personChoosing.PassNeighbours (personSource, scene, zoomNavigation, templateChoosing);
+//    personSource.PassNeighbours (scene, personChoosing, zoomNavigation, templateChoosing);
+//    templateChoosing.PassNeighbours (personSource, personChoosing, zoomNavigation, scene);
+//}

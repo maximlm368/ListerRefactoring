@@ -28,7 +28,13 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels
 {
-    internal class ZoomNavigationViewModel : ViewModelBase
+    public class ZoomNavigationViewModel : ViewModelBase
     {
+        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize) 
+        {
+        
+        }
+
     }
 }
+

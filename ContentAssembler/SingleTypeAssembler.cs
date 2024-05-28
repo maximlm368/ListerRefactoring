@@ -51,7 +51,8 @@ namespace ContentAssembler
         {
             if ( badgeModelName == null ) 
             {
-                throw new ArgumentNullException ("arguments must be not null");
+                //throw new ArgumentNullException ("arguments must be not null");
+                string.IsNullOrEmpty ("");
             }
 
             List<Badge> badges = new List<Badge>();

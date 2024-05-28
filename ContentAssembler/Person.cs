@@ -14,17 +14,16 @@ namespace ContentAssembler
         public string Department { get; private set; }
         public string Post { get; private set; }
 
-        public string StringPresentation 
-        { 
-            get 
-            {   string view = string.Empty;
+        public string StringPresentation
+        {
+            get
+            { string view = string.Empty;
                 AppendNameInView (FamilyName, ref view);
                 AppendNameInView (FirstName, ref view);
                 AppendNameInView (PatronymicName, ref view);
                 return view;
-            } 
+            }
         }
-
 
         public Person(string id, string familyName, string firstName, string patronymicName, string department, string post)
         {
@@ -101,16 +100,28 @@ namespace ContentAssembler
         }
 
 
-        private void AppendNameInView ( string name, ref string view ) 
+        public bool IsMatchingTo ( string stringPresentation )
         {
-            if ( ! string.IsNullOrWhiteSpace (name) )
+            if ( string.IsNullOrWhiteSpace(stringPresentation) ) 
+            {
+                return false;
+            }
+
+            bool isMatching = stringPresentation == this.StringPresentation;
+            return isMatching;
+        }
+
+
+        private void AppendNameInView ( string namePart, ref string view ) 
+        {
+            if ( ! string.IsNullOrWhiteSpace (namePart) )
             {
                 if ( ! string.IsNullOrWhiteSpace (view) )
                 {
                     view += " ";
                 }
 
-                view += name;
+                view += namePart;
             }
         }
     }

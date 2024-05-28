@@ -30,14 +30,15 @@
 			<TextBox
 				Name="comboboxFrame"
 				Focusable="False"
-				Width="471"
-				/>
+				Width="471" />
 
 			<TextBox
 				Name="personTextBox"
 				Width="440"
 				FontSize="14"
-				Background="White"/>
+				Background="White"
+				KeyDown="DropOrPickUpPersonsByKey"
+				KeyUp="HandlePersonListReduction" />
 			
 			<Border
 				Canvas.Top="34"
@@ -46,9 +47,10 @@
 				Background="Gray">
 				
 				<Viewbox
+					Name="visiblePersons"
 					Width="469"
-					Height="89"
-					IsVisible="False">
+					Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+					IsVisible="True">
 
 					<Canvas
 						Name="listFrame"
@@ -56,58 +58,53 @@
 						Height="89"
 						Background="AliceBlue">
 
-						<Label
-							Margin="0,-10"
-							Width="454"
-							FontSize="12"
-							BorderBrush="Brown"
-							BorderThickness="1"
-							Content="Content 1"/>
 
-						<Label
-							Margin="0,12"
-							Width="454"
-							FontSize="12"
-							BorderBrush="Brown"
-							BorderThickness="1"
-							Content="Content 2"/>
+						<ItemsControl
+							Name="personList"
+							Canvas.Top="{Binding   Path = PeopleTopShift,  Mode=OneWay}"
+							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
+							
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
 
-						<Label
-							Margin="0,34"
-							Width="454"
-							FontSize="12"
-							BorderBrush="Brown"
-							BorderThickness="1"
-							Content="Content 3"/>
+									<TextBox
+										Width="454"
+										FontSize="12"
+										BorderBrush="Brown"
+										BorderThickness="1"
+										IsReadOnly="True"
+										Tapped="HandleChoosingByTapping"
+										KeyDown="AcceptFocusedPerson"
+										Text="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
 
-						<Label
-							Margin="0,56"
-							Width="454"
-							FontSize="12"
-							BorderBrush="Brown"
-							BorderThickness="1"
-							Content="Content 4"/>
-
-						<Label
-							Margin="0,78"
-							Width="454"
-							FontSize="12"
-							BorderBrush="Brown"
-							BorderThickness="1"
-							Content="Content 5"/>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+						
 
 						<Canvas
+							Name="scroller"
 							Canvas.Left="454"
 							Width="15"
 							Height="89"
 							Background="White">
 
 							<Canvas
+								Name="upper"
 								Canvas.Left="0"
 								Canvas.Top="0"
 								Width="15"
 								Height="15"
 								Background="Gray"/>
+
+							<Canvas
+								Name="topSpan"
+								Canvas.Left="0"
+								Canvas.Top="15"
+								Width="15"
+								Height="27"
+								Background="White"/>
 
 							<Canvas
 								Name="runner"
@@ -118,6 +115,15 @@
 								Background="Gray"/>
 
 							<Canvas
+								Name="bottomSpan"
+								Canvas.Left="0"
+								Canvas.Top="62"
+								Width="15"
+								Height="22"
+								Background="White"/>
+
+							<Canvas
+								Name="downer"
 								Canvas.Left="0"
 								Canvas.Top="74"
 								Width="15"
@@ -145,6 +151,7 @@
 			VerticalContentAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Focusable="False"
+			Tapped="DropOrPickUpPersons"
 			Content="v"/>
 		
 		<Label
@@ -155,11 +162,12 @@
 			Content="ИЛИ" />
 		
 		<Button
-			Name="setEntirePersonListButton"
+			Name="entirePersonListButton"
 			Grid.Column="4"
 			Height="32"
 		    IsEnabled="False"
-			
+			Tapped="AcceptEntirePersonList"
+			GotFocus="DropOrPickUpPersonsByFocus"
 			Content="Весь список" />
 	</Grid>
 	
@@ -188,6 +196,52 @@
 
 Tapped="AcceptEntirePersonList"
 			GotFocus="DropDownOrPickUpPersonListViaFocus"
+			
+			
+			<Label
+							Margin="0,-10"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Tapped="HandleChoosingByTapping"
+							Content="{Binding  Path=FirstVisible,  Mode=OneWay}"/>
+
+						<Label
+							Margin="0,12"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Tapped="HandleChoosingByTapping"
+							Content="Content 2"/>
+
+						<Label
+							Margin="0,34"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Tapped="HandleChoosingByTapping"
+							Content="Content 3"/>
+
+						<Label
+							Margin="0,56"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Tapped="HandleChoosingByTapping"
+							Content="Content 4"/>
+
+						<Label
+							Margin="0,78"
+							Width="454"
+							FontSize="12"
+							BorderBrush="Brown"
+							BorderThickness="1"
+							Tapped="HandleChoosingByTapping"
+							Content="Content 5"/>
 			
 			
 			

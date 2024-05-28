@@ -29,7 +29,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 
-internal class TemplateChoosingViewModel : ViewModelBase
+public class TemplateChoosingViewModel : ViewModelBase
 {
     private IUniformDocumentAssembler uniformAssembler;
 
@@ -65,7 +65,7 @@ internal class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal TemplateChoosingViewModel () 
+    public TemplateChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize ) 
     {
         Templates = uniformAssembler.GetBadgeModels ();
     }

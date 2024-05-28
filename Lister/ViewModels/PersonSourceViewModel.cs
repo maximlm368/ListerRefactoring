@@ -12,7 +12,7 @@ using static QuestPDF.Helpers.Colors;
 
 namespace Lister.ViewModels
 {
-    internal class PersonSourceViewModel : ViewModelBase
+    public class PersonSourceViewModel : ViewModelBase
     {
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
@@ -29,8 +29,8 @@ namespace Lister.ViewModels
         }
 
         
-        internal PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
-                                       , PersonChoosingViewModel personChoosing ) 
+        public PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
+                                       , ContentAssembler.Size pageSize, PersonChoosingViewModel personChoosing ) 
         {
             _uniformAssembler = singleTypeDocumentAssembler;
             _personChoosingVM = personChoosing;

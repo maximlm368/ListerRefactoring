@@ -11,7 +11,7 @@ namespace ContentAssembler
         public double Width { get; private set; }
         public double Height { get; private set; }
 
-        public Size(double width, double height) 
+        public Size (double width, double height) 
         {
             this.Width = width;
             this.Height = height;
@@ -41,7 +41,7 @@ namespace ContentAssembler
         public OrganizationalDataOfBadge badgeDescription { get; private set; }
 
 
-        public Badge( Person person,  string backgroundImagePath,  OrganizationalDataOfBadge badgeDescription)
+        public Badge( Person person, string backgroundImagePath, OrganizationalDataOfBadge badgeDescription)
         {
             this.person = person;
             this.backgroundImagePath = backgroundImagePath;

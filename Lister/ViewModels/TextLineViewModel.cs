@@ -10,7 +10,7 @@ using ContentAssembler;
 
 namespace Lister.ViewModels
 {
-    internal class TextLineViewModel : BadgeMember
+    public class TextLineViewModel : BadgeMember
     {
         private string al;
         internal string Alignment
@@ -63,7 +63,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal TextLineViewModel ( TextualAtom text )
+        public TextLineViewModel ( TextualAtom text )
         {
             Alignment = text.Alignment;
             FontSize = text.FontSize;

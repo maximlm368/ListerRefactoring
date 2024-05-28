@@ -9,9 +9,9 @@ namespace Lister.Views
 {
     public partial class PersonSourceUserControl : UserControl
     {
-        private TemplateChoosingUserControl _templateChoosing;
-        private ZoomNavigationUserControl _zoomNavigation;
-        private SceneUserControl _scene;
+        //private TemplateChoosingUserControl _templateChoosing;
+        //private ZoomNavigationUserControl _zoomNavigation;
+        //private SceneUserControl _scene;
         private PersonChoosingUserControl _personChoosing;
         private PersonSourceViewModel _vm;
 
@@ -20,16 +20,6 @@ namespace Lister.Views
         {
             InitializeComponent ();
             _vm = (PersonSourceViewModel) DataContext;
-        }
-
-
-        internal void PassNeighbours ( SceneUserControl scene, PersonChoosingUserControl personChoosing
-                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
-        {
-            _personChoosing = personChoosing;
-            _scene = scene;
-            _zoomNavigation = zoomNavigation;
-            _templateChoosing = templateChoosing;
         }
 
 
@@ -85,7 +75,9 @@ namespace Lister.Views
                            if ( _vm.SourceFilePath != string.Empty )
                            {
                                editSourceFile.IsEnabled = true;
-                               _personChoosing. setEntirePersonList.IsEnabled = true;
+
+                               ModernMainView parent = (ModernMainView) this.Parent;
+                               parent.personChoosing. entirePersonListButton.IsEnabled = true;
                            }
                        }
                    }

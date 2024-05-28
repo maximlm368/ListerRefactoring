@@ -42,9 +42,9 @@
 
 					<ItemsControl
 						Name="lines"
-						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }"
-						Canvas.Left="{Binding ElementName=pageBorder, Path = DataContext.LinesContainerLeftShift, Mode=OneWay }"
-						Canvas.Top="{Binding ElementName=pageBorder, Path = DataContext.LinesContainerTopShift, Mode=OneWay }">
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
 
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
@@ -53,6 +53,7 @@
 
 
 								<ItemsControl
+									HorizontalAlignment="Center"
 									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
 
 									<ItemsControl.ItemTemplate>
@@ -125,6 +126,7 @@
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
 
+					
 				</Canvas>
 			</Border>
 

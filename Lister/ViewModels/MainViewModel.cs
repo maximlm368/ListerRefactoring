@@ -223,7 +223,7 @@ class MainViewModel : ViewModelBase
     internal Task<bool> GeneratePdf ( string fileToSave )
     {
         List<VMBadge> allBadges = GetAllBadges ();
-        Task<bool> task = new Task<bool> (() => { return converter.SaveAsFile (allBadges, fileToSave); });
+        Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (allBadges, fileToSave); });
         task.Start ();
         return task;
     }
@@ -233,7 +233,7 @@ class MainViewModel : ViewModelBase
     {
         List<VMBadge> allBadges = GetAllBadges();
         string fileToSave = @"intermidiate.pdf";
-        Task pdf = new Task (() => { converter.SaveAsFile (allBadges, fileToSave); });
+        Task pdf = new Task (() => { converter.ConvertToExtention (allBadges, fileToSave); });
         pdf.Start ();
         pdf.ContinueWith
                (

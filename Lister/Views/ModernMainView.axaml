@@ -6,31 +6,31 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
              x:Class="Lister.Views.ModernMainView"
-			 x:DataType="vm:ModernMainViewModel">
+			 x:DataType="vm:ModernMainViewModel" >
 
-    <StackPanel ZIndex="1" >
+	<StackPanel ZIndex="1" >
 		<uc:PersonSourceUserControl
 			Name="personSource"/>
-		
+
 		<uc:PersonChoosingUserControl
 			Name="personChoosing"
 			ZIndex="3"
 			Margin="0,-132"
 			Height="300"/>
-		
+
 		<uc:TemplateChoosingUserControl
 			Name="templateChoosing"
 			Margin="0,-3"/>
-		
+
 		<uc:ZoomNavigationUserControl
 			Name="zoomNavigation"
 			Margin="0,1"/>
-		
+
 		<uc:SceneUserControl
 			Name="scene"
 			Margin="0,0"/>
-		
+
 	</StackPanel>
-	
-	
+
+
 </UserControl>

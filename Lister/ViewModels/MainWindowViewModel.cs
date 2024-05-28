@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         //ViewModelBase content;
 

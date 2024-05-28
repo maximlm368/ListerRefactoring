@@ -4,6 +4,8 @@ using Avalonia.Media;
 using ContentAssembler;
 using DynamicData;
 using Lister.ViewModels;
+using Lister.Views;
+using System;
 using System.Collections.ObjectModel;
 
 namespace Lister.Views
@@ -19,49 +21,66 @@ namespace Lister.Views
         private double _personContainerHeight;
         private bool _openedViaButton = false;
         private bool _personListIsDropped = false;
-        private bool _entirePersonListIsSelected = false;
         private PersonSourceUserControl _personSourceUC;
         private TemplateChoosingUserControl _templateChoosingUC;
         private ZoomNavigationUserControl _zoomNavigationUC;
         private SceneUserControl _sceneUC;
-
+        private bool _entirePersonListIsSelected = false;
+        private TextBox _chosen;
 
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
+            
         }
 
 
-        internal void PassNeighbours ( PersonSourceUserControl personSource, SceneUserControl scene
-                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
-        {
-            _sceneUC = scene;
-            _personSourceUC = personSource;
-            _zoomNavigationUC = zoomNavigation;
-            _templateChoosingUC = templateChoosing;
-        }
-
-
-        internal void DropDownOrPickUpPersonListViaKey ( object sender, KeyEventArgs args )
+        internal void DropOrPickUpPersonsByKey ( object sender, KeyEventArgs args )
         {
             string key = args.Key.ToString ();
             bool keyIsEnter = key == "Return";
 
             if ( keyIsEnter )
             {
-                if ( _personListIsDropped )
+                DropOrPickUp ();
+
+                return;
+            }
+        }
+
+
+        internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
+        {
+            if ( _personListIsDropped )
+            {
+                visiblePersons.IsVisible = false;
+                _personListIsDropped = false;
+            }
+            else
+            {
+                personTextBox.Focus (NavigationMethod.Tab);
+                visiblePersons.IsVisible = true;
+                _personListIsDropped = true;
+
+                if ( _openedViaButton )
                 {
-                    personList.Height = 0;
-                    _personListIsDropped = false;
+                    _openedViaButton = false;
                 }
                 else
                 {
-                    personList.Height = CalculatePersonListHeight ();
-                    _personListIsDropped = true;
-                    _openedViaButton = false;
+                    _openedViaButton = true;
                 }
 
-                return;
+            }
+        }
+
+
+        internal void DropOrPickUpPersonsByFocus ( object sender, GotFocusEventArgs args )
+        {
+            if ( _personListIsDropped )
+            {
+                visiblePersons.IsVisible = false;
+                _personListIsDropped = false;
             }
         }
 
@@ -107,14 +126,14 @@ namespace Lister.Views
 
             if ( str != null )
             {
-                string partOfName = textBox.Text.ToLower ();
+                string fromSenderLower = textBox.Text.ToLower ();
 
-                List<Person> people = vm.People;
-                ObservableCollection<Person> foundVisiblePeople = new ObservableCollection<Person> ();
+                List <Person> people = vm.People;
+                ObservableCollection <Person> foundVisiblePeople = new ObservableCollection <Person> ();
 
-                foreach ( Person person in people )
+                foreach ( Person person   in   people )
                 {
-                    if ( person.StringPresentation.ToLower () == partOfName )
+                    if ( person.StringPresentation.ToLower () == fromSenderLower )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -123,14 +142,14 @@ namespace Lister.Views
                     string entireName = person.StringPresentation;
                     string entireNameInLowCase = entireName.ToLower ();
 
-                    if ( entireNameInLowCase.Contains (partOfName) && entireNameInLowCase != partOfName )
+                    if ( entireNameInLowCase.Contains (fromSenderLower)   &&   entireNameInLowCase != fromSenderLower )
                     {
                         foundVisiblePeople.Add (person);
                     }
                 }
 
                 vm.VisiblePeople = foundVisiblePeople;
-                personList.Height = CalculatePersonListHeight ();
+                visiblePersons.IsVisible = true;
                 _personListIsDropped = true;
             }
         }
@@ -151,39 +170,87 @@ namespace Lister.Views
         private void RecoverVisiblePeople ()
         {
             PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
-            List<Person> people = vm.People;
+            List <Person> people = vm.People;
             vm.VisiblePeople = new ();
             vm.VisiblePeople.AddRange (people);
         }
 
 
-        internal void HandlePersonChoosingViaTapping ( object sender, TappedEventArgs args )
+        internal void AcceptFocusedPerson ( object sender, KeyEventArgs args )
         {
-            //personChoosingIsTapped = true;
+            string key = args.Key.ToString ();
+            bool keyIsEnter = key == "Return";
 
-
-            if ( _personListIsDropped   &&   _selectionIsChanged )
+            if ( keyIsEnter )
             {
-                personList.Height = 0;
-                _personListIsDropped = false;
-                _selectionIsChanged = false;
+                PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+                TextBox focused = ( TextBox ) sender;
+                focused.Background = new SolidColorBrush (3397631);
+                string chosenName = focused.Text;
+                Person chosenPerson = vm.FindPersonByStringPresentation (chosenName);
+
+                if ( chosenPerson == null )
+                {
+                    return;
+                }
+
+                if ( _chosen != null )
+                {
+                    personTextBox.Text = chosenName;
+                    _singlePersonIsSelected = true;
+                    _entirePersonListIsSelected = false;
+                    _selectionIsChanged = true;
+                    _chosen.Background = new SolidColorBrush (16777215);
+                }
+
+                _chosen = focused;
+                vm.ChosenPerson = chosenPerson;
+                DropOrPickUp ();
             }
         }
 
 
-        internal void HandleSelectionChanged ( object sender, SelectionChangedEventArgs args )
+        private void DropOrPickUp () 
+        {
+            if ( _personListIsDropped )
+            {
+                visiblePersons.IsVisible = false;
+                _personListIsDropped = false;
+            }
+            else
+            {
+                visiblePersons.IsVisible = true;
+                _personListIsDropped = true;
+                _openedViaButton = false;
+            }
+        }
+
+
+        internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
-            vm.ChosenPerson = ( Person ) personList.SelectedItem;
-            Person person = ( Person ) personList.SelectedItem;
 
-            if ( person != null )
+            TextBox chosenControl = ( TextBox ) sender;
+            chosenControl.Background = new SolidColorBrush (3397631);
+
+            if ( _chosen != null )
             {
-                personTextBox.Text = person.StringPresentation;
+                _chosen.Background = new SolidColorBrush (16777215);
+            }
+
+            string chosenName = (string) chosenControl.Text;
+            Person chosenPerson = vm.FindPersonByStringPresentation (chosenName);
+            
+            TryToEnableBadgeCreationButton ();
+            DropOrPickUp ();
+            
+            if ( chosenPerson != null ) 
+            {
+                personTextBox.Text = chosenName;
                 _singlePersonIsSelected = true;
                 _entirePersonListIsSelected = false;
-                TryToEnableBadgeCreationButton ();
                 _selectionIsChanged = true;
+                vm.ChosenPerson = chosenPerson;
             }
         }
 
@@ -194,7 +261,7 @@ namespace Lister.Views
 
             if ( itsTimeToEnable )
             {
-                _templateChoosingUC.buildBadges.IsEnabled = true;
+                _templateChoosingUC. buildBadges.IsEnabled = true;
             }
         }
 
@@ -211,32 +278,6 @@ namespace Lister.Views
         }
 
 
-        internal void DropDownOrPickUpPersonList ( object sender, TappedEventArgs args )
-        {
-            if ( _personListIsDropped )
-            {
-                personList.Height = 0;
-                _personListIsDropped = false;
-            }
-            else
-            {
-                personTextBox.Focus (NavigationMethod.Tab);
-                personList.Height = CalculatePersonListHeight ();
-                _personListIsDropped = true;
-
-                if ( _openedViaButton )
-                {
-                    _openedViaButton = false;
-                }
-                else
-                {
-                    _openedViaButton = true;
-                }
-
-            }
-        }
-
-
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
             _entirePersonListIsSelected = true;
@@ -244,15 +285,28 @@ namespace Lister.Views
             TryToEnableBadgeCreationButton ();
         }
 
-
-        internal void DropDownOrPickUpPersonListViaFocus ( object sender, GotFocusEventArgs args )
-        {
-            if ( _personListIsDropped )
-            {
-                personList.Height = 0;
-                _personListIsDropped = false;
-            }
-        }
-
     }
 }
+
+
+//internal void PassNeighbours ( PersonSourceUserControl personSource, SceneUserControl scene
+//                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
+//{
+//    _sceneUC = scene;
+//    _personSourceUC = personSource;
+//    _zoomNavigationUC = zoomNavigation;
+//    _templateChoosingUC = templateChoosing;
+//}
+
+//internal void HandlePersonChoosingViaTapping ( object sender, TappedEventArgs args )
+//{
+//    //personChoosingIsTapped = true;
+
+
+//    if ( _personListIsDropped   &&   _selectionIsChanged )
+//    {
+//        visiblePersons.IsVisible = false;
+//        _personListIsDropped = false;
+//        _selectionIsChanged = false;
+//    }
+//}

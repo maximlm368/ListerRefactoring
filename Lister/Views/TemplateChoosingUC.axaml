@@ -50,6 +50,7 @@
 			Name="buildBadges"
 			Grid.Column="2"
 			HorizontalAlignment="Center"
+			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="False"
 			Content="Построить"/>
@@ -58,14 +59,17 @@
 			Name="clearBadges"
 			Grid.Column="3"
 			HorizontalAlignment="Center"
+			HorizontalContentAlignment="Center"
 			Width="86"
 			IsEnabled="False"
+			
 			Content="Очистить" />
 
 		<Button
 			Name="save"
 			Grid.Column="4"
 			HorizontalAlignment="Center"
+			HorizontalContentAlignment="Center"
 			Width="91"
 			IsEnabled="False"
 			Content="Сохранить" />
@@ -74,6 +78,7 @@
 			Name="print"
 			Grid.Column="5"
 			HorizontalAlignment="Center"
+			HorizontalContentAlignment="Center"
 			Width="71"
 			IsEnabled="False"
 			Content="Печать"/>

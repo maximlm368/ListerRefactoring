@@ -27,7 +27,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 
-class ConverterToPdf : IResultOfSessionSaver
+class ConverterToPdf 
 {
     private string ? currentImagePath = null;
     private Pdf.Image? image = null;
@@ -36,7 +36,7 @@ class ConverterToPdf : IResultOfSessionSaver
     public List<string> intermidiateFiles = new ();
 
 
-    internal bool SaveAsFile (List<VMBadge> items, string filePathToSave)
+    internal bool ConvertToExtention ( List<VMBadge> items, string filePathToSave)
     {
         bool result = true;
 

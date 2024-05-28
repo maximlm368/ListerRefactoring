@@ -16,7 +16,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels;
 
-class BadgeViewModel : ViewModelBase
+public class BadgeViewModel : ViewModelBase
 {
     private const double coefficient = 1.1;
     internal Badgee BadgeModel { get; private set; }
@@ -86,7 +86,7 @@ class BadgeViewModel : ViewModelBase
     internal bool IsCorrect { get; private set; }
 
 
-    internal BadgeViewModel ( Badgee badgeModel )
+    public BadgeViewModel ( Badgee badgeModel )
     {
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;
@@ -178,11 +178,11 @@ class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void SetCorrectScale ( double coefficient )
+    internal void SetCorrectScale ( double scale )
     {
-        if ( coefficient != 1 )
+        if ( scale != 1 )
         {
-            ZoomOn (coefficient);
+            ZoomOn (scale);
         }
     }
 

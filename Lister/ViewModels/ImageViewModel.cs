@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class ImageViewModel : BadgeMember
+    public class ImageViewModel : BadgeMember
     {
         private string pt;
         internal string Path
@@ -61,7 +61,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal ImageViewModel ( InsideImage image ) 
+        public ImageViewModel ( InsideImage image ) 
         {
             double width = 0;
             double height = 0;

@@ -33,13 +33,12 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels
 {
-    internal class PersonChoosingViewModel : ViewModelBase
+    public class PersonChoosingViewModel : ViewModelBase
     {
-        internal List<Person> People { get; private set; }
-        internal List<VMBadge> IncorrectBadges { get; private set; }
+        internal List <Person> People { get; private set; }
 
-        private ObservableCollection<Person> vP;
-        internal ObservableCollection<Person> VisiblePeople
+        private ObservableCollection <Person> vP;
+        internal ObservableCollection <Person> VisiblePeople
         {
             get { return vP; }
             set
@@ -58,17 +57,69 @@ namespace Lister.ViewModels
             }
         }
 
-
-        internal PersonChoosingViewModel ( PersonChoosingViewModel personChoosing )
+        private double tS;
+        internal double PeopleTopShift
         {
-            
-            VisiblePeople = new ObservableCollection<Person> ( );
-            People = new List<Person> ( );
-            IncorrectBadges = new List<VMBadge> ( );
+            get { return tS; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref tS, value, nameof (PeopleTopShift));
+            }
+        }
+
+        private double plH = 89;
+        internal double PersonListHeight
+        {
+            get { return plH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
+            }
+        }
+
+        private double plW = 454;
+        internal double PersonListWidth
+        {
+            get { return plW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref plW, value, nameof (PersonListWidth));
+            }
         }
 
 
+        public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
+                                         , ContentAssembler.Size pageSize )
+        {
+            
+            VisiblePeople = new ObservableCollection <Person> ( );
+            People = new List <Person> ( );
+            
+        }
 
+
+        internal Person ? FindPersonByStringPresentation ( string presentation ) 
+        {
+            if ( string.IsNullOrWhiteSpace(presentation) ) 
+            {
+                return null;
+            }
+
+            Person result = null;
+
+            foreach ( Person person  in  VisiblePeople ) 
+            {
+                bool isIntresting = person.IsMatchingTo (presentation);
+                
+                if ( isIntresting ) 
+                {
+                    result = person;
+                    break;
+                }
+            }
+
+            return result;
+        }
 
     }
 }
