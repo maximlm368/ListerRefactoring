@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -21,12 +22,13 @@ namespace Lister.Views
         private double _personContainerHeight;
         private bool _openedViaButton = false;
         private bool _personListIsDropped = false;
-        private PersonSourceUserControl _personSourceUC;
         private TemplateChoosingUserControl _templateChoosingUC;
-        private ZoomNavigationUserControl _zoomNavigationUC;
-        private SceneUserControl _sceneUC;
         private bool _entirePersonListIsSelected = false;
         private TextBox _chosen;
+        private bool _isPersonsScrollable = false;
+        private double _runnerStep = 0;
+        private bool _runnerIsCaptured = false;
+        private Point _runnerCapturingPosition = new Point(0, 0);
 
         public PersonChoosingUserControl ()
         {
@@ -34,6 +36,16 @@ namespace Lister.Views
             
         }
 
+
+        internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
+        {
+            _entirePersonListIsSelected = true;
+            _singlePersonIsSelected = false;
+            TryToEnableBadgeCreationButton ();
+        }
+
+
+        #region Drop
 
         internal void DropOrPickUpPersonsByKey ( object sender, KeyEventArgs args )
         {
@@ -104,6 +116,9 @@ namespace Lister.Views
             return personListHeight;
         }
 
+        #endregion Drop
+
+        #region PersonListReduction
 
         internal void HandlePersonListReduction ( object sender, KeyEventArgs args )
         {
@@ -175,6 +190,9 @@ namespace Lister.Views
             vm.VisiblePeople.AddRange (people);
         }
 
+        #endregion PersonListReduction
+
+        #region Choosing
 
         internal void AcceptFocusedPerson ( object sender, KeyEventArgs args )
         {
@@ -210,22 +228,6 @@ namespace Lister.Views
         }
 
 
-        private void DropOrPickUp () 
-        {
-            if ( _personListIsDropped )
-            {
-                visiblePersons.IsVisible = false;
-                _personListIsDropped = false;
-            }
-            else
-            {
-                visiblePersons.IsVisible = true;
-                _personListIsDropped = true;
-                _openedViaButton = false;
-            }
-        }
-
-
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
@@ -254,6 +256,7 @@ namespace Lister.Views
             }
         }
 
+        #endregion Choosing
 
         private void TryToEnableBadgeCreationButton ()
         {
@@ -262,6 +265,22 @@ namespace Lister.Views
             if ( itsTimeToEnable )
             {
                 _templateChoosingUC. buildBadges.IsEnabled = true;
+            }
+        }
+
+
+        private void DropOrPickUp ()
+        {
+            if ( _personListIsDropped )
+            {
+                visiblePersons.IsVisible = false;
+                _personListIsDropped = false;
+            }
+            else
+            {
+                visiblePersons.IsVisible = true;
+                _personListIsDropped = true;
+                _openedViaButton = false;
             }
         }
 
@@ -277,13 +296,196 @@ namespace Lister.Views
             _cursorIsOverPersonList = false;
         }
 
+        #region Scrolling
 
-        internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
+        internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
-            _entirePersonListIsSelected = true;
-            _singlePersonIsSelected = false;
-            TryToEnableBadgeCreationButton ();
+            if ( _isPersonsScrollable ) 
+            {
+                PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+                double step = 20;
+                double proportion = visiblePersons.Height / runner.Height;
+                double runnerStep = step / proportion;
+                runnerStep = GetInfluentStep (runnerStep);
+                bool isDirectionUp = true;
+
+                CompleteScrolling (isDirectionUp, step, runnerStep, vm);
+            }
         }
+
+
+        internal void ScrollByTapping ( object sender, TappedEventArgs args )
+        {
+            if ( _isPersonsScrollable )
+            {
+                PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+                int personCount = vm.VisiblePeople. Count;
+                double step = personList.Height / personCount;
+                double proportion = visiblePersons.Height / runner.Height;
+                double runnerStep = step / proportion;
+                runnerStep = GetInfluentStep (runnerStep);
+                
+                Canvas activator = sender as Canvas;
+                bool isDirectionUp = activator.Name == "upper";
+
+                CompleteScrolling (isDirectionUp, step, runnerStep, vm);
+            }
+        }
+
+
+        internal void ShiftRunner ( object sender, TappedEventArgs args )
+        {
+            if ( _isPersonsScrollable )
+            {
+                PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+                double runnerStep = runner.Height;
+                double step = visiblePersons.Height;
+
+                Canvas activator = sender as Canvas;
+                bool isDirectionUp = activator.Name == "topSpan";
+
+                CompleteScrolling (isDirectionUp, step, runnerStep, vm);
+            }
+        }
+
+
+        internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
+        {
+            _runnerIsCaptured = true;
+            _runnerCapturingPosition = args.GetPosition (( Canvas ) args.Source);
+        }
+
+
+        internal void ReleaseRunner ( )
+        {
+            _runnerIsCaptured = false;
+        }
+
+
+        internal void MoveRunner ( object sender, PointerEventArgs args )
+        {
+            if ( _runnerIsCaptured ) 
+            {
+                PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+                Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
+                double runnerVerticalDelta = _runnerCapturingPosition.Y - pointerPosition.Y;
+                double proportion = visiblePersons.Height / runner.Height;
+                double personsVerticalDelta = runnerVerticalDelta * proportion;
+
+                bool isDirectionUp = (runnerVerticalDelta > 0);
+                CompleteScrolling ( isDirectionUp, personsVerticalDelta, runnerVerticalDelta, vm );
+            }
+        }
+
+
+        private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep, PersonChoosingViewModel vm ) 
+        {
+            double currentPersonsScrollValue = vm.PersonsScrollValue;
+
+            if ( isDirectionUp )
+            {
+                currentPersonsScrollValue -= step;
+                double maxScroll = visiblePersons.Height - personList.Height;
+                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                if ( scrollExceeds )
+                {
+                    currentPersonsScrollValue = maxScroll;
+                }
+
+                UpRunner (runnerStep, vm);
+            }
+            else
+            {
+                currentPersonsScrollValue += step;
+
+                if ( currentPersonsScrollValue > 0 )
+                {
+                    currentPersonsScrollValue = 0;
+                }
+
+                DownRunner (runnerStep, vm);
+            }
+
+            vm.PersonsScrollValue = currentPersonsScrollValue;
+        }
+
+
+        private void UpRunner ( double runnerStep, PersonChoosingViewModel vm ) 
+        {
+            vm.RunnerTopCoordinate -= runnerStep;
+
+            if ( vm.RunnerTopCoordinate < upper.Height )
+            {
+                vm.RunnerTopCoordinate = upper.Height;
+            }
+
+            vm.TopSpanHeight -= runnerStep;
+
+            if ( vm.TopSpanHeight < 0 )
+            {
+                vm.TopSpanHeight = 0;
+            }
+
+            vm.BottomSpanHeight += runnerStep;
+
+            double maxHeight = scroller.Height - upper.Height - runner.Height - downer.Height;
+
+            if ( vm.BottomSpanHeight > maxHeight )
+            {
+                vm.BottomSpanHeight = maxHeight;
+            }
+        }
+
+
+        private void DownRunner ( double runnerStep, PersonChoosingViewModel vm ) 
+        {
+            vm.TopSpanHeight += runnerStep;
+
+            double maxHeight = scroller.Height - upper.Height - runner.Height - downer.Height;
+
+            if ( vm.TopSpanHeight > maxHeight )
+            {
+                vm.TopSpanHeight = maxHeight;
+            }
+
+            vm.RunnerTopCoordinate += runnerStep;
+
+            double maxRunnerTopCoord = upper.Height + topSpan.Height;
+
+            if ( vm.RunnerTopCoordinate > maxRunnerTopCoord )
+            {
+                vm.RunnerTopCoordinate = maxRunnerTopCoord;
+            }
+
+            vm.BottomSpanHeight -= runnerStep;
+
+            if ( vm.BottomSpanHeight < 0 )
+            {
+                vm.BottomSpanHeight = 0;
+            }
+        }
+
+
+        private double GetInfluentStep ( double step ) 
+        {
+            double wholeStep = Math.Round (step);
+
+            if ( wholeStep < 1 )
+            {
+                _runnerStep += step;
+
+                if ( _runnerStep >= 1 )
+                {
+                    step = _runnerStep;
+                    _runnerStep = 0;
+                }
+            }
+
+            return step;
+        }
+
+        #endregion Scrolling
 
     }
 }
@@ -310,3 +512,7 @@ namespace Lister.Views
 //        _selectionIsChanged = false;
 //    }
 //}
+//private PersonSourceUserControl _personSourceUC;
+//private ZoomNavigationUserControl _zoomNavigationUC;
+//private SceneUserControl _sceneUC;
+

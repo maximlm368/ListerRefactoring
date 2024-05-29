@@ -37,6 +37,7 @@
 				Width="440"
 				FontSize="14"
 				Background="White"
+				IsReadOnly="True"
 				KeyDown="DropOrPickUpPersonsByKey"
 				KeyUp="HandlePersonListReduction" />
 			
@@ -50,26 +51,27 @@
 					Name="visiblePersons"
 					Width="469"
 					Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+					PointerEntered="CursorIsOverPersonList"
+					PointerExited="CursorIsOutOfPersonList"
+					PointerWheelChanged="ScrollByWheel"
 					IsVisible="True">
 
 					<Canvas
 						Name="listFrame"
 						Width="469"
-						Height="89"
-						Background="AliceBlue">
-
+						Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+						Background="AliceBlue" >
 
 						<ItemsControl
 							Name="personList"
-							Canvas.Top="{Binding   Path = PeopleTopShift,  Mode=OneWay}"
+							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
-							
+
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 
 									<TextBox
-										Width="454"
 										FontSize="12"
 										BorderBrush="Brown"
 										BorderThickness="1"
@@ -81,54 +83,60 @@
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
-						
+
 
 						<Canvas
 							Name="scroller"
 							Canvas.Left="454"
-							Width="15"
-							Height="89"
+							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+							Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
 							Background="White">
 
 							<Canvas
 								Name="upper"
 								Canvas.Left="0"
 								Canvas.Top="0"
-								Width="15"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
-								Background="Gray"/>
+								Background="LightGray"
+								Tapped="ScrollByTapping"/>
 
 							<Canvas
 								Name="topSpan"
 								Canvas.Left="0"
 								Canvas.Top="15"
-								Width="15"
-								Height="27"
-								Background="White"/>
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
+								Background="White"
+								Tapped="ShiftRunner"/>		
 
 							<Canvas
 								Name="runner"
 								Canvas.Left="0"
-								Canvas.Top="42"
-								Width="15"
-								Height="20"
-								Background="Gray"/>
+								Canvas.Top="{Binding   Path = RunnerTopCoordinate,  Mode=OneWay}"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+								Background="LightGray"
+								PointerPressed="CaptureRunner"
+								PointerMoved="MoveRunner"/>
 
 							<Canvas
 								Name="bottomSpan"
 								Canvas.Left="0"
-								Canvas.Top="62"
-								Width="15"
-								Height="22"
-								Background="White"/>
+								Canvas.Bottom="15"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
+								Background="White"
+								Tapped="ShiftRunner"/>
 
 							<Canvas
 								Name="downer"
 								Canvas.Left="0"
-								Canvas.Top="74"
-								Width="15"
+								Canvas.Bottom="0"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
-								Background="Gray"/>
+								Background="LightGray"
+								Tapped="ScrollByTapping"/>
 
 						</Canvas>
 
@@ -244,5 +252,20 @@ Tapped="AcceptEntirePersonList"
 							Content="Content 5"/>
 			
 			
+			Canvas.Top="{Binding   Path = PeopleTopShift,  Mode=OneWay}"
 			
+			<Canvas
+						Name="listFrame"
+						Width="469"
+						Height="89"
+						Background="AliceBlue">
+						
+						
+				Canvas.Left="454"		
+				
+				
+		Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"		
+		Height="{Binding  Path = PersonListHeight,  Mode=OneWay}"
+		
+		
 -->

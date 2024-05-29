@@ -39,7 +39,7 @@ namespace Lister.ViewModels
 
         internal string SetPersonsFilePath ( string value )
         {
-            bool valueIsSuitable = ( value != null ) && ( value != string.Empty );
+            bool valueIsSuitable = ( value != null )   &&   ( value != string.Empty );
 
             if ( valueIsSuitable )
             {
@@ -48,14 +48,19 @@ namespace Lister.ViewModels
 
                 try
                 {
-                    List<Person> persons = _uniformAssembler.GetPersons ( value );
+                    List<Person> persons = _uniformAssembler.GetPersons (value);
+                    ObservableCollection <Person> visible = new ();
+                    List <Person> people = new ();
 
                     foreach ( var person in persons )
                     {
-                        _personChoosingVM.VisiblePeople.Add ( person );
-                        _personChoosingVM.People.Add ( person );
+                        visible.Add (person);
+                        people.Add (person);
+                        
                     }
 
+                    _personChoosingVM.VisiblePeople = visible;
+                    _personChoosingVM.People = people;
                     return value;
                 }
                 catch ( IOException ex )
@@ -64,7 +69,6 @@ namespace Lister.ViewModels
                     return string.Empty;
                 }
             }
-
             return string.Empty;
         }
     }

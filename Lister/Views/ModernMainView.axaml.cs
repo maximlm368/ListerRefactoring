@@ -18,6 +18,11 @@ namespace Lister.Views
             IncorrectBadges = new List<BadgeViewModel> ();
         }
 
+
+        internal void ReleaseRunner () 
+        {
+            personChoosing.ReleaseRunner ();
+        }
     }
 }
 

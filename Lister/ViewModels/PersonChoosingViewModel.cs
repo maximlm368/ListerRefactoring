@@ -35,7 +35,7 @@ namespace Lister.ViewModels
 {
     public class PersonChoosingViewModel : ViewModelBase
     {
-        internal List <Person> People { get; private set; }
+        internal List <Person> People { get; set; }
 
         private ObservableCollection <Person> vP;
         internal ObservableCollection <Person> VisiblePeople
@@ -44,6 +44,7 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
+                SetPersonList (value);
             }
         }
 
@@ -57,17 +58,7 @@ namespace Lister.ViewModels
             }
         }
 
-        private double tS;
-        internal double PeopleTopShift
-        {
-            get { return tS; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref tS, value, nameof (PeopleTopShift));
-            }
-        }
-
-        private double plH = 89;
+        private double plH = 100;
         internal double PersonListHeight
         {
             get { return plH; }
@@ -87,6 +78,66 @@ namespace Lister.ViewModels
             }
         }
 
+        private double psV;
+        internal double PersonsScrollValue
+        {
+            get { return psV; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref psV, value, nameof (PersonsScrollValue));
+            }
+        }
+
+        private double rH;
+        internal double RunnerHeight
+        {
+            get { return rH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref rH, value, nameof (RunnerHeight));
+            }
+        }
+
+        private double rTC;
+        internal double RunnerTopCoordinate
+        {
+            get { return rTC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref rTC, value, nameof (RunnerTopCoordinate));
+            }
+        }
+
+        private double tSH;
+        internal double TopSpanHeight
+        {
+            get { return tSH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref tSH, value, nameof (TopSpanHeight));
+            }
+        }
+
+        private double bSH;
+        internal double BottomSpanHeight
+        {
+            get { return bSH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bSH, value, nameof (BottomSpanHeight));
+            }
+        }
+
+        private double sW;
+        internal double ScrollerWidth
+        {
+            get { return sW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollerWidth));
+            }
+        }
+
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
                                          , ContentAssembler.Size pageSize )
@@ -100,14 +151,14 @@ namespace Lister.ViewModels
 
         internal Person ? FindPersonByStringPresentation ( string presentation ) 
         {
-            if ( string.IsNullOrWhiteSpace(presentation) ) 
+            if ( string.IsNullOrWhiteSpace (presentation) ) 
             {
                 return null;
             }
 
             Person result = null;
 
-            foreach ( Person person  in  VisiblePeople ) 
+            foreach ( Person person   in   VisiblePeople ) 
             {
                 bool isIntresting = person.IsMatchingTo (presentation);
                 
@@ -121,5 +172,46 @@ namespace Lister.ViewModels
             return result;
         }
 
+
+        private void SetPersonList ( ObservableCollection <Person> persons ) 
+        {
+            if ( persons == null ) 
+            {
+                return;
+            }
+
+            if ( persons.Count <= 5 ) 
+            {
+                PersonListHeight = 20 * persons.Count;
+                PersonListWidth = 469;
+                ScrollerWidth = 0;
+            }
+            else 
+            {
+                PersonListHeight = 20 * 5;
+                PersonListWidth = 454;
+                ScrollerWidth = 15;
+
+                RunnerTopCoordinate = 15;
+                //RunnerHeight = 
+            }
+        }
+
     }
 }
+
+
+
+
+//private double tS;
+//internal double PeopleTopShift
+//{
+//    get { return tS; }
+//    set
+//    {
+//        this.RaiseAndSetIfChanged (ref tS, value, nameof (PeopleTopShift));
+//    }
+//}
+
+
+//  private double plH = 89;

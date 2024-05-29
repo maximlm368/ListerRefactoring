@@ -78,6 +78,7 @@ namespace Lister.Views
 
                                ModernMainView parent = (ModernMainView) this.Parent;
                                parent.personChoosing. entirePersonListButton.IsEnabled = true;
+                               parent.personChoosing. personTextBox.IsReadOnly = false;
                            }
                        }
                    }

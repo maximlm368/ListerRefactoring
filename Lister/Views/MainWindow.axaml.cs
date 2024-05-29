@@ -33,6 +33,7 @@ public partial class MainWindow : Window
         currentWidth = Width;
         currentHeight = Height;
         this.Tapped += HandleTapping;
+        this.PointerReleased += ReleaseRunner;
     }
 
 
@@ -80,6 +81,13 @@ public partial class MainWindow : Window
     {
         MainView mainView = ( MainView ) Content;
         mainView.CloseCustomCombobox ();
+    }
+
+
+    internal void ReleaseRunner ( object sender, PointerReleasedEventArgs args )
+    {
+        ModernMainView mainView = ( ModernMainView ) Content;
+        mainView.ReleaseRunner ();
     }
 }
 
