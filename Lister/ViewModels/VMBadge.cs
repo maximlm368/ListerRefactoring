@@ -19,7 +19,7 @@ namespace Lister.ViewModels;
 class VMBadge : ViewModelBase
 {
     private const double coefficient = 1.1;
-    internal Badge BadgeModel { get; private set; }
+    internal Badgeee BadgeModel { get; private set; }
     internal Bitmap ImageBitmap { get; private set; }
 
     private string lN;
@@ -266,7 +266,7 @@ class VMBadge : ViewModelBase
     internal bool IsCorrect { get; private set; }
 
 
-    internal VMBadge ( Badge badgeModel )
+    internal VMBadge ( Badgeee badgeModel )
     {
         this.BadgeModel = badgeModel;
         BadgeWidth = badgeModel.badgeDescription. badgeDimensions. outlineSize. Width;

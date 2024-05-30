@@ -10,14 +10,14 @@ namespace ContentAssembler
 
 
 
-    public class Badgee
+    public class Badge
     {
         public Person Person { get; private set; }
         public string BackgroundImagePath { get; private set; }
         public BadgeLayout BadgeLayout { get; private set; }
 
 
-        public Badgee ( Person person, string backgroundImagePath, BadgeLayout layout )
+        public Badge ( Person person, string backgroundImagePath, BadgeLayout layout )
         {
             bool isArgumentNull = ( person == null )   ||   ( backgroundImagePath == null )   ||   ( layout == null );
 

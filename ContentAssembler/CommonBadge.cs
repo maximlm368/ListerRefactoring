@@ -34,14 +34,14 @@ namespace ContentAssembler
 
 
 
-    public class Badge 
+    public class Badgeee 
     {
         public Person person { get;  private set; }
         public string backgroundImagePath { get; private set; }
         public OrganizationalDataOfBadge badgeDescription { get; private set; }
 
 
-        public Badge( Person person, string backgroundImagePath, OrganizationalDataOfBadge badgeDescription)
+        public Badgeee( Person person, string backgroundImagePath, OrganizationalDataOfBadge badgeDescription)
         {
             this.person = person;
             this.backgroundImagePath = backgroundImagePath;

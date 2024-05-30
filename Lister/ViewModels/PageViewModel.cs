@@ -57,8 +57,8 @@ public class PageViewModel : ViewModelBase
         }
     }
 
-    private ObservableCollection<BadgeLine> llines;
-    internal ObservableCollection<BadgeLine> Lines
+    private ObservableCollection <BadgeLine> llines;
+    internal ObservableCollection <BadgeLine> Lines
     {
         get { return llines; }
         set
@@ -83,7 +83,7 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    internal static List<PageViewModel> ? PlaceIntoPages ( List<BadgeViewModel> placebleBadges,
+    internal static List <PageViewModel> ? PlaceIntoPages ( List<BadgeViewModel> placebleBadges,
                                                          Size pageSize, double desiredScale, PageViewModel ? scratchPage )
     {
         bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, pageSize, desiredScale);

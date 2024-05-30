@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Media;
 using ContentAssembler;
@@ -13,50 +14,81 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        private bool _templateIsSelected = false;
+        
         private bool _cursorIsOverPersonList = false;
-        private bool _singlePersonIsSelected = false;
-        private bool _selectionIsChanged = false;
         private double _maxPersonListHeight;
         private double _minPersonListHeight;
         private double _personContainerHeight;
-        private bool _openedViaButton = false;
         private bool _personListIsDropped = false;
-        private TemplateChoosingUserControl _templateChoosingUC;
-        private bool _entirePersonListIsSelected = false;
         private TextBox _chosen;
-        private bool _isPersonsScrollable = false;
         private double _runnerStep = 0;
         private bool _runnerIsCaptured = false;
         private Point _runnerCapturingPosition = new Point(0, 0);
+        private PersonSourceUserControl _personSourceUC;
+        private TemplateChoosingUserControl _templateChoosingUC;
+        private SceneUserControl _sceneUC;
+        private ZoomNavigationUserControl _zoomNavigationUC;
+        public bool SinglePersonIsSelected { get; private set; }
+        public bool EntirePersonListIsSelected { get; private set; }
+
 
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
-            
+        }
+
+
+        internal void PassNeighbours ( PersonSourceUserControl personSource, SceneUserControl scene
+                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
+        {
+            _sceneUC = scene;
+            _personSourceUC = personSource;
+            _zoomNavigationUC = zoomNavigation;
+            _templateChoosingUC = templateChoosing;
         }
 
 
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
-            _entirePersonListIsSelected = true;
-            _singlePersonIsSelected = false;
+            EntirePersonListIsSelected = true;
+            SinglePersonIsSelected = false;
             TryToEnableBadgeCreationButton ();
         }
 
 
         #region Drop
 
-        internal void DropOrPickUpPersonsByKey ( object sender, KeyEventArgs args )
+        internal void CloseCustomCombobox ()
+        {
+            bool reasonExists = _personListIsDropped   &&   !_cursorIsOverPersonList;
+
+            if ( reasonExists )
+            {
+                visiblePersons.IsVisible = false;
+                _personListIsDropped = false;
+            }
+        }
+
+
+        internal void DropOrPickUpPersonsOrScroll ( object sender, KeyEventArgs args )
         {
             string key = args.Key.ToString ();
-            bool keyIsEnter = key == "Return";
 
-            if ( keyIsEnter )
+            if ( key == "Return" )
             {
                 DropOrPickUp ();
-
                 return;
+            }
+
+            if ( key == "Up" )
+            {
+                ScrollByKey (true);
+                return;
+            }
+
+            if ( key == "Down" )
+            {
+                ScrollByKey(false);
             }
         }
 
@@ -73,16 +105,6 @@ namespace Lister.Views
                 personTextBox.Focus (NavigationMethod.Tab);
                 visiblePersons.IsVisible = true;
                 _personListIsDropped = true;
-
-                if ( _openedViaButton )
-                {
-                    _openedViaButton = false;
-                }
-                else
-                {
-                    _openedViaButton = true;
-                }
-
             }
         }
 
@@ -131,22 +153,16 @@ namespace Lister.Views
                 return;
             }
 
-            _templateChoosingUC. buildBadges.IsEnabled = false;
-            _templateChoosingUC. clearBadges.IsEnabled = false;
-            _templateChoosingUC. save.IsEnabled = false;
-            _templateChoosingUC. print.IsEnabled = false;
-
+            DisableButtons ();
             TextBox textBox = ( TextBox ) sender;
             string str = textBox.Text;
 
             if ( str != null )
             {
                 string fromSenderLower = textBox.Text.ToLower ();
-
-                List <Person> people = vm.People;
                 ObservableCollection <Person> foundVisiblePeople = new ObservableCollection <Person> ();
 
-                foreach ( Person person   in   people )
+                foreach ( Person person   in   vm.People )
                 {
                     if ( person.StringPresentation.ToLower () == fromSenderLower )
                     {
@@ -170,6 +186,15 @@ namespace Lister.Views
         }
 
 
+        private void DisableButtons () 
+        {
+            _templateChoosingUC. buildBadges.IsEnabled = false;
+            _templateChoosingUC. clearBadges.IsEnabled = false;
+            _templateChoosingUC. save.IsEnabled = false;
+            _templateChoosingUC. print.IsEnabled = false;
+        }
+
+
         private bool IsKeyUnipacting ( string key )
         {
             bool keyIsUnimpacting = key == "Tab";
@@ -185,16 +210,14 @@ namespace Lister.Views
         private void RecoverVisiblePeople ()
         {
             PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
-            List <Person> people = vm.People;
-            vm.VisiblePeople = new ();
-            vm.VisiblePeople.AddRange (people);
+            vm.VisiblePeople = new () { vm.People };
         }
 
         #endregion PersonListReduction
 
         #region Choosing
 
-        internal void AcceptFocusedPerson ( object sender, KeyEventArgs args )
+        internal void AcceptFocusedPersonOrScroll ( object sender, KeyEventArgs args )
         {
             string key = args.Key.ToString ();
             bool keyIsEnter = key == "Return";
@@ -215,9 +238,9 @@ namespace Lister.Views
                 if ( _chosen != null )
                 {
                     personTextBox.Text = chosenName;
-                    _singlePersonIsSelected = true;
-                    _entirePersonListIsSelected = false;
-                    _selectionIsChanged = true;
+                    SinglePersonIsSelected = true;
+                    EntirePersonListIsSelected = false;
+                    //_selectionIsChanged = true;
                     _chosen.Background = new SolidColorBrush (16777215);
                 }
 
@@ -249,9 +272,9 @@ namespace Lister.Views
             if ( chosenPerson != null ) 
             {
                 personTextBox.Text = chosenName;
-                _singlePersonIsSelected = true;
-                _entirePersonListIsSelected = false;
-                _selectionIsChanged = true;
+                SinglePersonIsSelected = true;
+                EntirePersonListIsSelected = false;
+                //_selectionIsChanged = true;
                 vm.ChosenPerson = chosenPerson;
             }
         }
@@ -260,7 +283,10 @@ namespace Lister.Views
 
         private void TryToEnableBadgeCreationButton ()
         {
-            bool itsTimeToEnable = ( _singlePersonIsSelected   ||   _entirePersonListIsSelected )   &&   _templateIsSelected;
+            ModernMainView parent = this.Parent as ModernMainView;
+            bool templateIsSelected = parent.templateChoosing.TemplateIsSelected;
+
+            bool itsTimeToEnable = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected )   &&   templateIsSelected;
 
             if ( itsTimeToEnable )
             {
@@ -280,7 +306,6 @@ namespace Lister.Views
             {
                 visiblePersons.IsVisible = true;
                 _personListIsDropped = true;
-                _openedViaButton = false;
             }
         }
 
@@ -300,23 +325,26 @@ namespace Lister.Views
 
         internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
-            if ( _isPersonsScrollable ) 
+            if ( visiblePersons.IsScrollable ) 
             {
                 PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
-                double step = 20;
+
+                int count = personList.ItemCount;
+                double listHeight = personList.Height;
+                double itemHeight = listHeight / count;
                 double proportion = visiblePersons.Height / runner.Height;
-                double runnerStep = step / proportion;
+                double runnerStep = itemHeight / proportion;
                 runnerStep = GetInfluentStep (runnerStep);
                 bool isDirectionUp = true;
 
-                CompleteScrolling (isDirectionUp, step, runnerStep, vm);
+                CompleteScrolling (isDirectionUp, itemHeight, runnerStep, vm);
             }
         }
 
 
         internal void ScrollByTapping ( object sender, TappedEventArgs args )
         {
-            if ( _isPersonsScrollable )
+            if ( visiblePersons.IsScrollable )
             {
                 PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
                 int personCount = vm.VisiblePeople. Count;
@@ -335,7 +363,7 @@ namespace Lister.Views
 
         internal void ShiftRunner ( object sender, TappedEventArgs args )
         {
-            if ( _isPersonsScrollable )
+            if ( visiblePersons.IsScrollable )
             {
                 PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
                 double runnerStep = runner.Height;
@@ -378,8 +406,27 @@ namespace Lister.Views
         }
 
 
+        private void ScrollByKey ( bool isDirectionUp )
+        {
+            PersonChoosingViewModel vm = ( PersonChoosingViewModel ) DataContext;
+
+            if ( visiblePersons.IsScrollable ) 
+            {
+                int count = personList.ItemCount;
+                double listHeight = personList.Height;
+                double itemHeight = listHeight / count;
+                double proportion = visiblePersons.Height / runner.Height;
+                double runnerStep = itemHeight / proportion;
+
+                CompleteScrolling (isDirectionUp, itemHeight, runnerStep, vm);
+            }
+        }
+
+
         private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep, PersonChoosingViewModel vm ) 
         {
+            if ( scroller.Width == 0 ) return;
+
             double currentPersonsScrollValue = vm.PersonsScrollValue;
 
             if ( isDirectionUp )
@@ -515,4 +562,6 @@ namespace Lister.Views
 //private PersonSourceUserControl _personSourceUC;
 //private ZoomNavigationUserControl _zoomNavigationUC;
 //private SceneUserControl _sceneUC;
-
+//private bool _openedViaButton = false;
+//private bool _selectionIsChanged = false;
+//private bool _templateIsSelected = false;

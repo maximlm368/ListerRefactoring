@@ -34,6 +34,7 @@
 			Width="230"
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
+			SelectionChanged="HandleTemplateChoosing"
 		    ItemsSource="{ Binding   Path = Templates,   Mode = OneWay }">
 			
 			<ComboBox.ItemTemplate>
@@ -53,6 +54,7 @@
 			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="False"
+			Tapped="BuildBadges"
 			Content="Построить"/>
 		
 		<Button
@@ -62,7 +64,7 @@
 			HorizontalContentAlignment="Center"
 			Width="86"
 			IsEnabled="False"
-			
+			Tapped="ClearBadges"
 			Content="Очистить" />
 
 		<Button
@@ -72,6 +74,7 @@
 			HorizontalContentAlignment="Center"
 			Width="91"
 			IsEnabled="False"
+			Tapped="GeneratePdf"
 			Content="Сохранить" />
 		
 		<Button
@@ -81,6 +84,7 @@
 			HorizontalContentAlignment="Center"
 			Width="71"
 			IsEnabled="False"
+			Tapped="Print"
 			Content="Печать"/>
 	</Grid>
   

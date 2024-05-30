@@ -58,23 +58,23 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        collection.AddSingleton<IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
-        collection.AddSingleton<IPeopleDataSource, PeopleSource> ();
+        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
+        collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
         //collection.AddSingleton<IResultOfSessionSaver, Lister.ViewModels.ConverterToPdf> ();
-        collection.AddSingleton<Lister.ViewModels.ConverterToPdf> ();
-        collection.AddSingleton<IUniformDocumentAssembler, UniformDocAssembler> ();
-        collection.AddSingleton<ContentAssembler.Size> ();
-        collection.AddSingleton<IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
-        collection.AddSingleton<ModernMainViewModel> ();
-        collection.AddSingleton<BadgeViewModel> ();
-        collection.AddSingleton<ImageViewModel> ();
-        collection.AddSingleton<PageViewModel> ();
-        collection.AddSingleton<PersonChoosingViewModel> ();
-        collection.AddSingleton<PersonSourceViewModel> ();
-        collection.AddSingleton<SceneViewModel> ();
-        collection.AddSingleton<TemplateChoosingViewModel> ();
-        collection.AddSingleton<ZoomNavigationViewModel> ();
-        collection.AddSingleton<TextLineViewModel> ();
+        collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
+        collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
+        collection.AddSingleton <ContentAssembler.Size> ();
+        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
+        collection.AddSingleton <ModernMainViewModel> ();
+        collection.AddSingleton <BadgeViewModel> ();
+        collection.AddSingleton <ImageViewModel> ();
+        collection.AddSingleton <PageViewModel> ();
+        collection.AddSingleton <PersonChoosingViewModel> ();
+        collection.AddSingleton <PersonSourceViewModel> ();
+        collection.AddSingleton <SceneViewModel> ();
+        collection.AddSingleton <TemplateChoosingViewModel> ();
+        collection.AddSingleton <ZoomNavigationViewModel> ();
+        collection.AddSingleton <TextLineViewModel> ();
     }
 }
 

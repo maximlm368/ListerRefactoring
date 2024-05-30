@@ -2,12 +2,10 @@
 {
     public interface IBadgeAppearenceProvider
     {
-        //public BadgeDimensions GetMainBadgeDimesions(string BadgeTemplateName);
-
-        //public List<InsideImage> GetBadgeInsideImages(string BadgeTemplateName);
-
         public OrganizationalDataOfBadge GetBadgeData(string BadgeTemplateName);
-        
+
+        public BadgeLayout GetBadgeLayout ( string badgeTemplateName );
+
         public List<FileInfo> GetBadgeModelsNames();
     }
 

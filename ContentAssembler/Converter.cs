@@ -21,7 +21,7 @@ namespace ContentAssembler
     
     public interface IResultOfSessionSaver
     {
-        internal void ConvertToExtention(List<Badge> items,  string filePathToSave);
+        internal void ConvertToExtention(List<Badgeee> items,  string filePathToSave);
     }
 
 
@@ -39,7 +39,7 @@ namespace ContentAssembler
     public class ConverterToPdf : IResultOfSessionSaver
     {
 
-        void IResultOfSessionSaver.ConvertToExtention (List<Badge> items, string filePathToSave )
+        void IResultOfSessionSaver.ConvertToExtention (List<Badgeee> items, string filePathToSave )
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -154,7 +154,7 @@ namespace ContentAssembler
 
 
 
-        private static void RenderAllItems ( TableDescriptor table,  List<Badge> items) 
+        private static void RenderAllItems ( TableDescriptor table,  List<Badgeee> items) 
         {
             var image = "D://Projects/Java/Lister/src/nurses.jpg";
             string text = "hflashflh";

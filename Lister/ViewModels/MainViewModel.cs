@@ -553,7 +553,7 @@ class MainViewModel : ViewModelBase
 
         string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
-        List<Badge> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
+        List<Badgeee> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
 
         if ( requiredBadges.Count > 0 ) 
         {
@@ -596,7 +596,7 @@ class MainViewModel : ViewModelBase
         string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
         Person goalPerson = ChosenPerson;
-        Badge requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
+        Badgeee requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
         VMBadge goalVMBadge = new VMBadge (requiredBadge);
 
         if ( ! goalVMBadge.IsCorrect )
@@ -640,7 +640,7 @@ class MainViewModel : ViewModelBase
     }
 
 
-    internal bool VerifyBadgeCorrectness(Badge badge ) 
+    internal bool VerifyBadgeCorrectness(Badgeee badge ) 
     {
 
 

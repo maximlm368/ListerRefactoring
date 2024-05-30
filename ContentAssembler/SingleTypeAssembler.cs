@@ -55,12 +55,12 @@ namespace ContentAssembler
                 string.IsNullOrEmpty ("");
             }
 
-            List<Badge> badges = new List<Badge>();
-            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceProvider.GetBadgeData(badgeModelName);
+            List<Badge> badges = new ();
+            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (badgeModelName);
 
             foreach ( var person in people ) 
             {    
-                Badge item = new Badge (person, badgeModelName, badgeOrganizationalData);
+                Badge item = new Badge (person, badgeModelName, badgeLayout);
                 badges.Add (item);
             }
 
@@ -80,14 +80,14 @@ namespace ContentAssembler
                 throw new ArgumentNullException("arguments must be not null");
             }
 
-            OrganizationalDataOfBadge badgeOrganizationalData = badgeAppearenceProvider.GetBadgeData(badgeModelName);
+            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout(badgeModelName);
 
-            Badge badge = new Badge ( person, badgeModelName, badgeOrganizationalData );
+            Badge badge = new Badge ( person, badgeModelName, badgeLayout );
 
             return badge;
         }
 
-        public Badge CreateSingleBadgeByModel(string badgeModelName)
+        public Badgeee CreateSingleBadgeByModel(string badgeModelName)
         {
             throw new NotImplementedException();
         }

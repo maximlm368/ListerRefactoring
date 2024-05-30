@@ -25,13 +25,16 @@ using static Lister.ViewModels.MainViewModel;
 using System.Reflection;
 using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
+using QuestPDF.Helpers;
+using System;
 
 
 namespace Lister.ViewModels;
 
 public class TemplateChoosingViewModel : ViewModelBase
 {
-    private IUniformDocumentAssembler uniformAssembler;
+    private ConverterToPdf converter;
+    private SceneViewModel _sceneVM;
 
     private List<FileInfo> templatesField;
     internal List<FileInfo> Templates
@@ -65,8 +68,86 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    public TemplateChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize ) 
+    public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, ContentAssembler.Size pageSize, 
+                                       SceneViewModel sceneViewModel ) 
     {
-        Templates = uniformAssembler.GetBadgeModels ();
+        Templates = docAssembler.GetBadgeModels ();
+        _sceneVM = sceneViewModel;
+        converter = new ConverterToPdf ();
+    }
+
+
+    internal void BuildBadges ()
+    {
+        if ( ChosenTemplate == null )
+        {
+            return;
+        }
+
+        string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
+        _sceneVM.BuildBadges (fileName);
+    }
+
+
+    internal void BuildSingleBadge ()
+    {
+        if ( ChosenTemplate == null )
+        {
+            return;
+        }
+
+        string fileName = ChosenTemplate.FullName.ExtractFileNameFromPath ();
+        _sceneVM.BuildSingleBadge (fileName);
+    }
+
+
+    internal void ClearAllPages ()
+    {
+        _sceneVM.ClearAllPages ();
+    }
+
+
+    internal Task<bool> GeneratePdf ( string fileToSave )
+    {
+        List <BadgeViewModel> badges = GetAllBadges ();
+        Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (badges, fileToSave); });
+        task.Start ();
+        return task;
+    }
+
+
+    public void Print ()
+    {
+        List <BadgeViewModel> badges = GetAllBadges ();
+        string fileToSave = @"intermidiate.pdf";
+        Task pdf = new Task (() => { converter.ConvertToExtention (badges, fileToSave); });
+        pdf.Start ();
+        pdf.ContinueWith
+               (
+                  savingTask =>
+                  {
+                      int length = converter.intermidiateFiles.Count;
+
+                      ProcessStartInfo info = new ()
+                      {
+                          FileName = fileToSave,
+                          Verb = "Print",
+                          UseShellExecute = true,
+                          ErrorDialog = false,
+                          CreateNoWindow = true,
+                          WindowStyle = ProcessWindowStyle.Minimized
+                      };
+
+                      Process.Start (info)?.WaitForExit (20_000);
+                      File.Delete (fileToSave);
+                  }
+               );
+    }
+
+
+    private List <BadgeViewModel> GetAllBadges ()
+    {
+        List <BadgeViewModel> allBadges = _sceneVM.GetAllBadges();
+        return allBadges;
     }
 }

@@ -52,11 +52,10 @@ namespace Lister.ViewModels
                     ObservableCollection <Person> visible = new ();
                     List <Person> people = new ();
 
-                    foreach ( var person in persons )
+                    foreach ( var person   in   persons )
                     {
                         visible.Add (person);
                         people.Add (person);
-                        
                     }
 
                     _personChoosingVM.VisiblePeople = visible;

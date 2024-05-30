@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="340"
              x:Class="Lister.Views.PersonChoosingUserControl"
+			 xmlns:uc="clr-namespace:Lister.Views"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:PersonChoosingViewModel">
 
@@ -30,6 +31,7 @@
 			<TextBox
 				Name="comboboxFrame"
 				Focusable="False"
+				IsReadOnly="True"
 				Width="471" />
 
 			<TextBox
@@ -38,7 +40,7 @@
 				FontSize="14"
 				Background="White"
 				IsReadOnly="True"
-				KeyDown="DropOrPickUpPersonsByKey"
+				KeyDown="DropOrPickUpPersonsOrScroll"
 				KeyUp="HandlePersonListReduction" />
 			
 			<Border
@@ -46,26 +48,28 @@
 				Margin="0,-2"
 				BorderThickness="1"
 				Background="Gray">
-				
-				<Viewbox
+
+				<uc:CustomViewbox
 					Name="visiblePersons"
 					Width="469"
-					Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+					Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 					PointerEntered="CursorIsOverPersonList"
 					PointerExited="CursorIsOutOfPersonList"
 					PointerWheelChanged="ScrollByWheel"
-					IsVisible="True">
+					IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
+					IsVisible="False">
 
 					<Canvas
 						Name="listFrame"
 						Width="469"
-						Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
 						<ItemsControl
 							Name="personList"
 							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+							Height="{Binding   Path = PersonListHeight,  Mode=OneWayToSource}"
 							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
@@ -77,7 +81,7 @@
 										BorderThickness="1"
 										IsReadOnly="True"
 										Tapped="HandleChoosingByTapping"
-										KeyDown="AcceptFocusedPerson"
+										KeyDown="AcceptFocusedPersonOrScroll"
 										Text="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
 
 								</DataTemplate>
@@ -108,7 +112,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
 								Background="White"
-								Tapped="ShiftRunner"/>		
+								Tapped="ShiftRunner"/>
 
 							<Canvas
 								Name="runner"
@@ -141,7 +145,7 @@
 						</Canvas>
 
 					</Canvas>
-				</Viewbox>
+				</uc:CustomViewbox>
 			</Border>
 
 			

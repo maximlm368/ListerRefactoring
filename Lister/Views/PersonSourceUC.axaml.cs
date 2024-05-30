@@ -14,12 +14,25 @@ namespace Lister.Views
         //private SceneUserControl _scene;
         private PersonChoosingUserControl _personChoosing;
         private PersonSourceViewModel _vm;
+        private TemplateChoosingUserControl _templateChoosing;
+        private ZoomNavigationUserControl _zoomNavigation;
+        private SceneUserControl _scene;
 
 
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
             _vm = (PersonSourceViewModel) DataContext;
+        }
+
+
+        internal void PassNeighbours ( PersonChoosingUserControl personChoosing, TemplateChoosingUserControl templateChoosing,
+                                     , ZoomNavigationUserControl zoomNavigation, SceneUserControl scene )
+        {
+            _personChoosing = personChoosing;
+            _templateChoosing = templateChoosing;
+            _scene = scene;
+            _zoomNavigation = zoomNavigation;
         }
 
 

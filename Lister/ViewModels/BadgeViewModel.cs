@@ -19,7 +19,7 @@ namespace Lister.ViewModels;
 public class BadgeViewModel : ViewModelBase
 {
     private const double coefficient = 1.1;
-    internal Badgee BadgeModel { get; private set; }
+    internal Badge BadgeModel { get; private set; }
     internal Bitmap ImageBitmap { get; private set; }
 
     private double bW;
@@ -86,7 +86,7 @@ public class BadgeViewModel : ViewModelBase
     internal bool IsCorrect { get; private set; }
 
 
-    public BadgeViewModel ( Badgee badgeModel )
+    public BadgeViewModel ( Badge badgeModel )
     {
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;

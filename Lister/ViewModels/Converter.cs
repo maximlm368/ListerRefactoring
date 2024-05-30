@@ -36,7 +36,7 @@ class ConverterToPdf
     public List<string> intermidiateFiles = new ();
 
 
-    internal bool ConvertToExtention ( List<VMBadge> items, string filePathToSave)
+    internal bool ConvertToExtention ( List<BadgeViewModel> items, string filePathToSave)
     {
         bool result = true;
 
@@ -47,7 +47,7 @@ class ConverterToPdf
         }
 
         Settings.License = LicenseType.Community;
-        List<VMBadge []> pairs = items.SeparateIntoPairs ();
+        List<BadgeViewModel []> pairs = items.SeparateIntoPairs ();
 
         var doc = QuestPDF.Fluent.Document.Create(container =>
         {

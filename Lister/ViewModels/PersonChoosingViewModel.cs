@@ -44,7 +44,6 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
-                SetPersonList (value);
             }
         }
 
@@ -58,23 +57,34 @@ namespace Lister.ViewModels
             }
         }
 
-        private double plH = 100;
-        internal double PersonListHeight
+        private double vH;
+        internal double VisibleHeight
         {
-            get { return plH; }
+            get { return vH; }
             set
             {
-                this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
+                this.RaiseAndSetIfChanged (ref vH, value, nameof (VisibleHeight));
             }
         }
 
-        private double plW = 454;
+        private double plW;
         internal double PersonListWidth
         {
             get { return plW; }
             set
             {
                 this.RaiseAndSetIfChanged (ref plW, value, nameof (PersonListWidth));
+            }
+        }
+
+        private double plH;
+        internal double PersonListHeight
+        {
+            get { return plH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
+                SetPersonList ();
             }
         }
 
@@ -138,14 +148,23 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool isPS;
+        public bool IsPersonsScrollable
+        {
+            get { return isPS; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref isPS, value, nameof (IsPersonsScrollable));
+            }
+        }
+
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
                                          , ContentAssembler.Size pageSize )
         {
             
-            VisiblePeople = new ObservableCollection <Person> ( );
-            People = new List <Person> ( );
-            
+            //VisiblePeople = new ObservableCollection <Person> ( );
+            //People = new List <Person> ( );
         }
 
 
@@ -173,28 +192,41 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetPersonList ( ObservableCollection <Person> persons ) 
+        private void SetPersonList ( ) 
         {
-            if ( persons == null ) 
-            {
-                return;
-            }
+            int personCount = VisiblePeople. Count;
+            double oneHeight = PersonListHeight / personCount;
 
-            if ( persons.Count <= 5 ) 
+            if (personCount > 5) 
             {
-                PersonListHeight = 20 * persons.Count;
-                PersonListWidth = 469;
-                ScrollerWidth = 0;
+                ShowScroller (oneHeight);
             }
             else 
             {
-                PersonListHeight = 20 * 5;
-                PersonListWidth = 454;
-                ScrollerWidth = 15;
-
-                RunnerTopCoordinate = 15;
-                //RunnerHeight = 
+                VisibleHeight = oneHeight * personCount;
+                PersonListWidth = 469;
+                ScrollerWidth = 0;
+                IsPersonsScrollable = false;
             }
+
+            
+        }
+
+
+        private void ShowScroller ( double oneHeight ) 
+        {
+            VisibleHeight = oneHeight * 5;
+            PersonListWidth = 454;
+            ScrollerWidth = 15;
+
+            double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
+            double proportion = PersonListHeight / scrollerWorkAreaHeight;
+            RunnerHeight = VisibleHeight * proportion;
+            RunnerTopCoordinate = 15;
+            TopSpanHeight = 0;
+            BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
+            PersonsScrollValue = 0;
+            IsPersonsScrollable = true;
         }
 
     }
