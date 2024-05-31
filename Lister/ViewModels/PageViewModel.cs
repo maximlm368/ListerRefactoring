@@ -25,7 +25,7 @@ public class PageViewModel : ViewModelBase
     private int _badgeCount;
     private double _scale;
     private BadgeLine _currentLine;
-    internal Size pageSize;
+    internal static Size pageSize;
 
     private double pW;
     internal double PageWidth
@@ -47,16 +47,6 @@ public class PageViewModel : ViewModelBase
         }
     }
 
-    private BadgeViewModel bE;
-    internal BadgeViewModel BadgeExample
-    {
-        get { return bE; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref bE, value, nameof (BadgeExample));
-        }
-    }
-
     private ObservableCollection <BadgeLine> llines;
     internal ObservableCollection <BadgeLine> Lines
     {
@@ -68,10 +58,15 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    public PageViewModel ( Size pageSize, BadgeViewModel badgeExample, double desiredScale )
+    static PageViewModel () 
+    {
+        pageSize = new Size (794, 1123);
+    }
+
+
+    public PageViewModel ( double desiredScale )
     {
         Lines = new ObservableCollection<BadgeLine> ();
-        BadgeExample = badgeExample;
         _scale = desiredScale;
         _badgeCount = 0;
         PageWidth = pageSize.Width;
@@ -84,20 +79,18 @@ public class PageViewModel : ViewModelBase
 
 
     internal static List <PageViewModel> ? PlaceIntoPages ( List<BadgeViewModel> placebleBadges,
-                                                         Size pageSize, double desiredScale, PageViewModel ? scratchPage )
+                                                            double desiredScale, PageViewModel ? scratchPage )
     {
-        bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, pageSize, desiredScale);
+        bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, desiredScale);
 
         if ( areArgumentsInvalid )
         {
             return null;
         }
-
-        BadgeViewModel badgeExample = placebleBadges [0].Clone ();
         
         //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
 
-        PageViewModel fillablePage = DefineFillablePage(scratchPage, pageSize, desiredScale, badgeExample);
+        PageViewModel fillablePage = DefineFillablePage(scratchPage, desiredScale);
 
         return Place (placebleBadges, desiredScale, fillablePage);
     }
@@ -122,7 +115,7 @@ public class PageViewModel : ViewModelBase
 
             if ( timeToStartNewPage )
             {
-                beingProcessedPage = new PageViewModel (pageSize, BadgeExample, _scale);
+                beingProcessedPage = new PageViewModel ( _scale);
             }
 
             beingProcessedPage.Lines.Add (_currentLine);
@@ -136,23 +129,6 @@ public class PageViewModel : ViewModelBase
     internal void Clear ()
     {
         _badgeCount = 0;
-    }
-
-
-    private void VerifyBadgeSizeAccordence ( VMBadge badge )
-    {
-        Size verifiebleSize = badge.BadgeModel.badgeDescription.badgeDimensions.outlineSize;
-        int verifiebleWidth = ( int ) ( _scale * verifiebleSize.Width );
-        int verifiebleHeight = ( int ) ( _scale * verifiebleSize.Height );
-
-        bool isNotAccordent = ( verifiebleWidth != ( int ) BadgeExample. BadgeWidth )
-                              ||
-                              ( verifiebleHeight != ( int ) BadgeExample. BadgeHeight );
-
-        if ( isNotAccordent )
-        {
-            throw new Exception ("Size of passed on badge is not according set for this page");
-        }
     }
 
 
@@ -217,27 +193,23 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, Size pageSize, double desiredScale )
+    private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, double desiredScale )
     {
         bool areArgumentsInvalid = ( placebleBadges == null );
         areArgumentsInvalid = areArgumentsInvalid || ( placebleBadges.Count < 1 );
-        areArgumentsInvalid = areArgumentsInvalid || ( pageSize == null );
-        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.Width == 0 );
-        areArgumentsInvalid = areArgumentsInvalid || ( pageSize.Height == 0 );
         areArgumentsInvalid = areArgumentsInvalid || ( desiredScale == 0 );
 
         return areArgumentsInvalid;
     }
 
 
-    private static PageViewModel DefineFillablePage ( PageViewModel? scratchPage, Size pageSize, double desiredScale,
-                                                      BadgeViewModel badgeExample ) 
+    private static PageViewModel DefineFillablePage ( PageViewModel? scratchPage, double desiredScale ) 
     {
         bool isBadgeInsertionFirstTime = (scratchPage == null);
 
         if ( isBadgeInsertionFirstTime ) 
         {
-            return new PageViewModel (pageSize, badgeExample, desiredScale);
+            return new PageViewModel ( desiredScale);
         }
         else 
         {
@@ -296,5 +268,23 @@ public class PageException : Exception {}
 //    set
 //    {
 //        this.RaiseAndSetIfChanged (ref lCTS, value, nameof (LinesContainerTopShift));
+//    }
+//}
+
+
+
+//private void VerifyBadgeSizeAccordence ( VMBadge badge )
+//{
+//    Size verifiebleSize = badge.BadgeModel.badgeDescription.badgeDimensions.outlineSize;
+//    int verifiebleWidth = ( int ) ( _scale * verifiebleSize.Width );
+//    int verifiebleHeight = ( int ) ( _scale * verifiebleSize.Height );
+
+//    bool isNotAccordent = ( verifiebleWidth != ( int ) BadgeExample.BadgeWidth )
+//                          ||
+//                          ( verifiebleHeight != ( int ) BadgeExample.BadgeHeight );
+
+//    if ( isNotAccordent )
+//    {
+//        throw new Exception ("Size of passed on badge is not according set for this page");
 //    }
 //}

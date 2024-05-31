@@ -15,9 +15,11 @@ namespace Lister.ViewModels
         
         private double _documentScale;
         private double _scalabilityCoefficient;
+        private double _zoomDegree;
         private List <PageViewModel> _allPages;
         private PageViewModel _lastPage;
         private Person _chosenPerson;
+        private string procentSymbol;
 
         private PageViewModel vPage;
         internal PageViewModel VisiblePage
@@ -41,13 +43,30 @@ namespace Lister.ViewModels
 
         internal List<BadgeViewModel> IncorrectBadges { get; private set; }
 
+        private string zoomDV;
+        internal string ZoomDegreeInView
+        {
+            get { return zoomDV; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
+            }
+        }
+
+        private PersonChoosingViewModel _personChoosingVM;
 
 
-        public SceneViewModel ( IUniformDocumentAssembler docAssembler, ContentAssembler.Size pageSize ) 
+        public SceneViewModel ( IUniformDocumentAssembler docAssembler, ContentAssembler.Size pageSize,
+                                PersonChoosingViewModel personChoosingVM ) 
         {
             _docAssembler = docAssembler;
+            _personChoosingVM = personChoosingVM;
+            _allPages = new List <PageViewModel> ();
             _documentScale = 1;
             _scalabilityCoefficient = 1.25;
+            VisiblePageNumber = 1;
+            procentSymbol = "%";
+            _zoomDegree = 100;
         }
 
 
@@ -97,7 +116,7 @@ namespace Lister.ViewModels
         {
             string pathInAvalonia = "avares://Lister/Assets";
             string badgeModelName = pathInAvalonia + "/" + fileName;
-            Person goalPerson = ChosenPerson;
+            Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge);
 
@@ -111,7 +130,7 @@ namespace Lister.ViewModels
             if ( itIsFirstBadgeBuildingInCurrentAppRun )
             {
                 BadgeViewModel badgeExample = goalVMBadge.Clone ();
-                VisiblePage = new PageViewModel (pageSize, badgeExample, _documentScale);
+                VisiblePage = new PageViewModel ( _documentScale);
                 _lastPage = VisiblePage;
                 _allPages.Add (VisiblePage);
             }
@@ -171,7 +190,8 @@ namespace Lister.ViewModels
                     _allPages [pageCounter].ZoomOn (_scalabilityCoefficient);
                 }
 
-                VisiblePage.ZoomOnExampleBadge (_scalabilityCoefficient);
+                //VisiblePage.ZoomOnExampleBadge (_scalabilityCoefficient);
+                VisiblePage.ZoomOn (_scalabilityCoefficient);
                 _zoomDegree *= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
@@ -185,12 +205,13 @@ namespace Lister.ViewModels
 
             if ( VisiblePage != null )
             {
-                for ( int pageCounter = 0; pageCounter < _allPages.Count; pageCounter++ )
+                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
                 {
                     _allPages [pageCounter].ZoomOut (_scalabilityCoefficient);
                 }
 
-                VisiblePage.ZoomOutExampleBadge (_scalabilityCoefficient);
+                VisiblePage.ZoomOut (_scalabilityCoefficient);
+
                 _zoomDegree /= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
@@ -198,7 +219,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void VisualiseNextPage ()
+        internal int VisualiseNextPage ()
         {
             if ( VisiblePageNumber < _allPages.Count )
             {
@@ -207,10 +228,12 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
+
+            return VisiblePageNumber;
         }
 
 
-        internal void VisualisePreviousPage ()
+        internal int VisualisePreviousPage ()
         {
             if ( VisiblePageNumber > 1 )
             {
@@ -219,10 +242,12 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
+
+            return VisiblePageNumber;
         }
 
 
-        internal void VisualiseLastPage ()
+        internal int VisualiseLastPage ()
         {
             if ( VisiblePageNumber < _allPages.Count )
             {
@@ -231,10 +256,12 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
+
+            return VisiblePageNumber;
         }
 
 
-        internal void VisualiseFirstPage ()
+        internal int VisualiseFirstPage ()
         {
             if ( VisiblePageNumber > 1 )
             {
@@ -243,53 +270,39 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
+
+            return VisiblePageNumber;
         }
 
 
         internal int VisualisePageWithNumber ( int pageNumber )
         {
-            int result = VisiblePageNumber;
             bool notTheSamePage = VisiblePageNumber != pageNumber;
             bool inRange = pageNumber <= _allPages.Count;
 
-            if ( notTheSamePage && inRange )
+            if ( notTheSamePage   &&   inRange )
             {
                 VisiblePage.Hide ();
                 VisiblePageNumber = pageNumber;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
-                result = pageNumber;
             }
 
-            return result;
+            return VisiblePageNumber;
         }
 
 
-        internal List <BadgeViewModel> GetAllBadges ()
+        internal List <PageViewModel> GetAllPages ()
         {
-            List<BadgeViewModel> allBadges = new ();
-
-            for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
-            {
-                int badgePairCounter = 0;
-
-                while ( true )
-                {
-                    try
-                    {
-                        allBadges.Add (_allPages [pageCounter].EvenBadges [badgePairCounter]);
-                        allBadges.Add (_allPages [pageCounter].OddBadges [badgePairCounter]);
-                        badgePairCounter++;
-                    }
-                    catch ( ArgumentOutOfRangeException e )
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return allBadges;
+            return _allPages;
         }
+
+
+        internal int GetPageCount ()
+        {
+            return _allPages.Count;
+        }
+
 
     }
 }

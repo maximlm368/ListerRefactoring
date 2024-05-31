@@ -809,7 +809,7 @@ public partial class MainView : UserControl
         try
         {
             int pageNumber = (int) UInt32.Parse (textBox.Text);
-            int visiblePageNum = viewModel.VisualisePageWithNumber (pageNumber);
+            viewModel.VisualisePageWithNumber (pageNumber);
             visiblePageNumber.Text = viewModel. VisiblePageNumber.ToString ( );
             SetEnablePageNavigation ();
         }

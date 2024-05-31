@@ -16,15 +16,54 @@ namespace Lister.ViewModels
         private SceneViewModel _sceneVM;
 
 
-        public ModernMainViewModel ( ) 
+        public ModernMainViewModel ( PersonSourceViewModel personSourceVM, PersonChoosingViewModel personChoosingVM,
+                                     TemplateChoosingViewModel templateChoosingVM, ZoomNavigationViewModel zoomNavigationVM,
+                                     SceneViewModel sceneVM )
         {
-            //_personChoosingVM = new PersonChoosingViewModel (singleTypeDocumentAssembler, pageSize);
-            //_personSourceVM = new PersonSourceViewModel (singleTypeDocumentAssembler, pageSize, _personChoosingVM);
-            //_templateChoosingVM = new TemplateChoosingViewModel ( singleTypeDocumentAssembler, pageSize );
-            //_zoomNavigationVM = new ZoomNavigationViewModel (singleTypeDocumentAssembler, pageSize);
-            //_sceneVM = new SceneViewModel (singleTypeDocumentAssembler, pageSize);
+            _personChoosingVM = personChoosingVM;
+            _personSourceVM = personSourceVM;
+            _templateChoosingVM = templateChoosingVM;
+            _zoomNavigationVM = zoomNavigationVM;
+            _sceneVM = sceneVM;
         }
-
+        
     }
+
+
 }
 //  IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize
+
+//public override void Send ( string message, List<object> args, LittleViewModel littleVM )
+//{
+//    if ( _personChoosingVM == (littleVM as PersonChoosingViewModel) ) 
+//    {
+
+//    }
+//}
+
+//public abstract class Mediator : ViewModelBase
+//{
+//    public abstract void Send ( string message, List<object> ? args, LittleViewModel littleVM );
+//}
+
+
+
+//public abstract class LittleViewModel : ViewModelBase
+//{
+//    protected Mediator _mediator;
+
+
+//    public void SetMediator ( Mediator mediator )
+//    {
+//        this._mediator = mediator;
+//    }
+
+
+//    public virtual void Send ( string message, List<object> ? args )
+//    {
+//        _mediator.Send (message, args, this);
+//    }
+
+
+//    public abstract void Notify ( string message, List<object> ? args );
+//}

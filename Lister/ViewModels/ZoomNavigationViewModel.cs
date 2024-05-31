@@ -30,11 +30,96 @@ namespace Lister.ViewModels
 {
     public class ZoomNavigationViewModel : ViewModelBase
     {
-        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize) 
+        private SceneViewModel _sceneVM;
+
+        private int vpN;
+        internal int VisiblePageNumber
         {
-        
+            get { return vpN; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
+            }
         }
 
+        private string zoomDV;
+        internal string ZoomDegreeInView
+        {
+            get { return zoomDV; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
+            }
+        }
+        private double zoomDegree;
+
+
+        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize,
+                                        SceneViewModel sceneViewModel ) 
+        {
+            _sceneVM = sceneViewModel;
+        }
+
+
+        internal void VisualiseNextPage ()
+        {
+            VisiblePageNumber = _sceneVM.VisualiseNextPage ();
+        }
+
+
+        internal void VisualisePreviousPage ()
+        {
+            VisiblePageNumber = _sceneVM.VisualisePreviousPage ();
+        }
+
+
+        internal void VisualiseLastPage ()
+        {
+            VisiblePageNumber = _sceneVM.VisualiseLastPage ();
+        }
+
+
+        internal void VisualiseFirstPage ()
+        {
+            VisiblePageNumber = _sceneVM.VisualiseFirstPage ();
+        }
+
+
+        internal void VisualisePageWithNumber ( int pageNumber )
+        {
+            VisiblePageNumber = _sceneVM.VisualisePageWithNumber (pageNumber);
+        }
+
+
+        internal int GetPageCount () 
+        {
+            return _sceneVM.GetPageCount ();
+        }
+
+
+        internal void ZoomOnDocument ( short step )
+        {
+            _sceneVM.ZoomOnDocument ( step );
+        }
+
+
+        internal void ZoomOutDocument ( short step )
+        {
+            _sceneVM.ZoomOutDocument ( step );
+        }
     }
+
+
+
+    public class MediatorNullException : Exception { }
 }
+
+
+//private void CheckMediator ()
+//{
+//    if ( _mediator == null )
+//    {
+//        throw new MediatorNullException ();
+//    }
+//}
 

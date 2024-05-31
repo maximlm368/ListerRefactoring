@@ -229,6 +229,7 @@ namespace Lister.ViewModels
             IsPersonsScrollable = true;
         }
 
+        
     }
 }
 
