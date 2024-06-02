@@ -7,20 +7,20 @@ namespace DataGateway
 {
     public class BadgeAppearenceProvider : IBadgeAppearenceProvider
     {
-        private string templatesFolderPath;
-        private List<string> textualAtomNames;
-        private Dictionary<string, string> nameAndJson;
+        private string _templatesFolderPath;
+        private List<string> _textualAtomNames;
+        private Dictionary<string, string> _nameAndJson;
 
 
-        public BadgeAppearenceProvider ( string templatesPath )
+        public BadgeAppearenceProvider ( string templatesFolderPath )
         {
-            textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            this.templatesFolderPath = templatesPath;
-            DirectoryInfo containingDirectory = new DirectoryInfo ( templatesFolderPath );
+            _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
+            _templatesFolderPath = templatesFolderPath;
+            DirectoryInfo containingDirectory = new DirectoryInfo ( _templatesFolderPath );
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
-            nameAndJson = new Dictionary<string , string> ( );
+            _nameAndJson = new Dictionary<string , string> ( );
 
-            foreach ( FileInfo fileInfo in fileInfos )
+            foreach ( FileInfo fileInfo   in   fileInfos )
             {
                 string jsonPath = fileInfo.FullName;
                 string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath );
@@ -28,51 +28,28 @@ namespace DataGateway
 
                 if ( hasNameExist )
                 {
-                    nameAndJson.Add ( templateName, jsonPath );
+                    _nameAndJson.Add ( templateName, jsonPath );
                 }
             }
         }
 
 
-        public OrganizationalDataOfBadge GetBadgeData (string badgeTemplateName)
+        public string GetBadgeBackgroundPath ( string templateName )
         {
-            double badgeWidth = 350;
-            double badgeHeight = 214;
-            Size badgeSize = new Size (badgeWidth, badgeHeight);
-
-            double personTextAreaWidth = 220;
-            double personTextAreaHeight = 147;
-            Size personTextAreaSize = new Size (personTextAreaWidth, personTextAreaHeight);
-
-            double personTextBlockTopShiftOnBackground = 60;
-            double personTextBlockLeftShiftOnBackground = 130;
-
-            double firstLevelFontSize = 30;
-            double secondLevelFontSize = 16;
-            double thirdLevelFontSize = 11;
-
-            double firstLevelTBHeight = 37;
-            double secondLevelTBHeight = 20;
-            double thirdLevelTBHeight = 14;
-
-            BadgeDimensions badgeDimensions = new BadgeDimensions( badgeSize, personTextAreaSize
-                                                  , personTextBlockTopShiftOnBackground, personTextBlockLeftShiftOnBackground 
-                                                  , firstLevelFontSize, secondLevelFontSize, thirdLevelFontSize
-                                                  , firstLevelTBHeight, secondLevelTBHeight, thirdLevelTBHeight);
-
-            OrganizationalDataOfBadge badgeDescriprion = new OrganizationalDataOfBadge (badgeDimensions, null);
-
-            return badgeDescriprion;
+            string jsonPath = _nameAndJson [ templateName ];
+            string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
+            return backgroundPath;
         }
 
 
-        public BadgeLayout GetBadgeLayout ( string badgeTemplateName )
+        public BadgeLayout GetBadgeLayout ( string templateName )
         {
-            string jsonPath = nameAndJson [ badgeTemplateName ];
+            string jsonPath = _nameAndJson [ templateName ];
 
-            double badgeWidth = GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateIntoDouble ( );
+            double badgeWidth = 
+                      GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateIntoDouble ( );
             double badgeHeight =
-            GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateIntoDouble ( );
+                      GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateIntoDouble ( );
             Size badgeSize = new Size ( badgeWidth, badgeHeight );
 
             List<TextualAtom> atoms = GetAtoms ( jsonPath );
@@ -241,7 +218,7 @@ namespace DataGateway
         {
             List<string> templateNames = new ();
 
-            foreach ( KeyValuePair<string, string> template in nameAndJson )
+            foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
                 templateNames.Add (template.Key);
             }
@@ -282,7 +259,36 @@ namespace DataGateway
         }
 
 
+        public OrganizationalDataOfBadge GetBadgeData ( string badgeTemplateName )
+        {
+            double badgeWidth = 350;
+            double badgeHeight = 214;
+            Size badgeSize = new Size ( badgeWidth , badgeHeight );
 
+            double personTextAreaWidth = 220;
+            double personTextAreaHeight = 147;
+            Size personTextAreaSize = new Size ( personTextAreaWidth , personTextAreaHeight );
+
+            double personTextBlockTopShiftOnBackground = 60;
+            double personTextBlockLeftShiftOnBackground = 130;
+
+            double firstLevelFontSize = 30;
+            double secondLevelFontSize = 16;
+            double thirdLevelFontSize = 11;
+
+            double firstLevelTBHeight = 37;
+            double secondLevelTBHeight = 20;
+            double thirdLevelTBHeight = 14;
+
+            BadgeDimensions badgeDimensions = new BadgeDimensions ( badgeSize , personTextAreaSize
+                                                  , personTextBlockTopShiftOnBackground , personTextBlockLeftShiftOnBackground
+                                                  , firstLevelFontSize , secondLevelFontSize , thirdLevelFontSize
+                                                  , firstLevelTBHeight , secondLevelTBHeight , thirdLevelTBHeight );
+
+            OrganizationalDataOfBadge badgeDescriprion = new OrganizationalDataOfBadge ( badgeDimensions , null );
+
+            return badgeDescriprion;
+        }
 
     }
 }

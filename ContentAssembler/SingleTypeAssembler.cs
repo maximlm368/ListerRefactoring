@@ -21,9 +21,9 @@ namespace ContentAssembler
 
         public List<Person> GetPersons (string? personsFilePath);
 
-        public List<FileInfo> GetBadgeModels ();
+        public List<string> GetBadgeModels ( );
 
-        public void GeneratePdf ();
+        public void GeneratePdf ( );
     }
 
 
@@ -47,20 +47,20 @@ namespace ContentAssembler
         }
 
 
-        public List<Badge> CreateBadgesByModel ( string badgeModelName )
+        public List<Badge> CreateBadgesByModel ( string templateName )
         {
-            if ( badgeModelName == null ) 
+            if ( string.IsNullOrEmpty ( templateName ) ) 
             {
-                //throw new ArgumentNullException ("arguments must be not null");
-                string.IsNullOrEmpty ("");
+                throw new ArgumentNullException ( "arguments must be not null" );
             }
 
             List<Badge> badges = new ();
-            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (badgeModelName);
+            string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
 
-            foreach ( var person in people ) 
+            foreach ( var person   in   people ) 
             {    
-                Badge item = new Badge (person, badgeModelName, badgeLayout);
+                Badge item = new Badge (person, backgroundPath, badgeLayout);
                 badges.Add (item);
             }
 
@@ -68,9 +68,9 @@ namespace ContentAssembler
         }
 
 
-        public Badge CreateSingleBadgeByModel(string badgeModelName, Person person) 
+        public Badge CreateSingleBadgeByModel(string templateName, Person person) 
         {
-            if (badgeModelName == null)
+            if (templateName == null)
             {
                 throw new ArgumentNullException("arguments must be not null");
             }
@@ -80,9 +80,9 @@ namespace ContentAssembler
                 throw new ArgumentNullException("arguments must be not null");
             }
 
-            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout(badgeModelName);
-
-            Badge badge = new Badge ( person, badgeModelName, badgeLayout );
+            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout(templateName);
+            string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            Badge badge = new Badge ( person, backgroundPath, badgeLayout );
 
             return badge;
         }
@@ -99,9 +99,9 @@ namespace ContentAssembler
         }
 
 
-        public List<FileInfo> GetBadgeModels()
+        public List<string> GetBadgeModels()
         {
-            return badgeAppearenceProvider.GetBadgeModelsNames();
+            return badgeAppearenceProvider.GetBadgeTemplateNames();
         }
 
 

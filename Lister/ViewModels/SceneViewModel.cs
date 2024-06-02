@@ -70,20 +70,17 @@ namespace Lister.ViewModels
         }
 
 
-        internal void BuildBadges ( string fileName )
+        internal void BuildBadges ( string templateName )
         {
-            string pathInAvalonia = "avares://Lister/Assets";
-
-            string badgeModelName = pathInAvalonia + "/" + fileName;
-            List<Badge> requiredBadges = _docAssembler.CreateBadgesByModel (badgeModelName);
+            List<Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
 
             if ( requiredBadges.Count > 0 )
             {
                 List<BadgeViewModel> allBadges = new ();
 
-                for ( int badgeCounter = 0; badgeCounter < requiredBadges.Count; badgeCounter++ )
+                for ( int index = 0;   index < requiredBadges.Count;   index++ )
                 {
-                    BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [badgeCounter]);
+                    BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 
                     if ( !beingProcessedBadgeVM.IsCorrect )
@@ -112,12 +109,10 @@ namespace Lister.ViewModels
         }
 
 
-        internal void BuildSingleBadge ( string fileName )
+        internal void BuildSingleBadge ( string templateName )
         {
-            string pathInAvalonia = "avares://Lister/Assets";
-            string badgeModelName = pathInAvalonia + "/" + fileName;
             Person goalPerson = _personChoosingVM.ChosenPerson;
-            Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
+            Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge);
 
             if ( !goalVMBadge.IsCorrect )

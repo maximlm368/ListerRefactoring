@@ -6,7 +6,9 @@
 
         public BadgeLayout GetBadgeLayout ( string badgeTemplateName );
 
-        public List<FileInfo> GetBadgeModelsNames();
+        public List<string> GetBadgeTemplateNames ( );
+
+        public string GetBadgeBackgroundPath ( string templateName );
     }
 
 

@@ -36,25 +36,25 @@ public class TemplateChoosingViewModel : ViewModelBase
     private ConverterToPdf converter;
     private SceneViewModel _sceneVM;
 
-    private List<FileInfo> templatesField;
-    internal List<FileInfo> Templates
+    private List<string> tF;
+    internal List<string> Templates
     {
         get
         {
-            return templatesField;
+            return tF;
         }
         set
         {
-            this.RaiseAndSetIfChanged (ref templatesField, value, nameof (Templates));
+            this.RaiseAndSetIfChanged (ref tF, value, nameof (Templates));
         }
     }
 
-    private FileInfo cT;
-    internal FileInfo ChosenTemplate
+    private string cT;
+    internal string ChosenTemplate
     {
         set
         {
-            bool valueIsSuitable = ( value.Name != string.Empty ) && ( value != null );
+            bool valueIsSuitable = ( value != null )   &&   ( value != string.Empty );
 
             if ( valueIsSuitable )
             {
@@ -84,8 +84,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             return;
         }
 
-        string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
-        _sceneVM.BuildBadges (fileName);
+        _sceneVM.BuildBadges (ChosenTemplate);
     }
 
 
@@ -96,8 +95,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             return;
         }
 
-        string fileName = ChosenTemplate.FullName.ExtractFileNameFromPath ();
-        _sceneVM.BuildSingleBadge (fileName);
+        _sceneVM.BuildSingleBadge (ChosenTemplate);
     }
 
 

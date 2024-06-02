@@ -29,7 +29,7 @@ namespace Lister.Views
         internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
         {
             ComboBox comboBox = ( ComboBox ) sender;
-            _vm.ChosenTemplate = ( FileInfo ) comboBox.SelectedItem;
+            _vm.ChosenTemplate = ( string ) comboBox.SelectedItem;
             TemplateIsSelected = true;
             TryToEnableBadgeCreationButton ();
         }
