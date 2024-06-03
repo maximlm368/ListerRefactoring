@@ -11,7 +11,7 @@
 		Name="workArea"
 		HorizontalAlignment="Left"
 		Margin="18,0"
-		Width="1330"
+		Width="760"
 		Height="310"
 		BorderBrush="Brown"
 		BorderThickness="1">

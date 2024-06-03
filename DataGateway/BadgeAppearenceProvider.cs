@@ -12,10 +12,11 @@ namespace DataGateway
         private Dictionary<string, string> _nameAndJson;
 
 
-        public BadgeAppearenceProvider ( string templatesFolderPath )
+        public BadgeAppearenceProvider (  )
         {
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            _templatesFolderPath = templatesFolderPath;
+            _templatesFolderPath = @"./";
+
             DirectoryInfo containingDirectory = new DirectoryInfo ( _templatesFolderPath );
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );

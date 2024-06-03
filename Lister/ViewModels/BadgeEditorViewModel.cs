@@ -9,8 +9,8 @@ namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
-        private List<VMBadge> incorrectBadges;
-        internal List<VMBadge> IncorrectBadges
+        private List <BadgeViewModel> incorrectBadges;
+        internal List <BadgeViewModel> IncorrectBadges
         {
             set
             {
@@ -19,15 +19,15 @@ namespace Lister.ViewModels
                 if ( incorrectBadges.Count > 1 ) 
                 {
                     BeingProcessedBadge = incorrectBadges [0];
-                    BeingProcessedBadge.ShowBackgroundImage ();
+                    BeingProcessedBadge.Show ();
                 }
             }
         }
 
 
 
-        private VMBadge bpB;
-        internal VMBadge BeingProcessedBadge
+        private BadgeViewModel bpB;
+        internal BadgeViewModel BeingProcessedBadge
         {
             get { return bpB; }
             set
@@ -37,11 +37,21 @@ namespace Lister.ViewModels
         }
 
 
-        public BadgeEditorViewModel ( )
-        {
-            
-        }
+        public BadgeEditorViewModel ( ){ }
 
+
+        internal void PassIncorects ( List <BadgeViewModel> incorrects ) 
+        {
+            bool isNullOrEmpty = (incorrects == null)   ||   (incorrects.Count == 0);
+
+            if ( isNullOrEmpty ) 
+            {
+                return;
+            }
+
+            IncorrectBadges = incorrects;
+            BeingProcessedBadge = incorrects [0];
+        }
 
     }
 }

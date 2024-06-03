@@ -2,12 +2,13 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Lister.ViewModels;
 using Lister.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Views
 {
     public partial class ZoomNavigationUserControl : UserControl
     {
-        private ZoomNavigationViewModel _viewModel;
+        private ZoomNavigationViewModel _vm;
         private short _scalabilityDepth = 0;
         private short _maxDepth = 5;
         private short _minDepth = -5;
@@ -18,34 +19,35 @@ namespace Lister.Views
         public ZoomNavigationUserControl ()
         {
             InitializeComponent ();
-            _viewModel = ( ZoomNavigationViewModel ) DataContext;
+            DataContext = App.services.GetRequiredService<ZoomNavigationViewModel> ();
+            _vm = ( ZoomNavigationViewModel ) DataContext;
         }
 
 
         internal void ToNextPage ( object sender, TappedEventArgs args )
         {
-            _viewModel.VisualiseNextPage ();
+            _vm.VisualiseNextPage ();
             SetEnablePageNavigation ();
         }
 
 
         internal void ToPreviousPage ( object sender, TappedEventArgs args )
         {
-            _viewModel.VisualisePreviousPage ();
+            _vm.VisualisePreviousPage ();
             SetEnablePageNavigation ();
         }
 
 
         internal void ToLastPage ( object sender, TappedEventArgs args )
         {
-            _viewModel.VisualiseLastPage ();
+            _vm.VisualiseLastPage ();
             SetEnablePageNavigation ();
         }
 
 
         internal void ToFirstPage ( object sender, TappedEventArgs args )
         {
-            _viewModel.VisualiseFirstPage ();
+            _vm.VisualiseFirstPage ();
             SetEnablePageNavigation ();
         }
 
@@ -57,13 +59,13 @@ namespace Lister.Views
             try
             {
                 int pageNumber = ( int ) UInt32.Parse (textBox.Text);
-                _viewModel.VisualisePageWithNumber (pageNumber);
-                visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
+                _vm.VisualisePageWithNumber (pageNumber);
+                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
                 SetEnablePageNavigation ();
             }
             catch ( System.FormatException e )
             {
-                visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
+                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
             }
         }
 
@@ -73,7 +75,7 @@ namespace Lister.Views
             if ( _scalabilityDepth < _maxDepth )
             {
 
-                _viewModel.ZoomOnDocument (_scalabilityStep);
+                _vm.ZoomOnDocument (_scalabilityStep);
                 _scalabilityDepth++;
             }
 
@@ -93,7 +95,7 @@ namespace Lister.Views
         {
             if ( _scalabilityDepth > _minDepth )
             {
-                _viewModel.ZoomOutDocument (_scalabilityStep);
+                _vm.ZoomOutDocument (_scalabilityStep);
                 _scalabilityDepth--;
             }
 
@@ -111,14 +113,14 @@ namespace Lister.Views
 
         internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
         {
-            if ( incorrectBadges.Count > 0 )
-            {
-                BadgeEditorView badgeEditor = new BadgeEditorView ();
-                badgeEditor.SetIncorrectBadges (incorrectBadges);
+            //if ( incorrectBadges.Count > 0 )
+            //{
+            //    BadgeEditorView badgeEditor = new BadgeEditorView ();
+            //    badgeEditor.SetIncorrectBadges (incorrectBadges);
 
 
-                owner.Content = badgeEditor;
-            }
+            //    owner.Content = badgeEditor;
+            //}
         }
 
 
@@ -223,34 +225,32 @@ namespace Lister.Views
 
         internal void SetEnablePageNavigation ()
         {
-            ZoomNavigationViewModel vm = ( ZoomNavigationViewModel ) DataContext;
-
-            int pageCount = vm.GetPageCount ();
+            int pageCount = _vm.GetPageCount ();
 
             if ( pageCount > 1 )
             {
-                if ( ( vm.VisiblePageNumber > 1 )   &&   ( vm.VisiblePageNumber == pageCount ) )
+                if ( ( _vm.VisiblePageNumber > 1 )   &&   ( _vm.VisiblePageNumber == pageCount ) )
                 {
                     firstPage.IsEnabled = true;
                     previousPage.IsEnabled = true;
                     nextPage.IsEnabled = false;
                     lastPage.IsEnabled = false;
                 }
-                else if ( ( vm.VisiblePageNumber > 1 )   &&   ( vm.VisiblePageNumber < pageCount ) )
+                else if ( ( _vm.VisiblePageNumber > 1 )   &&   ( _vm.VisiblePageNumber < pageCount ) )
                 {
                     firstPage.IsEnabled = true;
                     previousPage.IsEnabled = true;
                     nextPage.IsEnabled = true;
                     lastPage.IsEnabled = true;
                 }
-                else if ( ( vm.VisiblePageNumber == 1 )   &&   ( pageCount == 1 ) )
+                else if ( ( _vm.VisiblePageNumber == 1 )   &&   ( pageCount == 1 ) )
                 {
                     firstPage.IsEnabled = false;
                     previousPage.IsEnabled = false;
                     nextPage.IsEnabled = false;
                     lastPage.IsEnabled = false;
                 }
-                else if ( ( vm.VisiblePageNumber == 1 )   &&   ( pageCount > 1 ) )
+                else if ( ( _vm.VisiblePageNumber == 1 )   &&   ( pageCount > 1 ) )
                 {
                     firstPage.IsEnabled = false;
                     previousPage.IsEnabled = false;
@@ -263,6 +263,16 @@ namespace Lister.Views
 
 
 
+    }
+
+
+
+    public partial class EditorButtom : Button 
+    {
+        internal List<BadgeViewModel> IncorrectBadges { get; private set; }
+
+
+        public EditorButtom(): base () { }
     }
 }
 

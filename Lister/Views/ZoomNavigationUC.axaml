@@ -102,12 +102,13 @@
 			IsEnabled="False"
 			Tapped="ZoomOut"
 			Content="-" />
-		
+
 		<Button
 			Name="edit"
 			Grid.Column="11"
 			HorizontalAlignment="Center"
 			Width="126"
+			IsEnabled="False"
 			Tapped="EditIncorrectBadges"
 			Content="Редактировать"/>
 		

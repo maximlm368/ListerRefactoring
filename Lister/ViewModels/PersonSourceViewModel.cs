@@ -30,7 +30,7 @@ namespace Lister.ViewModels
 
         
         public PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
-                                       , ContentAssembler.Size pageSize, PersonChoosingViewModel personChoosing ) 
+                                                                    , PersonChoosingViewModel personChoosing ) 
         {
             _uniformAssembler = singleTypeDocumentAssembler;
             _personChoosingVM = personChoosing;

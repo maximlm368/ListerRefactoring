@@ -14,7 +14,6 @@ namespace Lister.Views
         public SceneUserControl ()
         {
             InitializeComponent ();
-
             this.Margin = new Avalonia.Thickness (5);
         }
 

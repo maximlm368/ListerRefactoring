@@ -44,6 +44,7 @@
 				KeyUp="HandlePersonListReduction" />
 			
 			<Border
+				Name="listBorder"
 				Canvas.Top="34"
 				Margin="0,-2"
 				BorderThickness="1"
@@ -69,7 +70,7 @@
 							Name="personList"
 							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
-							Height="{Binding   Path = PersonListHeight,  Mode=OneWayToSource}"
+							
 							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
@@ -77,9 +78,6 @@
 
 									<TextBox
 										FontSize="12"
-										BorderBrush="Brown"
-										BorderThickness="1"
-										IsReadOnly="True"
 										Tapped="HandleChoosingByTapping"
 										KeyDown="AcceptFocusedPersonOrScroll"
 										Text="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
@@ -91,7 +89,7 @@
 
 						<Canvas
 							Name="scroller"
-							Canvas.Left="454"
+							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
 							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 							Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
 							Background="White">
@@ -271,5 +269,5 @@ Tapped="AcceptEntirePersonList"
 		Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"		
 		Height="{Binding  Path = PersonListHeight,  Mode=OneWay}"
 		
-		
+		Height="{Binding   Path = PersonListHeight,  Mode=OneWayToSource}"
 -->

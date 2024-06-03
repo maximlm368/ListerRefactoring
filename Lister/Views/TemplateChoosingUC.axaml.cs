@@ -4,6 +4,7 @@ using Avalonia.Platform.Storage;
 using ContentAssembler;
 using ExtentionsAndAuxiliary;
 using Lister.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -12,7 +13,6 @@ namespace Lister.Views
     public partial class TemplateChoosingUserControl : UserControl
     {
         private const double coefficient = 1.1;
-        private List<BadgeViewModel> _incorrectBadges;
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
         internal bool TemplateIsSelected { get; private set; }
@@ -21,7 +21,8 @@ namespace Lister.Views
         public TemplateChoosingUserControl ()
         {
             InitializeComponent ();
-            _vm = (TemplateChoosingViewModel) DataContext;
+            DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+            _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
         }
 
@@ -37,7 +38,7 @@ namespace Lister.Views
 
         private void TryToEnableBadgeCreationButton ()
         {
-            ModernMainView parent = this.Parent as ModernMainView;
+            ModernMainView parent = this.Parent.Parent as ModernMainView;
             bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
             bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
@@ -51,7 +52,7 @@ namespace Lister.Views
 
         internal void BuildBadges ( object sender, TappedEventArgs args )
         {
-            ModernMainView parent = this.Parent as ModernMainView;
+            ModernMainView parent = this.Parent.Parent as ModernMainView;
             bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
             bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
@@ -63,8 +64,6 @@ namespace Lister.Views
             {
                 _vm.BuildBadges ();
             }
-
-            _incorrectBadges = _vm.IncorrectBadges;
 
             ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
 
@@ -78,7 +77,7 @@ namespace Lister.Views
 
         internal void ClearBadges ( object sender, TappedEventArgs args )
         {
-            ModernMainView parent = this.Parent as ModernMainView;
+            ModernMainView parent = this.Parent.Parent as ModernMainView;
             ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
 
             _vm.ClearAllPages ();
@@ -142,8 +141,6 @@ namespace Lister.Views
         {
             _vm.Print ();
         }
-
-
 
     }
 }

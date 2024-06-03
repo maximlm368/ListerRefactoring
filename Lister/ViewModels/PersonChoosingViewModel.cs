@@ -35,6 +35,7 @@ namespace Lister.ViewModels
 {
     public class PersonChoosingViewModel : ViewModelBase
     {
+        private double _oneHeight;
         internal List <Person> People { get; set; }
 
         private ObservableCollection <Person> vP;
@@ -44,6 +45,7 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
+                SetPersonList ();
             }
         }
 
@@ -84,7 +86,6 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
-                SetPersonList ();
             }
         }
 
@@ -148,6 +149,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private double sCL;
+        internal double ScrollerCanvasLeft
+        {
+            get { return sCL; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref sCL, value, nameof (ScrollerCanvasLeft));
+            }
+        }
+
         private bool isPS;
         public bool IsPersonsScrollable
         {
@@ -159,12 +170,18 @@ namespace Lister.ViewModels
         }
 
 
-        public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
-                                         , ContentAssembler.Size pageSize )
+        public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
-            
-            //VisiblePeople = new ObservableCollection <Person> ( );
-            //People = new List <Person> ( );
+            _oneHeight = 24;
+            ScrollerCanvasLeft = 454;
+            VisiblePeople = new ObservableCollection<Person> ();
+            People = new List<Person> ();
+        }
+
+
+        internal void ShiftScroller ( double shift )
+        {
+            ScrollerCanvasLeft -= shift;
         }
 
 
@@ -195,27 +212,24 @@ namespace Lister.ViewModels
         private void SetPersonList ( ) 
         {
             int personCount = VisiblePeople. Count;
-            double oneHeight = PersonListHeight / personCount;
 
-            if (personCount > 5) 
+            if ( personCount > 5 )
             {
-                ShowScroller (oneHeight);
+                ShowScroller ();
             }
-            else 
+            else
             {
-                VisibleHeight = oneHeight * personCount;
+                VisibleHeight = _oneHeight * personCount;
                 PersonListWidth = 469;
                 ScrollerWidth = 0;
                 IsPersonsScrollable = false;
             }
-
-            
         }
 
 
-        private void ShowScroller ( double oneHeight ) 
+        private void ShowScroller () 
         {
-            VisibleHeight = oneHeight * 5;
+            VisibleHeight = _oneHeight * 5;
             PersonListWidth = 454;
             ScrollerWidth = 15;
 

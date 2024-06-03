@@ -54,8 +54,7 @@ namespace Lister.ViewModels
         private double zoomDegree;
 
 
-        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize,
-                                        SceneViewModel sceneViewModel ) 
+        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, SceneViewModel sceneViewModel ) 
         {
             _sceneVM = sceneViewModel;
         }

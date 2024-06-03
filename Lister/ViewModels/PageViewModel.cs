@@ -71,7 +71,7 @@ public class PageViewModel : ViewModelBase
         _badgeCount = 0;
         PageWidth = pageSize.Width;
         PageHeight = pageSize.Height;
-        _lineLimit = GetMaxLineAmount ();
+        //_lineLimit = GetMaxLineAmount ();////////////////////////////////////////////////////////////////////////////////
         _currentLine = new BadgeLine (PageWidth, _scale);
         Lines.Add (_currentLine);
         SetCorrectScale ();
@@ -132,11 +132,11 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    private int GetMaxLineAmount ()
-    {
-        double badgeHeight = BadgeExample. BadgeHeight;
-        return ( int ) ( PageHeight / badgeHeight );
-    }
+    //private int GetMaxLineAmount ()
+    //{
+    //    double badgeHeight = BadgeExample. BadgeHeight;
+    //    return ( int ) ( PageHeight / badgeHeight );
+    //}
 
 
     internal void ZoomOn ( double scaleCoefficient )

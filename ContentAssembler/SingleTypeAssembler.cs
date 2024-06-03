@@ -36,11 +36,8 @@ namespace ContentAssembler
         private List<Person> people;
 
 
-        public UniformDocAssembler(IResultOfSessionSaver converter
-                                      , IBadgeAppearenceProvider badgeAppearenceDataSource
-                                                          , IPeopleDataSource peopleDataSource)
+        public UniformDocAssembler (IBadgeAppearenceProvider badgeAppearenceDataSource, IPeopleDataSource peopleDataSource)
         {
-            this.converter = converter;
             this.badgeAppearenceProvider = badgeAppearenceDataSource;
             this.peopleDataSource = peopleDataSource;
             people = new List<Person>();
@@ -49,7 +46,9 @@ namespace ContentAssembler
 
         public List<Badge> CreateBadgesByModel ( string templateName )
         {
-            if ( string.IsNullOrEmpty ( templateName ) ) 
+            bool argumentIsNull = string.IsNullOrEmpty (templateName);
+
+            if ( argumentIsNull ) 
             {
                 throw new ArgumentNullException ( "arguments must be not null" );
             }
@@ -70,12 +69,9 @@ namespace ContentAssembler
 
         public Badge CreateSingleBadgeByModel(string templateName, Person person) 
         {
-            if (templateName == null)
-            {
-                throw new ArgumentNullException("arguments must be not null");
-            }
+            bool argumentIsNull = string.IsNullOrEmpty(templateName)   ||   (person == null);
 
-            if (person == null)
+            if (argumentIsNull)
             {
                 throw new ArgumentNullException("arguments must be not null");
             }
@@ -95,7 +91,7 @@ namespace ContentAssembler
 
         public void GeneratePdf ()
         {
-            converter.ConvertToExtention (null, null);
+            //converter.ConvertToExtention (null, null);
         }
 
 

@@ -18,16 +18,16 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        string badgeTemplatesFolderPath = @"./";
-        IBadgeAppearenceProvider badgeAppearenceDataSource = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
-        IPeopleDataSource peopleDataSource = new PeopleSource ();
-        IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
-        IUniformDocumentAssembler docAssembler = new UniformDocAssembler (converter, badgeAppearenceDataSource, peopleDataSource);
+        //string badgeTemplatesFolderPath = @"./";
+        //IBadgeAppearenceProvider badgeAppearenceDataSource = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
+        //IPeopleDataSource peopleDataSource = new PeopleSource ();
+        //IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
+        //IUniformDocumentAssembler docAssembler = new UniformDocAssembler (badgeAppearenceDataSource, peopleDataSource);
 
         this.Opened += OnOpened;
-        MainView mainView = (MainView) Content;
-        mainView.SetOwner ( this );
-        mainView.PassAssembler ( docAssembler );
+        ModernMainView mainView = (ModernMainView) Content;
+        //mainView.SetOwner ( this );
+        //mainView.PassAssembler ( docAssembler );
         
         this.SizeChanged += OnSizeChanged;
         currentWidth = Width;
@@ -63,23 +63,23 @@ public partial class MainWindow : Window
 
     private void OnSizeChanged ( object? sender , SizeChangedEventArgs e )
     {
-        MainView mainView = ( MainView ) Content;
+        ModernMainView mainView = ( ModernMainView ) Content;
         double newWidth = e.NewSize.Width;
         double newHeight = e.NewSize.Height;
         double widthDifference = currentWidth - newWidth;
         double heightDifference = currentHeight - newHeight;
         currentWidth = newWidth;
         currentHeight = newHeight;
-        mainView.personList.Width -= widthDifference;
-        mainView.personTyping.Width -= widthDifference;
-        mainView.comboboxFrame.Width -= widthDifference;
-        mainView.workArea.Height -= heightDifference;
+       
+        mainView.scene.workArea.Width -= widthDifference;
+        mainView.scene. workArea.Height -= heightDifference;
+        mainView.personChoosing.AdjustComboboxWidth (widthDifference);
     }
 
 
     internal void HandleTapping ( object sender, TappedEventArgs args )
     {
-        MainView mainView = ( MainView ) Content;
+        ModernMainView mainView = ( ModernMainView ) Content;
         mainView.CloseCustomCombobox ();
     }
 

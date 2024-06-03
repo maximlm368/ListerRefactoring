@@ -68,8 +68,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, ContentAssembler.Size pageSize, 
-                                       SceneViewModel sceneViewModel ) 
+    public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel ) 
     {
         Templates = docAssembler.GetBadgeModels ();
         _sceneVM = sceneViewModel;

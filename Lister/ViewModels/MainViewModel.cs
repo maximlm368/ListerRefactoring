@@ -158,7 +158,7 @@ class MainViewModel : ViewModelBase
     {
         this.uniformAssembler = singleTypeDocumentAssembler;
         converter = new ConverterToPdf ();
-        Templates = uniformAssembler.GetBadgeModels();
+        //Templates = uniformAssembler.GetBadgeModels();
         VisiblePeople = new ObservableCollection<Person>();
         People = new List<Person>();
         IncorrectBadges = new List<VMBadge> ();
@@ -222,39 +222,39 @@ class MainViewModel : ViewModelBase
 
     internal Task<bool> GeneratePdf ( string fileToSave )
     {
-        List<VMBadge> allBadges = GetAllBadges ();
-        Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (allBadges, fileToSave); });
-        task.Start ();
-        return task;
+        //List<VMBadge> allBadges = GetAllBadges ();
+        //Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (allBadges, fileToSave); });
+        //task.Start ();
+        return null;
     }
 
 
     public void Print ( )
     {
-        List<VMBadge> allBadges = GetAllBadges();
-        string fileToSave = @"intermidiate.pdf";
-        Task pdf = new Task (() => { converter.ConvertToExtention (allBadges, fileToSave); });
-        pdf.Start ();
-        pdf.ContinueWith
-               (
-                  savingTask =>
-                  {
-                      int length = converter. intermidiateFiles.Count;
+        //List<VMBadge> allBadges = GetAllBadges();
+        //string fileToSave = @"intermidiate.pdf";
+        //Task pdf = new Task (() => { converter.ConvertToExtention (allBadges, fileToSave); });
+        //pdf.Start ();
+        //pdf.ContinueWith
+        //       (
+        //          savingTask =>
+        //          {
+        //              int length = converter. intermidiateFiles.Count;
 
-                      ProcessStartInfo info = new ()
-                      {
-                          FileName = fileToSave,
-                          Verb = "Print",
-                          UseShellExecute = true,
-                          ErrorDialog = false,
-                          CreateNoWindow = true,
-                          WindowStyle = ProcessWindowStyle.Minimized
-                      };
+        //              ProcessStartInfo info = new ()
+        //              {
+        //                  FileName = fileToSave,
+        //                  Verb = "Print",
+        //                  UseShellExecute = true,
+        //                  ErrorDialog = false,
+        //                  CreateNoWindow = true,
+        //                  WindowStyle = ProcessWindowStyle.Minimized
+        //              };
 
-                      Process.Start (info)?.WaitForExit (20_000);
-                      File.Delete (fileToSave);
-                  }
-               );
+        //              Process.Start (info)?.WaitForExit (20_000);
+        //              File.Delete (fileToSave);
+        //          }
+        //       );
     }
 
 
@@ -553,90 +553,90 @@ class MainViewModel : ViewModelBase
 
         string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
         string badgeModelName = pathInAvalonia + "/" + fileName;
-        List<Badgeee> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
+        //List<Badgeee> requiredBadges = uniformAssembler.CreateBadgesByModel (badgeModelName);
 
-        if ( requiredBadges.Count > 0 ) 
-        {
-            List<VMBadge> allBadges = new List<VMBadge> ();
+        //if ( requiredBadges.Count > 0 ) 
+        //{
+        //    List<VMBadge> allBadges = new List<VMBadge> ();
 
-            for ( int badgeCounter = 0;   badgeCounter < requiredBadges.Count;   badgeCounter++ )
-            {
-                VMBadge beingProcessedVMBadge = new VMBadge (requiredBadges [badgeCounter]);
-                allBadges.Add (beingProcessedVMBadge);
+        //    for ( int badgeCounter = 0;   badgeCounter < requiredBadges.Count;   badgeCounter++ )
+        //    {
+        //        VMBadge beingProcessedVMBadge = new VMBadge (requiredBadges [badgeCounter]);
+        //        allBadges.Add (beingProcessedVMBadge);
 
-                if ( ! beingProcessedVMBadge.IsCorrect ) 
-                {
-                    IncorrectBadges.Add (beingProcessedVMBadge);
-                }
-            }
+        //        if ( ! beingProcessedVMBadge.IsCorrect ) 
+        //        {
+        //            IncorrectBadges.Add (beingProcessedVMBadge);
+        //        }
+        //    }
 
-            List<VMPage> newPages = VMPage.PlaceIntoPages (allBadges, pageSize, documentScale, lastPage);
-            bool placingStartedOnLastPage = (lastPage != null)   &&   lastPage.Equals (newPages [0]);
+        //    List<VMPage> newPages = VMPage.PlaceIntoPages (allBadges, pageSize, documentScale, lastPage);
+        //    bool placingStartedOnLastPage = (lastPage != null)   &&   lastPage.Equals (newPages [0]);
 
-            if (placingStartedOnLastPage) 
-            {
-                VisiblePageNumber = allPages.Count;
+        //    if (placingStartedOnLastPage) 
+        //    {
+        //        VisiblePageNumber = allPages.Count;
 
-                // page number 0 corresponds last page of previous building,  VMPage.PlaceIntoPages() method
-                // added badges on it
-                newPages.RemoveAt (0);
-            }
+        //        // page number 0 corresponds last page of previous building,  VMPage.PlaceIntoPages() method
+        //        // added badges on it
+        //        newPages.RemoveAt (0);
+        //    }
 
-            allPages.AddRange (newPages);
-            lastPage = allPages.Last ();
-            VisiblePage = allPages [VisiblePageNumber - 1];
-            VisiblePage.ShowBadges ();
-        }  
+        //    allPages.AddRange (newPages);
+        //    lastPage = allPages.Last ();
+        //    VisiblePage = allPages [VisiblePageNumber - 1];
+        //    VisiblePage.ShowBadges ();
+        //}  
     }
 
 
     internal void BuildSingleBadge ()
     {
-        string pathInAvalonia = "avares://Lister/Assets";
-        string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
-        string badgeModelName = pathInAvalonia + "/" + fileName;
-        Person goalPerson = ChosenPerson;
-        Badgeee requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
-        VMBadge goalVMBadge = new VMBadge (requiredBadge);
+        //string pathInAvalonia = "avares://Lister/Assets";
+        //string fileName = ChosenTemplate. FullName.ExtractFileNameFromPath ();
+        //string badgeModelName = pathInAvalonia + "/" + fileName;
+        //Person goalPerson = ChosenPerson;
+        //Badgeee requiredBadge = uniformAssembler.CreateSingleBadgeByModel (badgeModelName, goalPerson);
+        //VMBadge goalVMBadge = new VMBadge (requiredBadge);
 
-        if ( ! goalVMBadge.IsCorrect )
-        {
-            IncorrectBadges.Add (goalVMBadge);
-        }
+        //if ( ! goalVMBadge.IsCorrect )
+        //{
+        //    IncorrectBadges.Add (goalVMBadge);
+        //}
 
-        bool itIsFirstBadgeBuildingInCurrentAppRun = (VisiblePage==null);
+        //bool itIsFirstBadgeBuildingInCurrentAppRun = (VisiblePage==null);
 
-        if ( itIsFirstBadgeBuildingInCurrentAppRun ) 
-        {
-            VMBadge badgeExample = goalVMBadge.Clone ();
-            VisiblePage = new VMPage (pageSize, badgeExample, documentScale);
-            lastPage = VisiblePage;
-            allPages.Add (VisiblePage);
-        }
+        //if ( itIsFirstBadgeBuildingInCurrentAppRun ) 
+        //{
+        //    VMBadge badgeExample = goalVMBadge.Clone ();
+        //    VisiblePage = new VMPage (pageSize, badgeExample, documentScale);
+        //    lastPage = VisiblePage;
+        //    allPages.Add (VisiblePage);
+        //}
 
-        bool placingStartedAfterEntireListAddition = ! lastPage.Equals (VisiblePage);
+        //bool placingStartedAfterEntireListAddition = ! lastPage.Equals (VisiblePage);
 
-        if (placingStartedAfterEntireListAddition) 
-        {
-            VisiblePage.HideBadges ();
-            VisiblePage = lastPage;
-            VisiblePage.ShowBadges ();
-        }
+        //if (placingStartedAfterEntireListAddition) 
+        //{
+        //    VisiblePage.HideBadges ();
+        //    VisiblePage = lastPage;
+        //    VisiblePage.ShowBadges ();
+        //}
 
-        VMPage possibleNewVisiblePage = lastPage.AddBadge (goalVMBadge, true);
-        bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (lastPage);
+        //VMPage possibleNewVisiblePage = lastPage.AddBadge (goalVMBadge, true);
+        //bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (lastPage);
 
-        if ( timeToIncrementVisiblePageNumber ) 
-        {
-            VisiblePage.HideBadges ();
-            VisiblePage = possibleNewVisiblePage;
-            lastPage = VisiblePage;
-            allPages.Add (possibleNewVisiblePage);
-            VisiblePage.ShowBadges ();
-        }
+        //if ( timeToIncrementVisiblePageNumber ) 
+        //{
+        //    VisiblePage.HideBadges ();
+        //    VisiblePage = possibleNewVisiblePage;
+        //    lastPage = VisiblePage;
+        //    allPages.Add (possibleNewVisiblePage);
+        //    VisiblePage.ShowBadges ();
+        //}
 
-        VisiblePageNumber = allPages.Count;
-        goalVMBadge.ShowBackgroundImage ();
+        //VisiblePageNumber = allPages.Count;
+        //goalVMBadge.ShowBackgroundImage ();
     }
 
 

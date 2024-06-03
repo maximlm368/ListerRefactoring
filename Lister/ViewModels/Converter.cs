@@ -79,7 +79,7 @@ class ConverterToPdf
                                         columns.ConstantColumn (350, Unit.Point);
                                     });
 
-                                    RenderPair (table, pairs [rowNumber]);
+                                    //RenderPair (table, pairs [rowNumber]);
                                 }
                             );
                         }

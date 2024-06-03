@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Lister.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -12,8 +13,8 @@ namespace Lister.Views
         //private TemplateChoosingUserControl _templateChoosing;
         //private ZoomNavigationUserControl _zoomNavigation;
         //private SceneUserControl _scene;
-        private PersonChoosingUserControl _personChoosing;
         private PersonSourceViewModel _vm;
+        private PersonChoosingUserControl _personChoosing;
         private TemplateChoosingUserControl _templateChoosing;
         private ZoomNavigationUserControl _zoomNavigation;
         private SceneUserControl _scene;
@@ -22,17 +23,8 @@ namespace Lister.Views
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
+            DataContext = App.services.GetRequiredService<PersonSourceViewModel> ();
             _vm = (PersonSourceViewModel) DataContext;
-        }
-
-
-        internal void PassNeighbours ( PersonChoosingUserControl personChoosing, TemplateChoosingUserControl templateChoosing,
-                                     , ZoomNavigationUserControl zoomNavigation, SceneUserControl scene )
-        {
-            _personChoosing = personChoosing;
-            _templateChoosing = templateChoosing;
-            _scene = scene;
-            _zoomNavigation = zoomNavigation;
         }
 
 
@@ -89,7 +81,7 @@ namespace Lister.Views
                            {
                                editSourceFile.IsEnabled = true;
 
-                               ModernMainView parent = (ModernMainView) this.Parent;
+                               ModernMainView parent = (ModernMainView) this.Parent.Parent;
                                parent.personChoosing. entirePersonListButton.IsEnabled = true;
                                parent.personChoosing. personTextBox.IsReadOnly = false;
                            }

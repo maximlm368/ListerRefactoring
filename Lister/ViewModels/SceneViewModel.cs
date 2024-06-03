@@ -56,8 +56,7 @@ namespace Lister.ViewModels
         private PersonChoosingViewModel _personChoosingVM;
 
 
-        public SceneViewModel ( IUniformDocumentAssembler docAssembler, ContentAssembler.Size pageSize,
-                                PersonChoosingViewModel personChoosingVM ) 
+        public SceneViewModel ( IUniformDocumentAssembler docAssembler, PersonChoosingViewModel personChoosingVM ) 
         {
             _docAssembler = docAssembler;
             _personChoosingVM = personChoosingVM;
@@ -83,13 +82,13 @@ namespace Lister.ViewModels
                     BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 
-                    if ( !beingProcessedBadgeVM.IsCorrect )
+                    if ( ! beingProcessedBadgeVM.IsCorrect )
                     {
                         IncorrectBadges.Add (beingProcessedBadgeVM);
                     }
                 }
 
-                List<PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, pageSize, _documentScale, _lastPage);
+                List<PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
                 bool placingStartedOnLastPage = ( _lastPage != null ) && _lastPage.Equals (newPages [0]);
 
                 if ( placingStartedOnLastPage )
@@ -114,8 +113,9 @@ namespace Lister.ViewModels
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge);
+            int fdf = 0;
 
-            if ( !goalVMBadge.IsCorrect )
+            if ( ! goalVMBadge.IsCorrect )
             {
                 IncorrectBadges.Add (goalVMBadge);
             }
@@ -272,10 +272,11 @@ namespace Lister.ViewModels
 
         internal int VisualisePageWithNumber ( int pageNumber )
         {
-            bool notTheSamePage = VisiblePageNumber != pageNumber;
+            bool visiblePageExists = (VisiblePage != null);
+            bool notTheSamePage = (VisiblePageNumber != pageNumber);
             bool inRange = pageNumber <= _allPages.Count;
 
-            if ( notTheSamePage   &&   inRange )
+            if ( visiblePageExists   &&   notTheSamePage   &&   inRange )
             {
                 VisiblePage.Hide ();
                 VisiblePageNumber = pageNumber;

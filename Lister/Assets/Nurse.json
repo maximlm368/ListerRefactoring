@@ -1,16 +1,16 @@
 {
-  "TemplateName" : "врач",
-  "BackgroundImagePath" : "doctors2.jpg",
-  "Width" : "350",
-  "Height" : "212",
+  "TemplateName": "медсестра",
+  "BackgroundImagePath": "dfdf.jpg",
+  "Width": "350",
+  "Height": "212",
 
   "FamilyName": {
-    "Width" : "220",
-    "Height" : "37",
-    "TopOffset" : "65",
-    "LeftOffset" : "130",
-    "Alignment" : "Center",
-    "FontSize" : "30",
+    "Width": "220",
+    "Height": "37",
+    "TopOffset": "65",
+    "LeftOffset": "130",
+    "Alignment": "Center",
+    "FontSize": "30",
     "FontFamily": "Arial",
     "IsShiftableBelow": "0"
   },
@@ -59,7 +59,7 @@
     "IsShiftableBelow": "1"
   },
 
-  "UnitedTextBlocks" : {
+  "UnitedTextBlocks": {
     "Items": [
       {
         "United": {
@@ -79,8 +79,8 @@
     ]
   },
 
-  "InsideImages" : {
-    "Items" : [
+  "InsideImages": {
+    "Items": [
       {
         "ImagePath": "",
         "ImageGeometricElementName": "",

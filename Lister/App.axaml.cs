@@ -13,6 +13,17 @@ namespace Lister;
 
 public partial class App : Application
 {
+    public static ServiceProvider services;
+
+
+    static App () 
+    {
+        ServiceCollection collection = new ServiceCollection ();
+        collection.AddNeededServices ();
+        services = collection.BuildServiceProvider ();
+    }
+
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -21,11 +32,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        string badgeTemplatesFolderPath = @"./";
         
-        ServiceCollection collection = new ServiceCollection ();
-        collection.AddNeededServices ();
-        ServiceProvider services = collection.BuildServiceProvider ();
         ModernMainViewModel mainViewModel = services.GetRequiredService<ModernMainViewModel> ();
 
         ModernMainView mainView = new ModernMainView ()
@@ -58,25 +65,43 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
+        //BadgeAppearenceProviderFactory factory = new BadgeAppearenceProviderFactory ();
+
+        //Type serviceType = typeof (DataGateway.BadgeAppearenceProvider);
+
+        //collection.AddSingleton <IBadgeAppearenceProvider> 
+        //                           (( factory ) => (BadgeAppearenceProvider) factory.GetService(serviceType));
+
+        collection.AddSingleton<IBadgeAppearenceProvider, BadgeAppearenceProvider>();
         collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
         //collection.AddSingleton<IResultOfSessionSaver, Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
-        collection.AddSingleton <ContentAssembler.Size> ();
+        
         collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
         collection.AddSingleton <ModernMainViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
         collection.AddSingleton <PageViewModel> ();
         collection.AddSingleton <PersonChoosingViewModel> ();
-        collection.AddSingleton <PersonSourceViewModel> ();
+        collection.AddSingleton<PersonSourceViewModel> ();
         collection.AddSingleton <SceneViewModel> ();
         collection.AddSingleton <TemplateChoosingViewModel> ();
         collection.AddSingleton <ZoomNavigationViewModel> ();
         collection.AddSingleton <TextLineViewModel> ();
     }
 }
+
+
+//public class BadgeAppearenceProviderFactory : IServiceProvider
+//{
+//    public object ? GetService ( Type serviceType )
+//    {
+//        string badgeTemplatesFolderPath = @"./";
+//        BadgeAppearenceProvider badgeAppearenceProvider = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
+//        return badgeAppearenceProvider;
+//    }
+//}
 
 
 
