@@ -83,6 +83,26 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
+    //private double cT;
+    //internal double CanvasTop
+    //{
+    //    get { return cT; }
+    //    set
+    //    {
+    //        this.RaiseAndSetIfChanged (ref cT, value, nameof (CanvasTop));
+    //    }
+    //}
+
+    //private double cL;
+    //internal double CanvasLeft
+    //{
+    //    get { return cL; }
+    //    set
+    //    {
+    //        this.RaiseAndSetIfChanged (ref cL, value, nameof (CanvasLeft));
+    //    }
+    //}
+
     internal bool IsCorrect { get; private set; }
 
 
@@ -112,6 +132,18 @@ public class BadgeViewModel : ViewModelBase
         string path = BadgeModel. BackgroundImagePath;
         Uri uri = new Uri (path);
         this.ImageBitmap = ImageHelper.LoadFromResource (uri);
+
+        //try 
+        //{
+        //    Uri uri = new Uri (path);
+        //    this.ImageBitmap = ImageHelper.LoadFromResource (uri);
+        //}
+        //catch( UriFormatException ex ) 
+        //{
+        //    string mess = ex.Message;
+        //    int jk = 0;
+        //}
+
     }
 
 
@@ -193,11 +225,11 @@ public class BadgeViewModel : ViewModelBase
 
         for ( int index = 0;   index < orderedTextualFields.Count;   index++ ) 
         {
-            TextualAtom text = orderedTextualFields [index];
-            double fontSize = text.FontSize;
-            double lineLength = text.Width;
-            double topOffset = text.TopOffset;
-            string beingProcessedLine = text.Content;
+            TextualAtom textAtom = orderedTextualFields [index];
+            double fontSize = textAtom.FontSize;
+            double lineLength = textAtom.Width;
+            double topOffset = textAtom.TopOffset;
+            string beingProcessedLine = textAtom.Content;
             string additionalLine = string.Empty;
 
             while ( true )
@@ -210,19 +242,20 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ! lineIsOverflow ) 
                 {
-                    if ( text.IsShiftableBelow )
+                    if ( textAtom.IsShiftableBelow )
                     {
                         topOffset += summaryVerticalOffset;
                     }
 
-                    text.TopOffset = topOffset;
-                    text.Content = beingProcessedLine;
-                    TextLineViewModel textLine = new TextLineViewModel (text);
+                    textAtom.TopOffset = topOffset;
+                    textAtom.Content = beingProcessedLine;
+                    TextLineViewModel textLine = new TextLineViewModel (textAtom);
                     TextLines.Add (textLine);
 
                     if ( additionalLine != string.Empty ) 
                     {
                         beingProcessedLine = additionalLine;
+                        additionalLine = string.Empty;
                         continue;
                     }
                     else 
@@ -231,15 +264,15 @@ public class BadgeViewModel : ViewModelBase
                     }
                 }
 
-                List<string> splited = beingProcessedLine.SeparateIntoMainAndTail ();
+                List<string> splited = beingProcessedLine.SeparateTail ();
 
                 if ( splited.Count > 0 )
                 {
                     beingProcessedLine = splited [0];
                     additionalLine = splited [1] + " " + additionalLine;
 
-                    summaryVerticalOffset += text.Height;
-                    topOffset += text.Height;
+                    summaryVerticalOffset += textAtom.Height;
+                    topOffset += textAtom.Height;
                 }
                 else
                 {

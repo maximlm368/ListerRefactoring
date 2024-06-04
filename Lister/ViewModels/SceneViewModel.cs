@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using ContentAssembler;
 using QuestPDF.Helpers;
 using ReactiveUI;
@@ -88,8 +89,8 @@ namespace Lister.ViewModels
                     }
                 }
 
-                List<PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
-                bool placingStartedOnLastPage = ( _lastPage != null ) && _lastPage.Equals (newPages [0]);
+                List <PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
+                bool placingStartedOnLastPage = ( _lastPage != null )   &&   _lastPage.Equals (newPages [0]);
 
                 if ( placingStartedOnLastPage )
                 {
@@ -113,7 +114,6 @@ namespace Lister.ViewModels
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge);
-            int fdf = 0;
 
             if ( ! goalVMBadge.IsCorrect )
             {
@@ -124,13 +124,12 @@ namespace Lister.ViewModels
 
             if ( itIsFirstBadgeBuildingInCurrentAppRun )
             {
-                BadgeViewModel badgeExample = goalVMBadge.Clone ();
-                VisiblePage = new PageViewModel ( _documentScale);
+                VisiblePage = new PageViewModel ( _documentScale );
                 _lastPage = VisiblePage;
                 _allPages.Add (VisiblePage);
             }
 
-            bool placingStartedAfterEntireListAddition = !_lastPage.Equals (VisiblePage);
+            bool placingStartedAfterEntireListAddition = ! _lastPage.Equals (VisiblePage);
 
             if ( placingStartedAfterEntireListAddition )
             {
@@ -140,7 +139,7 @@ namespace Lister.ViewModels
             }
 
             PageViewModel possibleNewVisiblePage = _lastPage.AddBadge (goalVMBadge, true);
-            bool timeToIncrementVisiblePageNumber = !possibleNewVisiblePage.Equals (_lastPage);
+            bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (_lastPage);
 
             if ( timeToIncrementVisiblePageNumber )
             {
@@ -160,7 +159,7 @@ namespace Lister.ViewModels
         {
             if ( _allPages.Count > 0 )
             {
-                for ( int pageCounter = 0; pageCounter < _allPages.Count; pageCounter++ )
+                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
                 {
                     _allPages [pageCounter].Clear ();
                 }

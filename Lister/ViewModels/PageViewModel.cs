@@ -21,10 +21,9 @@ namespace Lister.ViewModels;
 
 public class PageViewModel : ViewModelBase
 {
-    private readonly int _lineLimit;
     private int _badgeCount;
     private double _scale;
-    private BadgeLine _currentLine;
+    private BadgeLine _fillableLine;
     internal static Size pageSize;
 
     private double pW;
@@ -71,9 +70,10 @@ public class PageViewModel : ViewModelBase
         _badgeCount = 0;
         PageWidth = pageSize.Width;
         PageHeight = pageSize.Height;
-        //_lineLimit = GetMaxLineAmount ();////////////////////////////////////////////////////////////////////////////////
-        _currentLine = new BadgeLine (PageWidth, _scale);
-        Lines.Add (_currentLine);
+        double usefullHeight = PageHeight - 20;
+        _fillableLine = new BadgeLine (PageWidth, _scale, usefullHeight);
+        Lines.Add (_fillableLine);
+
         SetCorrectScale ();
     }
 
@@ -99,26 +99,39 @@ public class PageViewModel : ViewModelBase
     internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
     {
         PageViewModel beingProcessedPage = this;
-        ActionSuccess additionSuccess = _currentLine.AddBadge (badge);
+        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge);
 
-        if ( additionSuccess == ActionSuccess.Failure ) 
+        if ( additionSuccess == ActionSuccess.FailureByWidth ) 
         {
-            _currentLine = new BadgeLine (PageWidth, _scale);
-            additionSuccess = _currentLine.AddBadge (badge);
+            double restHeight = GetRestHeight ();
+            BadgeLine newLine = new BadgeLine (PageWidth, _scale, restHeight);
+            additionSuccess = newLine.AddBadge (badge);
 
-            if ( additionSuccess == ActionSuccess.Failure )
+            if ( additionSuccess == ActionSuccess.FailureByWidth )
             {
-                throw new PageException ( );
+                throw new PageException ();
+            }
+            else if ( additionSuccess == ActionSuccess.FailureByHeight ) 
+            {
+                beingProcessedPage = new PageViewModel (_scale);
+                beingProcessedPage.AddBadge (badge, true);
             }
 
-            bool timeToStartNewPage = ( Lines. Count == _lineLimit );
+            beingProcessedPage.Lines.Add (newLine);
+            beingProcessedPage._fillableLine = newLine;
+        }
 
-            if ( timeToStartNewPage )
+        if ( additionSuccess == ActionSuccess.FailureByHeight )
+        {
+            bool isPageBlank = (beingProcessedPage.Lines. Count < 2);
+
+            if ( isPageBlank ) 
             {
-                beingProcessedPage = new PageViewModel ( _scale);
+                throw new PageException ();
             }
 
-            beingProcessedPage.Lines.Add (_currentLine);
+            beingProcessedPage = new PageViewModel (_scale);
+            beingProcessedPage.AddBadge (badge, true);
         }
 
         beingProcessedPage._badgeCount++;
@@ -126,17 +139,32 @@ public class PageViewModel : ViewModelBase
     }
 
 
+    private bool IsTimeForNewPage () 
+    {
+        double restHeight = GetRestHeight ();
+        bool itIsTime = restHeight > _fillableLine.Height;
+        return itIsTime;
+    }
+
+
+    private double GetRestHeight ( ) 
+    {
+        double summaryHeight = 0;
+
+        foreach ( BadgeLine line   in   Lines )
+        {
+            summaryHeight += line.Height;
+        }
+
+        double restHeight = PageHeight - summaryHeight;
+        return restHeight;
+    }
+
+
     internal void Clear ()
     {
         _badgeCount = 0;
     }
-
-
-    //private int GetMaxLineAmount ()
-    //{
-    //    double badgeHeight = BadgeExample. BadgeHeight;
-    //    return ( int ) ( PageHeight / badgeHeight );
-    //}
 
 
     internal void ZoomOn ( double scaleCoefficient )
@@ -196,20 +224,20 @@ public class PageViewModel : ViewModelBase
     private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, double desiredScale )
     {
         bool areArgumentsInvalid = ( placebleBadges == null );
-        areArgumentsInvalid = areArgumentsInvalid || ( placebleBadges.Count < 1 );
-        areArgumentsInvalid = areArgumentsInvalid || ( desiredScale == 0 );
+        areArgumentsInvalid = areArgumentsInvalid   ||   ( placebleBadges.Count < 1 );
+        areArgumentsInvalid = areArgumentsInvalid   ||   ( desiredScale == 0 );
 
         return areArgumentsInvalid;
     }
 
 
-    private static PageViewModel DefineFillablePage ( PageViewModel? scratchPage, double desiredScale ) 
+    private static PageViewModel DefineFillablePage ( PageViewModel ? scratchPage, double desiredScale ) 
     {
         bool isBadgeInsertionFirstTime = (scratchPage == null);
 
         if ( isBadgeInsertionFirstTime ) 
         {
-            return new PageViewModel ( desiredScale);
+            return new PageViewModel ( desiredScale );
         }
         else 
         {
@@ -218,8 +246,8 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    private static List<PageViewModel> Place ( List<BadgeViewModel> placebleBadges, double desiredScale
-                                             , PageViewModel fillablePage ) 
+    private static List<PageViewModel> Place ( List <BadgeViewModel> placebleBadges, double desiredScale
+                                                                            , PageViewModel fillablePage ) 
     {
         List<PageViewModel> result = new ();
 
@@ -287,4 +315,12 @@ public class PageException : Exception {}
 //    {
 //        throw new Exception ("Size of passed on badge is not according set for this page");
 //    }
+//}
+
+
+//bool timeToStartNewPage = IsTimeForNewPage ();
+
+//if ( timeToStartNewPage )
+//{
+//    beingProcessedPage = new PageViewModel ( _scale);
 //}

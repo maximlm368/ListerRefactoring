@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Lister.ViewModels
     internal class BadgeLine : ViewModelBase
     {
         private double _restWidth;
+        private double _heightConstraint;
         private double _scale;
 
         private ObservableCollection <BadgeViewModel> badges;
@@ -34,11 +36,42 @@ namespace Lister.ViewModels
             }
         }
 
+        private double maxH;
+        internal double Height 
+        { 
+            get 
+            {
+                foreach ( BadgeViewModel badge   in   Badges ) 
+                {
+                    if ( badge.BadgeHeight > maxH ) 
+                    {
+                        maxH = badge.BadgeHeight;
+                    }
+                }
 
-        internal BadgeLine( double width, double scale ) 
+                return maxH;
+            } 
+
+            private set { maxH = value; } 
+        }
+
+        //private StackPanel sPT;
+        //internal StackPanel StackPanelTemplate
+        //{
+        //    get { return sPT; }
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref sPT, value, nameof (StackPanelTemplate));
+        //    }
+        //}
+
+
+        internal BadgeLine( double width, double scale, double heightConstraint ) 
         {
+            Badges = new ObservableCollection<BadgeViewModel> ();
             _restWidth = width;
             _scale = scale;
+            _heightConstraint = heightConstraint;
         }
 
 
@@ -46,11 +79,18 @@ namespace Lister.ViewModels
         {
             badge.SetCorrectScale ( _scale );
 
-            if ( _restWidth < badge.BadgeWidth ) 
+            bool isFailureByWidth = ( _restWidth < badge.BadgeWidth );
+            bool isFailureByHeight = ( _heightConstraint < badge.BadgeHeight );
+            
+            if ( isFailureByWidth )
             {
-                return ActionSuccess.Failure;
+                return ActionSuccess.FailureByWidth;
             }
-            else 
+            else if ( isFailureByHeight ) 
+            {
+                return ActionSuccess.FailureByHeight;
+            }
+            else
             {
                 Badges.Add (badge);
                 _restWidth -= badge.BadgeWidth;
@@ -105,7 +145,8 @@ namespace Lister.ViewModels
 
     internal enum ActionSuccess 
     {
-        Failure = 0,
-        Success = 1
+        FailureByWidth = 0,
+        FailureByHeight = 1,
+        Success = 2
     }
 }

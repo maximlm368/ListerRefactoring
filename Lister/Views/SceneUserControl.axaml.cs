@@ -1,5 +1,8 @@
 using Avalonia.Controls;
+using Avalonia.LogicalTree;
+using Lister.ViewModels;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Views
 {
@@ -14,10 +17,11 @@ namespace Lister.Views
         public SceneUserControl ()
         {
             InitializeComponent ();
+            DataContext = App.services.GetRequiredService<SceneViewModel> ();
             this.Margin = new Avalonia.Thickness (5);
-        }
 
-        
+            
+        }
     }
 }
 

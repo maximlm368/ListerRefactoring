@@ -24,6 +24,9 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
+
+            TextBlock fdf = new TextBlock ();
+            fdf.FontFamily = new Avalonia.Media.FontFamily ("");
         }
 
 

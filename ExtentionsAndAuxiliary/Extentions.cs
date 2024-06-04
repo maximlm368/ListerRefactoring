@@ -42,7 +42,7 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SeparateIntoMainAndTail ( this string str )
+        public static List<string> SeparateTail ( this string str )
         {
             List<string> result = new List<string> ();
 

@@ -76,11 +76,12 @@
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 
-									<TextBox
+									<Label
 										FontSize="12"
+										Height="16"
 										Tapped="HandleChoosingByTapping"
 										KeyDown="AcceptFocusedPersonOrScroll"
-										Text="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
+										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
 
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>

@@ -160,9 +160,12 @@ namespace Lister.Extentions
     {
         public static Bitmap LoadFromResource(Uri resourceUri)
         {
-            Bitmap bitmap = new Bitmap(AssetLoader.Open(resourceUri));
+            using Stream stream = new FileStream (resourceUri.AbsolutePath, FileMode.Open);
+            Bitmap bitmap = new Bitmap (stream);
+            //Bitmap bitmap = new Bitmap(AssetLoader.Open(resourceUri));
             return bitmap;
         }
+
 
         public static async Task<Bitmap?> LoadFromWeb(Uri url)
         {

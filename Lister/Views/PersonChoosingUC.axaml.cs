@@ -21,7 +21,7 @@ namespace Lister.Views
         private double _minPersonListHeight;
         private double _personContainerHeight;
         private bool _personListIsDropped = false;
-        private TextBox _chosen;
+        private Label _chosen;
         private double _runnerStep = 0;
         private bool _runnerIsCaptured = false;
         private Point _runnerCapturingPosition = new Point(0, 0);
@@ -236,9 +236,9 @@ namespace Lister.Views
 
             if ( keyIsEnter )
             {
-                TextBox focused = ( TextBox ) sender;
+                Label focused = ( Label ) sender;
                 focused.Background = new SolidColorBrush (3397631);
-                string chosenName = focused.Text;
+                string chosenName = (string) focused.Content;
                 Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
 
                 if ( chosenPerson == null )
@@ -264,7 +264,7 @@ namespace Lister.Views
 
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
-            TextBox chosenControl = ( TextBox ) sender;
+            Label chosenControl = ( Label ) sender;
             chosenControl.Background = new SolidColorBrush (3397631);
 
             if ( _chosen != null )
@@ -272,7 +272,7 @@ namespace Lister.Views
                 _chosen.Background = new SolidColorBrush (16777215);
             }
 
-            string chosenName = (string) chosenControl.Text;
+            string chosenName = (string) chosenControl.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
             
             TryToEnableBadgeCreationButton ();

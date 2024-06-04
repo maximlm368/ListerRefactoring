@@ -540,7 +540,7 @@ class VMBadge : ViewModelBase
 
         while ( lineIsOverflow )
         {
-            List<string> splited = beingProcessedLine.SeparateIntoMainAndTail ();
+            List<string> splited = beingProcessedLine.SeparateTail ();
 
             if ( splited.Count > 0 )
             {

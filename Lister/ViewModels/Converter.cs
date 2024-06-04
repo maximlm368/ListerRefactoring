@@ -350,6 +350,7 @@ class ConverterToPdf
             currentImagePath = imagePath;
             string complitedImagePath = GetImagePath (imagePath);
             image = Pdf.Image.FromFile (complitedImagePath);
+            //image = Pdf.Image.FromFile (imagePath);
         }
 
         tableForLine.Cell ().Row (1).Column (( uint ) badgeIndex + 1)
@@ -574,16 +575,23 @@ class ConverterToPdf
     }
 
 
+    //private string GetImagePath ( string relativePath )
+    //{
+    //    var containingDirectory = AppDomain.CurrentDomain. BaseDirectory;
+
+    //    for ( int ancestorDirectoryCounter = 0;   ancestorDirectoryCounter < 5;   ancestorDirectoryCounter++ )
+    //    {
+    //        containingDirectory = Directory.GetParent (containingDirectory).FullName;
+    //    }
+
+    //    string resultPath = containingDirectory + relativePath.Remove (0, 7);
+    //    return resultPath;
+    //}
+
+
     private string GetImagePath ( string relativePath )
     {
-        var containingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-        for ( int ancestorDirectoryCounter = 0; ancestorDirectoryCounter < 5; ancestorDirectoryCounter++ )
-        {
-            containingDirectory = Directory.GetParent (containingDirectory).FullName;
-        }
-
-        string resultPath = containingDirectory + relativePath.Remove (0, 7);
+        string resultPath = relativePath.Remove (0, 8);
         return resultPath;
     }
 

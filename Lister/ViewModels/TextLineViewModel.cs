@@ -5,6 +5,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Avalonia.Media;
 using ReactiveUI;
 using ContentAssembler;
 
@@ -32,8 +33,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private string ff;
-        internal string FontFamily
+        private FontFamily ff;
+        internal FontFamily FontFamily
         {
             get { return ff; }
             private set
@@ -67,7 +68,7 @@ namespace Lister.ViewModels
         {
             Alignment = text.Alignment;
             FontSize = text.FontSize;
-            FontFamily = text.FontFamily;
+            FontFamily = new FontFamily(text.FontFamily);
             Content = text.Content;
             IsShiftableBelow = text.IsShiftableBelow;
 

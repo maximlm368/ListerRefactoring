@@ -172,7 +172,7 @@ namespace Lister.ViewModels
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
-            _oneHeight = 24;
+            _oneHeight = 25.5;
             ScrollerCanvasLeft = 454;
             VisiblePeople = new ObservableCollection<Person> ();
             People = new List<Person> ();

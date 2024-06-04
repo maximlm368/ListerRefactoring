@@ -14,7 +14,8 @@
 		Width="760"
 		Height="310"
 		BorderBrush="Brown"
-		BorderThickness="1">
+		BorderThickness="1"
+		DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
 		
 		<ScrollViewer
 			Name="scroller"
@@ -27,21 +28,21 @@
 				Margin="0,20"
 				BorderBrush="LightBlue"
 				BorderThickness="1"  
-				Width="794"
-				Height="1123"
+				Width="796"
+				Height="1125"
 				ScrollViewer.VerticalScrollBarVisibility="Auto"
-				ScrollViewer.HorizontalScrollBarVisibility="Auto"
-				DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
+				ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
 				<Canvas
 					Name="A4"
 					VerticalAlignment="Top"
-					Width="792"
-					Height="1121"
+					Width="794"
+					Height="1123"
 					Background="White">
 
 					<ItemsControl
 						Name="lines"
+						Canvas.Top="20"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
 						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
@@ -49,13 +50,16 @@
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 
-
-
-
 								<ItemsControl
-									HorizontalAlignment="Center"
+									HorizontalAlignment="Center"									
 									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
 
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Horizontal"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+									
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
 
@@ -78,7 +82,7 @@
 															<DataTemplate>
 
 																<TextBlock
-																	Classes ="FirstLevel"
+																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 													                Text="{Binding   Path = Content,  Mode=OneWay }" />
 
 															</DataTemplate>
@@ -118,10 +122,6 @@
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
 								
-								
-								
-								
-
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
@@ -141,4 +141,19 @@
 <!--
 			Width= "{Binding   Path = PageWidth,   Mode=OneWay }"
 			    Height="{Binding   Path = PageHeight,   Mode=OneWay }"
+				
+				
+				
+				
+															Canvas.Left="{Binding  Path = BadgeWidth,  Mode=OneWay }"
+												Canvas.Top="{Binding  Path = BadgeWidth,  Mode=OneWay }"	
+				
+
+								
+									
+				
+				<StackPanel
+									Orientation="Horizontal">
+									
+								</StackPanel>
 			-->
