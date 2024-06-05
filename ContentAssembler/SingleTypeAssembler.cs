@@ -55,10 +55,10 @@ namespace ContentAssembler
 
             List<Badge> badges = new ();
             string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
-            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
-
+            
             foreach ( var person   in   people ) 
-            {    
+            {
+                BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
                 Badge item = new Badge (person, backgroundPath, badgeLayout);
                 badges.Add (item);
             }

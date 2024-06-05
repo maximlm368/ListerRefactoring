@@ -286,16 +286,19 @@ public class BadgeViewModel : ViewModelBase
 
     private void OrderTextlinesByVertical ( List<TextualAtom> textualFields )
     {
-        for ( int index = 0;   index < textualFields. Count - 1;   index++ )
+        for ( int index = 0;   index < textualFields. Count;   index++ )
         {
-            TextualAtom line = textualFields [index];
-            TextualAtom next = textualFields [index + 1];
-
-            if ( line.TopOffset > next.TopOffset ) 
+            for ( int num = index;   num < textualFields.Count - 1;   num++ ) 
             {
                 TextualAtom current = textualFields [index];
-                textualFields [index] = next;
-                textualFields [index + 1] = current;
+                TextualAtom next = textualFields [index + 1];
+
+                if ( current.TopOffset > next.TopOffset )
+                {
+                    TextualAtom reserve = textualFields [index];
+                    textualFields [index] = next;
+                    textualFields [index + 1] = reserve;
+                }
             }
         }
     }

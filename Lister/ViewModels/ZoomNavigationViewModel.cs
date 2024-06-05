@@ -30,7 +30,15 @@ namespace Lister.ViewModels
 {
     public class ZoomNavigationViewModel : ViewModelBase
     {
-        private SceneViewModel _sceneVM;
+        private SceneViewModel sc;
+        internal SceneViewModel SceneVM
+        {
+            get { return sc; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref sc, value, nameof (SceneVM));
+            }
+        }
 
         private int vpN;
         internal int VisiblePageNumber
@@ -42,69 +50,58 @@ namespace Lister.ViewModels
             }
         }
 
-        private string zoomDV;
-        internal string ZoomDegreeInView
-        {
-            get { return zoomDV; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
-            }
-        }
-        private double zoomDegree;
-
 
         public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, SceneViewModel sceneViewModel ) 
         {
-            _sceneVM = sceneViewModel;
+            SceneVM = sceneViewModel;
         }
 
 
         internal void VisualiseNextPage ()
         {
-            VisiblePageNumber = _sceneVM.VisualiseNextPage ();
+            VisiblePageNumber = SceneVM.VisualiseNextPage ();
         }
 
 
         internal void VisualisePreviousPage ()
         {
-            VisiblePageNumber = _sceneVM.VisualisePreviousPage ();
+            VisiblePageNumber = SceneVM.VisualisePreviousPage ();
         }
 
 
         internal void VisualiseLastPage ()
         {
-            VisiblePageNumber = _sceneVM.VisualiseLastPage ();
+            VisiblePageNumber = SceneVM.VisualiseLastPage ();
         }
 
 
         internal void VisualiseFirstPage ()
         {
-            VisiblePageNumber = _sceneVM.VisualiseFirstPage ();
+            VisiblePageNumber = SceneVM.VisualiseFirstPage ();
         }
 
 
         internal void VisualisePageWithNumber ( int pageNumber )
         {
-            VisiblePageNumber = _sceneVM.VisualisePageWithNumber (pageNumber);
+            VisiblePageNumber = SceneVM.VisualisePageWithNumber (pageNumber);
         }
 
 
         internal int GetPageCount () 
         {
-            return _sceneVM.GetPageCount ();
+            return SceneVM.GetPageCount ();
         }
 
 
-        internal void ZoomOnDocument ( short step )
+        internal void ZoomOn ( short step )
         {
-            _sceneVM.ZoomOnDocument ( step );
+            SceneVM.ZoomOn ( step );
         }
 
 
-        internal void ZoomOutDocument ( short step )
+        internal void ZoomOut ( short step )
         {
-            _sceneVM.ZoomOutDocument ( step );
+            SceneVM.ZoomOut ( step );
         }
     }
 
@@ -121,4 +118,15 @@ namespace Lister.ViewModels
 //        throw new MediatorNullException ();
 //    }
 //}
+
+//private string zoomDV;
+//internal string ZoomDegreeInView
+//{
+//    get { return zoomDV; }
+//    set
+//    {
+//        this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
+//    }
+//}
+//private double zoomDegree;
 

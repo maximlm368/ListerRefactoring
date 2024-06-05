@@ -371,27 +371,6 @@ class ConverterToPdf
     }
 
 
-    private void RenderTextLines ( ColumnDescriptor column, IEnumerable <TextLineViewModel> textLines )
-    {
-        foreach ( TextLineViewModel textLine   in   textLines ) 
-        {
-            string text = textLine.Content;
-            float paddingLeft = (float) textLine.LeftOffset;
-            float paddingTop = (float) textLine.TopOffset;
-            string fontFamily = textLine.FontFamily;
-            float fontSize = (float) textLine.FontSize;
-
-            column
-                .Item ()
-                .PaddingLeft( paddingLeft )
-                .PaddingTop( paddingTop )
-                .Text (text)
-                .FontFamily (fontFamily)
-                .FontSize (fontSize);
-        }
-    }
-
-
     private void RenderTextLines ( LayersDescriptor layers, IEnumerable <TextLineViewModel> textLines )
     {
         foreach ( TextLineViewModel textLine   in   textLines )
@@ -399,7 +378,7 @@ class ConverterToPdf
             string text = textLine.Content;
             float paddingLeft = ( float ) textLine.LeftOffset;
             float paddingTop = ( float ) textLine.TopOffset;
-            string fontFamily = textLine.FontFamily;
+            string fontFamily = textLine.FontFamily. Name;
             float fontSize = ( float ) textLine.FontSize;
 
             layers
@@ -653,3 +632,22 @@ class ConverterToPdf
 //                   );
 //}
 
+//private void RenderTextLines ( ColumnDescriptor column, IEnumerable<TextLineViewModel> textLines )
+//{
+//    foreach ( TextLineViewModel textLine in textLines )
+//    {
+//        string text = textLine.Content;
+//        float paddingLeft = ( float ) textLine.LeftOffset;
+//        float paddingTop = ( float ) textLine.TopOffset;
+//        string fontFamily = textLine.FontFamily.Name;
+//        float fontSize = ( float ) textLine.FontSize;
+
+//        column
+//            .Item ()
+//            .PaddingLeft (paddingLeft)
+//            .PaddingTop (paddingTop)
+//            .Text (text)
+//            .FontFamily (fontFamily)
+//            .FontSize (fontSize);
+//    }
+//}

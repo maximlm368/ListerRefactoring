@@ -35,7 +35,7 @@
 			Width="28"
 			IsEnabled="False"
 			Tapped="ToFirstPage"
-			Content="z" />
+			Content="f" />
 		
 		<Button
 			Name="previousPage"
@@ -44,7 +44,7 @@
 			Width="28"
 			IsEnabled="False"
 			Tapped="ToPreviousPage"
-			Content="b" />
+			Content="p" />
 
 		<TextBox
 			Name="visiblePageNumber"
@@ -54,6 +54,7 @@
 			MaxHeight="30"
 			FontSize="14"
 			TextChanged="StepOnPage"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"/>
 
 		<Button
@@ -63,7 +64,7 @@
 			Width="28"
 			IsEnabled="False"
 			Tapped="ToNextPage"
-			Content="f" />
+			Content="n" />
 		
 		<Button
 			Name="lastPage"
@@ -92,6 +93,7 @@
 			FontSize="14"
 			IsReadOnly="True"
 			KeyUp="SetNewScale"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
 		
 		<Button

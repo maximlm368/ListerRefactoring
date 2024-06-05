@@ -212,6 +212,7 @@ namespace Lister.ViewModels
         private void SetPersonList ( ) 
         {
             int personCount = VisiblePeople. Count;
+            PersonListHeight = _oneHeight * personCount;
 
             if ( personCount > 5 )
             {
@@ -235,7 +236,13 @@ namespace Lister.ViewModels
 
             double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
             double proportion = PersonListHeight / scrollerWorkAreaHeight;
-            RunnerHeight = VisibleHeight * proportion;
+            RunnerHeight = VisibleHeight / proportion;
+
+            if (RunnerHeight < 2) 
+            {
+                RunnerHeight = 2;
+            }
+
             RunnerTopCoordinate = 15;
             TopSpanHeight = 0;
             BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;

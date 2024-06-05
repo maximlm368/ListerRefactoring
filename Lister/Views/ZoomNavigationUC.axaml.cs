@@ -72,10 +72,13 @@ namespace Lister.Views
 
         internal void ZoomOn ( object sender, TappedEventArgs args )
         {
+            ModernMainView parent = this.Parent.Parent as ModernMainView;
+            SceneUserControl scene = parent.scene;
+
             if ( _scalabilityDepth < _maxDepth )
             {
 
-                _vm.ZoomOnDocument (_scalabilityStep);
+                _vm.ZoomOn (_scalabilityStep);
                 _scalabilityDepth++;
             }
 
@@ -93,9 +96,12 @@ namespace Lister.Views
 
         internal void ZoomOut ( object sender, TappedEventArgs args )
         {
+            ModernMainView parent = this.Parent.Parent as ModernMainView;
+            SceneUserControl scene = parent.scene;
+
             if ( _scalabilityDepth > _minDepth )
             {
-                _vm.ZoomOutDocument (_scalabilityStep);
+                _vm.ZoomOut (_scalabilityStep);
                 _scalabilityDepth--;
             }
 
@@ -111,7 +117,7 @@ namespace Lister.Views
         }
 
 
-        internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
+                internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
         {
             //if ( incorrectBadges.Count > 0 )
             //{
@@ -290,3 +296,43 @@ namespace Lister.Views
 //private TemplateChoosingUserControl _templateChoosing;
 //private SceneUserControl _scene;
 //private PersonChoosingUserControl _personChoosing;
+
+//internal void ZoomOn ( object sender, TappedEventArgs args )
+//{
+//    if ( _scalabilityDepth < _maxDepth )
+//    {
+
+//        _vm.ZoomOn (_scalabilityStep);
+//        _scalabilityDepth++;
+//    }
+
+//    if ( _scalabilityDepth == _maxDepth )
+//    {
+//        zoomOn.IsEnabled = false;
+//    }
+
+//    if ( !zoomOut.IsEnabled )
+//    {
+//        zoomOut.IsEnabled = true;
+//    }
+//}
+
+
+//internal void ZoomOut ( object sender, TappedEventArgs args )
+//{
+//    if ( _scalabilityDepth > _minDepth )
+//    {
+//        _vm.ZoomOut (_scalabilityStep);
+//        _scalabilityDepth--;
+//    }
+
+//    if ( _scalabilityDepth == _minDepth )
+//    {
+//        zoomOut.IsEnabled = false;
+//    }
+
+//    if ( !zoomOn.IsEnabled )
+//    {
+//        zoomOn.IsEnabled = true;
+//    }
+//}

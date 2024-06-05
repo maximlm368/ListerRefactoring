@@ -78,7 +78,8 @@
 
 									<Label
 										FontSize="12"
-										Height="16"
+										Height="20"
+										Background="Yellow"
 										Tapped="HandleChoosingByTapping"
 										KeyDown="AcceptFocusedPersonOrScroll"
 										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
@@ -92,7 +93,7 @@
 							Name="scroller"
 							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
 							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
-							Height="{Binding   Path = PersonListHeight,  Mode=OneWay}"
+							Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 							Background="White">
 
 							<Canvas
@@ -119,7 +120,7 @@
 								Canvas.Top="{Binding   Path = RunnerTopCoordinate,  Mode=OneWay}"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
-								Background="LightGray"
+								Background="Red"
 								PointerPressed="CaptureRunner"
 								PointerMoved="MoveRunner"/>
 
@@ -129,7 +130,7 @@
 								Canvas.Bottom="15"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
-								Background="White"
+								Background="Green"
 								Tapped="ShiftRunner"/>
 
 							<Canvas

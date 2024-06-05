@@ -26,8 +26,20 @@ namespace Lister.ViewModels
             }
         }
 
-        private ObservableCollection <Thickness> margin;
-        internal ObservableCollection <Thickness> Margin
+
+        //private ObservableCollection<Thickness> margin;
+        //internal ObservableCollection<Thickness> Margin
+        //{
+        //    get { return margin; }
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
+        //    }
+        //}
+
+
+        private Thickness margin;
+        internal Thickness Margin
         {
             get { return margin; }
             set
@@ -35,6 +47,7 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
             }
         }
+
 
         private double maxH;
         internal double Height 
@@ -54,16 +67,6 @@ namespace Lister.ViewModels
 
             private set { maxH = value; } 
         }
-
-        //private StackPanel sPT;
-        //internal StackPanel StackPanelTemplate
-        //{
-        //    get { return sPT; }
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref sPT, value, nameof (StackPanelTemplate));
-        //    }
-        //}
 
 
         internal BadgeLine( double width, double scale, double heightConstraint ) 
@@ -94,6 +97,8 @@ namespace Lister.ViewModels
             {
                 Badges.Add (badge);
                 _restWidth -= badge.BadgeWidth;
+                Margin = new Thickness (_restWidth/2, 0, 0, 0);
+                
                 return ActionSuccess.Success;
             }
         }

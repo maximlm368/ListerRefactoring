@@ -25,8 +25,8 @@ namespace Lister.Views
             _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
 
-            TextBlock fdf = new TextBlock ();
-            fdf.FontFamily = new Avalonia.Media.FontFamily ("");
+            //TextBlock fdf = new TextBlock ();
+            //fdf.FontFamily = new Avalonia.Media.FontFamily ("Arial");
         }
 
 

@@ -8,10 +8,7 @@ namespace Lister.Views
 {
     public partial class SceneUserControl : UserControl
     {
-        private PersonSourceUserControl _personSource;
-        private TemplateChoosingUserControl _templateChoosing;
-        private ZoomNavigationUserControl _zoomNavigation;
-        private PersonChoosingUserControl _personChoosing;
+        private SceneViewModel _vm;
 
 
         public SceneUserControl ()
@@ -19,9 +16,8 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
             this.Margin = new Avalonia.Thickness (5);
-
-            
         }
+
     }
 }
 

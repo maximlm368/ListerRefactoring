@@ -31,6 +31,7 @@ namespace ContentAssembler
             BadgeLayout = layout;
 
             Dictionary<string, string> personProperties = Person.GetProperties ();
+
             BadgeLayout.SetTextualValues ( personProperties );
             BadgeLayout.TrimEdgeCharsOfAtomContent ();
         }
@@ -53,7 +54,7 @@ namespace ContentAssembler
         }
 
 
-        internal void SetTextualValues ( Dictionary<string , string> personProperties )
+        internal void SetTextualValues ( Dictionary <string, string> personProperties )
         {
             List<TextualAtom> includibles = new ( );
             List<TextualAtom> includings = new ( );
@@ -77,7 +78,7 @@ namespace ContentAssembler
 
         private void AllocateValues ( Dictionary<string, string> personProperties, List<TextualAtom> includibles ) 
         {
-            foreach ( KeyValuePair<string, string> property in personProperties )
+            foreach ( KeyValuePair <string, string> property   in   personProperties )
             {
                 foreach ( TextualAtom atom in TextualFields )
                 {
@@ -199,18 +200,18 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFamily { get; private set; }
-        private string content;
+        private string _content;
         public string Content
         {
             get
             {
-                return content;
+                return _content;
             }
             set
             {
                 if ( !string.IsNullOrWhiteSpace (value) )
                 {
-                    content = value;
+                    _content = value;
                     ContentIsSet = true;
                 }
             }
@@ -224,7 +225,7 @@ namespace ContentAssembler
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
                            , double fontSize, string fontFamily, List<string>? includedAtoms, bool isShiftableBelow )
         {
-            content = "";
+            _content = "";
             ContentIsSet = false;
             Name = name;
             Width = width;
@@ -246,8 +247,8 @@ namespace ContentAssembler
 
             foreach ( char symbol in unNeeded )
             {
-                content.TrimStart (symbol);
-                content.TrimEnd (symbol);
+                _content.TrimStart (symbol);
+                _content.TrimEnd (symbol);
             }
         }
 

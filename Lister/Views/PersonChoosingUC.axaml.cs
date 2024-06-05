@@ -107,17 +107,20 @@ namespace Lister.Views
 
         internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
         {
+            int fdfd = 0;
+
             if ( _personListIsDropped )
             {
-                visiblePersons.IsVisible = false;
                 _personListIsDropped = false;
+                visiblePersons.IsVisible = false;
             }
             else
             {
-                personTextBox.Focus (NavigationMethod.Tab);
-                visiblePersons.IsVisible = true;
                 _personListIsDropped = true;
+                visiblePersons.IsVisible = true;
             }
+            personTextBox.Focus (NavigationMethod.Tab);
+            int dfdf = 0;
         }
 
 
@@ -432,7 +435,7 @@ namespace Lister.Views
 
             double currentPersonsScrollValue = vm.PersonsScrollValue;
 
-            if ( isDirectionUp )
+            if (! isDirectionUp )
             {
                 currentPersonsScrollValue -= step;
                 double maxScroll = visiblePersons.Height - personList.Height;

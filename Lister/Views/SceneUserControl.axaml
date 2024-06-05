@@ -14,8 +14,7 @@
 		Width="760"
 		Height="310"
 		BorderBrush="Brown"
-		BorderThickness="1"
-		DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
+		BorderThickness="1">
 		
 		<ScrollViewer
 			Name="scroller"
@@ -45,13 +44,15 @@
 						Canvas.Top="20"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
-						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
+						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }"
+						DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
 
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 
 								<ItemsControl
-									HorizontalAlignment="Center"									
+									Margin="{Binding  Path = Margin,  Mode=OneWay }"
+									HorizontalAlignment="Left"								
 									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
 
 									<ItemsControl.ItemsPanel>
@@ -70,50 +71,32 @@
 												<Canvas
 													Width="{Binding  Path = BadgeWidth,  Mode=OneWay }"
 													Height="{Binding   Path = BadgeHeight,   Mode=OneWay }" >
-
+							                        
 													<Image
 														Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
 														Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
 
 													<ItemsControl
-														ItemsSource="{Binding  Path = textLines,  Mode=OneWay }">
+														Canvas.Top="55"
+														Canvas.Left="0"
+														ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }">
 
 														<ItemsControl.ItemTemplate>
 															<DataTemplate>
 
-																<TextBlock
+																<Label
+																	Margin="130,0"
+																	Height="{Binding   Path = Height,  Mode=OneWay }"
+																	Width="{Binding   Path = Width,  Mode=OneWay }"
+																	FontSize="{Binding   Path = FontSize,  Mode=OneWay }"
 																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
-													                Text="{Binding   Path = Content,  Mode=OneWay }" />
+																	HorizontalContentAlignment="Center"
+													                Content="{Binding   Path = Content,  Mode=OneWay }" />
 
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>
 													</ItemsControl>
-
-													<ItemsControl
-														ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }">
-
-														<ItemsControl.ItemTemplate>
-															<DataTemplate>
-
-																<Image
-																	Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
-																	Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
-
-															</DataTemplate>
-														</ItemsControl.ItemTemplate>
-													</ItemsControl>
-
-													<ItemsControl
-														ItemsSource="{Binding  Path = Rectangles,  Mode=OneWay }">
-
-														<ItemsControl.ItemTemplate>
-															<DataTemplate>
-
-																<Rectangle Canvas.Top="565" />
-
-															</DataTemplate>
-														</ItemsControl.ItemTemplate>
-													</ItemsControl>
+													
 
 												</Canvas>
 											</Border>
@@ -156,4 +139,65 @@
 									Orientation="Horizontal">
 									
 								</StackPanel>
+								
+								
+								
+								
+	Canvas.Top="{Binding   Path = TopOffset,  Mode=OneWay }"
+																	Canvas.Left="{Binding   Path = LeftOffset,  Mode=OneWay }"							
+					
+					
+					
+					<ItemsControl
+														Background="AliceBlue"
+														Canvas.Top="0"
+														Canvas.Left="0"
+														ItemsSource="{Binding  Path = textLines,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Label
+																	Background="AliceBlue"
+																	
+																	Height="{Binding   Path = Height,  Mode=OneWay }"
+																	Width="{Binding   Path = Width,  Mode=OneWay }"
+																	FontSize="{Binding   Path = FontSize,  Mode=OneWay }"
+																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+													                Content="{Binding   Path = Content,  Mode=OneWay }" />
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+					
+					
+					
+			                                        <ItemsControl
+														ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Image
+																	Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+																	Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													<ItemsControl
+														ItemsSource="{Binding  Path = Rectangles,  Mode=OneWay }">
+
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Rectangle Canvas.Top="565" />
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>		
+					
+					
+					
 			-->

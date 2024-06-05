@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using ContentAssembler;
+using Lister.Views;
 using QuestPDF.Helpers;
 using ReactiveUI;
 
@@ -54,6 +56,66 @@ namespace Lister.ViewModels
             }
         }
 
+        private double pW;
+        internal double PageWidth
+        {
+            get { return pW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pW, value, nameof (PageWidth));
+            }
+        }
+
+        private double pH;
+        internal double PageHeight
+        {
+            get { return pH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pH, value, nameof (PageHeight));
+            }
+        }
+
+        private double bW;
+        internal double BorderWidth
+        {
+            get { return bW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bW, value, nameof (BorderWidth));
+            }
+        }
+
+        private double bH;
+        internal double BorderHeight
+        {
+            get { return bH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bH, value, nameof (BorderHeight));
+            }
+        }
+
+        private Thickness bM;
+        internal Thickness BorderMargin
+        {
+            get { return bM; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bM, value, nameof (BorderMargin));
+            }
+        }
+
+        private double cT;
+        internal double CanvasTop
+        {
+            get { return cT; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cT, value, nameof (CanvasTop));
+            }
+        }
+
         private PersonChoosingViewModel _personChoosingVM;
 
 
@@ -67,6 +129,13 @@ namespace Lister.ViewModels
             VisiblePageNumber = 1;
             procentSymbol = "%";
             _zoomDegree = 100;
+            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
+
+            PageHeight = PageViewModel.pageSize.Height;
+            PageWidth = PageViewModel.pageSize.Width;
+            BorderHeight = PageHeight + 2;
+            BorderWidth = PageWidth + 2;
+            int fdfd = 0;
         }
 
 
@@ -83,11 +152,15 @@ namespace Lister.ViewModels
                     BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 
-                    if ( ! beingProcessedBadgeVM.IsCorrect )
-                    {
-                        IncorrectBadges.Add (beingProcessedBadgeVM);
-                    }
+                    //if ( ! beingProcessedBadgeVM.IsCorrect )
+                    //{
+                    //    IncorrectBadges.Add (beingProcessedBadgeVM);
+                    //}
                 }
+
+
+                
+
 
                 List <PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
                 bool placingStartedOnLastPage = ( _lastPage != null )   &&   _lastPage.Equals (newPages [0]);
@@ -106,6 +179,12 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
+
+
+
+
+            string name = VisiblePage.Lines [0].Badges [0].TextLines [0].Content;
+            int ddf = 0;
         }
 
 
@@ -173,27 +252,33 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOnDocument ( short step )
+        internal void ZoomOn ( short step )
         {
             _documentScale *= _scalabilityCoefficient;
 
             if ( VisiblePage != null )
             {
-                for ( int pageCounter = 0; pageCounter < _allPages.Count; pageCounter++ )
+                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
                 {
                     _allPages [pageCounter].ZoomOn (_scalabilityCoefficient);
                 }
 
-                //VisiblePage.ZoomOnExampleBadge (_scalabilityCoefficient);
-                VisiblePage.ZoomOn (_scalabilityCoefficient);
                 _zoomDegree *= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+
+                PageWidth *= _scalabilityCoefficient;
+                PageHeight *= _scalabilityCoefficient;
+                BorderHeight = PageHeight + 2;
+                BorderWidth = PageWidth + 2;
+                CanvasTop *= _scalabilityCoefficient;
+                double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
+                BorderMargin = new Thickness (marginLeft, 0, 0, 0);
             }
         }
 
 
-        internal void ZoomOutDocument ( short step )
+        internal void ZoomOut ( short step )
         {
             _documentScale /= _scalabilityCoefficient;
 
@@ -204,11 +289,17 @@ namespace Lister.ViewModels
                     _allPages [pageCounter].ZoomOut (_scalabilityCoefficient);
                 }
 
-                VisiblePage.ZoomOut (_scalabilityCoefficient);
-
                 _zoomDegree /= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+
+                PageWidth /= _scalabilityCoefficient;
+                PageHeight /= _scalabilityCoefficient;
+                BorderHeight = PageHeight + 2;
+                BorderWidth = PageWidth + 2;
+                CanvasTop /= _scalabilityCoefficient;
+                double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
+                BorderMargin = new Thickness (marginLeft, 0, 0, 0);
             }
         }
 

@@ -91,8 +91,9 @@ public class PageViewModel : ViewModelBase
         //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
 
         PageViewModel fillablePage = DefineFillablePage(scratchPage, desiredScale);
+        List <PageViewModel> pages = Place (placebleBadges, desiredScale, fillablePage);
 
-        return Place (placebleBadges, desiredScale, fillablePage);
+        return pages;
     }
 
 
