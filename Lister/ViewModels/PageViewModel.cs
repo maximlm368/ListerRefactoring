@@ -46,6 +46,26 @@ public class PageViewModel : ViewModelBase
         }
     }
 
+    private double bW;
+    internal double BorderWidth
+    {
+        get { return bW; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref bW, value, nameof (BorderWidth));
+        }
+    }
+
+    private double bH;
+    internal double BorderHeight
+    {
+        get { return bH; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref bH, value, nameof (BorderHeight));
+        }
+    }
+
     private ObservableCollection <BadgeLine> llines;
     internal ObservableCollection <BadgeLine> Lines
     {
@@ -73,8 +93,34 @@ public class PageViewModel : ViewModelBase
         double usefullHeight = PageHeight - 20;
         _fillableLine = new BadgeLine (PageWidth, _scale, usefullHeight);
         Lines.Add (_fillableLine);
+        BorderHeight = PageHeight + 2;
+        BorderWidth = PageWidth + 2;
 
         SetCorrectScale ();
+    }
+
+
+    private PageViewModel ( PageViewModel page )
+    {
+        Lines = new ObservableCollection<BadgeLine> ();
+        _scale = 1;
+        _badgeCount = page._badgeCount;
+        PageWidth = pageSize.Width;
+        PageHeight = pageSize.Height;
+        BorderHeight = PageHeight + 2;
+        BorderWidth = PageWidth + 2;
+
+        foreach ( BadgeLine line   in   page.Lines ) 
+        {
+            BadgeLine originalLine = line.GetDimensionalOriginal ();
+            Lines.Add (originalLine);
+        }
+    }
+
+
+    internal PageViewModel GetDimendionalOriginal () 
+    {
+        return new PageViewModel ( this );
     }
 
 
@@ -165,6 +211,11 @@ public class PageViewModel : ViewModelBase
     internal void Clear ()
     {
         _badgeCount = 0;
+
+        foreach( BadgeLine line   in   Lines ) 
+        {
+            line.Clear ();
+        }
     }
 
 
@@ -173,6 +224,8 @@ public class PageViewModel : ViewModelBase
         this._scale *= scaleCoefficient;
         PageHeight *= scaleCoefficient;
         PageWidth *= scaleCoefficient;
+        BorderHeight = PageHeight + 2;
+        BorderWidth = PageWidth + 2;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {
@@ -186,6 +239,8 @@ public class PageViewModel : ViewModelBase
         _scale /= scaleCoefficient;
         PageHeight /= scaleCoefficient;
         PageWidth /= scaleCoefficient;
+        BorderHeight = PageHeight + 2;
+        BorderWidth = PageWidth + 2;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {

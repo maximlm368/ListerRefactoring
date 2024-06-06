@@ -39,6 +39,8 @@ namespace DataGateway
         {
             string jsonPath = _nameAndJson [ templateName ];
             string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
+            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
+            backgroundPath = "file:///" + directoryPath + "//" + backgroundPath;
             return backgroundPath;
         }
 
@@ -80,15 +82,15 @@ namespace DataGateway
         private void SetUnitingAtoms ( List<TextualAtom> atoms, string jsonPath ) 
         {
             IEnumerable<IConfigurationSection> unitings =
-                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks : Items" }, jsonPath);
+                          GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
 
-            foreach ( IConfigurationSection unit in unitings )
+            foreach ( IConfigurationSection unit   in   unitings )
             {
                 IConfigurationSection unitedSection = unit.GetSection ("United");
                 IEnumerable<IConfigurationSection> unitedSections = GetterFromJson.GetChildrenOfSection (unitedSection);
                 List<string> unitedAtomsNames = new List<string> ();
 
-                foreach ( IConfigurationSection name in unitedSections )
+                foreach ( IConfigurationSection name   in   unitedSections )
                 {
                     unitedAtomsNames.Add (name.Value);
                 }
@@ -104,7 +106,7 @@ namespace DataGateway
             List<InsideImage> pictures = new ();
 
             IEnumerable<IConfigurationSection> images =
-                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "InsideImages : Items" }, jsonPath);
+                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "InsideImages" }, jsonPath);
 
             foreach ( IConfigurationSection image in images )
             {

@@ -62,17 +62,32 @@ namespace ContentAssembler
             AllocateValues ( personProperties, includibles );
             SetComplexValuesToIncludingAtoms (includings, includibles);
 
+            List <TextualAtom> removable = new ( );
+
             foreach ( TextualAtom includedAtom   in   includibles )
             {
                 if ( ! includedAtom.isNeeded )
                 {
-                    includibles.Remove ( includedAtom );
+                    removable.Add ( includedAtom );
                 }
             }
 
             List<TextualAtom> neededAtoms = new List<TextualAtom> ();
             neededAtoms.AddRange ( includibles );
             neededAtoms.AddRange (includings);
+
+            //TextualFields.RemoveAt (3);
+
+            TextualFields [1] = TextualFields [5];
+
+            TextualFields.RemoveAt (2);
+            TextualFields.RemoveAt (4);
+            //TextualFields.RemoveAt (4);
+
+           
+
+
+
         }
 
 
@@ -80,7 +95,7 @@ namespace ContentAssembler
         {
             foreach ( KeyValuePair <string, string> property   in   personProperties )
             {
-                foreach ( TextualAtom atom in TextualFields )
+                foreach ( TextualAtom atom   in   TextualFields )
                 {
                     if ( atom.Name == property.Key )
                     {
@@ -95,17 +110,17 @@ namespace ContentAssembler
 
         private void SetComplexValuesToIncludingAtoms ( List<TextualAtom> includings, List<TextualAtom> includibles ) 
         {
-            foreach ( TextualAtom atom in TextualFields )
+            foreach ( TextualAtom atom   in   TextualFields )
             {
-                bool atomIsIncluding = !atom.ContentIsSet;
+                bool atomIsIncluding = ! atom.ContentIsSet;
 
                 if ( atomIsIncluding )
                 {
                     string complexContent = "";
 
-                    foreach ( string includedAtomName in atom.IncludedAtoms )
+                    foreach ( string includedAtomName   in   atom.IncludedAtoms )
                     {
-                        foreach ( TextualAtom includedAtom in includibles )
+                        foreach ( TextualAtom includedAtom   in   includibles )
                         {
                             bool coincide = ( includedAtom.Name == includedAtomName );
 

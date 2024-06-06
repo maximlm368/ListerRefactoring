@@ -78,6 +78,27 @@ namespace Lister.ViewModels
         }
 
 
+        private BadgeLine ( BadgeLine line )
+        {
+            Badges = new ObservableCollection<BadgeViewModel> ();
+            _scale = line._scale;
+            _restWidth = line._restWidth / _scale;
+            _heightConstraint = line._heightConstraint / _scale;
+
+            foreach ( BadgeViewModel badge   in   line.Badges ) 
+            {
+                Badges.Add ( badge.GetDimensionalOriginal() );
+            }
+        }
+
+
+        internal BadgeLine GetDimensionalOriginal () 
+        {
+            BadgeLine original = new BadgeLine (this);
+            return original;
+        }
+
+
         internal ActionSuccess AddBadge ( BadgeViewModel badge ) 
         {
             badge.SetCorrectScale ( _scale );
@@ -143,6 +164,12 @@ namespace Lister.ViewModels
             {
                 Badges [index].Hide ();
             }
+        }
+
+
+        internal void Clear ()
+        {
+            Badges.Clear ();
         }
     }
 

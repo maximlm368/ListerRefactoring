@@ -13,6 +13,8 @@ namespace Lister.ViewModels
 {
     public class TextLineViewModel : BadgeMember
     {
+        private TextualAtom _dataSource;
+
         private string al;
         internal string Alignment
         {
@@ -66,6 +68,7 @@ namespace Lister.ViewModels
 
         public TextLineViewModel ( TextualAtom text )
         {
+            _dataSource = text;
             Alignment = text.Alignment;
             FontSize = text.FontSize;
             FontFamily = new FontFamily(text.FontFamily);
@@ -73,6 +76,27 @@ namespace Lister.ViewModels
             IsShiftableBelow = text.IsShiftableBelow;
 
             SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
+        }
+
+
+        private TextLineViewModel ( TextLineViewModel text )
+        {
+            _dataSource = text._dataSource;
+            Alignment = text._dataSource.Alignment;
+            FontSize = text._dataSource.FontSize;
+            FontFamily = new FontFamily (text._dataSource.FontFamily);
+            Content = text.Content;
+            IsShiftableBelow = text.IsShiftableBelow;
+
+            SetYourself (text._dataSource.Width, text._dataSource.Height, text._dataSource.TopOffset
+                                                                        , text._dataSource.LeftOffset);
+        }
+
+
+        internal TextLineViewModel GetDimensionalOriginal () 
+        {
+            TextLineViewModel original = new TextLineViewModel (this);
+            return original;
         }
 
 

@@ -25,6 +25,7 @@ using Avalonia.Controls.Shapes;
 using ExtentionsAndAuxiliary;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 
 namespace Lister.ViewModels;
@@ -311,7 +312,7 @@ class ConverterToPdf
                       table.ColumnsDefinition (
                           columns =>
                           {
-                               for ( int badgeNumber = 0;   badgeNumber < line.Badges.Count;   badgeNumber++ )
+                               for ( int badgeNumber = 0;   badgeNumber < line.Badges. Count;   badgeNumber++ )
                                {
                                    BadgeViewModel beingRendered = line.Badges [badgeNumber];
                                    float badgeWidth = ( float ) beingRendered.BadgeWidth;
@@ -436,6 +437,9 @@ class ConverterToPdf
         rect.Size = new SKSize (size.Width, size.Height);
         canvas.DrawRect (rect, paint);
     }
+
+
+
 
 
     private void RenderLastNameLineOnBadge ( ColumnDescriptor column, VMBadge beingRenderedItem )

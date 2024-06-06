@@ -56,46 +56,6 @@ namespace Lister.ViewModels
             }
         }
 
-        private double pW;
-        internal double PageWidth
-        {
-            get { return pW; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref pW, value, nameof (PageWidth));
-            }
-        }
-
-        private double pH;
-        internal double PageHeight
-        {
-            get { return pH; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref pH, value, nameof (PageHeight));
-            }
-        }
-
-        private double bW;
-        internal double BorderWidth
-        {
-            get { return bW; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref bW, value, nameof (BorderWidth));
-            }
-        }
-
-        private double bH;
-        internal double BorderHeight
-        {
-            get { return bH; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref bH, value, nameof (BorderHeight));
-            }
-        }
-
         private Thickness bM;
         internal Thickness BorderMargin
         {
@@ -123,19 +83,16 @@ namespace Lister.ViewModels
         {
             _docAssembler = docAssembler;
             _personChoosingVM = personChoosingVM;
-            _allPages = new List <PageViewModel> ();
             _documentScale = 1;
+            _allPages = new List <PageViewModel> ();
+            VisiblePage = new PageViewModel (_documentScale);
+            _lastPage = VisiblePage;
+            _allPages.Add (VisiblePage);
             _scalabilityCoefficient = 1.25;
             VisiblePageNumber = 1;
             procentSymbol = "%";
             _zoomDegree = 100;
-            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
-
-            PageHeight = PageViewModel.pageSize.Height;
-            PageWidth = PageViewModel.pageSize.Width;
-            BorderHeight = PageHeight + 2;
-            BorderWidth = PageWidth + 2;
-            int fdfd = 0;
+            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol; 
         }
 
 
@@ -179,12 +136,6 @@ namespace Lister.ViewModels
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
-
-
-
-
-            string name = VisiblePage.Lines [0].Badges [0].TextLines [0].Content;
-            int ddf = 0;
         }
 
 
@@ -199,16 +150,7 @@ namespace Lister.ViewModels
                 IncorrectBadges.Add (goalVMBadge);
             }
 
-            bool itIsFirstBadgeBuildingInCurrentAppRun = ( VisiblePage == null );
-
-            if ( itIsFirstBadgeBuildingInCurrentAppRun )
-            {
-                VisiblePage = new PageViewModel ( _documentScale );
-                _lastPage = VisiblePage;
-                _allPages.Add (VisiblePage);
-            }
-
-            bool placingStartedAfterEntireListAddition = ! _lastPage.Equals (VisiblePage);
+            bool placingStartedAfterEntireListAddition = !_lastPage.Equals (VisiblePage);
 
             if ( placingStartedAfterEntireListAddition )
             {
@@ -243,8 +185,8 @@ namespace Lister.ViewModels
                     _allPages [pageCounter].Clear ();
                 }
 
-                VisiblePage = _allPages [0];
-                _allPages = new List <PageViewModel> ();
+                _allPages.Clear ();
+                VisiblePage = new PageViewModel (_documentScale);
                 _lastPage = VisiblePage;
                 _allPages.Add (_lastPage);
                 VisiblePageNumber = 1;
@@ -267,10 +209,6 @@ namespace Lister.ViewModels
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
 
-                PageWidth *= _scalabilityCoefficient;
-                PageHeight *= _scalabilityCoefficient;
-                BorderHeight = PageHeight + 2;
-                BorderWidth = PageWidth + 2;
                 CanvasTop *= _scalabilityCoefficient;
                 double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
                 BorderMargin = new Thickness (marginLeft, 0, 0, 0);
@@ -293,10 +231,6 @@ namespace Lister.ViewModels
                 short zDegree = ( short ) _zoomDegree;
                 ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
 
-                PageWidth /= _scalabilityCoefficient;
-                PageHeight /= _scalabilityCoefficient;
-                BorderHeight = PageHeight + 2;
-                BorderWidth = PageWidth + 2;
                 CanvasTop /= _scalabilityCoefficient;
                 double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
                 BorderMargin = new Thickness (marginLeft, 0, 0, 0);

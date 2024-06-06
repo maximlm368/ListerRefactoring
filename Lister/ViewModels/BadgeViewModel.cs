@@ -22,6 +22,9 @@ public class BadgeViewModel : ViewModelBase
     internal Badge BadgeModel { get; private set; }
     internal Bitmap ImageBitmap { get; private set; }
 
+    private double _widht;
+    private double _height;
+
     private double bW;
     internal double BadgeWidth
     {
@@ -72,7 +75,7 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    private double borderThickness;
+    private double _borderThickness;
     private Avalonia.Thickness bT;
     internal Avalonia.Thickness BorderThickness
     {
@@ -111,19 +114,62 @@ public class BadgeViewModel : ViewModelBase
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;
         BadgeWidth = layout.OutlineSize. Width;
+        _widht = BadgeWidth;
+        BadgeHeight = layout.OutlineSize. Height;
+        _height = BadgeHeight;
+        TextLines = new ObservableCollection<TextLineViewModel> ();
+        InsideImages = new ObservableCollection<ImageViewModel> ();
+        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        IsCorrect = true;
+        _borderThickness = 1;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
+
+        List<TextualAtom> atoms = layout.TextualFields;
+        OrderTextlinesByVertical (atoms);
+        SetUpTextLines (atoms);
+
+        List<InsideImage> images = layout.InsideImages;
+        SetUpImagesAndGeometryElements (images);
+    }
+
+
+    private BadgeViewModel ( BadgeViewModel badge )
+    {
+        BadgeModel = badge.BadgeModel;
+        BadgeLayout layout = BadgeModel. BadgeLayout;
+        BadgeWidth = layout.OutlineSize. Width;
         BadgeHeight = layout.OutlineSize. Height;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
-        borderThickness = 1;
-        BorderThickness = new Avalonia.Thickness (borderThickness);
+        _borderThickness = 1;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
 
-        List<TextualAtom> atoms = layout.TextualFields;
-        OrderTextlinesByVertical (atoms);
-        SetUpTextLines (atoms);
-        List<InsideImage> images = layout.InsideImages;
-        SetUpImagesAndGeometryElements (images);
+        foreach ( TextLineViewModel line   in   badge.TextLines ) 
+        {
+            TextLineViewModel original = line.GetDimensionalOriginal ();
+            TextLines.Add (original);
+        }
+
+        //foreach ( ImageViewModel image   in   badge.InsideImages )
+        //{
+        //    TextLineViewModel original = image.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
+
+        //foreach ( ImageViewModel shape   in   badge.InsideShapes )
+        //{
+        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
+    }
+
+
+    internal BadgeViewModel GetDimensionalOriginal () 
+    {
+        BadgeViewModel original = new BadgeViewModel ( this );
+        return original;
     }
 
 
@@ -173,8 +219,8 @@ public class BadgeViewModel : ViewModelBase
             shape.ZoomOn (coefficient);
         }
 
-        borderThickness *= coefficient;
-        BorderThickness = new Avalonia.Thickness (borderThickness);
+        _borderThickness *= coefficient;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
     }
 
 
@@ -198,8 +244,8 @@ public class BadgeViewModel : ViewModelBase
             shape.ZoomOut (coefficient);
         }
 
-        borderThickness /= coefficient;
-        BorderThickness = new Avalonia.Thickness (borderThickness);
+        _borderThickness /= coefficient;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
     }
 
 

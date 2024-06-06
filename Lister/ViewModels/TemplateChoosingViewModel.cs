@@ -106,7 +106,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     internal Task<bool> GeneratePdf ( string fileToSave )
     {
-        List <PageViewModel> pages = GetAllBadges ();
+        List <PageViewModel> pages = GetAllPages ();
         Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (pages, fileToSave); });
         task.Start ();
         return task;
@@ -115,7 +115,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     public void Print ()
     {
-        List <PageViewModel> pages = GetAllBadges ();
+        List <PageViewModel> pages = GetAllPages ();
         string fileToSave = @"intermidiate.pdf";
         Task pdf = new Task (() => { converter.ConvertToExtention (pages, fileToSave); });
         pdf.Start ();
@@ -142,8 +142,16 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    private List <PageViewModel> GetAllBadges ()
+    private List <PageViewModel> GetAllPages ()
     {
-        return _sceneVM.GetAllPages();
+        List<PageViewModel> pages = _sceneVM.GetAllPages ();
+        List<PageViewModel> dimensionallyOriginals = new List<PageViewModel> ();
+
+        foreach ( PageViewModel page in pages )
+        {
+            dimensionallyOriginals.Add (page.GetDimendionalOriginal ());
+        }
+
+        return dimensionallyOriginals;
     }
 }
