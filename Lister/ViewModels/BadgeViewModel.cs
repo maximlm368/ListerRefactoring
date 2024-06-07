@@ -265,15 +265,18 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private void SetUpTextLines ( List<TextualAtom> orderedTextualFields )
+    private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
 
         for ( int index = 0;   index < orderedTextualFields.Count;   index++ ) 
         {
+            bool isSplitingOccured = false;
+            bool isTimeToShiftNextLine = false;
             TextualAtom textAtom = orderedTextualFields [index];
             double fontSize = textAtom.FontSize;
             double lineLength = textAtom.Width;
+            textAtom.TopOffset += summaryVerticalOffset;
             double topOffset = textAtom.TopOffset;
             string beingProcessedLine = textAtom.Content;
             string additionalLine = string.Empty;
@@ -288,14 +291,22 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ! lineIsOverflow ) 
                 {
-                    if ( textAtom.IsShiftableBelow )
+                    if ( textAtom.IsShiftableBelow   &&   isTimeToShiftNextLine )
                     {
-                        topOffset += summaryVerticalOffset;
+                        summaryVerticalOffset += textAtom.FontSize;
+                        topOffset += textAtom.FontSize;
                     }
 
-                    textAtom.TopOffset = topOffset;
-                    textAtom.Content = beingProcessedLine;
-                    TextLineViewModel textLine = new TextLineViewModel (textAtom);
+                    if ( isSplitingOccured )
+                    {
+                        isTimeToShiftNextLine = true;
+                    }
+
+                    TextualAtom atom = new TextualAtom (textAtom, topOffset, beingProcessedLine);
+
+                    atom.TopOffset = topOffset;
+                    atom.Content = beingProcessedLine;
+                    TextLineViewModel textLine = new TextLineViewModel (atom);
                     TextLines.Add (textLine);
 
                     if ( additionalLine != string.Empty ) 
@@ -316,9 +327,7 @@ public class BadgeViewModel : ViewModelBase
                 {
                     beingProcessedLine = splited [0];
                     additionalLine = splited [1] + " " + additionalLine;
-
-                    summaryVerticalOffset += textAtom.Height;
-                    topOffset += textAtom.Height;
+                    isSplitingOccured = true;
                 }
                 else
                 {
@@ -330,9 +339,9 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private void OrderTextlinesByVertical ( List<TextualAtom> textualFields )
+    private void OrderTextlinesByVertical ( List <TextualAtom> textualFields )
     {
-        for ( int index = 0;   index < textualFields. Count;   index++ )
+        for ( int index = 0;   index < textualFields.Count;   index++ )
         {
             for ( int num = index;   num < textualFields.Count - 1;   num++ ) 
             {

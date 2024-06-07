@@ -18,7 +18,8 @@
 		
 		<ScrollViewer
 			Name="scroller"
-			
+			VerticalScrollBarVisibility="Auto"
+			HorizontalScrollBarVisibility="Auto"
 			AllowAutoHide="True"
 			Background="AliceBlue">
 
@@ -29,8 +30,7 @@
 				BorderThickness="1"  
 				Width="{Binding  Path = BorderWidth,  Mode=OneWay}"
 				Height="{Binding  Path = BorderHeight,  Mode=OneWay}"
-				ScrollViewer.VerticalScrollBarVisibility="Auto"
-				ScrollViewer.HorizontalScrollBarVisibility="Auto"
+				
 				DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
 
 				<Canvas
@@ -42,7 +42,7 @@
 
 					<ItemsControl
 						Name="lines"
-						Canvas.Top="20"
+						Canvas.Top="{Binding  Path = ContentTopOffset,  Mode=OneWay }"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
 						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
@@ -70,7 +70,7 @@
 
 												<Canvas
 													Width="{Binding  Path = BadgeWidth,  Mode=OneWay }"
-													Height="{Binding   Path = BadgeHeight,   Mode=OneWay }" >
+											        Height="{Binding   Path = BadgeHeight,   Mode=OneWay }">
 							                        
 													<Image
 														Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
@@ -81,20 +81,28 @@
 
 														<ItemsControl.ItemsPanel>
 															<ItemsPanelTemplate>
-																<Canvas />
+																<Canvas
+																	Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																	Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
 															</ItemsPanelTemplate>
 														</ItemsControl.ItemsPanel>
+
+														<ItemsControl.Styles>
+															<Style Selector="ItemsControl ContentPresenter">
+																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+															</Style>
+														</ItemsControl.Styles>
 
 														<ItemsControl.ItemTemplate>
 															<DataTemplate>
 
 																<Label
-																	Canvas.Top="{Binding TopOffset}"
-																	Canvas.Left="{Binding LeftOffset}"
-																	Height="{Binding   Path = Height,  Mode=OneWay }"
-																	Width="{Binding   Path = Width,  Mode=OneWay }"
-																	FontSize="{Binding   Path = FontSize,  Mode=OneWay }"
-																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+																	VerticalAlignment="Top"
+																	Height="{Binding Path = Height,  Mode=OneWay}"
+																	Width="{Binding  Path = Width,  Mode=OneWay}"
+																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 																	HorizontalContentAlignment="Center"
 													                Content="{Binding   Path = Content,  Mode=OneWay }" />
 
@@ -105,6 +113,7 @@
 													
 
 												</Canvas>
+				
 											</Border>
 
 										</DataTemplate>

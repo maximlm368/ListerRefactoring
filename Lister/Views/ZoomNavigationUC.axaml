@@ -110,8 +110,9 @@
 			Grid.Column="11"
 			HorizontalAlignment="Center"
 			Width="126"
-			IsEnabled="False"
+			IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
 			Tapped="EditIncorrectBadges"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			Content="Редактировать"/>
 		
 	</Grid>

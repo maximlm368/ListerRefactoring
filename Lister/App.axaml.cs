@@ -72,19 +72,20 @@ public static class ServiceCollectionExtensions
         //collection.AddSingleton <IBadgeAppearenceProvider> 
         //                           (( factory ) => (BadgeAppearenceProvider) factory.GetService(serviceType));
 
-        collection.AddSingleton<IBadgeAppearenceProvider, BadgeAppearenceProvider>();
+        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider>();
         collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
+
         //collection.AddSingleton<IResultOfSessionSaver, Lister.ViewModels.ConverterToPdf> ();
+
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
-        
         collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
         collection.AddSingleton <ModernMainViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
         collection.AddSingleton <PageViewModel> ();
         collection.AddSingleton <PersonChoosingViewModel> ();
-        collection.AddSingleton<PersonSourceViewModel> ();
+        collection.AddSingleton <PersonSourceViewModel> ();
         collection.AddSingleton <SceneViewModel> ();
         collection.AddSingleton <TemplateChoosingViewModel> ();
         collection.AddSingleton <ZoomNavigationViewModel> ();

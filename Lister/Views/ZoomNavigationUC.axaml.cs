@@ -2,7 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Lister.ViewModels;
 using Lister.Views;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Lister.Views
 {
@@ -21,6 +23,7 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<ZoomNavigationViewModel> ();
             _vm = ( ZoomNavigationViewModel ) DataContext;
+            //visiblePageNumber.Text = 1.ToString ();
         }
 
 
@@ -59,11 +62,22 @@ namespace Lister.Views
             try
             {
                 int pageNumber = ( int ) UInt32.Parse (textBox.Text);
+
+                if ( pageNumber == 0 )
+                {
+                    visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+                    return;
+                }
+
                 _vm.VisualisePageWithNumber (pageNumber);
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
                 SetEnablePageNavigation ();
             }
             catch ( System.FormatException e )
+            {
+                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+            }
+            catch ( System.OverflowException e )
             {
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
             }
@@ -117,16 +131,19 @@ namespace Lister.Views
         }
 
 
-                internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
+        internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
         {
-            //if ( incorrectBadges.Count > 0 )
-            //{
-            //    BadgeEditorView badgeEditor = new BadgeEditorView ();
-            //    badgeEditor.SetIncorrectBadges (incorrectBadges);
+            List<BadgeViewModel> incorrects = _vm.GetIncorrectBadges ();
 
-
-            //    owner.Content = badgeEditor;
-            //}
+            ModernMainView ancestorView = this.Parent.Parent as ModernMainView;
+            MainWindow owner = ancestorView.Parent as MainWindow;
+ 
+            if ( incorrects.Count > 0 )
+            {
+                BadgeEditorView badgeEditor = new BadgeEditorView ();
+                badgeEditor.PassIncorrectBadges (incorrects);
+                owner.Content = badgeEditor;
+            }
         }
 
 

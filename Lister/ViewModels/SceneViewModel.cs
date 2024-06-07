@@ -76,6 +76,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool eE;
+        internal bool EditionMustEnable
+        {
+            get { return eE; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref eE, value, nameof (EditionMustEnable));
+            }
+        }
+
         private PersonChoosingViewModel _personChoosingVM;
 
 
@@ -92,7 +102,9 @@ namespace Lister.ViewModels
             VisiblePageNumber = 1;
             procentSymbol = "%";
             _zoomDegree = 100;
-            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol; 
+            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
+            IncorrectBadges = new List<BadgeViewModel> ();
+            EditionMustEnable = false;
         }
 
 
@@ -109,15 +121,12 @@ namespace Lister.ViewModels
                     BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 
-                    //if ( ! beingProcessedBadgeVM.IsCorrect )
-                    //{
-                    //    IncorrectBadges.Add (beingProcessedBadgeVM);
-                    //}
+                    if ( !beingProcessedBadgeVM.IsCorrect )
+                    {
+                        IncorrectBadges.Add (beingProcessedBadgeVM);
+                        EditionMustEnable = true;
+                    }
                 }
-
-
-                
-
 
                 List <PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
                 bool placingStartedOnLastPage = ( _lastPage != null )   &&   _lastPage.Equals (newPages [0]);
@@ -296,8 +305,8 @@ namespace Lister.ViewModels
 
         internal int VisualisePageWithNumber ( int pageNumber )
         {
-            bool visiblePageExists = (VisiblePage != null);
-            bool notTheSamePage = (VisiblePageNumber != pageNumber);
+            bool visiblePageExists = ( VisiblePage != null );
+            bool notTheSamePage = ( VisiblePageNumber != pageNumber );
             bool inRange = pageNumber <= _allPages.Count;
 
             if ( visiblePageExists   &&   notTheSamePage   &&   inRange )

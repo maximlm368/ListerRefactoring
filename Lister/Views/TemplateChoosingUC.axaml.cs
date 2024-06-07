@@ -82,12 +82,15 @@ namespace Lister.Views
         {
             ModernMainView parent = this.Parent.Parent as ModernMainView;
             ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
+            SceneUserControl scene = parent.scene;
+            SceneViewModel sceneVM = scene.DataContext as SceneViewModel;
 
             _vm.ClearAllPages ();
             clearBadges.IsEnabled = false;
             save.IsEnabled = false;
             print.IsEnabled = false;
             zoomNavigation.DisableButtons ();
+            sceneVM.EditionMustEnable = false;
         }
 
 
