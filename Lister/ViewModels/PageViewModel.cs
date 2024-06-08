@@ -25,6 +25,7 @@ public class PageViewModel : ViewModelBase
     private double _scale;
     private BadgeLine _fillableLine;
     internal static Size pageSize;
+    internal static double contentTopOffset;
 
     private double pW;
     internal double PageWidth
@@ -66,6 +67,16 @@ public class PageViewModel : ViewModelBase
         }
     }
 
+    private double tO;
+    internal double ContentTopOffset
+    {
+        get { return tO; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref tO, value, nameof (ContentTopOffset));
+        }
+    }
+
     private ObservableCollection <BadgeLine> llines;
     internal ObservableCollection <BadgeLine> Lines
     {
@@ -80,6 +91,7 @@ public class PageViewModel : ViewModelBase
     static PageViewModel () 
     {
         pageSize = new Size (794, 1123);
+        contentTopOffset = 20;
     }
 
 
@@ -90,6 +102,7 @@ public class PageViewModel : ViewModelBase
         _badgeCount = 0;
         PageWidth = pageSize.Width;
         PageHeight = pageSize.Height;
+        ContentTopOffset = contentTopOffset;
         double usefullHeight = PageHeight - 20;
         _fillableLine = new BadgeLine (PageWidth, _scale, usefullHeight);
         Lines.Add (_fillableLine);
@@ -107,6 +120,7 @@ public class PageViewModel : ViewModelBase
         _badgeCount = page._badgeCount;
         PageWidth = pageSize.Width;
         PageHeight = pageSize.Height;
+        ContentTopOffset = contentTopOffset;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -146,13 +160,13 @@ public class PageViewModel : ViewModelBase
     internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
     {
         PageViewModel beingProcessedPage = this;
-        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge);
+        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge, true);
 
         if ( additionSuccess == ActionSuccess.FailureByWidth ) 
         {
             double restHeight = GetRestHeight ();
             BadgeLine newLine = new BadgeLine (PageWidth, _scale, restHeight);
-            additionSuccess = newLine.AddBadge (badge);
+            additionSuccess = newLine.AddBadge (badge, false);
 
             if ( additionSuccess == ActionSuccess.FailureByWidth )
             {
@@ -224,6 +238,7 @@ public class PageViewModel : ViewModelBase
         this._scale *= scaleCoefficient;
         PageHeight *= scaleCoefficient;
         PageWidth *= scaleCoefficient;
+        ContentTopOffset *= scaleCoefficient;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -239,6 +254,7 @@ public class PageViewModel : ViewModelBase
         _scale /= scaleCoefficient;
         PageHeight /= scaleCoefficient;
         PageWidth /= scaleCoefficient;
+        ContentTopOffset /= scaleCoefficient;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -255,6 +271,9 @@ public class PageViewModel : ViewModelBase
         {
             PageHeight *= _scale;
             PageWidth *= _scale;
+            ContentTopOffset *= _scale;
+            BorderHeight = PageHeight + 2;
+            BorderWidth = PageWidth + 2;
         }
     }
 
@@ -310,7 +329,7 @@ public class PageViewModel : ViewModelBase
         for ( int index = 0;   index < placebleBadges.Count;   index++ )
         {
             BadgeViewModel beingProcessedBadge = placebleBadges [index];
-            beingProcessedBadge.SetCorrectScale (desiredScale);
+            //beingProcessedBadge.SetCorrectScale (desiredScale);
             PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
             bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
 

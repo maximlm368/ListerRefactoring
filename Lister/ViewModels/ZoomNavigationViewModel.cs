@@ -57,6 +57,12 @@ namespace Lister.ViewModels
         }
 
 
+        internal List<BadgeViewModel> GetIncorrectBadges () 
+        {
+            return SceneVM. IncorrectBadges;
+        }
+
+
         internal void VisualiseNextPage ()
         {
             VisiblePageNumber = SceneVM.VisualiseNextPage ();

@@ -42,15 +42,15 @@ namespace ContentAssembler
     public class BadgeLayout
     {
         public Size OutlineSize { get; private set; }
-        public List<TextualAtom> TextualFields { get; private set; }
-        public List<InsideImage> InsideImages { get; private set; }
+        public List <TextualAtom> TextualFields { get; private set; }
+        public List <InsideImage> InsideImages { get; private set; }
 
 
-        public BadgeLayout ( Size outlineSize, List<TextualAtom> ? textualFields, List<InsideImage> ? insideImages )
+        public BadgeLayout ( Size outlineSize, List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
         {
             OutlineSize = outlineSize;
-            TextualFields = textualFields ?? new List<TextualAtom> ();
-            InsideImages = insideImages ?? new List<InsideImage> ();
+            TextualFields = textualFields ?? new List <TextualAtom> ();
+            InsideImages = insideImages ?? new List <InsideImage> ();
         }
 
 
@@ -91,7 +91,7 @@ namespace ContentAssembler
         }
 
 
-        private void AllocateValues ( Dictionary<string, string> personProperties, List<TextualAtom> includibles ) 
+        private void AllocateValues ( Dictionary<string, string> personProperties, List <TextualAtom> includibles ) 
         {
             foreach ( KeyValuePair <string, string> property   in   personProperties )
             {
@@ -252,6 +252,24 @@ namespace ContentAssembler
             FontFamily = fontFamily;
             IncludedAtoms = includedAtoms ?? new List<string> ();
             IsShiftableBelow = isShiftableBelow;
+            isNeeded = true;
+        }
+
+
+        public TextualAtom ( TextualAtom source, double topOffset, string content )
+        {
+            _content = content;
+            ContentIsSet = true;
+            Name = source.Name;
+            Width = source.Width;
+            Height = source.Height;
+            TopOffset = source.TopOffset;
+            LeftOffset = source.LeftOffset;
+            Alignment = source.Alignment;
+            FontSize = source.FontSize;
+            FontFamily = source.FontFamily;
+            IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
+            IsShiftableBelow = source.IsShiftableBelow;
             isNeeded = true;
         }
 

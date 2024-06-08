@@ -99,9 +99,12 @@ namespace Lister.ViewModels
         }
 
 
-        internal ActionSuccess AddBadge ( BadgeViewModel badge ) 
+        internal ActionSuccess AddBadge ( BadgeViewModel badge, bool shouldScale ) 
         {
-            badge.SetCorrectScale ( _scale );
+            if ( shouldScale ) 
+            {
+                badge.SetCorrectScale (_scale);
+            }
 
             bool isFailureByWidth = ( _restWidth < badge.BadgeWidth );
             bool isFailureByHeight = ( _heightConstraint < badge.BadgeHeight );
@@ -129,6 +132,8 @@ namespace Lister.ViewModels
         {
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
+            double newMarginLeft = Margin.Left * scaleCoefficient;
+            Margin = new Thickness (newMarginLeft, 0, 0, 0);
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
@@ -141,6 +146,8 @@ namespace Lister.ViewModels
         {
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
+            double newMarginLeft = Margin.Left / scaleCoefficient;
+            Margin = new Thickness (newMarginLeft, 0, 0, 0);
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {

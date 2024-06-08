@@ -529,14 +529,14 @@ public partial class MainView : UserControl
 
     internal void EditIncorrectBadges (object sender, TappedEventArgs args) 
     {
-        if (incorrectBadges.Count > 0) 
-        {
-            BadgeEditorView badgeEditor = new BadgeEditorView ();
-            badgeEditor.SetIncorrectBadges (incorrectBadges);
+        //if (incorrectBadges.Count > 0) 
+        //{
+        //    BadgeEditorView badgeEditor = new BadgeEditorView ();
+        //    badgeEditor.SetIncorrectBadges (incorrectBadges);
 
 
-            owner.Content = badgeEditor;
-        }
+        //    owner.Content = badgeEditor;
+        //}
     }
 
 

@@ -40,7 +40,7 @@ namespace Lister.ViewModels
         public BadgeEditorViewModel ( ){ }
 
 
-        internal void PassIncorects ( List <BadgeViewModel> incorrects ) 
+        internal void SetIncorects ( List <BadgeViewModel> incorrects ) 
         {
             bool isNullOrEmpty = (incorrects == null)   ||   (incorrects.Count == 0);
 

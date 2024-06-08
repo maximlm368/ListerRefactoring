@@ -79,8 +79,12 @@ public partial class MainWindow : Window
 
     internal void HandleTapping ( object sender, TappedEventArgs args )
     {
-        ModernMainView mainView = ( ModernMainView ) Content;
-        mainView.CloseCustomCombobox ();
+        try 
+        {
+            ModernMainView mainView = ( ModernMainView ) Content;
+            mainView.CloseCustomCombobox ();
+        }
+        catch( InvalidCastException ex) {}
     }
 
 
