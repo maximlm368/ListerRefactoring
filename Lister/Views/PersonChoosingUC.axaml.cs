@@ -15,7 +15,7 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        
+        private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
         private double _maxPersonListHeight;
         private double _minPersonListHeight;
@@ -48,7 +48,7 @@ namespace Lister.Views
             comboboxFrame.Width -= shift;
             visiblePersons.Width -= shift;
             listFrame.Width -= shift;
-
+            _vm.WidthDelta = shift;
 
             _vm.ShiftScroller (shift);
         }
@@ -72,13 +72,15 @@ namespace Lister.Views
 
         internal void CloseCustomCombobox ()
         {
-            bool reasonExists = _personListIsDropped   &&   !_cursorIsOverPersonList;
+            bool reasonExists = _personListIsDropped   &&   ! _cursorIsOverPersonList   &&   ! _buttonIsPressed;
 
             if ( reasonExists )
             {
                 visiblePersons.IsVisible = false;
                 _personListIsDropped = false;
             }
+
+            _buttonIsPressed = false;
         }
 
 
@@ -107,7 +109,7 @@ namespace Lister.Views
 
         internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
         {
-            int fdfd = 0;
+            _buttonIsPressed = true;
 
             if ( _personListIsDropped )
             {
@@ -120,7 +122,6 @@ namespace Lister.Views
                 visiblePersons.IsVisible = true;
             }
             personTextBox.Focus (NavigationMethod.Tab);
-            int dfdf = 0;
         }
 
 
@@ -172,21 +173,21 @@ namespace Lister.Views
 
             if ( str != null )
             {
-                string fromSenderLower = textBox.Text.ToLower ();
+                string fromSender = textBox.Text.ToLower ();
                 ObservableCollection <Person> foundVisiblePeople = new ObservableCollection <Person> ();
 
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( person.StringPresentation.ToLower () == fromSenderLower )
+                    if ( person.StringPresentation.ToLower () == fromSender )
                     {
                         RecoverVisiblePeople ();
                         return;
                     }
 
                     string entireName = person.StringPresentation;
-                    string entireNameInLowCase = entireName.ToLower ();
+                    entireName = entireName.ToLower ();
 
-                    if ( entireNameInLowCase.Contains (fromSenderLower)   &&   entireNameInLowCase != fromSenderLower )
+                    if ( entireName.Contains (fromSender)   &&   entireName != fromSender )
                     {
                         foundVisiblePeople.Add (person);
                     }
@@ -234,15 +235,15 @@ namespace Lister.Views
 
         internal void AcceptFocusedPersonOrScroll ( object sender, KeyEventArgs args )
         {
-            string key = args.Key.ToString ();
+            string key = args.Key.ToString ( );
             bool keyIsEnter = key == "Return";
 
             if ( keyIsEnter )
             {
                 Label focused = ( Label ) sender;
-                focused.Background = new SolidColorBrush (3397631);
-                string chosenName = (string) focused.Content;
-                Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
+                focused.Background = new SolidColorBrush ( 3397631 );
+                string chosenName = ( string ) focused.Content;
+                Person chosenPerson = _vm.FindPersonByStringPresentation ( chosenName );
 
                 if ( chosenPerson == null )
                 {
@@ -255,12 +256,12 @@ namespace Lister.Views
                     SinglePersonIsSelected = true;
                     EntirePersonListIsSelected = false;
                     //_selectionIsChanged = true;
-                    _chosen.Background = new SolidColorBrush (16777215);
+                    _chosen.Background = new SolidColorBrush ( 16777215 );
                 }
 
                 _chosen = focused;
                 _vm.ChosenPerson = chosenPerson;
-                DropOrPickUp ();
+                DropOrPickUp ( );
             }
         }
 
@@ -268,12 +269,18 @@ namespace Lister.Views
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             Label chosenControl = ( Label ) sender;
-            chosenControl.Background = new SolidColorBrush (3397631);
+            //chosenControl.Background = new SolidColorBrush ( 3397631 );
+            chosenControl.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
+
 
             if ( _chosen != null )
             {
-                _chosen.Background = new SolidColorBrush (16777215);
+                //_chosen.Background = new SolidColorBrush ( 16777215 );
+                _chosen.Background = new SolidColorBrush ( new Color ( 255 , 255 , 255 , 255 ) );
+
             }
+
+            _chosen = chosenControl;
 
             string chosenName = (string) chosenControl.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
@@ -357,8 +364,9 @@ namespace Lister.Views
         {
             if ( visiblePersons.IsScrollable )
             {
-                int personCount = _vm.VisiblePeople. Count;
-                double step = personList.Height / personCount;
+                //int personCount = _vm.VisiblePeople. Count;
+                //double step = personList.Height / personCount;
+                double step = 24;
                 double proportion = visiblePersons.Height / runner.Height;
                 double runnerStep = step / proportion;
                 runnerStep = GetInfluentStep (runnerStep);
@@ -421,6 +429,7 @@ namespace Lister.Views
                 int count = personList.ItemCount;
                 double listHeight = personList.Height;
                 double itemHeight = listHeight / count;
+                itemHeight = 24;
                 double proportion = visiblePersons.Height / runner.Height;
                 double runnerStep = itemHeight / proportion;
 

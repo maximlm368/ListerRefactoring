@@ -35,6 +35,10 @@ namespace Lister.ViewModels
 {
     public class PersonChoosingViewModel : ViewModelBase
     {
+        private double _withScroll = 454;
+        private double _withoutScroll = 469;
+        internal double WidthDelta { get; set; }
+
         private double _oneHeight;
         internal List <Person> People { get; set; }
 
@@ -172,7 +176,7 @@ namespace Lister.ViewModels
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
-            _oneHeight = 25.5;
+            _oneHeight = 24;
             ScrollerCanvasLeft = 454;
             VisiblePeople = new ObservableCollection<Person> ();
             People = new List<Person> ();
@@ -221,7 +225,7 @@ namespace Lister.ViewModels
             else
             {
                 VisibleHeight = _oneHeight * personCount;
-                PersonListWidth = 469;
+                PersonListWidth = _withoutScroll - WidthDelta;
                 ScrollerWidth = 0;
                 IsPersonsScrollable = false;
             }
@@ -231,7 +235,7 @@ namespace Lister.ViewModels
         private void ShowScroller () 
         {
             VisibleHeight = _oneHeight * 5;
-            PersonListWidth = 454;
+            PersonListWidth = _withScroll - WidthDelta;
             ScrollerWidth = 15;
 
             double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);

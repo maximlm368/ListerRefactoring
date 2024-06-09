@@ -103,8 +103,8 @@
 																	Width="{Binding  Path = Width,  Mode=OneWay}"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-																	HorizontalContentAlignment="Center"
-													                Content="{Binding   Path = Content,  Mode=OneWay }" />
+																	HorizontalContentAlignment="Right"
+													        Content="{Binding   Path = Content,  Mode=OneWay }" />
 
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>

@@ -104,12 +104,13 @@ public class PageViewModel : ViewModelBase
         PageHeight = pageSize.Height;
         ContentTopOffset = contentTopOffset;
         double usefullHeight = PageHeight - 20;
-        _fillableLine = new BadgeLine (PageWidth, _scale, usefullHeight);
-        Lines.Add (_fillableLine);
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
         SetCorrectScale ();
+
+        _fillableLine = new BadgeLine ( PageWidth , _scale , usefullHeight );
+        Lines.Add ( _fillableLine );
     }
 
 

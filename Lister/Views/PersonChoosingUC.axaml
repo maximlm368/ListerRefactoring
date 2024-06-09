@@ -70,16 +70,15 @@
 							Name="personList"
 							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
-							
 							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 
 									<Label
-										FontSize="12"
-										Height="20"
-										Background="Yellow"
+										FontSize="14"
+										Height="24"
+										Background="White"
 										Tapped="HandleChoosingByTapping"
 										KeyDown="AcceptFocusedPersonOrScroll"
 										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>

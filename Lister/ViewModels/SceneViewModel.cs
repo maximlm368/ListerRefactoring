@@ -189,10 +189,10 @@ namespace Lister.ViewModels
         {
             if ( _allPages.Count > 0 )
             {
-                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
-                {
-                    _allPages [pageCounter].Clear ();
-                }
+                //for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
+                //{
+                //    _allPages [pageCounter].Clear ();
+                //}
 
                 _allPages.Clear ();
                 VisiblePage = new PageViewModel (_documentScale);

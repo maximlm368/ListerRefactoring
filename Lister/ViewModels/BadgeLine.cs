@@ -72,8 +72,8 @@ namespace Lister.ViewModels
         internal BadgeLine( double width, double scale, double heightConstraint ) 
         {
             Badges = new ObservableCollection<BadgeViewModel> ();
-            _restWidth = width;
             _scale = scale;
+            _restWidth = width;
             _heightConstraint = heightConstraint;
         }
 
