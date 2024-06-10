@@ -15,7 +15,7 @@ namespace Lister.ViewModels
         internal double Width
         {
             get { return wd; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref wd, value, nameof (Width));
             }
@@ -35,7 +35,7 @@ namespace Lister.ViewModels
         internal double TopOffset
         {
             get { return tof; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref tof, value, nameof (TopOffset));
             }
@@ -45,7 +45,7 @@ namespace Lister.ViewModels
         internal double LeftOffset
         {
             get { return lof; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref lof, value, nameof (LeftOffset));
             }

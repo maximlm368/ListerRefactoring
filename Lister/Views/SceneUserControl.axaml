@@ -30,7 +30,6 @@
 				BorderThickness="1"  
 				Width="{Binding  Path = BorderWidth,  Mode=OneWay}"
 				Height="{Binding  Path = BorderHeight,  Mode=OneWay}"
-				
 				DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
 
 				<Canvas
@@ -98,20 +97,18 @@
 															<DataTemplate>
 
 																<Label
-																	VerticalAlignment="Top"
 																	Height="{Binding Path = Height,  Mode=OneWay}"
 																	Width="{Binding  Path = Width,  Mode=OneWay}"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-																	HorizontalContentAlignment="Right"
-													        Content="{Binding   Path = Content,  Mode=OneWay }" />
+																	HorizontalContentAlignment="{Binding  Alignment}"
+													                Content="{Binding   Path = Content,  Mode=OneWay }" />
 
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>
 
 													</ItemsControl>
 													
-
 												</Canvas>
 				
 											</Border>

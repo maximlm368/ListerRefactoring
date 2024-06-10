@@ -142,6 +142,7 @@ namespace Lister.Views
             {
                 BadgeEditorView badgeEditor = new BadgeEditorView ();
                 badgeEditor.PassIncorrectBadges (incorrects);
+                badgeEditor.PassBackPoint (ancestorView);
                 owner.Content = badgeEditor;
             }
         }

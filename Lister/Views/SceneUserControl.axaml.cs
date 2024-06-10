@@ -19,7 +19,7 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
             this.Margin = new Avalonia.Thickness (5);
 
-
+            
             //var source = new Subject<string> ();
             //var label = new Label ();
 
@@ -36,25 +36,24 @@ namespace Lister.Views
 
 
 
+            //IEnumerable<Control> children = lines.GetTemplateChildren ();
 
-            IEnumerable<Control> children = lines.GetTemplateChildren ();
-
-            foreach ( Control child in children )
-            {
-                ItemsControl items = child as ItemsControl;
-                IEnumerable<Control> badges = items.GetTemplateChildren ();
+            //foreach ( Control child in children )
+            //{
+            //    ItemsControl items = child as ItemsControl;
+            //    IEnumerable<Control> badges = items.GetTemplateChildren ();
 
 
-                foreach ( Control badge   in   badges )
-                {
-                    Border border = child as Border;
-                    Canvas canvas = border.Child as Canvas;
+            //    foreach ( Control badge   in   badges )
+            //    {
+            //        Border border = child as Border;
+            //        Canvas canvas = border.Child as Canvas;
                     
                     
 
-                }
+            //    }
 
-            }
+            //}
 
         }
 

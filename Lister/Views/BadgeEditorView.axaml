@@ -2,30 +2,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+             mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="730"
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
+			 xmlns:uc="clr-namespace:Lister.Views"
              x:Class="Lister.Views.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel">
   
 	<StackPanel>
 
-		<Grid Name="activationAndAcception"  Height="40" Margin="10,0"  Background="AntiqueWhite">
+		<Grid
+			Name="activationAndAcception"
+			Height="40"
+			Margin="10,0"
+			Background="AntiqueWhite">
+			
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="132" ></ColumnDefinition>
 				<ColumnDefinition Width="132" ></ColumnDefinition>
 				<ColumnDefinition Width="132" ></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
+
+			<Button
+				Name="Back"
+				Content="Назад"
+				Width="130"
+				Grid.Column="0"
+				HorizontalContentAlignment="Center"
+				Tapped="GoBack"/>
 			
-			<Button Name="chooseFile"  Content="Редактировать" Width="130"  Grid.Column="0"	HorizontalContentAlignment="Center" />
+			<Button
+				Name="chooseFile"
+				Content="Редактировать"
+				Width="130"
+				Grid.Column="1"
+				HorizontalContentAlignment="Center" />
 			
-			<Button  Name="editSourceFile" Width="130" HorizontalContentAlignment="Center"
-					 Content="Принять"  Grid.Column="1" />
+			<Button
+				Name="editSourceFile"
+				Width="130"
+				HorizontalContentAlignment="Center"
+			    Content="Принять"
+				Grid.Column="2" />
 		</Grid>
 
 		
 		
-		<Grid Name="zoomAndNavigation"  Height="40" Margin="10,-2" Background="AliceBlue"> 
+		<Grid
+			Name="zoomAndNavigation"
+			Height="40"
+			Margin="10,-2"
+			Background="AliceBlue"> 
+			
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
@@ -40,46 +69,152 @@
 			</Grid.ColumnDefinitions>
 			
 
-			<Button Name="firstBadge"  Content="first" Grid.Column="0"  HorizontalContentAlignment="Center" 
-					Width="48" IsEnabled="False" />
-			<Button  Name="previousBadge" Content="prev" Grid.Column="1"  HorizontalContentAlignment="Center" 
-					 Width="48" IsEnabled="False" />
-
-			<TextBox  Name="visiblePageNumber"  Width="60"  FontSize="14"  Grid.Column="2"  MaxHeight="30" Margin="0,3"
-					  Text="{Binding   Path = visiblePageNumber,   Mode=OneWay}"/>
-
-			<Button Name="nextBadge"  Content="next" Grid.Column="3"  HorizontalContentAlignment="Center" 
-					Width="48" IsEnabled="False" />
-			<Button Name="lastBadge"  Content="last" Grid.Column="4"  HorizontalContentAlignment="Center" 
-					Width="48" IsEnabled="False"/>
-			<Button  Name="zoomOn" Content="+" Grid.Column="6"  HorizontalAlignment="Center" Width="28" IsEnabled="False" />
+			<Button
+				Name="firstBadge"
+				Content="first"
+				Grid.Column="0"
+				HorizontalContentAlignment="Center" 
+			    Width="48"
+				Tapped="ToFirst"
+				IsEnabled="False" />
 			
-			<TextBox  Name="scalabilityGrade"  Width="60"  FontSize="14"  Grid.Column="7"  MaxHeight="30" Margin="0,3"
-					  IsReadOnly="True" Text="{Binding   Path = zoomDegreeInView,   Mode=OneWay}"/>
-			<Button  Name="zoomOut"  Content="-" Grid.Column="8"  HorizontalAlignment="Center" Width="28" IsEnabled="False" />
+			<Button
+				Name="previousBadge"
+				Content="prev"
+				Grid.Column="1"
+				HorizontalContentAlignment="Center" 
+				Width="48"
+				Tapped="ToPrevious"
+				IsEnabled="False" />
+
+			<TextBox
+				Name="visiblePageNumber"
+				Width="60"
+				FontSize="14"
+				Grid.Column="2"
+				MaxHeight="30"
+				Margin="0,3"
+				TextChanged="ToParticularBadge"
+				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
+
+			<Button
+				Name="nextBadge"
+				Content="next"
+				Grid.Column="3"
+				HorizontalContentAlignment="Center" 
+				Width="48"
+				Tapped="ToNext"
+				IsEnabled="False" />
+			
+			<Button
+				Name="lastBadge"
+				Content="last"
+				Grid.Column="4"
+				HorizontalContentAlignment="Center" 
+				Width="48"
+				Tapped="ToLast"
+				IsEnabled="False"/>
+			
+			<Button
+				Name="zoomOn"
+				Content="+"
+				Grid.Column="6"
+				HorizontalAlignment="Center"
+				Width="28"
+				IsEnabled="False" />
+			
+			<TextBox
+				Name="scalabilityGrade"
+				Width="60"
+				FontSize="14"
+				Grid.Column="7"
+				MaxHeight="30"
+				Margin="0,3"
+				IsReadOnly="True"/>
+			
+			<Button
+				Name="zoomOut"
+				Content="-" Grid.Column="8"
+				HorizontalAlignment="Center"
+				Width="28"
+				IsEnabled="False" />
 		</Grid>
 
 		
-		<Grid Name="badgeArea" Margin="10,2"  Background="AntiqueWhite">
+		<Grid
+			Name="badgeArea"
+			Margin="10,10"
+			Background="AntiqueWhite">
+			
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
+			
+			<Grid.RowDefinitions>
+				<RowDefinition Height="600"></RowDefinition>
+			</Grid.RowDefinitions>
 
-			<Border  BorderThickness="1"  BorderBrush="Gray"  Grid.Column="0" Width="980"  Height="560"  >
+			<Border
+				BorderThickness="1"
+				BorderBrush="Gray"
+				Grid.Column="0"
+				Grid.Row="0"
+				Width="982"
+				Height="602">
 
-				<Canvas  Name="incorrectBadge"  Width="977"  Height="557" Background="Coral">
+				<Canvas
+					Name="incorrectBadge"
+					Width="980"
+					Height="600">
 
-					<Image Name="backgroundImage" Source = "{Binding   Path = BeingProcessedBadge.ImageBitmap,   Mode=OneWay }" 
-						   Width="977" />
+					<Image
+						Name="backgroundImage"  
+						Width="980"
+						
+						Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
+
+					<ItemsControl
+	                    ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Canvas
+									Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+									Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.Styles>
+							<Style Selector="ItemsControl ContentPresenter">
+								<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffset,  Mode=TwoWay}" />
+								<Setter Property="Canvas.Top" Value="{Binding Path = TopOffset,  Mode=TwoWay}" />
+							</Style>
+						</ItemsControl.Styles>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+
+								<Label
+									VerticalAlignment="Center"
+									Height="{Binding Path = Height,  Mode=OneWay}"
+									Width="{Binding  Path = Width,  Mode=OneWay}"
+									FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+									FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
+									HorizontalContentAlignment="Center"
+									DoubleTapped="Focus"
+									PointerPressed="Capture"
+								    PointerMoved="Move"
+									Content="{Binding   Path = Content,  Mode=OneWay }" />
+
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
 					
 				</Canvas>
 			</Border>
 			
 		</Grid>
 		
-
-		
-		
 	</StackPanel>
-	
 </UserControl>

@@ -129,7 +129,7 @@
 								Canvas.Bottom="15"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
-								Background="Green"
+								Background="White"
 								Tapped="ShiftRunner"/>
 
 							<Canvas

@@ -32,7 +32,12 @@ namespace Lister.Views
         }
 
 
-
+        internal void ChangeSize ( double widthDifference, double heightDifference )
+        {
+            scene. workArea.Width -= widthDifference;
+            scene. workArea.Height -= heightDifference;
+            personChoosing.AdjustComboboxWidth (widthDifference);
+        }
     }
 }
 

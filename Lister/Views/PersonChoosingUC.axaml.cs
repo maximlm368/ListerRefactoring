@@ -24,7 +24,7 @@ namespace Lister.Views
         private Label _chosen;
         private double _runnerStep = 0;
         private bool _runnerIsCaptured = false;
-        private Point _runnerCapturingPosition = new Point(0, 0);
+        private double _capturingY;
         private PersonSourceUserControl _personSourceUC;
         private SceneUserControl _sceneUC;
         private ZoomNavigationUserControl _zoomNavigationUC;
@@ -355,7 +355,7 @@ namespace Lister.Views
                 runnerStep = GetInfluentStep (runnerStep);
                 bool isDirectionUp = true;
 
-                CompleteScrolling (isDirectionUp, itemHeight, runnerStep, _vm);
+                CompleteScrolling (isDirectionUp, itemHeight, runnerStep);
             }
         }
 
@@ -374,7 +374,7 @@ namespace Lister.Views
                 Canvas activator = sender as Canvas;
                 bool isDirectionUp = activator.Name == "upper";
 
-                CompleteScrolling (isDirectionUp, step, runnerStep, _vm);
+                CompleteScrolling (isDirectionUp, step, runnerStep);
             }
         }
 
@@ -389,7 +389,7 @@ namespace Lister.Views
                 Canvas activator = sender as Canvas;
                 bool isDirectionUp = activator.Name == "topSpan";
 
-                CompleteScrolling (isDirectionUp, step, runnerStep, _vm);
+                CompleteScrolling (isDirectionUp, step, runnerStep);
             }
         }
 
@@ -397,7 +397,9 @@ namespace Lister.Views
         internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
         {
             _runnerIsCaptured = true;
-            _runnerCapturingPosition = args.GetPosition (( Canvas ) args.Source);
+            Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
+            _capturingY = inRunnerRelativePosition.Y;
+            int fdfd = 0;
         }
 
 
@@ -411,13 +413,17 @@ namespace Lister.Views
         {
             if ( _runnerIsCaptured ) 
             {
+                Canvas can = ( Canvas ) args.Source;
+                string name = can.Name;
+
                 Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
-                double runnerVerticalDelta = _runnerCapturingPosition.Y - pointerPosition.Y;
+                double runnerVerticalDelta = _capturingY - pointerPosition.Y;
+
                 double proportion = visiblePersons.Height / runner.Height;
                 double personsVerticalDelta = runnerVerticalDelta * proportion;
 
                 bool isDirectionUp = (runnerVerticalDelta > 0);
-                CompleteScrolling ( isDirectionUp, personsVerticalDelta, runnerVerticalDelta, _vm );
+                CompleteScrolling ( isDirectionUp, personsVerticalDelta, runnerVerticalDelta );
             }
         }
 
@@ -427,37 +433,24 @@ namespace Lister.Views
             if ( visiblePersons.IsScrollable ) 
             {
                 int count = personList.ItemCount;
-                double listHeight = personList.Height;
-                double itemHeight = listHeight / count;
-                itemHeight = 24;
+                //double listHeight = personList.Height;
+                //double itemHeight = listHeight / count;
+                double itemHeight = 24;
                 double proportion = visiblePersons.Height / runner.Height;
-                double runnerStep = itemHeight / proportion;
-
-                CompleteScrolling (isDirectionUp, itemHeight, runnerStep, _vm);
+                double wholeSpan = _vm.TopSpanHeight + _vm.BottomSpanHeight - _vm.RunnerHeight;
+                double runnerStep = wholeSpan / count;
+                CompleteScrolling (isDirectionUp, itemHeight, runnerStep);
             }
         }
 
 
-        private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep, PersonChoosingViewModel vm ) 
+        private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep ) 
         {
             if ( scroller.Width == 0 ) return;
 
-            double currentPersonsScrollValue = vm.PersonsScrollValue;
+            double currentPersonsScrollValue = _vm.PersonsScrollValue;
 
-            if (! isDirectionUp )
-            {
-                currentPersonsScrollValue -= step;
-                double maxScroll = visiblePersons.Height - personList.Height;
-                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
-
-                if ( scrollExceeds )
-                {
-                    currentPersonsScrollValue = maxScroll;
-                }
-
-                UpRunner (runnerStep, vm);
-            }
-            else
+            if ( isDirectionUp )
             {
                 currentPersonsScrollValue += step;
 
@@ -466,10 +459,26 @@ namespace Lister.Views
                     currentPersonsScrollValue = 0;
                 }
 
-                DownRunner (runnerStep, vm);
+                UpRunner (runnerStep, _vm);
+            }
+            else
+            {
+                int count = personList.ItemCount;
+                double itemHeight = 24;
+                currentPersonsScrollValue -= step;
+                double listHeight = itemHeight * count;
+                double maxScroll = visiblePersons.Height - listHeight;
+                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                if ( scrollExceeds )
+                {
+                    currentPersonsScrollValue = maxScroll;
+                }
+
+                DownRunner (runnerStep, _vm);
             }
 
-            vm.PersonsScrollValue = currentPersonsScrollValue;
+            _vm.PersonsScrollValue = currentPersonsScrollValue;
         }
 
 
@@ -553,30 +562,3 @@ namespace Lister.Views
 }
 
 
-//internal void PassNeighbours ( PersonSourceUserControl personSource, SceneUserControl scene
-//                                     , ZoomNavigationUserControl zoomNavigation, TemplateChoosingUserControl templateChoosing )
-//{
-//    _sceneUC = scene;
-//    _personSourceUC = personSource;
-//    _zoomNavigationUC = zoomNavigation;
-//    _templateChoosingUC = templateChoosing;
-//}
-
-//internal void HandlePersonChoosingViaTapping ( object sender, TappedEventArgs args )
-//{
-//    //personChoosingIsTapped = true;
-
-
-//    if ( _personListIsDropped   &&   _selectionIsChanged )
-//    {
-//        visiblePersons.IsVisible = false;
-//        _personListIsDropped = false;
-//        _selectionIsChanged = false;
-//    }
-//}
-//private PersonSourceUserControl _personSourceUC;
-//private ZoomNavigationUserControl _zoomNavigationUC;
-//private SceneUserControl _sceneUC;
-//private bool _openedViaButton = false;
-//private bool _selectionIsChanged = false;
-//private bool _templateIsSelected = false;

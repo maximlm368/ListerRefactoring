@@ -9,9 +9,9 @@ namespace Lister.Views;
 
 public partial class MainWindow : Window
 {
-    private PixelSize screenSize;
-    private double currentWidth;
-    private double currentHeight;
+    private PixelSize _screenSize;
+    private double _currentWidth;
+    private double _currentHeight;
 
 
     public MainWindow ( )
@@ -30,10 +30,10 @@ public partial class MainWindow : Window
         //mainView.PassAssembler ( docAssembler );
         
         this.SizeChanged += OnSizeChanged;
-        currentWidth = Width;
-        currentHeight = Height;
+        _currentWidth = Width;
+        _currentHeight = Height;
         this.Tapped += HandleTapping;
-        this.PointerReleased += ReleaseRunner;
+        this.PointerReleased += ReleaseCaptured;
     }
 
 
@@ -46,7 +46,7 @@ public partial class MainWindow : Window
 
     internal void SetSize ( PixelSize size )
     {
-        screenSize = size;
+        _screenSize = size;
     }
 
 
@@ -54,8 +54,8 @@ public partial class MainWindow : Window
     {
         int windowWidth = ( int ) this.DesiredSize.Width / 2;
         int windowHeight = ( int ) this.DesiredSize.Height / 2;
-        int x = ( screenSize.Width - windowWidth ) / 2;
-        int y = ( screenSize.Height - windowHeight ) / 2;
+        int x = ( _screenSize.Width - windowWidth ) / 2;
+        int y = ( _screenSize.Height - windowHeight ) / 2;
         //this.Position = new Avalonia.PixelPoint (x, y);
         int wqw = 0;
     }
@@ -63,17 +63,21 @@ public partial class MainWindow : Window
 
     private void OnSizeChanged ( object? sender , SizeChangedEventArgs e )
     {
-        ModernMainView mainView = ( ModernMainView ) Content;
-        double newWidth = e.NewSize.Width;
-        double newHeight = e.NewSize.Height;
-        double widthDifference = currentWidth - newWidth;
-        double heightDifference = currentHeight - newHeight;
-        currentWidth = newWidth;
-        currentHeight = newHeight;
-       
-        mainView.scene.workArea.Width -= widthDifference;
-        mainView.scene. workArea.Height -= heightDifference;
-        mainView.personChoosing.AdjustComboboxWidth (widthDifference);
+        try
+        {
+            ModernMainView mainView = ( ModernMainView ) Content;
+            double newWidth = e.NewSize. Width;
+            double newHeight = e.NewSize. Height;
+            double widthDifference = _currentWidth - newWidth;
+            double heightDifference = _currentHeight - newHeight;
+            _currentWidth = newWidth;
+            _currentHeight = newHeight;
+            mainView.ChangeSize (widthDifference, heightDifference);
+        }
+        catch ( System.InvalidCastException ex )
+        {
+
+        }
     }
 
 
@@ -84,14 +88,25 @@ public partial class MainWindow : Window
             ModernMainView mainView = ( ModernMainView ) Content;
             mainView.CloseCustomCombobox ();
         }
-        catch( InvalidCastException ex) {}
+        catch( InvalidCastException ex) 
+        {
+        
+        }
     }
 
 
-    internal void ReleaseRunner ( object sender, PointerReleasedEventArgs args )
+    internal void ReleaseCaptured ( object sender, PointerReleasedEventArgs args )
     {
-        ModernMainView mainView = ( ModernMainView ) Content;
-        mainView.ReleaseRunner ();
+        try
+        {
+            ModernMainView mainView = ( ModernMainView ) Content;
+            mainView.ReleaseRunner ();
+        }
+        catch ( InvalidCastException ex ) 
+        {
+            BadgeEditorView mainView = ( BadgeEditorView ) Content;
+            mainView.ReleaseCaptured ();
+        }
     }
 }
 

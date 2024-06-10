@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using Avalonia.Media;
 using ReactiveUI;
 using ContentAssembler;
+using QuestPDF.Infrastructure;
 
 namespace Lister.ViewModels
 {
@@ -15,8 +16,8 @@ namespace Lister.ViewModels
     {
         private TextualAtom _dataSource;
 
-        private string al;
-        internal string Alignment
+        private HorizontalAlignment al;
+        internal HorizontalAlignment Alignment
         {
             get { return al; }
             private set
@@ -69,7 +70,8 @@ namespace Lister.ViewModels
         public TextLineViewModel ( TextualAtom text )
         {
             _dataSource = text;
-            Alignment = text.Alignment;
+            //Alignment = GetAlignmentByString (text.Alignment);
+            Alignment = HorizontalAlignment.Center;
             FontSize = text.FontSize;
             FontFamily = new FontFamily(text.FontFamily);
             Content = text.Content;
@@ -82,7 +84,7 @@ namespace Lister.ViewModels
         private TextLineViewModel ( TextLineViewModel text )
         {
             _dataSource = text._dataSource;
-            Alignment = text._dataSource.Alignment;
+            Alignment = text.Alignment;
             FontSize = text._dataSource.FontSize;
             FontFamily = new FontFamily (text._dataSource.FontFamily);
             Content = text.Content;
@@ -112,6 +114,27 @@ namespace Lister.ViewModels
             FontSize /= coefficient;
             base.ZoomOut (coefficient);
         }
+
+
+        private HorizontalAlignment GetAlignmentByString ( string alignmentName ) 
+        {
+            if( alignmentName == "Left" ) 
+            { 
+                return HorizontalAlignment.Left; 
+            }
+            if ( alignmentName == "Right" )
+            {
+                return HorizontalAlignment.Right;
+            }
+            if ( alignmentName == "Center" )
+            {
+                return HorizontalAlignment.Center;
+            }
+            else
+            {
+                return HorizontalAlignment.Center;
+            }
+        } 
     }
 
 

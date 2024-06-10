@@ -54,6 +54,20 @@ namespace ContentAssembler
         }
 
 
+        internal BadgeLayout Clone ( ) 
+        {
+            List<TextualAtom> atoms = new List<TextualAtom> ();
+            
+            foreach ( var atom   in   TextualFields ) 
+            {
+                atoms.Add (atom.Clone ());
+            }
+
+            BadgeLayout clone = new BadgeLayout (OutlineSize, atoms, InsideImages);
+            return clone;
+        }
+
+
         internal void SetTextualValues ( Dictionary <string, string> personProperties )
         {
             List<TextualAtom> includibles = new ( );
@@ -271,6 +285,14 @@ namespace ContentAssembler
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
             IsShiftableBelow = source.IsShiftableBelow;
             isNeeded = true;
+        }
+
+
+        internal TextualAtom Clone () 
+        {
+            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFamily,
+                                                                                             IncludedAtoms, IsShiftableBelow);
+            return clone;
         }
 
 

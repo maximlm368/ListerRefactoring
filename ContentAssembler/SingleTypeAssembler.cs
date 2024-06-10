@@ -34,6 +34,7 @@ namespace ContentAssembler
         private IBadgeAppearenceProvider badgeAppearenceProvider;
         private IPeopleDataSource peopleDataSource;
         private List<Person> people;
+        private BadgeLayout _badgeLayout;
 
 
         public UniformDocAssembler (IBadgeAppearenceProvider badgeAppearenceDataSource, IPeopleDataSource peopleDataSource)
@@ -55,10 +56,11 @@ namespace ContentAssembler
 
             List<Badge> badges = new ();
             string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
-            
+            _badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
+
             foreach ( var person   in   people ) 
             {
-                BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
+                BadgeLayout badgeLayout = _badgeLayout.Clone ();
                 Badge item = new Badge (person, backgroundPath, badgeLayout);
                 badges.Add (item);
             }

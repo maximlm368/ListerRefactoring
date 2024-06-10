@@ -1,4 +1,7 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +12,35 @@ namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
-        private List <BadgeViewModel> incorrectBadges;
+        private double _scale = 2.8;
+
+        private List <BadgeViewModel> _incorrectBadges;
         internal List <BadgeViewModel> IncorrectBadges
         {
+            get { return _incorrectBadges; }
             set
             {
-                incorrectBadges = value;
+                bool isNullOrEmpty = ( value == null )   ||   ( value.Count == 0 );
 
-                if ( incorrectBadges.Count > 1 ) 
+                if ( isNullOrEmpty )
                 {
-                    BeingProcessedBadge = incorrectBadges [0];
-                    BeingProcessedBadge.Show ();
+                    return;
                 }
+
+                this.RaiseAndSetIfChanged (ref _incorrectBadges, value, nameof (IncorrectBadges));
+
+                if ( value [0] == null )
+                {
+                    return;
+                }
+
+                BadgeViewModel beingPrecessed = value [0].GetDimensionalOriginal ();
+                beingPrecessed.ZoomOn (_scale);
+                beingPrecessed.Show ();
+                BeingProcessedBadge = beingPrecessed;
+                BeingProcessedNumber = 1;
             }
         }
-
-
 
         private BadgeViewModel bpB;
         internal BadgeViewModel BeingProcessedBadge
@@ -36,22 +52,66 @@ namespace Lister.ViewModels
             }
         }
 
-
-        public BadgeEditorViewModel ( ){ }
-
-
-        internal void SetIncorects ( List <BadgeViewModel> incorrects ) 
+        private int bpN;
+        internal int BeingProcessedNumber
         {
-            bool isNullOrEmpty = (incorrects == null)   ||   (incorrects.Count == 0);
-
-            if ( isNullOrEmpty ) 
+            get { return bpN; }
+            set
             {
-                return;
+                this.RaiseAndSetIfChanged (ref bpN, value, nameof (BeingProcessedNumber));
             }
-
-            IncorrectBadges = incorrects;
-            BeingProcessedBadge = incorrects [0];
         }
 
+
+        public BadgeEditorViewModel ( )
+        {
+            IncorrectBadges = new List<BadgeViewModel> ();
+        }
+
+
+        internal void ToFirst ( )
+        {
+
+        }
+
+
+        internal void ToPrevious ( )
+        {
+
+        }
+
+
+        internal void ToNext ( )
+        {
+
+        }
+
+
+        internal void ToLast ( )
+        {
+
+        }
+
+
+        internal void ToParticularBadge ( int number )
+        {
+
+        }
+
+
+        internal void MoveCaptured ( Point delta )
+        {
+            BeingProcessedBadge.TextLines [0].TopOffset -= delta.Y;
+            BeingProcessedBadge.TextLines [0].LeftOffset -= delta.X;
+            BeingProcessedBadge.TextLines [0].Width = 700;
+            
+        }
+
+
+        //internal void ReleaseCaptured ( )
+        //{
+        //    BeingProcessedBadge.TextLines [0].TopOffset -= delta.Y;
+        //    BeingProcessedBadge.TextLines [0].LeftOffset -= delta.X;
+        //}
     }
 }

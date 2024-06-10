@@ -20,7 +20,17 @@ public class BadgeViewModel : ViewModelBase
 {
     private const double coefficient = 1.1;
     internal Badge BadgeModel { get; private set; }
-    internal Bitmap ImageBitmap { get; private set; }
+
+    private Bitmap bM;
+    internal Bitmap ImageBitmap 
+    {
+        get { return bM; }
+        private set
+        {
+            this.RaiseAndSetIfChanged ( ref bM, value, nameof (ImageBitmap));
+        }
+            
+    }
 
     private double _widht;
     private double _height;
@@ -178,18 +188,6 @@ public class BadgeViewModel : ViewModelBase
         string path = BadgeModel. BackgroundImagePath;
         Uri uri = new Uri (path);
         this.ImageBitmap = ImageHelper.LoadFromResource (uri);
-
-        //try 
-        //{
-        //    Uri uri = new Uri (path);
-        //    this.ImageBitmap = ImageHelper.LoadFromResource (uri);
-        //}
-        //catch( UriFormatException ex ) 
-        //{
-        //    string mess = ex.Message;
-        //    int jk = 0;
-        //}
-
     }
 
 
@@ -303,7 +301,6 @@ public class BadgeViewModel : ViewModelBase
                     }
 
                     TextualAtom atom = new TextualAtom (textAtom, topOffset, beingProcessedLine);
-
                     atom.TopOffset = topOffset;
                     atom.Content = beingProcessedLine;
                     TextLineViewModel textLine = new TextLineViewModel (atom);
@@ -331,6 +328,11 @@ public class BadgeViewModel : ViewModelBase
                 }
                 else
                 {
+                    TextualAtom atom = new TextualAtom (textAtom, topOffset, beingProcessedLine);
+                    atom.TopOffset = topOffset;
+                    atom.Content = beingProcessedLine;
+                    TextLineViewModel textLine = new TextLineViewModel (atom);
+                    TextLines.Add (textLine);
                     this.IsCorrect = false;
                     break;
                 }
