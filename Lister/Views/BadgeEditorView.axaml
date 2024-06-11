@@ -61,10 +61,19 @@
 				<ColumnDefinition Width="64"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
+				
 				<ColumnDefinition Width="30"></ColumnDefinition>
+				
 				<ColumnDefinition Width="30"></ColumnDefinition>
 				<ColumnDefinition Width="64"></ColumnDefinition>
 				<ColumnDefinition Width="30"></ColumnDefinition>
+				
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			
@@ -76,7 +85,7 @@
 				HorizontalContentAlignment="Center" 
 			    Width="48"
 				Tapped="ToFirst"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 			
 			<Button
 				Name="previousBadge"
@@ -85,7 +94,7 @@
 				HorizontalContentAlignment="Center" 
 				Width="48"
 				Tapped="ToPrevious"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
 				Name="visiblePageNumber"
@@ -104,7 +113,7 @@
 				HorizontalContentAlignment="Center" 
 				Width="48"
 				Tapped="ToNext"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 			
 			<Button
 				Name="lastBadge"
@@ -113,14 +122,15 @@
 				HorizontalContentAlignment="Center" 
 				Width="48"
 				Tapped="ToLast"
-				IsEnabled="False"/>
-			
+				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
+
 			<Button
-				Name="zoomOn"
-				Content="+"
+				Name="zoomOut"
+				Content="-"
 				Grid.Column="6"
 				HorizontalAlignment="Center"
 				Width="28"
+				Tapped="ReduceFontSize"
 				IsEnabled="False" />
 			
 			<TextBox
@@ -130,21 +140,66 @@
 				Grid.Column="7"
 				MaxHeight="30"
 				Margin="0,3"
+				Text="{Binding  Path = FocusedFontSize,  Mode=OneWay}"
 				IsReadOnly="True"/>
 			
 			<Button
-				Name="zoomOut"
-				Content="-" Grid.Column="8"
+				Name="zoomOn"
+				Content="+"
+				Grid.Column="8"
 				HorizontalAlignment="Center"
 				Width="28"
+				Tapped="IncreaseFontSize"
 				IsEnabled="False" />
+
+			<Button
+				Name="left"
+				Content="L"
+				Grid.Column="10"
+				HorizontalAlignment="Center"
+				Width="28"
+				Tapped="Left"
+				PointerPressed="LeftConstantly"
+				
+				KeyDown="Lefts"
+				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="right"
+				Content="R"
+				Grid.Column="11"
+				HorizontalAlignment="Center"
+				Width="28"
+				Tapped="Right"
+				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="up"
+				Content="U"
+				Grid.Column="12"
+				HorizontalAlignment="Center"
+				Width="28"
+				Tapped="Up"
+				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="down"
+				Content="D"
+				Grid.Column="13"
+				HorizontalAlignment="Center"
+				Width="28"
+				Tapped="Down"
+				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+			
+			
 		</Grid>
 
 		
-		<Grid
-			Name="badgeArea"
-			Margin="10,10"
-			Background="AntiqueWhite">
+
+	    <Grid
+		   Name="badgeArea"
+		   Margin="10,10"
+		   Background="AntiqueWhite">
 			
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -154,12 +209,18 @@
 				<RowDefinition Height="600"></RowDefinition>
 			</Grid.RowDefinitions>
 
+			<ScrollViewer
+				Name="scroller"
+				VerticalScrollBarVisibility="Auto"
+		        HorizontalScrollBarVisibility="Auto"
+		        AllowAutoHide="True">
+												
 			<Border
 				BorderThickness="1"
 				BorderBrush="Gray"
 				Grid.Column="0"
 				Grid.Row="0"
-				Width="982"
+				Width="980"
 				Height="602">
 
 				<Canvas
@@ -174,6 +235,7 @@
 						Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 
 					<ItemsControl
+						Name="textLines"
 	                    ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
 
 						<ItemsControl.ItemsPanel>
@@ -213,8 +275,10 @@
 					
 				</Canvas>
 			</Border>
-			
-		</Grid>
-		
-	</StackPanel>
+
+		</ScrollViewer>
+
+	</Grid>
+
+</StackPanel>
 </UserControl>

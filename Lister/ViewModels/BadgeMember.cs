@@ -25,7 +25,7 @@ namespace Lister.ViewModels
         internal double Height
         {
             get { return ht; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref ht, value, nameof (Height));
             }

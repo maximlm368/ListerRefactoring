@@ -1,17 +1,23 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using Lister.ViewModels;
+using System.Reactive.Linq;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Lister.Views
 {
     public partial class BadgeEditorView : UserControl
     {
         ModernMainView _back;
-        private Label _focused;
+        private ContentControl _focused;
         private bool _capturedExists;
+        private bool _pointerIsPressed;
         private Point _pointerPosition;
         private BadgeEditorViewModel _vm;
 
@@ -47,34 +53,132 @@ namespace Lister.Views
             }
 
             _focused = label;
+            zoomOn.IsEnabled = true;
+            zoomOut.IsEnabled = true;
+            string content = (string) _focused.Content;
+            _vm.Focus (content);
         }
 
 
         internal void Capture ( object sender, PointerPressedEventArgs args )
         {
-            Label captured = sender as Label;
-            
+            Label label = sender as Label;
 
-            if ( captured != _focused ) 
+            if ( label != _focused ) 
             {
                 return;
             }
 
-            _pointerPosition = args.GetPosition (captured);
+            _pointerPosition = args.GetPosition (label);
             _capturedExists = true;
         }
 
 
         internal void Move ( object sender, PointerEventArgs args )
         {
+            Label label = sender as Label;
+
             if ( _capturedExists )
             {
                 Point newPosition = args.GetPosition (_focused);
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;
                 Point delta = new Point ( horizontalDelta, verticalDelta );
-                _vm.MoveCaptured ( delta );
+                string capturedContent = label.Content.ToString () ?? string.Empty;
+                _vm.MoveCaptured ( capturedContent, delta );
             }
+        }
+
+
+        internal void StopConstantly ( object sender, PointerReleasedEventArgs args )
+        {
+            _pointerIsPressed = false;
+        }
+
+
+        internal void Left ( object sender, TappedEventArgs args )
+        {
+            if ( _focused == null ) 
+            {
+                return;
+            }
+
+            string content = (string) _focused.Content;
+            _vm.Left ( content );
+        }
+
+
+        internal void Lefts ( object sender, KeyEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            string key = args.Key.ToString ();
+            bool keyIsLeft = key == "Left";
+
+            if (keyIsLeft) 
+            {
+                string content = ( string ) _focused.Content;
+                _vm.Left (content);
+            }
+
+            
+        }
+
+
+        internal void LeftConstantly ( object sender, PointerPressedEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            _pointerIsPressed = true;
+            string content = ( string ) _focused.Content;
+
+            while (_pointerIsPressed) 
+            {
+                _vm.Left (content);
+                Thread.Sleep (100);
+            }
+        }
+
+
+        internal void Right ( object sender, TappedEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            string content = ( string ) _focused.Content;
+            _vm.Right (content);
+        }
+
+
+        internal void Up ( object sender, TappedEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            string content = ( string ) _focused.Content;
+            _vm.Up (content);
+        }
+
+
+        internal void Down ( object sender, TappedEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            string content = ( string ) _focused.Content;
+            _vm.Down (content);
         }
 
 
@@ -85,6 +189,10 @@ namespace Lister.Views
                 _capturedExists = false;
                 _focused.Background = null;
                 _focused = null;
+                zoomOn.IsEnabled = true;
+                zoomOut.IsEnabled = true;
+
+
             }
         }
 
@@ -92,28 +200,24 @@ namespace Lister.Views
         internal void ToFirst ( object sender, TappedEventArgs args ) 
         {
             _vm.ToFirst ();
-            SetEnableBadgeNavigation ();
         }
 
 
         internal void ToPrevious ( object sender, TappedEventArgs args )
         {
             _vm.ToPrevious ();
-            SetEnableBadgeNavigation ();
         }
 
 
         internal void ToNext ( object sender, TappedEventArgs args )
         {
             _vm.ToNext ();
-            SetEnableBadgeNavigation ();
         }
 
 
         internal void ToLast ( object sender, TappedEventArgs args )
         {
             _vm.ToLast ();
-            SetEnableBadgeNavigation ();
         }
 
 
@@ -121,61 +225,37 @@ namespace Lister.Views
         {
             TextBox textBox = sender as TextBox;
             string text = textBox.Text;
-            
-            try 
-            {
-                int number = int.Parse ( text );
-                _vm.ToParticularBadge (number);
-                SetEnableBadgeNavigation ();
-            }
-            catch ( Exception ex ) 
-            {
-                return;
-            }
+            _vm.ToParticularBadge (text);
         }
 
 
-        internal void SetEnableBadgeNavigation ()
+        internal void ReduceFontSize ( object sender, TappedEventArgs args )
         {
-            int badgeCount = _vm.IncorrectBadges. Count;
-
-            if ( badgeCount > 1 )
+            if ( _focused == null ) 
             {
-                if ( ( _vm.BeingProcessedNumber > 1 )   &&   ( _vm.BeingProcessedNumber == badgeCount ) )
-                {
-                    firstBadge.IsEnabled = true;
-                    previousBadge.IsEnabled = true;
-                    nextBadge.IsEnabled = false;
-                    lastBadge.IsEnabled = false;
-                }
-                else if ( ( _vm.BeingProcessedNumber > 1 )   &&   ( _vm.BeingProcessedNumber < badgeCount ) )
-                {
-                    firstBadge.IsEnabled = true;
-                    previousBadge.IsEnabled = true;
-                    nextBadge.IsEnabled = true;
-                    lastBadge.IsEnabled = true;
-                }
-                else if ( ( _vm.BeingProcessedNumber == 1 )   &&   ( badgeCount == 1 ) )
-                {
-                    firstBadge.IsEnabled = false;
-                    previousBadge.IsEnabled = false;
-                    nextBadge.IsEnabled = false;
-                    lastBadge.IsEnabled = false;
-                }
-                else if ( ( _vm.BeingProcessedNumber == 1 )   &&   ( badgeCount > 1 ) )
-                {
-                    firstBadge.IsEnabled = false;
-                    previousBadge.IsEnabled = false;
-                    nextBadge.IsEnabled = true;
-                    lastBadge.IsEnabled = true;
-                }
+                return;
             }
+
+            string content = (string) _focused.Content;
+            _vm.ReduceFontSize (content);
+        }
+
+
+        internal void IncreaseFontSize ( object sender, TappedEventArgs args )
+        {
+            if ( _focused == null )
+            {
+                return;
+            }
+
+            string content = ( string ) _focused.Content;
+            _vm.IncreaseFontSize (content);
         }
 
 
         internal void GoBack ( object sender, TappedEventArgs args )
         {
-            //BadgeEditorView ancestorView = this.Parent as BadgeEditorView;
+            _vm.SetOriginalScale ();
             MainWindow owner = this.Parent as MainWindow;
             owner.Content = _back;
         }

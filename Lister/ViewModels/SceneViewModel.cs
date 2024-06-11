@@ -121,7 +121,7 @@ namespace Lister.ViewModels
                     BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 
-                    if ( !beingProcessedBadgeVM.IsCorrect )
+                    if ( ! beingProcessedBadgeVM.IsCorrect )
                     {
                         IncorrectBadges.Add (beingProcessedBadgeVM);
                         EditionMustEnable = true;
@@ -157,6 +157,7 @@ namespace Lister.ViewModels
             if ( ! goalVMBadge.IsCorrect )
             {
                 IncorrectBadges.Add (goalVMBadge);
+                EditionMustEnable = true;
             }
 
             bool placingStartedAfterEntireListAddition = !_lastPage.Equals (VisiblePage);

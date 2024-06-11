@@ -18,7 +18,8 @@ namespace Lister.ViewModels;
 
 public class BadgeViewModel : ViewModelBase
 {
-    private const double coefficient = 1.1;
+    private const double coefficient = 1.03;
+    internal double Scale { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
     private Bitmap bM;
@@ -132,6 +133,7 @@ public class BadgeViewModel : ViewModelBase
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
         _borderThickness = 1;
+        Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
 
         List<TextualAtom> atoms = layout.TextualFields;
@@ -154,6 +156,7 @@ public class BadgeViewModel : ViewModelBase
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
         _borderThickness = 1;
+        Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
 
         foreach ( TextLineViewModel line   in   badge.TextLines ) 
@@ -201,6 +204,7 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
+        Scale *= coefficient;
 
         foreach ( TextLineViewModel line   in   TextLines ) 
         {
@@ -226,6 +230,7 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth /= coefficient;
         BadgeHeight /= coefficient;
+        Scale /= coefficient;
 
         foreach ( TextLineViewModel line   in   TextLines )
         {
@@ -289,7 +294,7 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ! lineIsOverflow ) 
                 {
-                    if ( textAtom.IsShiftableBelow   &&   isTimeToShiftNextLine )
+                    if ( isTimeToShiftNextLine )
                     {
                         summaryVerticalOffset += textAtom.FontSize;
                         topOffset += textAtom.FontSize;

@@ -30,7 +30,7 @@ namespace Lister.ViewModels
         internal double FontSize
         {
             get { return fs; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref fs, value, nameof (FontSize));
             }
@@ -119,7 +119,7 @@ namespace Lister.ViewModels
         private HorizontalAlignment GetAlignmentByString ( string alignmentName ) 
         {
             if( alignmentName == "Left" ) 
-            { 
+            {
                 return HorizontalAlignment.Left; 
             }
             if ( alignmentName == "Right" )
