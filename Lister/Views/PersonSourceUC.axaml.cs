@@ -56,15 +56,14 @@ namespace Lister.Views
                 MimeTypes = new [] { "image/*" }
             };
 
-            List<FilePickerFileType> fileExtentions = [];
+            List <FilePickerFileType> fileExtentions = [];
             fileExtentions.Add (csvFileType);
             FilePickerOpenOptions options = new FilePickerOpenOptions ();
-            options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+            options.FileTypeFilter = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
             options.Title = "Open Text File";
             options.AllowMultiple = false;
             var window = TopLevel.GetTopLevel (this);
-            Task<IReadOnlyList<IStorageFile>> chosenFile = null;
-            chosenFile = window.StorageProvider.OpenFilePickerAsync (options);
+            Task <IReadOnlyList<IStorageFile>> chosenFile = window.StorageProvider.OpenFilePickerAsync (options);
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
             chosenFile.ContinueWith

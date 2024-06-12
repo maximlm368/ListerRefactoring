@@ -70,7 +70,14 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel ) 
     {
-        Templates = docAssembler.GetBadgeModels ();
+        string problems = "";
+        Templates = docAssembler.GetBadgeModels ( out problems );
+
+        if ( ! string.IsNullOrEmpty ( problems ) ) 
+        {
+            int idOk = Winapi.MessageBox ( 0, problems, "", 0 );
+        }
+
         _sceneVM = sceneViewModel;
         converter = new ConverterToPdf ();
     }

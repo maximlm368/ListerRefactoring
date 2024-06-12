@@ -90,22 +90,23 @@
 															<Style Selector="ItemsControl ContentPresenter">
 																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
 																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
-																<Setter Property="HorizontalContentAlignment" 
-																		Value="{TemplateBinding HorizontalContentAlignment}"/>
-															</Style>
+																<Setter Property="HorizontalContentAlignment"	Value="{Binding Alignment}"/>
+                              </Style>
 															
 														</ItemsControl.Styles>
 
 														<ItemsControl.ItemTemplate>
+                              
+                              
+                                
 															<DataTemplate>
-
 																<Label
 																	Height="{Binding Path = Height,  Mode=OneWay}"
 																	Width="{Binding  Path = Width,  Mode=OneWay}"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-																	HorizontalContentAlignment="{Binding Alignment}"
-													                Content="{Binding   Path = Content,  Mode=OneWay }" />
+																	
+										              Content="{Binding   Path = Content,  Mode=OneWay }" />
 															</DataTemplate>
 
 														</ItemsControl.ItemTemplate>
@@ -240,11 +241,36 @@
 																	FontSize="{Binding   Path = FontSize,  Mode=OneWay }"
 																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 																	HorizontalContentAlignment="Center"
+                                  HorizontalContentAlignment="{Binding Alignment}"
 													                Content="{Binding   Path = Content,  Mode=OneWay }" />
 
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>
 
 													</ItemsControl>
+                          
+                          
+
+
+
+
+
+<Setter Property="Template">
+																	<ControlTemplate>
+																		<ContentPresenter 
+                                      Name="PART_ContentPresenter"								
+																			HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" />
+																	</ControlTemplate>
+																</Setter>
+                                
+                                
+
+
+<ControlTemplate>
+                                 <ContentPresenter
+                                    HorizontalContentAlignment="{Binding Alignment}" 
+                                 />  
+                              
+                              </ControlTemplate>
 					
 			-->

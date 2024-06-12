@@ -18,10 +18,13 @@ namespace Lister.ViewModels;
 
 public class BadgeViewModel : ViewModelBase
 {
+    private static Dictionary<string , Bitmap> _pathToImage;
+
     private const double coefficient = 1.03;
     internal double Scale { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
+    private Bitmap _bitMap = null;
     private Bitmap bM;
     internal Bitmap ImageBitmap 
     {
@@ -120,6 +123,12 @@ public class BadgeViewModel : ViewModelBase
     internal bool IsCorrect { get; private set; }
 
 
+    static BadgeViewModel ( )
+    {
+        _pathToImage = new Dictionary<string , Bitmap> ( );
+    }
+
+
     public BadgeViewModel ( Badge badgeModel )
     {
         BadgeModel = badgeModel;
@@ -188,9 +197,24 @@ public class BadgeViewModel : ViewModelBase
 
     internal void Show ()
     {
-        string path = BadgeModel. BackgroundImagePath;
-        Uri uri = new Uri (path);
-        this.ImageBitmap = ImageHelper.LoadFromResource (uri);
+        if( _bitMap == null )
+        {
+            string path = BadgeModel. BackgroundImagePath;
+            Uri uri = new Uri ( path );
+            string absolutePath = uri.AbsolutePath;
+
+            if ( ! _pathToImage.ContainsKey ( absolutePath ) ) 
+            {
+                _bitMap = ImageHelper.LoadFromResource ( uri );
+                _pathToImage.Add ( absolutePath , _bitMap );
+            }
+            else
+            {
+                _bitMap = _pathToImage [ absolutePath ];
+            }
+        }
+
+        this.ImageBitmap = _bitMap;
     }
 
 
@@ -288,8 +312,8 @@ public class BadgeViewModel : ViewModelBase
             {
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                            , FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
-                
-                double usefulTextBlockWidth = formatted.Width * coefficient;
+
+                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace;
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 

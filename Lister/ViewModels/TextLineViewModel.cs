@@ -70,8 +70,8 @@ namespace Lister.ViewModels
         public TextLineViewModel ( TextualAtom text )
         {
             _dataSource = text;
-            //Alignment = GetAlignmentByString (text.Alignment);
-            Alignment = HorizontalAlignment.Center;
+            Alignment = GetAlignmentByString ( text.Alignment );
+            //Alignment = HorizontalAlignment.Center;
             FontSize = text.FontSize;
             FontFamily = new FontFamily(text.FontFamily);
             Content = text.Content;

@@ -217,13 +217,27 @@ namespace DataGateway
         }
 
 
-        public List<string> GetBadgeTemplateNames ()
+        public List<string> GetBadgeTemplateNames ( out string problemMessage )
         {
             List<string> templateNames = new ();
+            problemMessage = "Следующие файлы не существуют:  ";
 
             foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
-                templateNames.Add (template.Key);
+                string jsonPath = template.Value;
+                string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
+                string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
+                string imagePath = directoryPath + "/" + backgroundPath;
+
+                try
+                {
+                    using Stream stream = new FileStream ( imagePath , FileMode.Open );
+                    templateNames.Add ( template.Key );
+                }
+                catch ( FileNotFoundException ex )
+                {
+                    problemMessage = problemMessage + imagePath + ", ";
+                }
             }
 
             return templateNames;
