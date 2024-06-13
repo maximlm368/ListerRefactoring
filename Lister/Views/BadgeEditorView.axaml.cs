@@ -14,6 +14,8 @@ namespace Lister.Views
 {
     public partial class BadgeEditorView : UserControl
     {
+        private double _widthDelta;
+        private double _heightDelta;
         ModernMainView _back;
         private ContentControl _focused;
         private bool _capturedExists;
@@ -26,6 +28,15 @@ namespace Lister.Views
             InitializeComponent ();
             this.DataContext = new BadgeEditorViewModel ();
             _vm = DataContext as BadgeEditorViewModel;
+        }
+
+
+        internal void ChangeSize ( double widthDifference, double heightDifference )
+        {
+            workArea.Width -= widthDifference;
+            workArea.Height -= heightDifference;
+            _widthDelta -= widthDifference;
+            _heightDelta -= heightDifference;
         }
 
 
@@ -46,8 +57,11 @@ namespace Lister.Views
         {
             Label label = sender as Label;
             label.Background = new SolidColorBrush (new Color (100, 255, 255, 255));
+            label.IsVisible = true;
+            double width = label.DesiredSize.Width;
 
-            if( _focused != null ) 
+
+            if ( _focused != null ) 
             {
                 _focused.Background = null;
             }
@@ -57,6 +71,9 @@ namespace Lister.Views
             zoomOut.IsEnabled = true;
             string content = (string) _focused.Content;
             _vm.Focus (content);
+
+
+            Cursor = new Cursor(StandardCursorType.Hand);
         }
 
 
@@ -77,9 +94,10 @@ namespace Lister.Views
         internal void Move ( object sender, PointerEventArgs args )
         {
             Label label = sender as Label;
-
+            
             if ( _capturedExists )
             {
+                label.Content = label.Content;
                 Point newPosition = args.GetPosition (_focused);
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;

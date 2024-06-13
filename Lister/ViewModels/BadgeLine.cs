@@ -12,9 +12,9 @@ namespace Lister.ViewModels
 {
     internal class BadgeLine : ViewModelBase
     {
-        private double _restWidth;
+        internal double _restWidth;
         private double _heightConstraint;
-        private double _scale;
+        internal double _scale;
 
         private ObservableCollection <BadgeViewModel> badges;
         internal ObservableCollection <BadgeViewModel> Badges
@@ -75,6 +75,7 @@ namespace Lister.ViewModels
             _scale = scale;
             _restWidth = width;
             _heightConstraint = heightConstraint;
+            int ff = 0;
         }
 
 
@@ -125,6 +126,7 @@ namespace Lister.ViewModels
                 
                 return ActionSuccess.Success;
             }
+            int dfdf = 0;
         }
 
 

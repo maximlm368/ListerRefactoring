@@ -66,8 +66,8 @@ public partial class MainWindow : Window
         try
         {
             ModernMainView mainView = ( ModernMainView ) Content;
-            double newWidth = e.NewSize. Width;
-            double newHeight = e.NewSize. Height;
+            double newWidth = e.NewSize.Width;
+            double newHeight = e.NewSize.Height;
             double widthDifference = _currentWidth - newWidth;
             double heightDifference = _currentHeight - newHeight;
             _currentWidth = newWidth;
@@ -76,7 +76,23 @@ public partial class MainWindow : Window
         }
         catch ( System.InvalidCastException ex )
         {
+            try
+            {
+                BadgeEditorView mainView = ( BadgeEditorView ) Content;
+                double newWidth = e.NewSize.Width;
+                double newHeight = e.NewSize.Height;
+                double widthDifference = _currentWidth - newWidth;
+                double heightDifference = _currentHeight - newHeight;
+                _currentWidth = newWidth;
+                _currentHeight = newHeight;
+                mainView.ChangeSize (widthDifference, heightDifference);
+            }
+            catch ( System.InvalidCastException excp )
+            {
 
+
+
+            }
         }
     }
 

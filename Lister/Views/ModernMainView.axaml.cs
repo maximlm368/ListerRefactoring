@@ -9,8 +9,10 @@ namespace Lister.Views
 {
     public partial class ModernMainView : UserControl
     {
+        private double _widthDelta;
+        private double _heightDelta;
         internal List<BadgeViewModel> IncorrectBadges { get; private set; }
-
+        
 
         public ModernMainView ()
         {
@@ -35,7 +37,9 @@ namespace Lister.Views
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
             scene. workArea.Width -= widthDifference;
-            scene. workArea.Height -= heightDifference;
+            _widthDelta -= widthDifference;
+            scene.workArea.Height -= heightDifference;
+            _heightDelta -= heightDifference;
             personChoosing.AdjustComboboxWidth (widthDifference);
         }
     }

@@ -161,7 +161,8 @@ public class PageViewModel : ViewModelBase
     internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
     {
         PageViewModel beingProcessedPage = this;
-        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge, true);
+        bool shouldScaleBadge = (badge.Scale != this._scale);
+        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge, shouldScaleBadge);
 
         if ( additionSuccess == ActionSuccess.FailureByWidth ) 
         {

@@ -88,25 +88,23 @@
 
 														<ItemsControl.Styles>
 															<Style Selector="ItemsControl ContentPresenter">
-																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																
 																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
 																<Setter Property="HorizontalContentAlignment"	Value="{Binding Alignment}"/>
-                              </Style>
-															
+                                                            </Style>
 														</ItemsControl.Styles>
 
 														<ItemsControl.ItemTemplate>
                               
-                              
-                                
 															<DataTemplate>
 																<Label
 																	Height="{Binding Path = Height,  Mode=OneWay}"
-																	Width="{Binding  Path = Width,  Mode=OneWay}"
+																	Width="{Binding Path = Width,  Mode=OneWayToSource}"
+																	
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-																	
-										              Content="{Binding   Path = Content,  Mode=OneWay }" />
+																	Canvas.Left="0"
+										                            Content="{Binding   Path = Content,  Mode=OneWay }" />
 															</DataTemplate>
 
 														</ItemsControl.ItemTemplate>

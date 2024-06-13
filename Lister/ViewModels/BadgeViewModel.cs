@@ -292,6 +292,16 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
+    internal void PreSetUpTextLines ( List <TextualAtom> orderedTextualFields )
+    {
+        foreach ( TextualAtom atom   in   orderedTextualFields ) 
+        {
+            TextLines.Add (new TextLineViewModel (atom));
+            
+        }
+    }
+
+
     private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
@@ -312,8 +322,29 @@ public class BadgeViewModel : ViewModelBase
             {
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                            , FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
+                double usefulTextBlockWidth = formatted.Width * coefficient;
 
-                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace;
+
+                //TextLineViewModel textLin = new TextLineViewModel (textAtom);
+                //TextLines.Add (textLin);
+                //textLin.Width = 200;
+                //usefulTextBlockWidth = textLin.Width;
+                
+                //string name = textLin.Content;
+
+
+
+                //usefulTextBlockWidth = 0;
+                //for ( int ind = 0;   ind < beingProcessedLine.Length;   ind++ )
+                //{
+                //    var ch = beingProcessedLine [ind];
+                //    FormattedText formated = new FormattedText (ch.ToString (), CultureInfo.CurrentCulture
+                //                                               , FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
+                //    double len = formated.Extent;
+                //    usefulTextBlockWidth += len;
+                //}
+                //usefulTextBlockWidth = usefulTextBlockWidth + ( beingProcessedLine.Length - 1 ) * Scale;
+
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 

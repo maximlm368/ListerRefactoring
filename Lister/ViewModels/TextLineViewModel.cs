@@ -73,7 +73,8 @@ namespace Lister.ViewModels
             Alignment = GetAlignmentByString ( text.Alignment );
             //Alignment = HorizontalAlignment.Center;
             FontSize = text.FontSize;
-            FontFamily = new FontFamily(text.FontFamily);
+            FontFamily = new FontFamily (text.FontFamily);
+            //FontFamily = new FontFamily ("sans-serif");
             Content = text.Content;
             IsShiftableBelow = text.IsShiftableBelow;
 

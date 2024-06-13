@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="730"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
 			 xmlns:uc="clr-namespace:Lister.Views"
              x:Class="Lister.Views.BadgeEditorView"
@@ -206,78 +206,92 @@
 			</Grid.ColumnDefinitions>
 			
 			<Grid.RowDefinitions>
-				<RowDefinition Height="600"></RowDefinition>
+				<RowDefinition></RowDefinition>
 			</Grid.RowDefinitions>
 
-			<ScrollViewer
-				Name="scroller"
-				VerticalScrollBarVisibility="Auto"
-		        HorizontalScrollBarVisibility="Auto"
-		        AllowAutoHide="True">
-												
 			<Border
-				BorderThickness="1"
-				BorderBrush="Gray"
+				Name="workArea"
+				HorizontalAlignment="Left"
+				Margin="18,0"
+				Width="760"
+				Height="360"
 				Grid.Column="0"
 				Grid.Row="0"
-				Width="980"
-				Height="602">
+				BorderBrush="Brown"
+				Background="AliceBlue"
+				BorderThickness="1">
 
-				<Canvas
-					Name="incorrectBadge"
-					Width="980"
-					Height="600">
+				<ScrollViewer
+					Name="scroller"
+					VerticalScrollBarVisibility="Auto"
+					HorizontalScrollBarVisibility="Auto"
+					AllowAutoHide="True"
+					Margin="10,10,10,10">
 
-					<Image
-						Name="backgroundImage"  
-						Width="980"
-						
-						Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
+					<Border
+						Name="badge"
+						BorderThickness="1"
+						BorderBrush="Gray"
+						Width="982"
+						Height="602">
 
-					<ItemsControl
-						Name="textLines"
-	                    ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
+						<Canvas
+							Name="incorrectBadge"
+							Width="980"
+							Height="600">
 
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<Canvas
-									Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-									Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
+							<Image
+								Name="backgroundImage"
+								Width="980"
+								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 
-						<ItemsControl.Styles>
-							<Style Selector="ItemsControl ContentPresenter">
-								<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffset,  Mode=TwoWay}" />
-								<Setter Property="Canvas.Top" Value="{Binding Path = TopOffset,  Mode=TwoWay}" />
-							</Style>
-						</ItemsControl.Styles>
+							<ItemsControl
+								Name="textLines"
+								ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
 
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<Canvas
+											Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+											Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
 
-								<Label
-									VerticalAlignment="Center"
-									Height="{Binding Path = Height,  Mode=OneWay}"
-									Width="{Binding  Path = Width,  Mode=OneWay}"
-									FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-									FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-									HorizontalContentAlignment="Center"
-									DoubleTapped="Focus"
-									PointerPressed="Capture"
-								    PointerMoved="Move"
-									Content="{Binding   Path = Content,  Mode=OneWay }" />
+								<ItemsControl.Styles>
+									<Style Selector="ItemsControl ContentPresenter">
+										<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffset,  Mode=TwoWay}" />
+										<Setter Property="Canvas.Top" Value="{Binding Path = TopOffset,  Mode=TwoWay}" />
+									</Style>
+								</ItemsControl.Styles>
 
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
 
-					</ItemsControl>
-					
-				</Canvas>
-			</Border>
+										<Label
+											VerticalAlignment="Center"
+											Height="{Binding Path = Height,  Mode=OneWay}"
+											
+											FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+											FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
+											HorizontalContentAlignment="Left"
+											Canvas.Left="0"
+											DoubleTapped="Focus"
+											PointerPressed="Capture"
+											PointerMoved="Move"
+											Content="{Binding   Path = Content,  Mode=OneWay }" />
+
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+
+							</ItemsControl>
+
+						</Canvas>
+					</Border>
+			
+		
 
 		</ScrollViewer>
-
+      </Border>
 	</Grid>
 
 </StackPanel>

@@ -64,6 +64,8 @@ namespace Lister.Views
         {
             EntirePersonListIsSelected = true;
             SinglePersonIsSelected = false;
+            personTextBox.Text = "Весь список";
+            personTextBox.FontWeight = FontWeight.Bold;
             TryToEnableBadgeCreationButton ();
         }
 
@@ -254,6 +256,7 @@ namespace Lister.Views
                 {
                     personTextBox.Text = chosenName;
                     SinglePersonIsSelected = true;
+                    personTextBox.FontWeight = FontWeight.Normal;
                     EntirePersonListIsSelected = false;
                     //_selectionIsChanged = true;
                     _chosen.Background = new SolidColorBrush ( 16777215 );
@@ -269,22 +272,16 @@ namespace Lister.Views
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             Label chosenControl = ( Label ) sender;
-            //chosenControl.Background = new SolidColorBrush ( 3397631 );
             chosenControl.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
-
 
             if ( _chosen != null )
             {
-                //_chosen.Background = new SolidColorBrush ( 16777215 );
                 _chosen.Background = new SolidColorBrush ( new Color ( 255 , 255 , 255 , 255 ) );
-
             }
 
             _chosen = chosenControl;
-
             string chosenName = (string) chosenControl.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
-            
             TryToEnableBadgeCreationButton ();
             DropOrPickUp ();
             
@@ -292,6 +289,7 @@ namespace Lister.Views
             {
                 personTextBox.Text = chosenName;
                 SinglePersonIsSelected = true;
+                personTextBox.FontWeight = FontWeight.Normal;
                 EntirePersonListIsSelected = false;
                 //_selectionIsChanged = true;
                 _vm.ChosenPerson = chosenPerson;
