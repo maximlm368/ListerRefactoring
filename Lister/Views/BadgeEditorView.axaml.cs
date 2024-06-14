@@ -14,8 +14,8 @@ namespace Lister.Views
 {
     public partial class BadgeEditorView : UserControl
     {
-        private double _widthDelta;
-        private double _heightDelta;
+        private static double _widthDelta;
+        private static double _heightDelta;
         ModernMainView _back;
         private ContentControl _focused;
         private bool _capturedExists;
@@ -28,6 +28,8 @@ namespace Lister.Views
             InitializeComponent ();
             this.DataContext = new BadgeEditorViewModel ();
             _vm = DataContext as BadgeEditorViewModel;
+            workArea.Width -= _widthDelta;
+            workArea.Height -= _heightDelta;
         }
 
 
@@ -35,8 +37,8 @@ namespace Lister.Views
         {
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
-            _widthDelta -= widthDifference;
-            _heightDelta -= heightDifference;
+            _widthDelta += widthDifference;
+            _heightDelta += heightDifference;
         }
 
 
@@ -56,11 +58,8 @@ namespace Lister.Views
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
             Label label = sender as Label;
-            label.Background = new SolidColorBrush (new Color (100, 255, 255, 255));
-            label.IsVisible = true;
-            double width = label.DesiredSize.Width;
-
-
+            //label.Background = new SolidColorBrush (new Color (100, 255, 255, 255));
+            
             if ( _focused != null ) 
             {
                 _focused.Background = null;
@@ -70,9 +69,9 @@ namespace Lister.Views
             zoomOn.IsEnabled = true;
             zoomOut.IsEnabled = true;
             string content = (string) _focused.Content;
+            Border container = label.Parent as Border;
+            container.BorderThickness = new Thickness(1,1,1,1);
             _vm.Focus (content);
-
-
             Cursor = new Cursor(StandardCursorType.Hand);
         }
 
@@ -205,12 +204,13 @@ namespace Lister.Views
             if ( _capturedExists )
             {
                 _capturedExists = false;
-                _focused.Background = null;
+                Border container = _focused.Parent as Border;
+                container.BorderThickness = new Thickness (0, 0, 0, 0);
+                //_focused.Background = null;
                 _focused = null;
                 zoomOn.IsEnabled = true;
                 zoomOut.IsEnabled = true;
-
-
+                Cursor = new Cursor (StandardCursorType.Arrow);
             }
         }
 
@@ -275,6 +275,8 @@ namespace Lister.Views
         {
             _vm.SetOriginalScale ();
             MainWindow owner = this.Parent as MainWindow;
+            _back.ChangeSize ( owner.WidthDifference, owner.HeightDifference );
+            owner.ResetDifference ();
             owner.Content = _back;
         }
     }

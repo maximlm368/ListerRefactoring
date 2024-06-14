@@ -10,7 +10,8 @@
 
 
 	<Grid Name="personChoosingBlock"
-		  Height="35">
+		  Height="35"
+		  ZIndex="0">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="100" ></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
@@ -50,22 +51,35 @@
 				BorderThickness="1"
 				Background="Gray">
 
-				<uc:CustomViewbox
+					<uc:CustomViewbox
 					Name="visiblePersons"
 					Width="469"
-					Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+				    Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+				    
 					PointerEntered="CursorIsOverPersonList"
 					PointerExited="CursorIsOutOfPersonList"
 					PointerWheelChanged="ScrollByWheel"
 					IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
 					IsVisible="False">
-
+					
 					<Canvas
 						Name="listFrame"
 						Width="469"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
+						<Label
+							Name="allPersonsSign"
+							FontSize="14"
+							FontWeight="Bold"
+							Background="LightPink"
+							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
+							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
+							ZIndex="1"
+							Tapped="AcceptEntirePersonList"
+							Content="Весь список"/>
+						
 						<ItemsControl
 							Name="personList"
 							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
@@ -74,11 +88,12 @@
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
-
+										
 									<Label
 										FontSize="14"
 										Height="24"
 										Background="White"
+										Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 										Tapped="HandleChoosingByTapping"
 										KeyDown="AcceptFocusedPersonOrScroll"
 										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
@@ -93,6 +108,7 @@
 							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
 							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 							Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+							ZIndex="2"
 							Background="White">
 
 							<Canvas
@@ -119,6 +135,7 @@
 								Canvas.Top="{Binding   Path = RunnerTopCoordinate,  Mode=OneWay}"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+								ZIndex="3"
 								Background="Red"
 								PointerPressed="CaptureRunner"
 								PointerMoved="MoveRunner"/>
@@ -146,8 +163,6 @@
 					</Canvas>
 				</uc:CustomViewbox>
 			</Border>
-
-			
 
 		</Canvas>	
 

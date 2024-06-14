@@ -42,8 +42,8 @@
 					<ItemsControl
 						Name="lines"
 						Canvas.Top="{Binding  Path = ContentTopOffset,  Mode=OneWay }"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
 						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
 
 						<ItemsControl.ItemTemplate>
@@ -88,7 +88,7 @@
 
 														<ItemsControl.Styles>
 															<Style Selector="ItemsControl ContentPresenter">
-																
+																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
 																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
 																<Setter Property="HorizontalContentAlignment"	Value="{Binding Alignment}"/>
                                                             </Style>
@@ -103,7 +103,6 @@
 																	
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-																	Canvas.Left="0"
 										                            Content="{Binding   Path = Content,  Mode=OneWay }" />
 															</DataTemplate>
 

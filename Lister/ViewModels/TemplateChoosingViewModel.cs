@@ -73,10 +73,10 @@ public class TemplateChoosingViewModel : ViewModelBase
         string problems = "";
         Templates = docAssembler.GetBadgeModels ( out problems );
 
-        if ( ! string.IsNullOrEmpty ( problems ) ) 
-        {
-            int idOk = Winapi.MessageBox ( 0, problems, "", 0 );
-        }
+        //if ( ! string.IsNullOrEmpty ( problems ) ) 
+        //{
+        //    int idOk = Winapi.MessageBox ( 0, problems, "", 0 );
+        //}
 
         _sceneVM = sceneViewModel;
         converter = new ConverterToPdf ();

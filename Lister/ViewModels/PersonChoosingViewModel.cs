@@ -37,7 +37,8 @@ namespace Lister.ViewModels
     {
         private double _withScroll = 454;
         private double _withoutScroll = 469;
-        internal double WidthDelta { get; set; }
+        private double _widthDelta;
+        internal bool ScrollingIsOccured { get; set; }
 
         private double _oneHeight;
         internal List <Person> People { get; set; }
@@ -163,6 +164,26 @@ namespace Lister.ViewModels
             }
         }
 
+        private double fH;
+        internal double FirstItemHeight
+        {
+            get { return fH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fH, value, nameof (FirstItemHeight));
+            }
+        }
+
+        private bool fV;
+        public bool FirstIsVisible
+        {
+            get { return fV; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fV, value, nameof (FirstIsVisible));
+            }
+        }
+
         private bool isPS;
         public bool IsPersonsScrollable
         {
@@ -180,12 +201,17 @@ namespace Lister.ViewModels
             ScrollerCanvasLeft = 454;
             VisiblePeople = new ObservableCollection<Person> ();
             People = new List<Person> ();
+            PersonsScrollValue = _oneHeight;
         }
 
 
         internal void ShiftScroller ( double shift )
         {
+            _widthDelta += shift;
             ScrollerCanvasLeft -= shift;
+            PersonListWidth -= shift;
+            _withoutScroll -= shift;
+            _withScroll -= shift;
         }
 
 
@@ -218,16 +244,19 @@ namespace Lister.ViewModels
             int personCount = VisiblePeople. Count;
             PersonListHeight = _oneHeight * personCount;
 
-            if ( personCount > 5 )
+            if ( personCount > 4 )
             {
                 ShowScroller ();
             }
             else
             {
+                FirstItemHeight = 0;
+                FirstIsVisible = false;
                 VisibleHeight = _oneHeight * personCount;
-                PersonListWidth = _withoutScroll - WidthDelta;
+                PersonListWidth = _withoutScroll - _widthDelta;
                 ScrollerWidth = 0;
                 IsPersonsScrollable = false;
+                PersonsScrollValue = 0;
             }
         }
 
@@ -235,7 +264,7 @@ namespace Lister.ViewModels
         private void ShowScroller () 
         {
             VisibleHeight = _oneHeight * 5;
-            PersonListWidth = _withScroll - WidthDelta;
+            PersonListWidth = _withScroll - _widthDelta;
             ScrollerWidth = 15;
 
             double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
@@ -250,8 +279,20 @@ namespace Lister.ViewModels
             RunnerTopCoordinate = 15;
             TopSpanHeight = 0;
             BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
-            PersonsScrollValue = 0;
             IsPersonsScrollable = true;
+
+            bool listIsWhole = (VisiblePeople. Count == People. Count);
+
+            if ( listIsWhole ) 
+            {
+                FirstIsVisible = true;
+                FirstItemHeight = PersonChoosingUserControl.AllPersonsSignHeight;
+
+                if (! ScrollingIsOccured) 
+                {
+                    PersonsScrollValue = PersonChoosingUserControl.AllPersonsSignHeight;
+                }
+            }
         }
 
         

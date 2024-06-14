@@ -43,8 +43,8 @@ namespace Lister.ViewModels
 
             if ( valueIsSuitable )
             {
-                _personChoosingVM.VisiblePeople.Clear ( );
-                _personChoosingVM.People.Clear ( );
+                //_personChoosingVM.VisiblePeople.Clear ( );
+                //_personChoosingVM.People.Clear ( );
 
                 try
                 {
@@ -58,8 +58,8 @@ namespace Lister.ViewModels
                         people.Add (person);
                     }
 
-                    _personChoosingVM.VisiblePeople = visible;
                     _personChoosingVM.People = people;
+                    _personChoosingVM.VisiblePeople = visible;
                     return value;
                 }
                 catch ( IOException ex )

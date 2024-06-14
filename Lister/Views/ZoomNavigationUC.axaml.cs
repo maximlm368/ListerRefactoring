@@ -141,6 +141,8 @@ namespace Lister.Views
             if ( incorrects.Count > 0 )
             {
                 BadgeEditorView badgeEditor = new BadgeEditorView ();
+                badgeEditor.ChangeSize (owner.WidthDifference, owner.HeightDifference);
+                owner.ResetDifference ();
                 badgeEditor.PassIncorrectBadges (incorrects);
                 badgeEditor.PassBackPoint (ancestorView);
                 owner.Content = badgeEditor;

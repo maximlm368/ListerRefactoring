@@ -12,6 +12,9 @@ public partial class MainWindow : Window
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
+    
+    internal double WidthDifference { get; private set; }
+    internal double HeightDifference { get; private set; }
 
 
     public MainWindow ( )
@@ -70,6 +73,8 @@ public partial class MainWindow : Window
             double newHeight = e.NewSize.Height;
             double widthDifference = _currentWidth - newWidth;
             double heightDifference = _currentHeight - newHeight;
+            WidthDifference += widthDifference;
+            HeightDifference += heightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             mainView.ChangeSize (widthDifference, heightDifference);
@@ -83,17 +88,23 @@ public partial class MainWindow : Window
                 double newHeight = e.NewSize.Height;
                 double widthDifference = _currentWidth - newWidth;
                 double heightDifference = _currentHeight - newHeight;
+                WidthDifference += widthDifference;
+                HeightDifference += heightDifference;
                 _currentWidth = newWidth;
                 _currentHeight = newHeight;
                 mainView.ChangeSize (widthDifference, heightDifference);
             }
             catch ( System.InvalidCastException excp )
             {
-
-
-
             }
         }
+    }
+
+
+    internal void ResetDifference ( )
+    {
+        WidthDifference = 0;
+        HeightDifference = 0;
     }
 
 
@@ -104,10 +115,7 @@ public partial class MainWindow : Window
             ModernMainView mainView = ( ModernMainView ) Content;
             mainView.CloseCustomCombobox ();
         }
-        catch( InvalidCastException ex) 
-        {
-        
-        }
+        catch( InvalidCastException ex) {}
     }
 
 

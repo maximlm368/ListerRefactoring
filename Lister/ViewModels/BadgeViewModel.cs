@@ -320,31 +320,10 @@ public class BadgeViewModel : ViewModelBase
 
             while ( true )
             {
+                Typeface face = new Typeface (new FontFamily("arial"), FontStyle.Normal, FontWeight.Normal);
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
-                                                           , FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
-                double usefulTextBlockWidth = formatted.Width * coefficient;
-
-
-                //TextLineViewModel textLin = new TextLineViewModel (textAtom);
-                //TextLines.Add (textLin);
-                //textLin.Width = 200;
-                //usefulTextBlockWidth = textLin.Width;
-                
-                //string name = textLin.Content;
-
-
-
-                //usefulTextBlockWidth = 0;
-                //for ( int ind = 0;   ind < beingProcessedLine.Length;   ind++ )
-                //{
-                //    var ch = beingProcessedLine [ind];
-                //    FormattedText formated = new FormattedText (ch.ToString (), CultureInfo.CurrentCulture
-                //                                               , FlowDirection.LeftToRight, Typeface.Default, fontSize, null);
-                //    double len = formated.Extent;
-                //    usefulTextBlockWidth += len;
-                //}
-                //usefulTextBlockWidth = usefulTextBlockWidth + ( beingProcessedLine.Length - 1 ) * Scale;
-
+                                                                    , FlowDirection.LeftToRight, face, fontSize, null);
+                double usefulTextBlockWidth = formatted.Width;
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 

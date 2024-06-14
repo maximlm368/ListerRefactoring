@@ -131,6 +131,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private Thickness fBT;
+        internal Thickness FocusedBorderThickness
+        {
+            get { return fBT; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fBT, value, nameof (FocusedBorderThickness));
+            }
+        }
+
 
         public BadgeEditorViewModel ( )
         {
@@ -413,6 +423,7 @@ namespace Lister.ViewModels
             {
                 FocusedFontSize = goalLine.FontSize.ToString ();
                 MoversAreEnable = true;
+                //FocusedBorderThickness = new Thickness (1, 1, 1, 1);
             }
         }
 
