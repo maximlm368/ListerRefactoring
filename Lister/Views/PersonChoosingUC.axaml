@@ -52,15 +52,14 @@
 				Background="Gray">
 
 					<uc:CustomViewbox
-					Name="visiblePersons"
-					Width="469"
-				    Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
-				    
-					PointerEntered="CursorIsOverPersonList"
-					PointerExited="CursorIsOutOfPersonList"
-					PointerWheelChanged="ScrollByWheel"
-					IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
-					IsVisible="False">
+						Name="visiblePersons"
+						Width="469"
+						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+						PointerEntered="CursorIsOverPersonList"
+						PointerExited="CursorIsOutOfPersonList"
+						PointerWheelChanged="ScrollByWheel"
+						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
+						IsVisible="False">
 					
 					<Canvas
 						Name="listFrame"
@@ -118,7 +117,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								Tapped="ScrollByTapping"/>
+								PointerPressed="ScrollByTapping"/>
 
 							<Canvas
 								Name="topSpan"
@@ -127,7 +126,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
 								Background="White"
-								Tapped="ShiftRunner"/>
+								PointerPressed="ShiftRunner"/>
 
 							<Canvas
 								Name="runner"
@@ -147,7 +146,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
 								Background="White"
-								Tapped="ShiftRunner"/>
+								PointerPressed="ShiftRunner"/>
 
 							<Canvas
 								Name="downer"
@@ -156,7 +155,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								Tapped="ScrollByTapping"/>
+								PointerPressed="ScrollByTapping"/>
 
 						</Canvas>
 

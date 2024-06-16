@@ -56,6 +56,7 @@ namespace Lister.Views
         internal void BuildBadges ( object sender, TappedEventArgs args )
         {
             ModernMainView parent = this.Parent.Parent as ModernMainView;
+            SceneUserControl scene = parent.scene;
             bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
             bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
@@ -75,6 +76,7 @@ namespace Lister.Views
             clearBadges.IsEnabled = true;
             save.IsEnabled = true;
             print.IsEnabled = true;
+            scene.CorrectAlignments ( );
         }
 
 

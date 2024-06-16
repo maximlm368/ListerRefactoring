@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 using Lister.ViewModels;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,9 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
             this.Margin = new Avalonia.Thickness (5);
+
+            
+
 
             
             //var source = new Subject<string> ();
@@ -57,9 +62,72 @@ namespace Lister.Views
 
         }
 
+
+        internal void CorrectAlignments ( ) 
+        {
+            Controls items = A4.Children;
+            ItemsControl itemsContainer = items [ 0 ] as ItemsControl;
+
+            IEnumerable <Visual> lines = itemsContainer.GetVisualChildren ( );
+
+            foreach ( Visual line in lines )
+            {
+                ItemsControl badgeItemsContainer = line as ItemsControl;
+
+                IEnumerable<Visual> badges = badgeItemsContainer.GetVisualChildren ( );
+
+                foreach ( Visual badge   in   badges )
+                {
+                    Border badgeBorder = badge as Border;
+                    Canvas badgeBase = badgeBorder.Child as Canvas;
+                    ItemsControl textLinesContainer = badgeBase.Children [ 2 ] as ItemsControl;
+                    IEnumerable<Visual> textLines = textLinesContainer.GetVisualChildren ( );
+
+                    int counter = 0;
+
+                    foreach( var textLine   in   textLines )
+                    {
+                        if( counter < 2 )
+                        {
+                            Label familyName = textLine as Label;
+                            familyName.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Right;
+                        }
+
+                        counter++;
+                    }
+
+                    
+
+                }
+
+            }
+
+
+
+
+
+
+            //foreach ( Control line in lines )
+            //{
+            //    ItemsControl badgeItems = line as ItemsControl;
+
+            //    IEnumerable<Visual> badges = badgeItems.GetVisualChildren ( );
+
+            //    foreach ( Control badge   in   badges )
+            //    {
+
+
+
+
+            //    }
+
+            //}
+
+
+        }
+
     }
 }
-
 
 
 //internal void PassNeighbours ( PersonSourceUserControl personSource, PersonChoosingUserControl personChoosing

@@ -30,6 +30,7 @@ using static Lister.ViewModels.MainViewModel;
 using System.Reflection;
 using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
+using Avalonia.Controls.Primitives;
 
 namespace Lister.ViewModels
 {
@@ -37,7 +38,9 @@ namespace Lister.ViewModels
     {
         private double _withScroll = 454;
         private double _withoutScroll = 469;
+        private double _upperHeight = 15;
         private double _widthDelta;
+        private Timer _timer;
         internal bool ScrollingIsOccured { get; set; }
 
         private double _oneHeight;
@@ -104,6 +107,7 @@ namespace Lister.ViewModels
             }
         }
 
+        internal double RealRunnerHeight { get; private set; }
         private double rH;
         internal double RunnerHeight
         {
@@ -270,6 +274,7 @@ namespace Lister.ViewModels
             double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
             double proportion = PersonListHeight / scrollerWorkAreaHeight;
             RunnerHeight = VisibleHeight / proportion;
+            RealRunnerHeight = RunnerHeight;
 
             if (RunnerHeight < 2) 
             {
@@ -295,7 +300,191 @@ namespace Lister.ViewModels
             }
         }
 
-        
+        #region Scrolling
+
+        internal void ScrollByWheel ( bool isDirectionUp, int count )
+        {
+            if ( IsPersonsScrollable )
+            {
+                double step = 24;
+                double proportion = VisibleHeight / RealRunnerHeight;
+                double runnerStep = step / proportion;
+
+                CompleteScrolling ( isDirectionUp , step , runnerStep , count );
+            }
+        }
+
+
+        internal void ScrollByButton ( bool isDirectionUp, int count )
+        {
+            if ( IsPersonsScrollable )
+            {
+                TimerCallback callBack = new TimerCallback ( ShiftCaller );
+
+                object [ ] args = new object [ 2 ];
+                args [ 0 ] = isDirectionUp;
+                args [ 1 ] = count;
+
+                _timer = new Timer ( callBack , args, 0 , 100 );
+            }
+        }
+
+
+        private void ShiftCaller ( object args )
+        {
+            object [ ] directionAndCount = ( object [ ] ) args;
+            bool isDirectionUp = ( bool ) directionAndCount [ 0 ];
+            int count = ( int ) directionAndCount [ 1 ];
+
+            double step = 24;
+            double proportion = VisibleHeight / RealRunnerHeight;
+            double runnerStep = step / proportion;
+
+            CompleteScrolling ( isDirectionUp , step , runnerStep , count );
+        }
+
+
+        internal void StopScrolling ( )
+        {
+            if ( IsPersonsScrollable )
+            {
+                _timer.Dispose ( );
+            }
+        }
+
+
+        internal void ShiftRunner ( bool isDirectionUp , int count )
+        {
+            if ( IsPersonsScrollable )
+            {
+                TimerCallback callBack = new TimerCallback ( ShiftCaller );
+
+                object [ ] args = new object [ 2 ];
+                args [ 0 ] = isDirectionUp;
+                args [ 1 ] = count;
+
+                _timer = new Timer ( callBack , args , 0 , 20 );
+            }
+        }
+
+
+        internal void MoveRunner ( double runnerVerticalDelta, int count )
+        {
+            double proportion = VisibleHeight / RealRunnerHeight;
+            double personsVerticalDelta = runnerVerticalDelta * proportion;
+            bool isDirectionUp = ( runnerVerticalDelta > 0 );
+            CompleteScrolling ( isDirectionUp , personsVerticalDelta , runnerVerticalDelta, count );
+        }
+
+
+        internal void ScrollByKey ( bool isDirectionUp , int count )
+        {
+            if ( IsPersonsScrollable )
+            {
+                double itemHeight = 24;
+                double proportion = VisibleHeight / RealRunnerHeight;
+                double wholeSpan = TopSpanHeight + BottomSpanHeight - RunnerHeight;
+                double runnerStep = wholeSpan / count;
+                CompleteScrolling ( isDirectionUp , itemHeight , runnerStep, count );
+            }
+        }
+
+
+        private void CompleteScrolling ( bool isDirectionUp , double step , double runnerStep, int count )
+        {
+            if ( ScrollerWidth == 0 )
+                return;
+
+            double currentPersonsScrollValue = PersonsScrollValue;
+
+            if ( isDirectionUp )
+            {
+                currentPersonsScrollValue += step;
+
+                if ( currentPersonsScrollValue > 24 )
+                {
+                    currentPersonsScrollValue = 24;
+                }
+
+                UpRunner ( runnerStep );
+            }
+            else
+            {
+                double itemHeight = 24;
+                currentPersonsScrollValue -= step;
+                double listHeight = itemHeight * count;
+                double maxScroll = VisibleHeight - listHeight;
+                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                if ( scrollExceeds )
+                {
+                    currentPersonsScrollValue = maxScroll;
+                }
+
+                DownRunner ( runnerStep );
+            }
+
+            PersonsScrollValue = currentPersonsScrollValue;
+            ScrollingIsOccured = true;
+        }
+
+
+        private void UpRunner ( double runnerStep )
+        {
+            RunnerTopCoordinate -= runnerStep;
+
+            if ( RunnerTopCoordinate < _upperHeight )
+            {
+                RunnerTopCoordinate = _upperHeight;
+            }
+
+            TopSpanHeight -= runnerStep;
+
+            if ( TopSpanHeight < 0 )
+            {
+                TopSpanHeight = 0;
+            }
+
+            BottomSpanHeight += runnerStep;
+
+            double maxHeight = VisibleHeight - _upperHeight - RunnerHeight - _upperHeight;
+
+            if ( BottomSpanHeight > maxHeight )
+            {
+                BottomSpanHeight = maxHeight;
+            }
+        }
+
+
+        private void DownRunner ( double runnerStep )
+        {
+            TopSpanHeight += runnerStep;
+
+            double maxHeight = VisibleHeight - _upperHeight - RunnerHeight - _upperHeight;
+
+            if ( TopSpanHeight > maxHeight )
+            {
+                TopSpanHeight = maxHeight;
+            }
+
+            RunnerTopCoordinate += runnerStep;
+
+            double maxRunnerTopCoord = _upperHeight + TopSpanHeight;
+
+            if ( RunnerTopCoordinate > maxRunnerTopCoord )
+            {
+                RunnerTopCoordinate = maxRunnerTopCoord;
+            }
+
+            BottomSpanHeight -= runnerStep;
+
+            if ( BottomSpanHeight < 0 )
+            {
+                BottomSpanHeight = 0;
+            }
+        }
+
+        #endregion Scrolling
     }
 }
 

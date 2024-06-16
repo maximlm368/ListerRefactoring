@@ -24,7 +24,7 @@ namespace Lister.Views
 
         internal void ReleaseRunner () 
         {
-            personChoosing.ReleaseRunner ();
+            personChoosing.ReleasePressed ();
         }
 
 

@@ -27,6 +27,8 @@ namespace Lister.Views
         private Label _chosen;
         private double _runnerStep = 0;
         private bool _runnerIsCaptured = false;
+        private bool _tapScrollingStarted = false;
+        private bool _shiftScrollingStarted = false;
         private double _capturingY;
         private PersonSourceUserControl _personSourceUC;
         private SceneUserControl _sceneUC;
@@ -359,52 +361,32 @@ namespace Lister.Views
 
         internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
-            if ( visiblePersons.IsScrollable ) 
-            {
-                int count = personList.ItemCount;
-                double listHeight = personList.Height;
-                double itemHeight = listHeight / count;
-                double proportion = visiblePersons.Height / runner.Height;
-                double runnerStep = itemHeight / proportion;
-                runnerStep = GetInfluentStep (runnerStep);
-                bool isDirectionUp = true;
-
-                CompleteScrolling (isDirectionUp, itemHeight, runnerStep);
-            }
+            bool isDirectionUp = args.Delta.Y > 0;
+            int count = personList.ItemCount;
+            _vm.ScrollByWheel ( isDirectionUp, count );
         }
 
 
-        internal void ScrollByTapping ( object sender, TappedEventArgs args )
+        internal void ScrollByTapping ( object sender, PointerPressedEventArgs args )
         {
-            if ( visiblePersons.IsScrollable )
-            {
-                //int personCount = _vm.VisiblePeople. Count;
-                //double step = personList.Height / personCount;
-                double step = 24;
-                double proportion = visiblePersons.Height / runner.Height;
-                double runnerStep = step / proportion;
-                runnerStep = GetInfluentStep (runnerStep);
-                
-                Canvas activator = sender as Canvas;
-                bool isDirectionUp = activator.Name == "upper";
-
-                CompleteScrolling (isDirectionUp, step, runnerStep);
-            }
+            Canvas activator = sender as Canvas;
+            bool isDirectionUp = activator.Name == "upper";
+            int count = personList.ItemCount;
+            _tapScrollingStarted = true;
+            _vm.ScrollByButton ( isDirectionUp, count );
         }
 
 
-        internal void ShiftRunner ( object sender, TappedEventArgs args )
+        internal void ShiftRunner ( object sender, PointerPressedEventArgs args )
         {
-            if ( visiblePersons.IsScrollable )
-            {
-                double runnerStep = runner.Height;
-                double step = visiblePersons.Height;
+            Canvas activator = sender as Canvas;
 
-                Canvas activator = sender as Canvas;
-                bool isDirectionUp = activator.Name == "topSpan";
+            //args.GetPosition
 
-                CompleteScrolling (isDirectionUp, step, runnerStep);
-            }
+            bool isDirectionUp = activator.Name == "topSpan";
+            int count = personList.ItemCount;
+            _shiftScrollingStarted = true;
+            _vm.ShiftRunner ( isDirectionUp, count );
         }
 
 
@@ -413,13 +395,28 @@ namespace Lister.Views
             _runnerIsCaptured = true;
             Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
             _capturingY = inRunnerRelativePosition.Y;
-            int fdfd = 0;
         }
 
 
-        internal void ReleaseRunner ( )
+        internal void ReleasePressed ( )
         {
-            _runnerIsCaptured = false;
+            if ( _runnerIsCaptured ) 
+            {
+                _runnerIsCaptured = false;
+            }
+
+            if( _tapScrollingStarted )
+            {
+                _tapScrollingStarted = false;
+                _vm.StopScrolling ( );
+            }
+
+            if ( _shiftScrollingStarted )
+            {
+                _shiftScrollingStarted = false;
+                _vm.StopScrolling ( );
+            }
+
         }
 
 
@@ -427,149 +424,38 @@ namespace Lister.Views
         {
             if ( _runnerIsCaptured ) 
             {
-                Canvas can = ( Canvas ) args.Source;
-                string name = can.Name;
-
                 Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
                 double runnerVerticalDelta = _capturingY - pointerPosition.Y;
-
-                double proportion = visiblePersons.Height / runner.Height;
-                double personsVerticalDelta = runnerVerticalDelta * proportion;
-
-                bool isDirectionUp = (runnerVerticalDelta > 0);
-                CompleteScrolling ( isDirectionUp, personsVerticalDelta, runnerVerticalDelta );
+                int count = personList.ItemCount;
+                _vm.MoveRunner ( runnerVerticalDelta, count );
             }
         }
 
 
         private void ScrollByKey ( bool isDirectionUp )
         {
-            if ( visiblePersons.IsScrollable ) 
-            {
-                int count = personList.ItemCount;
-                //double listHeight = personList.Height;
-                //double itemHeight = listHeight / count;
-                double itemHeight = 24;
-                double proportion = visiblePersons.Height / runner.Height;
-                double wholeSpan = _vm.TopSpanHeight + _vm.BottomSpanHeight - _vm.RunnerHeight;
-                double runnerStep = wholeSpan / count;
-                CompleteScrolling (isDirectionUp, itemHeight, runnerStep);
-            }
+            int count = personList.ItemCount;
+            _vm.ScrollByKey ( isDirectionUp, count );
         }
 
 
-        private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep ) 
-        {
-            if ( scroller.Width == 0 ) return;
+        //private double GetInfluentStep ( double step ) 
+        //{
+        //    double wholeStep = Math.Round (step);
 
-            double currentPersonsScrollValue = _vm.PersonsScrollValue;
+        //    if ( wholeStep < 1 )
+        //    {
+        //        _runnerStep += step;
 
-            if ( isDirectionUp )
-            {
-                currentPersonsScrollValue += step;
+        //        if ( _runnerStep >= 1 )
+        //        {
+        //            step = _runnerStep;
+        //            _runnerStep = 0;
+        //        }
+        //    }
 
-                if ( currentPersonsScrollValue > 24 )
-                {
-                    currentPersonsScrollValue = 24;
-                }
-
-                UpRunner (runnerStep, _vm);
-            }
-            else
-            {
-                int count = personList.ItemCount;
-                double itemHeight = 24;
-                currentPersonsScrollValue -= step;
-                double listHeight = itemHeight * count;
-                double maxScroll = visiblePersons.Height - listHeight;
-                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
-
-                if ( scrollExceeds )
-                {
-                    currentPersonsScrollValue = maxScroll;
-                }
-
-                DownRunner (runnerStep, _vm);
-            }
-
-            _vm.PersonsScrollValue = currentPersonsScrollValue;
-            _vm.ScrollingIsOccured = true;
-        }
-
-
-        private void UpRunner ( double runnerStep, PersonChoosingViewModel vm ) 
-        {
-            vm.RunnerTopCoordinate -= runnerStep;
-
-            if ( vm.RunnerTopCoordinate < upper.Height )
-            {
-                vm.RunnerTopCoordinate = upper.Height;
-            }
-
-            vm.TopSpanHeight -= runnerStep;
-
-            if ( vm.TopSpanHeight < 0 )
-            {
-                vm.TopSpanHeight = 0;
-            }
-
-            vm.BottomSpanHeight += runnerStep;
-
-            double maxHeight = scroller.Height - upper.Height - runner.Height - downer.Height;
-
-            if ( vm.BottomSpanHeight > maxHeight )
-            {
-                vm.BottomSpanHeight = maxHeight;
-            }
-        }
-
-
-        private void DownRunner ( double runnerStep, PersonChoosingViewModel vm ) 
-        {
-            vm.TopSpanHeight += runnerStep;
-
-            double maxHeight = scroller.Height - upper.Height - runner.Height - downer.Height;
-
-            if ( vm.TopSpanHeight > maxHeight )
-            {
-                vm.TopSpanHeight = maxHeight;
-            }
-
-            vm.RunnerTopCoordinate += runnerStep;
-
-            double maxRunnerTopCoord = upper.Height + topSpan.Height;
-
-            if ( vm.RunnerTopCoordinate > maxRunnerTopCoord )
-            {
-                vm.RunnerTopCoordinate = maxRunnerTopCoord;
-            }
-
-            vm.BottomSpanHeight -= runnerStep;
-
-            if ( vm.BottomSpanHeight < 0 )
-            {
-                vm.BottomSpanHeight = 0;
-            }
-        }
-
-
-        private double GetInfluentStep ( double step ) 
-        {
-            double wholeStep = Math.Round (step);
-
-            if ( wholeStep < 1 )
-            {
-                _runnerStep += step;
-
-                if ( _runnerStep >= 1 )
-                {
-                    step = _runnerStep;
-                    _runnerStep = 0;
-                }
-            }
-
-            return step;
-        }
+        //    return step;
+        //}
 
         #endregion Scrolling
 
