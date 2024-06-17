@@ -76,7 +76,8 @@ namespace Lister.Views
             clearBadges.IsEnabled = true;
             save.IsEnabled = true;
             print.IsEnabled = true;
-            scene.CorrectAlignments ( );
+
+            //scene.CorrectAlignments ( );
         }
 
 

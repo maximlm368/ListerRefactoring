@@ -132,7 +132,7 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
             .TranslateIntoDouble ();
             string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
-            string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsShiftableBelow" }, jsonPath);
+            string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsSplitable" }, jsonPath);
             bool isShiftable = false;
 
             try 
@@ -167,7 +167,7 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
             childSection = section.GetSection ("FontFamily");
             string fontFamily = GetterFromJson.GetSectionValue (childSection);
-            childSection = section.GetSection ("IsShiftableBelow");
+            childSection = section.GetSection ("IsSplitable");
             string shiftableString = GetterFromJson.GetSectionValue (childSection);
             bool isShiftable = false;
 

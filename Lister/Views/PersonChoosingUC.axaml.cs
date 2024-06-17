@@ -280,19 +280,26 @@ namespace Lister.Views
 
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
-            Label chosenControl = ( Label ) sender;
-            chosenControl.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
+            Label chosenLabel = ( Label ) sender;
+            chosenLabel.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
 
             if ( _chosen != null )
             {
                 _chosen.Background = new SolidColorBrush ( new Color ( 255 , 255 , 255 , 255 ) );
             }
 
-            _chosen = chosenControl;
-            string chosenName = (string) chosenControl.Content;
+            _chosen = chosenLabel;
+            string chosenName = (string) chosenLabel.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
             TryToEnableBadgeCreationButton ();
             DropOrPickUp ();
+
+            if ( chosenName == "Весь список" ) 
+            {
+                EntirePersonListIsSelected = true;
+                SinglePersonIsSelected = false;
+                chosenPerson = null;
+            }
 
             if ( chosenPerson != null ) 
             {

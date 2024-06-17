@@ -12,6 +12,8 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Collections.ObjectModel;
 using Avalonia.Media;
 using System.Globalization;
+using System.Reflection.Metadata;
+using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels
 {
@@ -149,6 +151,35 @@ namespace Lister.ViewModels
         }
 
 
+        internal void Split ( string focusedContent )
+        {
+            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
+            string lineContent = string.Empty;
+            TextLineViewModel goalLine = null;
+
+            foreach ( TextLineViewModel line in lines )
+            {
+                lineContent = line.Content;
+
+                if ( lineContent == focusedContent )
+                {
+                    goalLine = line;
+                    break;
+                }
+            }
+
+            if ( goalLine != null )
+            {
+                
+
+            }
+
+
+
+
+        }
+
+
         internal void ToFirst ( )
         {
             BeingProcessedBadge.Hide ();
@@ -279,7 +310,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void Left ( string focusedContent )
+        internal void ToSide ( string focusedContent, string direction )
         {
             ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
             string lineContent = string.Empty;
@@ -298,7 +329,25 @@ namespace Lister.ViewModels
 
             if ( goalLine != null )
             {
-                goalLine.LeftOffset -= _scale;
+                if ( direction == "Left" ) 
+                {
+                    goalLine.LeftOffset -= _scale;
+                }
+
+                if ( direction == "Right" )
+                {
+                    goalLine.LeftOffset += _scale;
+                }
+
+                if ( direction == "Top" )
+                {
+                    goalLine.TopOffset -= _scale;
+                }
+
+                if ( direction == "Bottom" )
+                {
+                    goalLine.TopOffset += _scale;
+                }
             }
         }
 
@@ -406,6 +455,21 @@ namespace Lister.ViewModels
         {
             ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
             string lineContent = string.Empty;
+            TextLineViewModel goalLine = GetCoincidence (focusedContent);
+
+            if ( goalLine != null )
+            {
+                FocusedFontSize = goalLine.FontSize.ToString ();
+                MoversAreEnable = true;
+                //FocusedBorderThickness = new Thickness (1, 1, 1, 1);
+            }
+        }
+
+
+        internal TextLineViewModel ? GetCoincidence ( string focusedContent )
+        {
+            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
+            string lineContent = string.Empty;
             TextLineViewModel goalLine = null;
 
             foreach ( TextLineViewModel line in lines )
@@ -419,12 +483,7 @@ namespace Lister.ViewModels
                 }
             }
 
-            if ( goalLine != null )
-            {
-                FocusedFontSize = goalLine.FontSize.ToString ();
-                MoversAreEnable = true;
-                //FocusedBorderThickness = new Thickness (1, 1, 1, 1);
-            }
+            return goalLine;
         }
 
 

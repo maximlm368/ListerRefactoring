@@ -9,6 +9,8 @@ using Lister.ViewModels;
 using System.Reactive.Linq;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using ExtentionsAndAuxiliary;
+using System.Globalization;
 
 namespace Lister.Views
 {
@@ -30,6 +32,7 @@ namespace Lister.Views
             _vm = DataContext as BadgeEditorViewModel;
             workArea.Width -= _widthDelta;
             workArea.Height -= _heightDelta;
+            //this.KeyDown += ToSide;
         }
 
 
@@ -54,25 +57,61 @@ namespace Lister.Views
             _back = back;
         }
 
+        #region CapturingAndMovingByMouse
 
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
             Label label = sender as Label;
             //label.Background = new SolidColorBrush (new Color (100, 255, 255, 255));
-            
-            if ( _focused != null ) 
+            Border container;
+
+            if ( _focused != null )
             {
+                container = _focused.Parent as Border;
+                container.BorderThickness = new Thickness (0, 0, 0, 0);
                 _focused.Background = null;
             }
 
             _focused = label;
             zoomOn.IsEnabled = true;
             zoomOut.IsEnabled = true;
-            string content = (string) _focused.Content;
-            Border container = label.Parent as Border;
+            string content = ( string ) _focused.Content;
+            List<string> strings = content.SplitBySeparators ();
+
+            TextLineViewModel line = _vm.GetCoincidence(content);
+
+            bool splitterCanBeSplitted = ( strings.Count > 1 )   &&   ( ! line.IsCorrect());
+
+            if ( splitterCanBeSplitted ) 
+            {
+                spliter.IsEnabled = true;
+            }
+            else 
+            {
+                spliter.IsEnabled = false;
+            }
+
+            container = label.Parent as Border;
             container.BorderThickness = new Thickness(1,1,1,1);
             _vm.Focus (content);
-            Cursor = new Cursor(StandardCursorType.Hand);
+            Cursor = new Cursor(StandardCursorType.SizeAll);
+        }
+
+
+        internal void Move ( object sender, PointerEventArgs args )
+        {
+            Label label = sender as Label;
+
+            if ( _capturedExists )
+            {
+                label.Content = label.Content;
+                Point newPosition = args.GetPosition (_focused);
+                double verticalDelta = _pointerPosition.Y - newPosition.Y;
+                double horizontalDelta = _pointerPosition.X - newPosition.X;
+                Point delta = new Point (horizontalDelta, verticalDelta);
+                string capturedContent = label.Content.ToString () ?? string.Empty;
+                _vm.MoveCaptured (capturedContent, delta);
+            }
         }
 
 
@@ -80,7 +119,7 @@ namespace Lister.Views
         {
             Label label = sender as Label;
 
-            if ( label != _focused ) 
+            if ( label != _focused )
             {
                 return;
             }
@@ -90,22 +129,56 @@ namespace Lister.Views
         }
 
 
-        internal void Move ( object sender, PointerEventArgs args )
+        internal void ReleaseCaptured ()
         {
-            Label label = sender as Label;
-            
             if ( _capturedExists )
             {
-                label.Content = label.Content;
-                Point newPosition = args.GetPosition (_focused);
-                double verticalDelta = _pointerPosition.Y - newPosition.Y;
-                double horizontalDelta = _pointerPosition.X - newPosition.X;
-                Point delta = new Point ( horizontalDelta, verticalDelta );
-                string capturedContent = label.Content.ToString () ?? string.Empty;
-                _vm.MoveCaptured ( capturedContent, delta );
+                _capturedExists = false;
+                Border container = _focused.Parent as Border;
+                container.BorderThickness = new Thickness (0, 0, 0, 0);
+                //_focused.Background = null;
+                _focused = null;
+                zoomOn.IsEnabled = false;
+                zoomOut.IsEnabled = false;
+                spliter.IsEnabled = false;
+                Cursor = new Cursor (StandardCursorType.Arrow);
             }
         }
 
+        #endregion CapturingAndMovingByMouse
+
+        #region Cursor
+
+        internal void SetCrossCursor ( object sender, PointerEventArgs args )
+        {
+            //Border border = sender as Border;
+            Label label = sender as Label;
+
+            if ( label != _focused )
+            {
+                return;
+            }
+
+            Cursor = new Cursor (StandardCursorType.SizeAll);
+        }
+
+
+        internal void SetArrowCursor ( object sender, PointerEventArgs args )
+        {
+            //Border border = sender as Border;
+            Label label = sender as Label;
+
+            if ( label != _focused )
+            {
+                return;
+            }
+
+            Cursor = new Cursor (StandardCursorType.Arrow);
+        }
+
+        #endregion Cursor
+
+        #region MovingByButtons
 
         internal void StopConstantly ( object sender, PointerReleasedEventArgs args )
         {
@@ -113,7 +186,7 @@ namespace Lister.Views
         }
 
 
-        internal void Left ( object sender, TappedEventArgs args )
+        internal void Left ( object sender, PointerPressedEventArgs args )
         {
             if ( _focused == null ) 
             {
@@ -121,11 +194,11 @@ namespace Lister.Views
             }
 
             string content = (string) _focused.Content;
-            _vm.Left ( content );
+            _vm.ToSide ( content, "Left" );
         }
 
 
-        internal void Lefts ( object sender, KeyEventArgs args )
+        internal void ToSide ( object sender, KeyEventArgs args )
         {
             if ( _focused == null )
             {
@@ -133,15 +206,9 @@ namespace Lister.Views
             }
 
             string key = args.Key.ToString ();
-            bool keyIsLeft = key == "Left";
 
-            if (keyIsLeft) 
-            {
-                string content = ( string ) _focused.Content;
-                _vm.Left (content);
-            }
-
-            
+            string content = ( string ) _focused.Content;
+            _vm.ToSide (content, key);
         }
 
 
@@ -157,7 +224,7 @@ namespace Lister.Views
 
             while (_pointerIsPressed) 
             {
-                _vm.Left (content);
+                _vm.ToSide (content, "Left");
                 Thread.Sleep (100);
             }
         }
@@ -198,22 +265,9 @@ namespace Lister.Views
             _vm.Down (content);
         }
 
+        #endregion MovingByButtons
 
-        internal void ReleaseCaptured ( )
-        {
-            if ( _capturedExists )
-            {
-                _capturedExists = false;
-                Border container = _focused.Parent as Border;
-                container.BorderThickness = new Thickness (0, 0, 0, 0);
-                //_focused.Background = null;
-                _focused = null;
-                zoomOn.IsEnabled = true;
-                zoomOut.IsEnabled = true;
-                Cursor = new Cursor (StandardCursorType.Arrow);
-            }
-        }
-
+        #region Navigation
 
         internal void ToFirst ( object sender, TappedEventArgs args ) 
         {
@@ -246,6 +300,9 @@ namespace Lister.Views
             _vm.ToParticularBadge (text);
         }
 
+        #endregion Navigation
+
+        #region EditFontSize
 
         internal void ReduceFontSize ( object sender, TappedEventArgs args )
         {
@@ -268,6 +325,26 @@ namespace Lister.Views
 
             string content = ( string ) _focused.Content;
             _vm.IncreaseFontSize (content);
+        }
+
+        #endregion EditFontSize
+
+        internal void Split ( object sender, TappedEventArgs args )
+        {
+            
+
+            if ( _focused != null )
+            {
+                Label label = _focused as Label;
+                Border container;
+                string content = ( string ) _focused.Content;
+                List<string> strings = content.SplitBySeparators ();
+
+
+
+            }
+
+            
         }
 
 

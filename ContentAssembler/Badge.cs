@@ -246,13 +246,13 @@ namespace ContentAssembler
             }
         }
         public List<string> IncludedAtoms { get; private set; }
-        public bool IsShiftableBelow { get; private set; }
+        public bool IsSplitable { get; private set; }
         public bool ContentIsSet { get; private set; }
         public bool isNeeded;
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFamily, List<string>? includedAtoms, bool isShiftableBelow )
+                           , double fontSize, string fontFamily, List<string>? includedAtoms, bool isSplitable )
         {
             _content = "";
             ContentIsSet = false;
@@ -265,7 +265,7 @@ namespace ContentAssembler
             FontSize = fontSize;
             FontFamily = fontFamily;
             IncludedAtoms = includedAtoms ?? new List<string> ();
-            IsShiftableBelow = isShiftableBelow;
+            IsSplitable = isSplitable;
             isNeeded = true;
         }
 
@@ -283,7 +283,7 @@ namespace ContentAssembler
             FontSize = source.FontSize;
             FontFamily = source.FontFamily;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
-            IsShiftableBelow = source.IsShiftableBelow;
+            IsSplitable = source.IsSplitable;
             isNeeded = true;
         }
 
@@ -291,7 +291,7 @@ namespace ContentAssembler
         internal TextualAtom Clone () 
         {
             TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFamily,
-                                                                                             IncludedAtoms, IsShiftableBelow);
+                                                                                             IncludedAtoms, IsSplitable);
             return clone;
         }
 

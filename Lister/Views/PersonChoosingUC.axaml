@@ -135,9 +135,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
 								ZIndex="3"
-								Background="Red"
-								PointerPressed="CaptureRunner"
-								PointerMoved="MoveRunner"/>
+								Background="Red"/>
 
 							<Canvas
 								Name="bottomSpan"
@@ -178,22 +176,7 @@
 			Focusable="False"
 			Tapped="DropOrPickUpPersons"
 			Content="v"/>
-		
-		<Label
-			Name="or"
-			Grid.Column="3"
-			HorizontalAlignment="Center"
-			Padding="0,10"
-			Content="ИЛИ" />
-		
-		<Button
-			Name="entirePersonListButton"
-			Grid.Column="4"
-			Height="32"
-		    IsEnabled="False"
-			Tapped="AcceptEntirePersonList"
-			GotFocus="DropOrPickUpPersonsByFocus"
-			Content="Весь список" />
+
 	</Grid>
 	
 	
@@ -285,4 +268,38 @@ Tapped="AcceptEntirePersonList"
 		Height="{Binding  Path = PersonListHeight,  Mode=OneWay}"
 		
 		Height="{Binding   Path = PersonListHeight,  Mode=OneWayToSource}"
+		
+		
+		
+		
+		
+		
+				
+		<Label
+			Name="or"
+			Grid.Column="3"
+			HorizontalAlignment="Center"
+			Padding="0,10"
+			Content="ИЛИ" />
+		
+		<Button
+			Name="entirePersonListButton"
+			Grid.Column="4"
+			Height="32"
+		    IsEnabled="False"
+			Tapped="AcceptEntirePersonList"
+			GotFocus="DropOrPickUpPersonsByFocus"
+			Content="Весь список" />
+			
+			
+			
+			<ColumnDefinition  Width="100" ></ColumnDefinition>
+			<ColumnDefinition  Width="130" ></ColumnDefinition>
+			
+			
+			
+			
+			PointerPressed="CaptureRunner"
+								PointerMoved="MoveRunner"/
+		
 -->

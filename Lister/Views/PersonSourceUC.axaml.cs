@@ -81,7 +81,7 @@ namespace Lister.Views
                                editSourceFile.IsEnabled = true;
 
                                ModernMainView parent = (ModernMainView) this.Parent.Parent;
-                               parent.personChoosing. entirePersonListButton.IsEnabled = true;
+                               //parent.personChoosing. entirePersonListButton.IsEnabled = true;
                                parent.personChoosing. personTextBox.IsReadOnly = false;
                            }
                        }

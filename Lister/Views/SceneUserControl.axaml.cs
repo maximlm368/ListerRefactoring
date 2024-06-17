@@ -68,33 +68,50 @@ namespace Lister.Views
             Controls items = A4.Children;
             ItemsControl itemsContainer = items [ 0 ] as ItemsControl;
 
-            IEnumerable <Visual> lines = itemsContainer.GetVisualChildren ( );
+            IEnumerable <ILogical> lines = itemsContainer.GetLogicalChildren ( );
+            int count = lines.Count ();
 
-            foreach ( Visual line in lines )
+            foreach ( ILogical line in lines )
             {
-                ItemsControl badgeItemsContainer = line as ItemsControl;
+                //ItemsControl badgeItemsContainer = line.LogicalChildren;
 
-                IEnumerable<Visual> badges = badgeItemsContainer.GetVisualChildren ( );
+                //IEnumerable<ILogical> badges = badgeItemsContainer.GetLogicalChildren ();
 
-                foreach ( Visual badge   in   badges )
+                IEnumerable<ILogical> badges = line.GetLogicalChildren ();
+                count = badges.Count ();
+
+                foreach ( ILogical badgeContainer   in   badges )
                 {
-                    Border badgeBorder = badge as Border;
-                    Canvas badgeBase = badgeBorder.Child as Canvas;
-                    ItemsControl textLinesContainer = badgeBase.Children [ 2 ] as ItemsControl;
-                    IEnumerable<Visual> textLines = textLinesContainer.GetVisualChildren ( );
+                    IEnumerable <ILogical> badgesInLine = badgeContainer.GetLogicalChildren ();
+                    count = badgesInLine.Count ();
 
-                    int counter = 0;
-
-                    foreach( var textLine   in   textLines )
+                    foreach ( ILogical badge   in   badgesInLine ) 
                     {
-                        if( counter < 2 )
-                        {
-                            Label familyName = textLine as Label;
-                            familyName.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Right;
-                        }
+                        IEnumerable <Border> badgeBorders = badge.GetLogicalChildren ().OfType<Border> ();
+                        count = badgeBorders.Count ();
+                        Border border = badgeBorders.FirstOrDefault ();
+                        
+                        Canvas badgeBase = border.Child as Canvas;
+                        ItemsControl textLinesContainer = badgeBase.Children [2] as ItemsControl;
+                        IEnumerable<Control> textLines = textLinesContainer.GetTemplateChildren ();
 
-                        counter++;
+                        int counter = 0;
+
+                        foreach ( var textLine in textLines )
+                        {
+                            if ( counter < 2 )
+                            {
+                                Label familyName = textLine as Label;
+                                familyName.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Right;
+                            }
+
+                            counter++;
+                        }
                     }
+
+
+
+                    
 
                     
 

@@ -56,9 +56,11 @@ namespace Lister.ViewModels
             {
                 foreach ( BadgeViewModel badge   in   Badges ) 
                 {
-                    if ( badge.BadgeHeight > maxH ) 
+                    if ( badge.BorderHeight > maxH ) 
                     {
-                        maxH = badge.BadgeHeight;
+                        maxH = badge.BorderHeight;
+                        double fd = badge.BadgeHeight;
+                        int dfddf = 0;
                     }
                 }
 

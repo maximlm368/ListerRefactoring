@@ -42,15 +42,14 @@
 					<ItemsControl
 						Name="lines"
 						Canvas.Top="{Binding  Path = ContentTopOffset,  Mode=OneWay }"
+						Canvas.Left="{Binding  Path = ContentLeftOffset,  Mode=OneWay }"
 						HorizontalAlignment="Left"
-						VerticalAlignment="Top"
 						ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
 
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 
 								<ItemsControl
-									Margin="{Binding  Path = Margin,  Mode=OneWay }"
 									HorizontalAlignment="Left"								
 									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
 
@@ -73,7 +72,8 @@
 							                        
 													<Image
 														Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
-														Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"/>
+														Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"
+														Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
 
 													<ItemsControl
 														ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }">
@@ -269,5 +269,9 @@
                                  />  
                               
                               </ControlTemplate>
+							  
+							  
+							  
+							  Margin="{Binding  Path = Margin,  Mode=OneWay }"
 					
 			-->

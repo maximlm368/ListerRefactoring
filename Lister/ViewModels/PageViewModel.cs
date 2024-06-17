@@ -21,11 +21,13 @@ namespace Lister.ViewModels;
 
 public class PageViewModel : ViewModelBase
 {
+    private static double _contentTopOffset;
+    private static double _contentLeftOffset;
+    internal static Size PageSize { get; private set; }
+
     private int _badgeCount;
     private double _scale;
     private BadgeLine _fillableLine;
-    internal static Size pageSize;
-    internal static double contentTopOffset;
 
     private double pW;
     internal double PageWidth
@@ -77,6 +79,16 @@ public class PageViewModel : ViewModelBase
         }
     }
 
+    private double lO;
+    internal double ContentLeftOffset
+    {
+        get { return lO; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref lO, value, nameof (ContentLeftOffset));
+        }
+    }
+
     private ObservableCollection <BadgeLine> llines;
     internal ObservableCollection <BadgeLine> Lines
     {
@@ -90,8 +102,9 @@ public class PageViewModel : ViewModelBase
 
     static PageViewModel () 
     {
-        pageSize = new Size (794, 1123);
-        contentTopOffset = 20;
+        PageSize = new Size (794, 1123);
+        _contentTopOffset = 20;
+        _contentLeftOffset = 45;
     }
 
 
@@ -100,9 +113,10 @@ public class PageViewModel : ViewModelBase
         Lines = new ObservableCollection<BadgeLine> ();
         _scale = desiredScale;
         _badgeCount = 0;
-        PageWidth = pageSize.Width;
-        PageHeight = pageSize.Height;
-        ContentTopOffset = contentTopOffset;
+        PageWidth = PageSize.Width;
+        PageHeight = PageSize.Height;
+        ContentTopOffset = _contentTopOffset;
+        ContentLeftOffset = _contentLeftOffset;
         double usefullHeight = PageHeight - 20;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
@@ -119,9 +133,10 @@ public class PageViewModel : ViewModelBase
         Lines = new ObservableCollection<BadgeLine> ();
         _scale = 1;
         _badgeCount = page._badgeCount;
-        PageWidth = pageSize.Width;
-        PageHeight = pageSize.Height;
-        ContentTopOffset = contentTopOffset;
+        PageWidth = PageSize.Width;
+        PageHeight = PageSize.Height;
+        ContentTopOffset = _contentTopOffset;
+        ContentLeftOffset = _contentLeftOffset;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -241,6 +256,7 @@ public class PageViewModel : ViewModelBase
         PageHeight *= scaleCoefficient;
         PageWidth *= scaleCoefficient;
         ContentTopOffset *= scaleCoefficient;
+        ContentLeftOffset *= scaleCoefficient;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -257,6 +273,7 @@ public class PageViewModel : ViewModelBase
         PageHeight /= scaleCoefficient;
         PageWidth /= scaleCoefficient;
         ContentTopOffset /= scaleCoefficient;
+        ContentLeftOffset /= scaleCoefficient;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -274,6 +291,7 @@ public class PageViewModel : ViewModelBase
             PageHeight *= _scale;
             PageWidth *= _scale;
             ContentTopOffset *= _scale;
+            ContentLeftOffset *= _scale;
             BorderHeight = PageHeight + 2;
             BorderWidth = PageWidth + 2;
         }

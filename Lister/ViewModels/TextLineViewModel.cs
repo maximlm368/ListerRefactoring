@@ -5,10 +5,13 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Globalization;
 using Avalonia.Media;
 using ReactiveUI;
 using ContentAssembler;
 using QuestPDF.Infrastructure;
+using ExtentionsAndAuxiliary;
+using System.Reflection;
 
 namespace Lister.ViewModels
 {
@@ -57,12 +60,12 @@ namespace Lister.ViewModels
         }
 
         private bool ish;
-        internal bool IsShiftableBelow
+        internal bool IsSplitable
         {
             get { return ish; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ish, value, nameof (IsShiftableBelow));
+                this.RaiseAndSetIfChanged (ref ish, value, nameof (IsSplitable));
             }
         }
 
@@ -76,7 +79,7 @@ namespace Lister.ViewModels
             FontFamily = new FontFamily (text.FontFamily);
             //FontFamily = new FontFamily ("sans-serif");
             Content = text.Content;
-            IsShiftableBelow = text.IsShiftableBelow;
+            IsSplitable = text.IsSplitable;
 
             SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
         }
@@ -89,7 +92,7 @@ namespace Lister.ViewModels
             FontSize = text._dataSource.FontSize;
             FontFamily = new FontFamily (text._dataSource.FontFamily);
             Content = text.Content;
-            IsShiftableBelow = text.IsShiftableBelow;
+            IsSplitable = text.IsSplitable;
 
             SetYourself (text._dataSource.Width, text._dataSource.Height, text._dataSource.TopOffset
                                                                         , text._dataSource.LeftOffset);
@@ -135,7 +138,41 @@ namespace Lister.ViewModels
             {
                 return HorizontalAlignment.Center;
             }
-        } 
+        }
+
+
+        internal void SplitYourself ( )
+        {
+            List<string> strings = Content.SplitBySeparators ();
+            double leftOffset = LeftOffset;
+
+            for ( int index = 0;   index < strings.Count;   index++ )
+            {
+                string processable = strings [index];
+
+                Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+                FormattedText formatted = new FormattedText (processable, CultureInfo.CurrentCulture
+                                                                    , FlowDirection.LeftToRight, face, FontSize, null);
+
+                TextLineViewModel textLine = new TextLineViewModel (_dataSource);
+                textLine.Content = processable;
+                textLine.LeftOffset += formatted.Width;
+
+
+
+
+            }
+        }
+
+
+        internal bool IsCorrect ()
+        {
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+
+            return formatted.Width <= Width;
+        }
     }
 
 

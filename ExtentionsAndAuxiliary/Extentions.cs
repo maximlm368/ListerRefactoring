@@ -70,6 +70,38 @@ namespace ExtentionsAndAuxiliary
         }
 
 
+        public static List<string> SplitBySeparators ( this string str )
+        {
+            List<string> result = new List<string> ();
+            string rest = string.Empty;
+
+            if ( str == null )
+            {
+                return result;
+            }
+
+            int splitedStartIndex = 0;
+            int splitedLength = 2;
+
+            for ( int index = 1;   index < str.Length - 1;   index++ )
+            {
+                if (( str [index] == ' ' )   ||   ( str [index] == '-' ))
+                {
+                    string splited = str.Substring (splitedStartIndex, splitedLength);
+                    rest = str.Substring (index + 1, str.Length - index - 1);
+                    splitedStartIndex = index + 1;
+                    splitedLength = 0;
+                    result.Add (splited);
+                }
+
+                splitedLength++;
+            }
+
+            result.Add (rest);
+            return result;
+        }
+
+
         public static List<string> SeparateIntoMainAndTailViaLastSeparators ( this string str, List<char> separators )
         {
             List<string> result = new List<string> ();

@@ -19,6 +19,7 @@ namespace Lister.ViewModels;
 public class BadgeViewModel : ViewModelBase
 {
     private static Dictionary<string , Bitmap> _pathToImage;
+    private static double _rightSpan = 5;
 
     private const double coefficient = 1.03;
     internal double Scale { get; private set; }
@@ -56,6 +57,26 @@ public class BadgeViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged (ref bH, value, nameof (BadgeHeight));
+        }
+    }
+
+    private double boW;
+    internal double BorderWidth
+    {
+        get { return boW; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref boW, value, nameof (BorderWidth));
+        }
+    }
+
+    private double boH;
+    internal double BorderHeight
+    {
+        get { return boH; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref boH, value, nameof (BorderHeight));
         }
     }
 
@@ -134,8 +155,10 @@ public class BadgeViewModel : ViewModelBase
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;
         BadgeWidth = layout.OutlineSize. Width;
+        BorderWidth = BadgeWidth + 2;
         _widht = BadgeWidth;
         BadgeHeight = layout.OutlineSize. Height;
+        BorderHeight = BadgeHeight + 3;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
@@ -159,7 +182,9 @@ public class BadgeViewModel : ViewModelBase
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
         BadgeWidth = layout.OutlineSize. Width;
+        BorderWidth = BadgeWidth + 2;
         BadgeHeight = layout.OutlineSize. Height;
+        BorderHeight = BadgeHeight + 2;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
@@ -228,6 +253,8 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
+        BorderWidth *= coefficient;
+        BorderHeight *= coefficient;
         Scale *= coefficient;
 
         foreach ( TextLineViewModel line   in   TextLines ) 
@@ -254,6 +281,8 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth /= coefficient;
         BadgeHeight /= coefficient;
+        BorderWidth /= coefficient;
+        BorderHeight /= coefficient;
         Scale /= coefficient;
 
         foreach ( TextLineViewModel line   in   TextLines )
@@ -324,7 +353,7 @@ public class BadgeViewModel : ViewModelBase
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
                 double usefulTextBlockWidth = formatted.Width;
-                bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
+                bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength - _rightSpan );
 
                 if ( ! lineIsOverflow ) 
                 {
@@ -359,7 +388,7 @@ public class BadgeViewModel : ViewModelBase
 
                 List<string> splited = beingProcessedLine.SeparateTail ();
 
-                if ( splited.Count > 0 )
+                if ( (splited.Count > 0)   &&   textAtom.IsSplitable )
                 {
                     beingProcessedLine = splited [0];
                     additionalLine = splited [1] + " " + additionalLine;

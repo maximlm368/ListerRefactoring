@@ -36,9 +36,10 @@ namespace Lister.ViewModels
 {
     public class PersonChoosingViewModel : ViewModelBase
     {
-        private double _withScroll = 454;
-        private double _withoutScroll = 469;
-        private double _upperHeight = 15;
+        private static double _withScroll = 454;
+        private static double _withoutScroll = 469;
+        private static double _upperHeight = 15;
+        private static double _scrollingScratch = 24;
         private double _widthDelta;
         private Timer _timer;
         internal bool ScrollingIsOccured { get; set; }
@@ -400,17 +401,27 @@ namespace Lister.ViewModels
             if ( isDirectionUp )
             {
                 currentPersonsScrollValue += step;
+                double scrollingScratch = 0;
 
-                if ( currentPersonsScrollValue > 24 )
+                if ( VisiblePeople.Count == People.Count )
                 {
-                    currentPersonsScrollValue = 24;
+                    scrollingScratch = _scrollingScratch;
+                }
+                else 
+                {
+                    scrollingScratch = 0;
+                }
+
+                if ( currentPersonsScrollValue > scrollingScratch )
+                {
+                    currentPersonsScrollValue = scrollingScratch;
                 }
 
                 UpRunner ( runnerStep );
             }
             else
             {
-                double itemHeight = 24;
+                double itemHeight = _scrollingScratch;
                 currentPersonsScrollValue -= step;
                 double listHeight = itemHeight * count;
                 double maxScroll = VisibleHeight - listHeight;

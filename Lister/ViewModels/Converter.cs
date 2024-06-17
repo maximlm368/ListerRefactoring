@@ -132,8 +132,8 @@ class ConverterToPdf
                 container.Page (page =>
                 {
                     PageViewModel currentPage = pages [pageNumber];
-                    float width = (float) PageViewModel.pageSize.Width;
-                    float height = (float) PageViewModel.pageSize.Height;
+                    float width = (float) PageViewModel.PageSize.Width;
+                    float height = (float) PageViewModel.PageSize.Height;
 
                     page.Size (width, height, Unit.Point);
                     page.MarginLeft (0, Unit.Point);

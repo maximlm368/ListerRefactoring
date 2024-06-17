@@ -146,6 +146,7 @@ namespace Lister.Views
                 badgeEditor.PassIncorrectBadges (incorrects);
                 badgeEditor.PassBackPoint (ancestorView);
                 owner.Content = badgeEditor;
+                //badgeEditor.Focus ();
             }
         }
 
