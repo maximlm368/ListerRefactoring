@@ -199,13 +199,13 @@ public class BadgeViewModel : ViewModelBase
             TextLines.Add (original);
         }
 
-        //foreach ( ImageViewModel image   in   badge.InsideImages )
+        //foreach ( ImageViewModel image in badge.InsideImages )
         //{
         //    TextLineViewModel original = image.GetDimensionalOriginal ();
         //    TextLines.Add (original);
         //}
 
-        //foreach ( ImageViewModel shape   in   badge.InsideShapes )
+        //foreach ( ImageViewModel shape in badge.InsideShapes )
         //{
         //    TextLineViewModel original = shape.GetDimensionalOriginal ();
         //    TextLines.Add (original);
@@ -262,15 +262,15 @@ public class BadgeViewModel : ViewModelBase
             line.ZoomOn (coefficient);
         }
 
-        foreach ( ImageViewModel image   in   InsideImages )
-        {
-            image.ZoomOn (coefficient);
-        }
+        //foreach ( ImageViewModel image   in   InsideImages )
+        //{
+        //    image.ZoomOn (coefficient);
+        //}
 
-        foreach ( ImageViewModel shape   in   InsideShapes )
-        {
-            shape.ZoomOn (coefficient);
-        }
+        //foreach ( ImageViewModel shape   in   InsideShapes )
+        //{
+        //    shape.ZoomOn (coefficient);
+        //}
 
         _borderThickness *= coefficient;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -290,15 +290,15 @@ public class BadgeViewModel : ViewModelBase
             line.ZoomOut (coefficient);
         }
 
-        foreach ( ImageViewModel image   in   InsideImages )
-        {
-            image.ZoomOut (coefficient);
-        }
+        //foreach ( ImageViewModel image   in   InsideImages )
+        //{
+        //    image.ZoomOut (coefficient);
+        //}
 
-        foreach ( ImageViewModel shape   in   InsideShapes )
-        {
-            shape.ZoomOut (coefficient);
-        }
+        //foreach ( ImageViewModel shape   in   InsideShapes )
+        //{
+        //    shape.ZoomOut (coefficient);
+        //}
 
         _borderThickness /= coefficient;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -331,6 +331,17 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
+    internal void ReplaceTextLine ( TextLineViewModel replaceble, List <TextLineViewModel> replacing )
+    {
+        TextLines.Remove (replaceble);
+
+        foreach ( TextLineViewModel line   in   replacing )
+        {
+            TextLines.Add (line);
+        }
+    }
+
+
     private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
@@ -353,7 +364,7 @@ public class BadgeViewModel : ViewModelBase
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
                 double usefulTextBlockWidth = formatted.Width;
-                bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength - _rightSpan );
+                bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 
                 {
@@ -429,7 +440,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private void SetUpImagesAndGeometryElements ( List<InsideImage> insideImages ) 
+    private void SetUpImagesAndGeometryElements ( List <InsideImage> insideImages ) 
     {
         for ( int index = 0;   index < insideImages.Count;   index++ )
         {

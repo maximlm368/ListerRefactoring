@@ -141,37 +141,54 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SplitYourself ( )
+        internal List <TextLineViewModel> SplitYourself ( List<string> splittedContents, double scale, double layoutWidth )
         {
-            List<string> strings = Content.SplitBySeparators ();
-            double leftOffset = LeftOffset;
+            List <TextLineViewModel> result = new List <TextLineViewModel>();
+            double previousLeftOffset = LeftOffset;
 
-            for ( int index = 0;   index < strings.Count;   index++ )
+            foreach ( string content in splittedContents )
             {
-                string processable = strings [index];
+                TextLineViewModel newLine = new TextLineViewModel (this);
+                newLine.ZoomOn (scale);
+                newLine.ReplaceContent (content);
+                newLine.LeftOffset = previousLeftOffset;
 
-                Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
-                FormattedText formatted = new FormattedText (processable, CultureInfo.CurrentCulture
-                                                                    , FlowDirection.LeftToRight, face, FontSize, null);
-
-                TextLineViewModel textLine = new TextLineViewModel (_dataSource);
-                textLine.Content = processable;
-                textLine.LeftOffset += formatted.Width;
-
-
-
-
+                if ( newLine.LeftOffset >= layoutWidth - 2 ) 
+                {
+                    newLine.LeftOffset = LeftOffset;
+                }
+                
+                newLine.TopOffset = TopOffset;
+                previousLeftOffset += newLine.Width;
+                result.Add (newLine);
             }
+
+            return result;
         }
 
 
-        internal bool IsCorrect ()
-        {
-            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
-            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
-                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+        //internal bool IsCorrect ()
+        //{
+        //    Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+        //    FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+        //                                                        , FlowDirection.LeftToRight, face, FontSize, null);
 
-            return formatted.Width <= Width;
+        //    return formatted.Width <= Width;
+        //}
+
+
+        internal void ReplaceContent ( string content )
+        {
+            if ( content == null ) 
+            {
+                content = string.Empty;
+            }
+
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            FormattedText formatted = new FormattedText (content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            Content = content;
+            Width = formatted.WidthIncludingTrailingWhitespace;
         }
     }
 

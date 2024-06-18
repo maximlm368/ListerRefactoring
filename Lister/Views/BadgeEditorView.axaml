@@ -54,7 +54,7 @@
 				HorizontalContentAlignment="Center"
 				Width="130"
 				Tapped="Split"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = SplitterIsEnable,   Mode=OneWay}" />
 			
 		</Grid>
 

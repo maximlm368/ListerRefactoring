@@ -35,14 +35,17 @@
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
 			SelectionChanged="HandleTemplateChoosing"
-		  ItemsSource="{ Binding   Path = Templates,   Mode = OneWay }">
+			
+		    ItemsSource="{ Binding   Path=Templates,   Mode = OneWay }">
 			
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
 					<Label
 						Padding="0,0,0,0"
 						FontSize="14"
-						Content="{Binding Mode=OneWay}"/>
+						Foreground="{Binding  Path=Color,  Mode=OneWay}"
+						Content="{Binding  Path=Name,  Mode=OneWay}"
+						Tapped="HandleTapping"/>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
 		</ComboBox>

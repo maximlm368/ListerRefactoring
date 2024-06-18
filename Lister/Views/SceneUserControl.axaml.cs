@@ -6,6 +6,7 @@ using Avalonia.VisualTree;
 using Lister.ViewModels;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+using System.Drawing;
 using System.Reactive.Subjects;
 
 namespace Lister.Views
@@ -65,6 +66,8 @@ namespace Lister.Views
 
         internal void CorrectAlignments ( ) 
         {
+            
+
             Controls items = A4.Children;
             ItemsControl itemsContainer = items [ 0 ] as ItemsControl;
 

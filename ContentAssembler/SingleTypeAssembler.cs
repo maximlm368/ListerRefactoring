@@ -21,7 +21,7 @@ namespace ContentAssembler
 
         public List<Person> GetPersons (string? personsFilePath);
 
-        public List<string> GetBadgeModels ( out string problemMessage );
+        public List <TemplateName> GetBadgeModels ( );
 
         public void GeneratePdf ( );
     }
@@ -97,9 +97,9 @@ namespace ContentAssembler
         }
 
 
-        public List<string> GetBadgeModels( out string problemMessage )
+        public List <TemplateName> GetBadgeModels ( )
         {
-            return badgeAppearenceProvider.GetBadgeTemplateNames( out problemMessage );
+            return badgeAppearenceProvider.GetBadgeTemplateNames ( );
         }
 
 

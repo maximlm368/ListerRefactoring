@@ -14,6 +14,7 @@ using Avalonia.Media;
 using System.Globalization;
 using System.Reflection.Metadata;
 using ExtentionsAndAuxiliary;
+using Microsoft.VisualBasic;
 
 namespace Lister.ViewModels
 {
@@ -21,7 +22,8 @@ namespace Lister.ViewModels
     {
         private const double coefficient = 1.1;
         private double _scale = 2.8;
-        private Dictionary<BadgeViewModel, double> _scaleStorage; 
+        private Dictionary<BadgeViewModel, double> _scaleStorage;
+        private TextLineViewModel _splittable;
 
         private List <BadgeViewModel> _incorrectBadges;
         internal List <BadgeViewModel> IncorrectBadges
@@ -123,6 +125,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool sE;
+        internal bool SplitterIsEnable
+        {
+            get { return sE; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref sE, value, nameof (SplitterIsEnable));
+            }
+        }
+
         private string fS;
         internal string FocusedFontSize
         {
@@ -148,35 +160,7 @@ namespace Lister.ViewModels
         {
             _scaleStorage = new Dictionary <BadgeViewModel, double> ();
             FocusedFontSize = string.Empty;
-        }
-
-
-        internal void Split ( string focusedContent )
-        {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
-            {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                
-
-            }
-
-
-
-
+            SplitterIsEnable = false;
         }
 
 
@@ -424,33 +408,6 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ReduceFontSize ( string focusedContent )
-        {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
-            {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.FontSize -= _scale;
-                goalLine.Width -= _scale;
-                goalLine.Height -= _scale;
-                FocusedFontSize = goalLine.FontSize.ToString();
-            }
-        }
-
-
         internal void Focus ( string focusedContent )
         {
             ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
@@ -487,6 +444,51 @@ namespace Lister.ViewModels
         }
 
 
+        internal void EnableSplitting ( string content )
+        {
+            TextLineViewModel line = GetCoincidence (content);
+
+            if ( line == null )
+            {
+                return;
+            }
+
+            List<string> strings = content.SplitBySeparators ();
+            bool lineIsSplitable = ( strings.Count > 1 );
+            //bool lineIsSplitable = ( strings.Count > 1 ) && ( !line.IsCorrect () );
+
+            EnableSplitting (lineIsSplitable, line);
+        }
+
+
+        private void EnableSplitting ( bool lineIsSplitable, TextLineViewModel splittable )
+        {
+            if ( lineIsSplitable )
+            {
+                _splittable = splittable;
+                SplitterIsEnable = true;
+            }
+            else
+            {
+                _splittable = null;
+                SplitterIsEnable = false;
+            }
+        }
+
+
+        internal void Split ( List<string> splittedContents )
+        {
+            if ( _splittable == null )
+            {
+                return;
+            }
+
+            double layoutWidth = BeingProcessedBadge. BadgeWidth;
+            List <TextLineViewModel> splitted = _splittable.SplitYourself (splittedContents, _scale, layoutWidth);
+            BeingProcessedBadge.ReplaceTextLine ( _splittable, splitted );
+        }
+
+
         internal void IncreaseFontSize ( string focusedContent )
         {
             ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
@@ -509,6 +511,33 @@ namespace Lister.ViewModels
                 goalLine.FontSize += _scale;
                 goalLine.Width += _scale;
                 goalLine.Height += _scale;
+                FocusedFontSize = goalLine.FontSize.ToString ();
+            }
+        }
+
+
+        internal void ReduceFontSize ( string focusedContent )
+        {
+            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
+            string lineContent = string.Empty;
+            TextLineViewModel goalLine = null;
+
+            foreach ( TextLineViewModel line in lines )
+            {
+                lineContent = line.Content;
+
+                if ( lineContent == focusedContent )
+                {
+                    goalLine = line;
+                    break;
+                }
+            }
+
+            if ( goalLine != null )
+            {
+                goalLine.FontSize -= _scale;
+                goalLine.Width -= _scale;
+                goalLine.Height -= _scale;
                 FocusedFontSize = goalLine.FontSize.ToString ();
             }
         }

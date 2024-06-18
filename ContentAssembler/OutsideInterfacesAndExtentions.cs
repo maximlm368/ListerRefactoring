@@ -6,7 +6,7 @@
 
         public BadgeLayout GetBadgeLayout ( string badgeTemplateName );
 
-        public List<string> GetBadgeTemplateNames ( out string problemMessage );
+        public List <TemplateName> GetBadgeTemplateNames ( );
 
         public string GetBadgeBackgroundPath ( string templateName );
     }
@@ -17,6 +17,20 @@
         public List<Person> GetPersons(string? personsFilePath);
 
         public string sourcePath {  get; set; }
+    }
+
+
+    public class TemplateName
+    {
+        public string name;
+        public bool isFound;
+
+
+        public TemplateName (string name, bool isFound ) 
+        {
+            this.name = name;
+            this.isFound = isFound;
+        }
     }
 }
 

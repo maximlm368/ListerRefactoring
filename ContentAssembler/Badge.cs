@@ -302,8 +302,8 @@ namespace ContentAssembler
 
             foreach ( char symbol in unNeeded )
             {
-                _content.TrimStart (symbol);
-                _content.TrimEnd (symbol);
+                _content = _content.TrimStart (symbol);
+                _content = _content.TrimEnd (symbol);
             }
         }
 

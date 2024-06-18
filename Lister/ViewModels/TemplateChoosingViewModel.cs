@@ -36,8 +36,8 @@ public class TemplateChoosingViewModel : ViewModelBase
     private ConverterToPdf converter;
     private SceneViewModel _sceneVM;
 
-    private List<string> tF;
-    internal List<string> Templates
+    private List <TemplateViewModel> tF;
+    internal List <TemplateViewModel> Templates
     {
         get
         {
@@ -49,12 +49,12 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
     }
 
-    private string cT;
-    internal string ChosenTemplate
+    private TemplateViewModel cT;
+    internal TemplateViewModel ChosenTemplate
     {
         set
         {
-            bool valueIsSuitable = ( value != null )   &&   ( value != string.Empty );
+            bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
 
             if ( valueIsSuitable )
             {
@@ -68,10 +68,29 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel ) 
+    public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
     {
-        string problems = "";
-        Templates = docAssembler.GetBadgeModels ( out problems );
+        List <TemplateName> templateNames = docAssembler.GetBadgeModels ();
+        
+        List <TemplateViewModel> templates = new List <TemplateViewModel> ();
+
+        foreach ( TemplateName name   in   templateNames ) 
+        {
+            SolidColorBrush brush;
+
+            if ( name.isFound ) 
+            {
+                brush = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+            else 
+            {
+                brush = new SolidColorBrush (new Color (100, 0, 0, 0));
+            }
+
+            templates.Add (new TemplateViewModel (name, brush));
+        }
+
+        Templates = templates;
 
         //if ( ! string.IsNullOrEmpty ( problems ) ) 
         //{
@@ -90,7 +109,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             return;
         }
 
-        _sceneVM.BuildBadges (ChosenTemplate);
+        _sceneVM.BuildBadges (ChosenTemplate. Name);
     }
 
 
@@ -101,7 +120,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             return;
         }
 
-        _sceneVM.BuildSingleBadge (ChosenTemplate);
+        _sceneVM.BuildSingleBadge (ChosenTemplate. Name);
     }
 
 
@@ -162,3 +181,47 @@ public class TemplateChoosingViewModel : ViewModelBase
         return dimensionallyOriginals;
     }
 }
+
+
+
+public class TemplateViewModel : ViewModelBase
+{
+    private TemplateName TemplateName { get; set; }
+
+    private string name;
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref name, value, nameof (Name));
+        }
+    }
+
+    private SolidColorBrush cL;
+    public SolidColorBrush Color
+    {
+        get
+        {
+            return cL;
+        }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref cL, value, nameof (Color));
+        }
+    }
+
+
+    public TemplateViewModel ( TemplateName templateName, SolidColorBrush color )
+    {
+        TemplateName = templateName;
+        Name = templateName.name;
+        Color = color;
+    }
+}
+
+
+//_chosen.Background = new SolidColorBrush (new Color (255, 255, 255, 255));

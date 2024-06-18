@@ -208,7 +208,7 @@ namespace DataGateway
             childSection = section.GetSection ( "Color" );
             string color = GetterFromJson.GetSectionValue ( childSection );
             
-            childSection = section.GetSection ( "ImageGeometricElementName" );
+            childSection = section.GetSection ( "GeometricElementName" );
             string geometricElement = GetterFromJson.GetSectionValue ( childSection );
 
             InsideImage image = 
@@ -217,10 +217,9 @@ namespace DataGateway
         }
 
 
-        public List<string> GetBadgeTemplateNames ( out string problemMessage )
+        public List <TemplateName> GetBadgeTemplateNames ( )
         {
-            List<string> templateNames = new ();
-            problemMessage = "Следующие файлы не существуют:  ";
+            List <TemplateName> templateNames = new ();
 
             foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
@@ -228,16 +227,18 @@ namespace DataGateway
                 string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
                 string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
                 string imagePath = directoryPath + "/" + backgroundPath;
+                bool isFound = true;
 
                 try
                 {
                     using Stream stream = new FileStream ( imagePath , FileMode.Open );
-                    templateNames.Add ( template.Key );
                 }
                 catch ( FileNotFoundException ex )
                 {
-                    problemMessage = problemMessage + imagePath + ", ";
+                    isFound = false;
                 }
+
+                templateNames.Add (new TemplateName (template.Key, isFound));
             }
 
             return templateNames;

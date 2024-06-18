@@ -63,8 +63,8 @@ namespace Lister.ViewModels
 
         public ImageViewModel ( InsideImage image ) 
         {
-            double width = 0;
-            double height = 0;
+            double width = image.Size. Width;
+            double height = image.Size .Height;
 
             bool isImageWorthVisibility = image.ImageKind != ImageType.nothing;
 

@@ -11,17 +11,21 @@ using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using ExtentionsAndAuxiliary;
 using System.Globalization;
+using System.IO;
+using Avalonia.Controls.Shapes;
 
 namespace Lister.Views
 {
     public partial class BadgeEditorView : UserControl
     {
+        private static double _scale = 2.8;
         private static double _widthDelta;
         private static double _heightDelta;
-        ModernMainView _back;
+        private ModernMainView _back;
         private ContentControl _focused;
         private bool _capturedExists;
         private bool _pointerIsPressed;
+        
         private Point _pointerPosition;
         private BadgeEditorViewModel _vm;
 
@@ -62,7 +66,6 @@ namespace Lister.Views
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
             Label label = sender as Label;
-            //label.Background = new SolidColorBrush (new Color (100, 255, 255, 255));
             Border container;
 
             if ( _focused != null )
@@ -76,21 +79,7 @@ namespace Lister.Views
             zoomOn.IsEnabled = true;
             zoomOut.IsEnabled = true;
             string content = ( string ) _focused.Content;
-            List<string> strings = content.SplitBySeparators ();
-
-            TextLineViewModel line = _vm.GetCoincidence(content);
-
-            bool splitterCanBeSplitted = ( strings.Count > 1 )   &&   ( ! line.IsCorrect());
-
-            if ( splitterCanBeSplitted ) 
-            {
-                spliter.IsEnabled = true;
-            }
-            else 
-            {
-                spliter.IsEnabled = false;
-            }
-
+            _vm.EnableSplitting(content);
             container = label.Parent as Border;
             container.BorderThickness = new Thickness(1,1,1,1);
             _vm.Focus (content);
@@ -136,7 +125,6 @@ namespace Lister.Views
                 _capturedExists = false;
                 Border container = _focused.Parent as Border;
                 container.BorderThickness = new Thickness (0, 0, 0, 0);
-                //_focused.Background = null;
                 _focused = null;
                 zoomOn.IsEnabled = false;
                 zoomOut.IsEnabled = false;
@@ -331,20 +319,15 @@ namespace Lister.Views
 
         internal void Split ( object sender, TappedEventArgs args )
         {
-            
-
             if ( _focused != null )
             {
                 Label label = _focused as Label;
                 Border container;
                 string content = ( string ) _focused.Content;
                 List<string> strings = content.SplitBySeparators ();
-
-
-
+                _vm.Split (strings);
+                _focused = null;
             }
-
-            
         }
 
 

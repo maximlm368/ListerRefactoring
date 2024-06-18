@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using ContentAssembler;
 using ExtentionsAndAuxiliary;
@@ -25,6 +26,11 @@ namespace Lister.Views
             _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
 
+
+
+            
+
+
             //TextBlock fdf = new TextBlock ();
             //fdf.FontFamily = new Avalonia.Media.FontFamily ("Arial");
         }
@@ -33,9 +39,43 @@ namespace Lister.Views
         internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
         {
             ComboBox comboBox = ( ComboBox ) sender;
-            _vm.ChosenTemplate = ( string ) comboBox.SelectedItem;
+            TemplateViewModel chosen = ( TemplateViewModel ) comboBox.SelectedItem;
+
+            var dfdfd = chosen.Color.Color.A;
+            int df = 0;
+
+            _vm.ChosenTemplate = chosen;
             TemplateIsSelected = true;
             TryToEnableBadgeCreationButton ();
+        }
+
+
+        internal void HandleTapping ( object sender, TappedEventArgs args )
+        {
+            ComboBox cb = ( ComboBox ) sender;
+            
+
+            TemplateViewModel chosen = ( TemplateViewModel ) cb.SelectedItem;
+
+            if ( cb.IsDropDownOpen ) 
+            {
+                if ( chosen != null   &&   chosen.Color.Color.A == 255 ) 
+                {
+                    int dffd = 0;
+                }
+
+
+
+            }
+            
+            
+
+
+
+            //if (  ) 
+            //{
+            
+            //}
         }
 
 
