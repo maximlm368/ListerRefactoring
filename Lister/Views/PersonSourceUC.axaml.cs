@@ -38,12 +38,18 @@ namespace Lister.Views
         {
             string key = args.Key.ToString ();
 
-            if ( key != "Q" )
+            //if ( key != "Space" )
+            //{
+            //    return;
+            //}
+
+            //ChooseFile ();
+
+            if ( key == "Space" )
             {
-                return;
+                ChooseFile ( );
             }
 
-            ChooseFile ();
         }
 
 
