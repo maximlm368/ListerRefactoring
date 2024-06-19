@@ -67,6 +67,19 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
     }
 
+    private bool isO;
+    internal bool IsOpen
+    {
+        set
+        {
+            this.RaiseAndSetIfChanged (ref isO, value, nameof (isO));
+        }
+        get
+        {
+            return isO;
+        }
+    }
+
 
     public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
     {
@@ -99,6 +112,12 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         _sceneVM = sceneViewModel;
         converter = new ConverterToPdf ();
+    }
+
+
+    internal void HandleTapping ( )
+    {
+        
     }
 
 

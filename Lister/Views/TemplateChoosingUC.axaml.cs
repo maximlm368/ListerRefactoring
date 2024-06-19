@@ -16,6 +16,7 @@ namespace Lister.Views
         private const double coefficient = 1.1;
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
+        private TemplateViewModel _chosen;
         internal bool TemplateIsSelected { get; private set; }
 
 
@@ -25,57 +26,29 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
-
-
-
-            
-
-
-            //TextBlock fdf = new TextBlock ();
-            //fdf.FontFamily = new Avalonia.Media.FontFamily ("Arial");
         }
 
 
-        internal void HandleTemplateChoosing ( object sender, SelectionChangedEventArgs args )
+        internal void HandleClosing ( object sender, EventArgs args )
         {
-            ComboBox comboBox = ( ComboBox ) sender;
-            TemplateViewModel chosen = ( TemplateViewModel ) comboBox.SelectedItem;
+            TemplateViewModel chosen = templateChoosing.SelectedItem as TemplateViewModel;
 
-            var dfdfd = chosen.Color.Color.A;
-            int df = 0;
-
-            _vm.ChosenTemplate = chosen;
-            TemplateIsSelected = true;
-            TryToEnableBadgeCreationButton ();
-        }
-
-
-        internal void HandleTapping ( object sender, TappedEventArgs args )
-        {
-            ComboBox cb = ( ComboBox ) sender;
-            
-
-            TemplateViewModel chosen = ( TemplateViewModel ) cb.SelectedItem;
-
-            if ( cb.IsDropDownOpen ) 
+            if ( chosen == null )
             {
-                if ( chosen != null   &&   chosen.Color.Color.A == 255 ) 
-                {
-                    int dffd = 0;
-                }
-
-
-
+                return;
             }
-            
-            
 
+            bool templateIsIncorrect = (chosen.Color.Color.A == 100);
 
-
-            //if (  ) 
-            //{
-            
-            //}
+            if ( templateIsIncorrect )
+            {
+                int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+            }
+            else 
+            {
+                TemplateIsSelected = true;
+                TryToEnableBadgeCreationButton ();
+            }
         }
 
 

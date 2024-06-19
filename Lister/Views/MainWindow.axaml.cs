@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using ContentAssembler;
 using DataGateway;
 using Lister.ViewModels;
@@ -9,6 +10,8 @@ namespace Lister.Views;
 
 public partial class MainWindow : Window
 {
+    public static IStorageProvider CommonStorageProvider { get; private set; }
+
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
@@ -20,6 +23,8 @@ public partial class MainWindow : Window
     public MainWindow ( )
     {
         InitializeComponent();
+
+        CommonStorageProvider = StorageProvider;
 
         //string badgeTemplatesFolderPath = @"./";
         //IBadgeAppearenceProvider badgeAppearenceDataSource = new BadgeAppearenceProvider (badgeTemplatesFolderPath);

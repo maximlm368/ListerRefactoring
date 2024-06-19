@@ -30,6 +30,7 @@ namespace Lister.Views
         private bool _tapScrollingStarted = false;
         private bool _shiftScrollingStarted = false;
         private double _capturingY;
+        private double _shiftScratch = 0;
         private PersonSourceUserControl _personSourceUC;
         private SceneUserControl _sceneUC;
         private ZoomNavigationUserControl _zoomNavigationUC;
@@ -387,13 +388,43 @@ namespace Lister.Views
         internal void ShiftRunner ( object sender, PointerPressedEventArgs args )
         {
             Canvas activator = sender as Canvas;
+            _shiftScratch = args.GetPosition ( activator ).Y;
+            double limit = 0;
 
-            //args.GetPosition
+
+            if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height )
+            {
+                _vm.StopScrolling ();
+                return;
+            }
 
             bool isDirectionUp = activator.Name == "topSpan";
+
+            if ( isDirectionUp ) 
+            {
+                limit = args.GetPosition (activator).Y;
+            }
+            else 
+            {
+                limit = bottomSpan.Height - args.GetPosition (activator).Y;
+            }
+            
+            
             int count = personList.ItemCount;
             _shiftScrollingStarted = true;
-            _vm.ShiftRunner ( isDirectionUp, count );
+            _vm.ShiftRunner ( isDirectionUp, count, limit );
+        }
+
+
+        internal void ResetY ( object sender, PointerEventArgs args )
+        {
+            Canvas activator = sender as Canvas;
+            _shiftScratch = args.GetPosition (activator).Y;
+
+            if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height ) 
+            {
+                _vm.StopScrolling ();
+            }
         }
 
 
@@ -402,6 +433,7 @@ namespace Lister.Views
             _runnerIsCaptured = true;
             Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
             _capturingY = inRunnerRelativePosition.Y;
+            int dfd = 0;
         }
 
 

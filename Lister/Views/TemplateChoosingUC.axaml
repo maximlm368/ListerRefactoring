@@ -8,7 +8,9 @@
 			 x:DataType="vm:TemplateChoosingViewModel">
 
 	
-	<Grid Name="badgeTemplateChoice" Margin="0,1">
+	<Grid
+		Name="badgeTemplateChoice"
+	    Margin="0,1">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="100"></ColumnDefinition>
 			<ColumnDefinition  Width="233"></ColumnDefinition>
@@ -34,20 +36,21 @@
 			Width="230"
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
-			SelectionChanged="HandleTemplateChoosing"
+			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
 			
-		    ItemsSource="{ Binding   Path=Templates,   Mode = OneWay }">
-			
-			<ComboBox.ItemTemplate>
-				<DataTemplate>
+			DropDownClosed="HandleClosing"
+		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
+
+			<ComboBox.ItemTemplate >
+				<DataTemplate >
 					<Label
 						Padding="0,0,0,0"
 						FontSize="14"
 						Foreground="{Binding  Path=Color,  Mode=OneWay}"
-						Content="{Binding  Path=Name,  Mode=OneWay}"
-						Tapped="HandleTapping"/>
+						Content="{Binding  Path=Name,  Mode=OneWay}"/>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
+			
 		</ComboBox>
 
 		<Button
@@ -92,3 +95,19 @@
 	</Grid>
   
 </UserControl>
+
+
+
+
+<!-- 
+
+<ComboBox.ItemsView>
+				<TextBlock
+					Tapped="HandleTapping"
+					Text="{Binding  Path=Name,  Mode=OneWay}"
+					FontSize="14"
+					Height="24"/>
+			</ComboBox.ItemsView>
+
+
+-->

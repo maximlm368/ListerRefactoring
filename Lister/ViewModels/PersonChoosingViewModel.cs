@@ -199,6 +199,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool tRO;
+        public bool TextboxIsReadOnly
+        {
+            get { return tRO; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref tRO, value, nameof (TextboxIsReadOnly));
+            }
+        }
+
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
@@ -207,6 +217,7 @@ namespace Lister.ViewModels
             VisiblePeople = new ObservableCollection<Person> ();
             People = new List<Person> ();
             PersonsScrollValue = _oneHeight;
+            TextboxIsReadOnly = false;
         }
 
 
@@ -321,10 +332,12 @@ namespace Lister.ViewModels
             if ( IsPersonsScrollable )
             {
                 TimerCallback callBack = new TimerCallback ( ShiftCaller );
+                double limit = 0;
 
-                object [ ] args = new object [ 2 ];
+                object [ ] args = new object [ 3 ];
                 args [ 0 ] = isDirectionUp;
                 args [ 1 ] = count;
+                args [2] = limit;
 
                 _timer = new Timer ( callBack , args, 0 , 100 );
             }
@@ -336,10 +349,28 @@ namespace Lister.ViewModels
             object [ ] directionAndCount = ( object [ ] ) args;
             bool isDirectionUp = ( bool ) directionAndCount [ 0 ];
             int count = ( int ) directionAndCount [ 1 ];
+            double limit = (double) directionAndCount [2];
 
             double step = 24;
             double proportion = VisibleHeight / RealRunnerHeight;
             double runnerStep = step / proportion;
+
+            bool isTimeToStop = false;
+
+            if ( isDirectionUp )
+            {
+                if ( TopSpanHeight < limit )
+                {
+                    StopScrolling ();
+                }
+            }
+            else 
+            {
+                if ( BottomSpanHeight < limit )
+                {
+                    StopScrolling ();
+                }
+            }
 
             CompleteScrolling ( isDirectionUp , step , runnerStep , count );
         }
@@ -347,22 +378,23 @@ namespace Lister.ViewModels
 
         internal void StopScrolling ( )
         {
-            if ( IsPersonsScrollable )
+            if ( _timer != null )
             {
-                _timer.Dispose ( );
+                _timer.Dispose ();
             }
         }
 
 
-        internal void ShiftRunner ( bool isDirectionUp , int count )
+        internal void ShiftRunner ( bool isDirectionUp , int count, double limit )
         {
             if ( IsPersonsScrollable )
             {
                 TimerCallback callBack = new TimerCallback ( ShiftCaller );
 
-                object [ ] args = new object [ 2 ];
+                object [ ] args = new object [ 3 ];
                 args [ 0 ] = isDirectionUp;
                 args [ 1 ] = count;
+                args [2] = limit;
 
                 _timer = new Timer ( callBack , args , 0 , 20 );
             }
@@ -373,7 +405,17 @@ namespace Lister.ViewModels
         {
             double proportion = VisibleHeight / RealRunnerHeight;
             double personsVerticalDelta = runnerVerticalDelta * proportion;
-            bool isDirectionUp = ( runnerVerticalDelta > 0 );
+            bool isDirectionUp = false;
+
+            if ( personsVerticalDelta < 0 ) 
+            {
+                isDirectionUp = true;
+            }
+            else if( personsVerticalDelta > 0 ) 
+            {
+                isDirectionUp = false;
+            }
+
             CompleteScrolling ( isDirectionUp , personsVerticalDelta , runnerVerticalDelta, count );
         }
 
@@ -416,8 +458,10 @@ namespace Lister.ViewModels
                 {
                     currentPersonsScrollValue = scrollingScratch;
                 }
-
-                UpRunner ( runnerStep );
+                else 
+                {
+                    UpRunner (runnerStep);
+                }
             }
             else
             {
@@ -431,8 +475,10 @@ namespace Lister.ViewModels
                 {
                     currentPersonsScrollValue = maxScroll;
                 }
-
-                DownRunner ( runnerStep );
+                else 
+                {
+                    DownRunner (runnerStep);
+                }
             }
 
             PersonsScrollValue = currentPersonsScrollValue;

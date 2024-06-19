@@ -76,7 +76,7 @@
 														Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
 
 													<ItemsControl
-														ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }">
+														ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }" >
 
 														<ItemsControl.ItemsPanel>
 															<ItemsPanelTemplate>
@@ -90,22 +90,19 @@
 															<Style Selector="ItemsControl ContentPresenter">
 																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
 																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
-																<Setter Property="HorizontalContentAlignment"	Value="{Binding Alignment}"/>
                                                             </Style>
 														</ItemsControl.Styles>
-
+														
 														<ItemsControl.ItemTemplate>
-                              
 															<DataTemplate>
 																<Label
 																	Height="{Binding Path = Height,  Mode=OneWay}"
-																	Width="{Binding Path = Width,  Mode=OneWayToSource}"
-																	
+																	Width="{Binding Path = Width,  Mode=OneWay}"
+																	HorizontalContentAlignment="Center"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 										                            Content="{Binding   Path = Content,  Mode=OneWay }" />
 															</DataTemplate>
-
 														</ItemsControl.ItemTemplate>
 
 													</ItemsControl>

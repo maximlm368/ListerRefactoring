@@ -286,10 +286,10 @@
 											<Label
 												VerticalAlignment="Center"
 												Height="{Binding Path = Height,  Mode=OneWay}"
-											
+											    
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-												HorizontalContentAlignment="Center"
+												HorizontalAlignment="Center"
 												DoubleTapped="Focus"
 												PointerPressed="Capture"
 												PointerMoved="Move"

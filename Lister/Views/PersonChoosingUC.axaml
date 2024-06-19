@@ -40,7 +40,7 @@
 				Width="440"
 				FontSize="14"
 				Background="White"
-				IsReadOnly="True"
+				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				KeyDown="DropOrPickUpPersonsOrScroll"
 				KeyUp="HandlePersonListReduction" />
 			
@@ -126,6 +126,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
 								Background="White"
+								PointerMoved="ResetY"
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
@@ -135,7 +136,9 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
 								ZIndex="3"
-								Background="Red"/>
+								Background="Red"
+								PointerPressed="CaptureRunner"
+								PointerMoved="MoveRunner"/>
 
 							<Canvas
 								Name="bottomSpan"
@@ -144,6 +147,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
 								Background="White"
+								PointerMoved="ResetY"
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas

@@ -34,16 +34,15 @@
 			Name="chooseFile"
 			Grid.Column="2"
 			HorizontalAlignment="Center"
-			Tapped="ChooseFile"
-            KeyDown="ChooseFile"
+            Command="{Binding Path=ChooseFile}"
 			Content="Выбрать файл" />
 		
 		<Button
 			Name="editSourceFile"
 			Grid.Column="3"
 			HorizontalAlignment="Center"
-			Tapped="OpenEditor"
-			IsEnabled="False"
+			Command="{Binding Path=OpenEditor}"
+			IsEnabled="{ Binding  Path=EditorIsEnable,  Mode=OneWay }"
 		    Content="Редактировать файл" />
 	</Grid>
 	
