@@ -129,12 +129,9 @@ namespace Lister.ViewModels
 
             if ( valueIsSuitable )
             {
-                //_personChoosingVM.VisiblePeople.Clear ( );
-                //_personChoosingVM.People.Clear ( );
-
                 try
                 {
-                    List<Person> persons = _uniformAssembler.GetPersons (value);
+                    List <Person> persons = _uniformAssembler.GetPersons (value);
                     ObservableCollection <Person> visible = new ();
                     List <Person> people = new ();
 

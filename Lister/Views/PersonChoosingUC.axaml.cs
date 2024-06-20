@@ -15,34 +15,18 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        internal static double AllPersonsSignHeight { get; private set; }
-        
         private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
-        private double _maxPersonListHeight;
-        private double _minPersonListHeight;
-        private double _personContainerHeight;
         private bool _personListIsDropped = false;
-        private bool _allPersonsLableExists = true;
         private Label _chosen;
-        private double _runnerStep = 0;
         private bool _runnerIsCaptured = false;
         private bool _tapScrollingStarted = false;
         private bool _shiftScrollingStarted = false;
         private double _capturingY;
         private double _shiftScratch = 0;
-        private PersonSourceUserControl _personSourceUC;
-        private SceneUserControl _sceneUC;
-        private ZoomNavigationUserControl _zoomNavigationUC;
         private PersonChoosingViewModel _vm;
-        public bool SinglePersonIsSelected { get; private set; }
-        public bool EntirePersonListIsSelected { get; private set; }
-
-
-        static PersonChoosingUserControl ()
-        {
-            AllPersonsSignHeight = 24;
-        }
+        //public bool SinglePersonIsSelected { get; private set; }
+        //public bool EntirePersonListIsSelected { get; private set; }
 
 
         public PersonChoosingUserControl ()
@@ -66,10 +50,9 @@ namespace Lister.Views
 
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
-            EntirePersonListIsSelected = true;
-            SinglePersonIsSelected = false;
-            personTextBox.Text = "Весь список";
-            personTextBox.FontWeight = FontWeight.Bold;
+            //EntirePersonListIsSelected = true;
+            //SinglePersonIsSelected = false;
+            _vm.ChosenPerson = null;
 
             if ( _chosen != null )
             {
@@ -78,7 +61,7 @@ namespace Lister.Views
             }
 
             DropOrPickUp ();
-            TryToEnableBadgeCreationButton ();
+            //TryToEnableBadgeCreationButton ();
         }
 
 
@@ -90,9 +73,7 @@ namespace Lister.Views
 
             if ( reasonExists )
             {
-                visiblePersons.IsVisible = false;
-                _vm.FirstItemHeight = 0;
-                _vm.FirstIsVisible = false;
+                _vm.HideDropDown ();
                 _personListIsDropped = false;
             }
 
@@ -126,27 +107,7 @@ namespace Lister.Views
         internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
         {
             _buttonIsPressed = true;
-
-            if ( _personListIsDropped )
-            {
-                _personListIsDropped = false;
-                visiblePersons.IsVisible = false;
-                _vm.FirstIsVisible = false;
-                _vm.FirstItemHeight = 0;
-            }
-            else
-            {
-                _personListIsDropped = true;
-                visiblePersons.IsVisible = true;
-
-                if ( _allPersonsLableExists )
-                {
-                    _vm.VisiblePeople = _vm.VisiblePeople;
-
-                    //_vm.FirstIsVisible = true;
-                    //_vm.FirstItemHeight = PersonChoosingUserControl.AllPersonsSignHeight;
-                }
-            }
+            DropOrPickUp ();
             personTextBox.Focus (NavigationMethod.Tab);
         }
 
@@ -155,9 +116,7 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                visiblePersons.IsVisible = false;
-                _vm.FirstItemHeight = 0;
-                _vm.FirstIsVisible = false;
+                _vm.HideDropDown ();
                 _personListIsDropped = false;
             }
         }
@@ -203,9 +162,11 @@ namespace Lister.Views
                 }
 
                 _vm.VisiblePeople = foundVisiblePeople;
-                visiblePersons.IsVisible = true;
-                //_allPersonsLableExists = false;
-                _personListIsDropped = true;
+            }
+
+            if ( ! _personListIsDropped ) 
+            {
+                DropOrPickUp ();
             }
         }
 
@@ -237,46 +198,43 @@ namespace Lister.Views
         private void RecoverVisiblePeople ()
         {
             _vm.VisiblePeople = new () { _vm.People };
-            visiblePersons.IsVisible = true;
-            _allPersonsLableExists = true;
         }
 
         #endregion PersonListReduction
 
         #region Choosing
 
-        internal void AcceptFocusedPersonOrScroll ( object sender, KeyEventArgs args )
-        {
-            string key = args.Key.ToString ( );
-            bool keyIsEnter = key == "Return";
+        //internal void AcceptFocusedPersonOrScroll ( object sender, KeyEventArgs args )
+        //{
+        //    string key = args.Key.ToString ( );
+        //    bool keyIsEnter = key == "Return";
 
-            if ( keyIsEnter )
-            {
-                Label focused = ( Label ) sender;
-                focused.Background = new SolidColorBrush ( 3397631 );
-                string chosenName = ( string ) focused.Content;
-                Person chosenPerson = _vm.FindPersonByStringPresentation ( chosenName );
+        //    if ( keyIsEnter )
+        //    {
+        //        Label focused = ( Label ) sender;
+        //        focused.Background = new SolidColorBrush ( 3397631 );
+        //        string chosenName = ( string ) focused.Content;
+        //        Person chosenPerson = _vm.FindPersonByStringPresentation ( chosenName );
 
-                if ( chosenPerson == null )
-                {
-                    return;
-                }
+        //        if ( chosenPerson == null )
+        //        {
+        //            return;
+        //        }
 
-                if ( _chosen != null )
-                {
-                    personTextBox.Text = chosenName;
-                    SinglePersonIsSelected = true;
-                    personTextBox.FontWeight = FontWeight.Normal;
-                    EntirePersonListIsSelected = false;
-                    //_selectionIsChanged = true;
-                    _chosen.Background = new SolidColorBrush ( 16777215 );
-                }
+        //        if ( _chosen != null )
+        //        {
+        //            personTextBox.Text = chosenName;
+        //            SinglePersonIsSelected = true;
+        //            personTextBox.FontWeight = FontWeight.Normal;
+        //            EntirePersonListIsSelected = false;
+        //            _chosen.Background = new SolidColorBrush ( 16777215 );
+        //        }
 
-                _chosen = focused;
-                _vm.ChosenPerson = chosenPerson;
-                DropOrPickUp ( );
-            }
-        }
+        //        _chosen = focused;
+        //        _vm.ChosenPerson = chosenPerson;
+        //        DropOrPickUp ( );
+        //    }
+        //}
 
 
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
@@ -292,63 +250,52 @@ namespace Lister.Views
             _chosen = chosenLabel;
             string chosenName = (string) chosenLabel.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
-            TryToEnableBadgeCreationButton ();
+            //TryToEnableBadgeCreationButton ();
             DropOrPickUp ();
+            _vm.ChosenPerson = chosenPerson;
 
-            if ( chosenName == "Весь список" ) 
-            {
-                EntirePersonListIsSelected = true;
-                SinglePersonIsSelected = false;
-                chosenPerson = null;
-            }
+            //if ( chosenName == "Весь список" ) 
+            //{
+            //    EntirePersonListIsSelected = true;
+            //    SinglePersonIsSelected = false;
+            //    chosenPerson = null;
+            //}
 
-            if ( chosenPerson != null ) 
-            {
-                personTextBox.Text = chosenName;
-                SinglePersonIsSelected = true;
-                personTextBox.FontWeight = FontWeight.Normal;
-                EntirePersonListIsSelected = false;
-                //_selectionIsChanged = true;
-                _vm.ChosenPerson = chosenPerson;
-            }
+            //if ( chosenPerson != null ) 
+            //{
+            //    SinglePersonIsSelected = true;
+            //    EntirePersonListIsSelected = false;
+            //    _vm.ChosenPerson = chosenPerson;
+            //}
         }
 
         #endregion Choosing
 
-        private void TryToEnableBadgeCreationButton ()
-        {
-            ModernMainView parent = this.Parent. Parent  as  ModernMainView;
-            bool templateIsSelected = parent.templateChoosing.TemplateIsSelected;
+        //private void TryToEnableBadgeCreationButton ()
+        //{
+        //    ModernMainView parent = this.Parent. Parent  as  ModernMainView;
+        //    bool templateIsSelected = parent.templateChoosing.TemplateIsSelected;
 
-            bool itsTimeToEnable = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected )   &&   templateIsSelected;
+        //    bool itsTimeToEnable = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected )   &&   templateIsSelected;
 
-            if ( itsTimeToEnable )
-            {
-                TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
-                templateChoosingUC. buildBadges.IsEnabled = true;
-            }
-        }
+        //    if ( itsTimeToEnable )
+        //    {
+        //        TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
+        //        templateChoosingUC. buildBadges.IsEnabled = true;
+        //    }
+        //}
 
 
         private void DropOrPickUp ()
         {
             if ( _personListIsDropped )
             {
-                visiblePersons.IsVisible = false;
-                _vm.FirstItemHeight = 0;
-                _vm.FirstIsVisible = false;
+                _vm.HideDropDown ();
                 _personListIsDropped = false;
             }
             else
             {
-                visiblePersons.IsVisible = true;
-
-                if( _allPersonsLableExists ) 
-                {
-                    _vm.FirstItemHeight = PersonChoosingUserControl.AllPersonsSignHeight;
-                    _vm.FirstIsVisible = true;
-                }
-                
+                _vm.ShowDropDown ();
                 _personListIsDropped = true;
             }
         }
@@ -416,16 +363,16 @@ namespace Lister.Views
         }
 
 
-        internal void ResetY ( object sender, PointerEventArgs args )
-        {
-            Canvas activator = sender as Canvas;
-            _shiftScratch = args.GetPosition (activator).Y;
+        //internal void ResetY ( object sender, PointerEventArgs args )
+        //{
+        //    Canvas activator = sender as Canvas;
+        //    _shiftScratch = args.GetPosition (activator).Y;
 
-            if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height ) 
-            {
-                _vm.StopScrolling ();
-            }
-        }
+        //    if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height ) 
+        //    {
+        //        _vm.StopScrolling ();
+        //    }
+        //}
 
 
         internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
@@ -477,24 +424,6 @@ namespace Lister.Views
             _vm.ScrollByKey ( isDirectionUp, count );
         }
 
-
-        //private double GetInfluentStep ( double step ) 
-        //{
-        //    double wholeStep = Math.Round (step);
-
-        //    if ( wholeStep < 1 )
-        //    {
-        //        _runnerStep += step;
-
-        //        if ( _runnerStep >= 1 )
-        //        {
-        //            step = _runnerStep;
-        //            _runnerStep = 0;
-        //        }
-        //    }
-
-        //    return step;
-        //}
 
         #endregion Scrolling
 

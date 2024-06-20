@@ -59,7 +59,7 @@
 			HorizontalAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Width="96"
-			IsEnabled="False"
+			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
 			Tapped="BuildBadges"
 			Content="Построить"/>
 		

@@ -27,6 +27,7 @@ using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
 using QuestPDF.Helpers;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace Lister.ViewModels;
@@ -35,6 +36,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 {
     private ConverterToPdf converter;
     private SceneViewModel _sceneVM;
+    private PersonChoosingViewModel _personChoosingVM;
 
     private List <TemplateViewModel> tF;
     internal List <TemplateViewModel> Templates
@@ -59,7 +61,10 @@ public class TemplateChoosingViewModel : ViewModelBase
             if ( valueIsSuitable )
             {
                 this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
+                BuildingIsPossible = true;
             }
+
+            TryToEnableBadgeCreationButton ();
         }
         get
         {
@@ -77,6 +82,31 @@ public class TemplateChoosingViewModel : ViewModelBase
         get
         {
             return isO;
+        }
+    }
+
+    private bool isC;
+    internal bool BuildingIsPossible
+    {
+        set
+        {
+            if ( value ) 
+            {
+                if (ChosenTemplate == null) 
+                {
+                    value = false;
+                }
+                else 
+                {
+                    value = true;
+                }
+            }
+
+            this.RaiseAndSetIfChanged (ref isC, value, nameof (BuildingIsPossible));
+        }
+        get
+        {
+            return isC;
         }
     }
 
@@ -118,6 +148,29 @@ public class TemplateChoosingViewModel : ViewModelBase
     internal void HandleTapping ( )
     {
         
+    }
+
+
+    internal void Build ()
+    {
+        if ( ChosenTemplate == null )
+        {
+            return;
+        }
+
+        if ( _personChoosingVM == null )
+        {
+            _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+        }
+
+        if ( _personChoosingVM.EntirePersonListIsSelected ) 
+        {
+            BuildBadges ();
+        }
+        else if( _personChoosingVM.SinglePersonIsSelected )
+        {
+            BuildSingleBadge ();
+        }
     }
 
 
@@ -198,6 +251,22 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         return dimensionallyOriginals;
+    }
+
+
+    private void TryToEnableBadgeCreationButton ()
+    {
+        if ( _personChoosingVM == null )
+        {
+            _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+        }
+
+        bool buildingIsPossible = ( ChosenTemplate != null );
+
+        if ( buildingIsPossible )
+        {
+            BuildingIsPossible = _personChoosingVM.BuildingIsPossible;
+        }
     }
 }
 

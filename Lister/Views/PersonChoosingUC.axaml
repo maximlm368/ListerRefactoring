@@ -41,6 +41,8 @@
 				FontSize="14"
 				Background="White"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
+				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
+				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				KeyDown="DropOrPickUpPersonsOrScroll"
 				KeyUp="HandlePersonListReduction" />
 			
@@ -59,7 +61,7 @@
 						PointerExited="CursorIsOutOfPersonList"
 						PointerWheelChanged="ScrollByWheel"
 						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
-						IsVisible="False">
+						IsVisible="{Binding   Path = DropDownIsVisible,  Mode=OneWay}">
 					
 					<Canvas
 						Name="listFrame"
@@ -94,7 +96,6 @@
 										Background="White"
 										Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 										Tapped="HandleChoosingByTapping"
-										KeyDown="AcceptFocusedPersonOrScroll"
 										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
 
 								</DataTemplate>
@@ -126,7 +127,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
 								Background="White"
-								PointerMoved="ResetY"
+								
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
@@ -147,7 +148,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
 								Background="White"
-								PointerMoved="ResetY"
+								
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
@@ -305,5 +306,10 @@ Tapped="AcceptEntirePersonList"
 			
 			PointerPressed="CaptureRunner"
 								PointerMoved="MoveRunner"/
+								
+								
+								
+								
+								PointerMoved="ResetY"
 		
 -->

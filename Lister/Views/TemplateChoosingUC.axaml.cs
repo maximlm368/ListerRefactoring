@@ -47,43 +47,45 @@ namespace Lister.Views
             else 
             {
                 TemplateIsSelected = true;
-                TryToEnableBadgeCreationButton ();
+                _vm.ChosenTemplate = chosen;
+                //TryToEnableBadgeCreationButton ();
             }
         }
 
 
-        private void TryToEnableBadgeCreationButton ()
-        {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
-            bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
+        //private void TryToEnableBadgeCreationButton ()
+        //{
+        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
+        //    bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
+        //    bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
-            bool itsTimeToEnable = ( singleIsSelected   ||   entireListIsSelected )   &&   TemplateIsSelected;
-            if ( itsTimeToEnable )
-            {
-                buildBadges.IsEnabled = true;
-            }
-        }
+        //    bool itsTimeToEnable = ( singleIsSelected   ||   entireListIsSelected )   &&   TemplateIsSelected;
+        //    if ( itsTimeToEnable )
+        //    {
+        //        buildBadges.IsEnabled = true;
+        //    }
+        //}
 
 
         internal void BuildBadges ( object sender, TappedEventArgs args )
         {
             ModernMainView parent = this.Parent.Parent as ModernMainView;
             SceneUserControl scene = parent.scene;
-            bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
-            bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
-            if ( singleIsSelected )
-            {
-                _vm.BuildSingleBadge ();
-            }
-            if ( entireListIsSelected )
-            {
-                _vm.BuildBadges ();
-            }
+            //bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
+            //bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
 
+            //if ( singleIsSelected )
+            //{
+            //    _vm.BuildSingleBadge ();
+            //}
+            //if ( entireListIsSelected )
+            //{
+            //    _vm.BuildBadges ();
+            //}
+
+            _vm.Build ();
             ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
-
             zoomNavigation.EnableZoom ();
             zoomNavigation.SetEnablePageNavigation ();
             clearBadges.IsEnabled = true;

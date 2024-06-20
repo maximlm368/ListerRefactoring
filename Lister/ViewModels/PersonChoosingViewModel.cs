@@ -31,6 +31,7 @@ using System.Reflection;
 using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
 using Avalonia.Controls.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.ViewModels
 {
@@ -40,9 +41,16 @@ namespace Lister.ViewModels
         private static double _withoutScroll = 469;
         private static double _upperHeight = 15;
         private static double _scrollingScratch = 24;
+        private static string _placeHolder = "Весь список";
+
+        private TemplateChoosingViewModel _templateChoosingVM;
+        private bool _firstMustBe = false;
         private double _widthDelta;
         private Timer _timer;
         internal bool ScrollingIsOccured { get; set; }
+        internal bool SinglePersonIsSelected { get; private set; }
+        internal bool EntirePersonListIsSelected { get; private set; }
+        internal bool BuildingIsPossible { get; private set; }
 
         private double _oneHeight;
         internal List <Person> People { get; set; }
@@ -58,13 +66,48 @@ namespace Lister.ViewModels
             }
         }
 
+        private string pH;
+        internal string PlaceHolder
+        {
+            get { return pH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pH, value, nameof (PlaceHolder));
+            }
+        }
+
+        private FontWeight fW;
+        internal FontWeight FontWeight
+        {
+            get { return fW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fW, value, nameof (FontWeight));
+            }
+        }
+
         private Person cP;
-        internal Person ChosenPerson
+        internal Person ? ChosenPerson
         {
             get { return cP; }
             set
             {
+                if ( value == null ) 
+                {
+                    EntirePersonListIsSelected = true;
+                    SinglePersonIsSelected = false;
+                    FontWeight = FontWeight.Bold;
+                    PlaceHolder = _placeHolder;
+                    TryToEnableBadgeCreation ();
+                    return;
+                }
+
                 this.RaiseAndSetIfChanged ( ref cP , value , nameof ( ChosenPerson ) );
+                EntirePersonListIsSelected = false;
+                SinglePersonIsSelected = true;
+                FontWeight = FontWeight.Normal;
+                PlaceHolder = ChosenPerson. StringPresentation;
+                TryToEnableBadgeCreation ();
             }
         }
 
@@ -186,6 +229,25 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref fV, value, nameof (FirstIsVisible));
+
+                if ( value ) 
+                {
+                    FirstItemHeight = 24;
+                }
+                else 
+                {
+                    FirstItemHeight = 0;
+                }
+            }
+        }
+
+        private bool dV;
+        public bool DropDownIsVisible
+        {
+            get { return dV; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref dV, value, nameof (DropDownIsVisible));
             }
         }
 
@@ -218,6 +280,27 @@ namespace Lister.ViewModels
             People = new List<Person> ();
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = false;
+            FontWeight = FontWeight.Bold;
+        }
+
+
+        internal void HideDropDown ( )
+        {
+            DropDownIsVisible = false;
+            FirstItemHeight = 0;
+            FirstIsVisible = false;
+        }
+
+
+        internal void ShowDropDown ()
+        {
+            DropDownIsVisible = true;
+            FirstIsVisible = _firstMustBe;
+
+            if (_firstMustBe) 
+            {
+                FirstItemHeight = _scrollingScratch;
+            }
         }
 
 
@@ -263,11 +346,14 @@ namespace Lister.ViewModels
             if ( personCount > 4 )
             {
                 ShowScroller ();
+                PlaceHolder = _placeHolder;
+                TryToEnableBadgeCreation ( );
             }
             else
             {
                 FirstItemHeight = 0;
                 FirstIsVisible = false;
+                _firstMustBe = false;
                 VisibleHeight = _oneHeight * personCount;
                 PersonListWidth = _withoutScroll - _widthDelta;
                 ScrollerWidth = 0;
@@ -281,7 +367,7 @@ namespace Lister.ViewModels
         {
             VisibleHeight = _oneHeight * 5;
             PersonListWidth = _withScroll - _widthDelta;
-            ScrollerWidth = 15;
+            ScrollerWidth = _upperHeight;
 
             double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
             double proportion = PersonListHeight / scrollerWorkAreaHeight;
@@ -293,7 +379,7 @@ namespace Lister.ViewModels
                 RunnerHeight = 2;
             }
 
-            RunnerTopCoordinate = 15;
+            RunnerTopCoordinate = _upperHeight;
             TopSpanHeight = 0;
             BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
             IsPersonsScrollable = true;
@@ -303,12 +389,9 @@ namespace Lister.ViewModels
             if ( listIsWhole ) 
             {
                 FirstIsVisible = true;
-                FirstItemHeight = PersonChoosingUserControl.AllPersonsSignHeight;
-
-                if (! ScrollingIsOccured) 
-                {
-                    PersonsScrollValue = PersonChoosingUserControl.AllPersonsSignHeight;
-                }
+                _firstMustBe = true;
+                FirstItemHeight = _scrollingScratch;
+                PersonsScrollValue = _scrollingScratch;
             }
         }
 
@@ -407,13 +490,15 @@ namespace Lister.ViewModels
             double personsVerticalDelta = runnerVerticalDelta * proportion;
             bool isDirectionUp = false;
 
-            if ( personsVerticalDelta < 0 ) 
+            if ( personsVerticalDelta > 0 ) 
             {
                 isDirectionUp = true;
             }
-            else if( personsVerticalDelta > 0 ) 
+            else if( personsVerticalDelta < 0 ) 
             {
                 isDirectionUp = false;
+                personsVerticalDelta = personsVerticalDelta * ( -1 );
+                runnerVerticalDelta = runnerVerticalDelta * ( -1 );
             }
 
             CompleteScrolling ( isDirectionUp , personsVerticalDelta , runnerVerticalDelta, count );
@@ -443,25 +528,14 @@ namespace Lister.ViewModels
             if ( isDirectionUp )
             {
                 currentPersonsScrollValue += step;
-                double scrollingScratch = 0;
-
-                if ( VisiblePeople.Count == People.Count )
+                double scrollingLimit = GetScrollLimit ();
+                
+                if ( currentPersonsScrollValue > scrollingLimit )
                 {
-                    scrollingScratch = _scrollingScratch;
-                }
-                else 
-                {
-                    scrollingScratch = 0;
+                    currentPersonsScrollValue = scrollingLimit;
                 }
 
-                if ( currentPersonsScrollValue > scrollingScratch )
-                {
-                    currentPersonsScrollValue = scrollingScratch;
-                }
-                else 
-                {
-                    UpRunner (runnerStep);
-                }
+                UpRunner (runnerStep);
             }
             else
             {
@@ -475,14 +549,25 @@ namespace Lister.ViewModels
                 {
                     currentPersonsScrollValue = maxScroll;
                 }
-                else 
-                {
-                    DownRunner (runnerStep);
-                }
+                
+                DownRunner (runnerStep);
             }
 
             PersonsScrollValue = currentPersonsScrollValue;
             ScrollingIsOccured = true;
+        }
+
+
+        private double GetScrollLimit () 
+        {
+            double scrollingLimit = 0;
+            
+            if ( VisiblePeople.Count == People.Count )
+            {
+                scrollingLimit = _scrollingScratch;
+            }
+
+            return scrollingLimit;
         }
 
 
@@ -542,6 +627,24 @@ namespace Lister.ViewModels
         }
 
         #endregion Scrolling
+
+
+        private void TryToEnableBadgeCreation ()
+        {
+            if ( _templateChoosingVM == null ) 
+            {
+                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+            }
+
+            BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected);
+
+            if ( BuildingIsPossible )
+            {
+                _templateChoosingVM.BuildingIsPossible = true;
+            }
+
+            int df = 0;
+        }
     }
 }
 

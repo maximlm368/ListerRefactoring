@@ -40,6 +40,13 @@ namespace Lister.Views
         }
 
 
+        internal void Splitttt ( object sender, TappedEventArgs args )
+        {
+            Label label = sender as Label;
+            label.Content = "dfffdfddfdf";
+        }
+
+
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
             workArea.Width -= widthDifference;

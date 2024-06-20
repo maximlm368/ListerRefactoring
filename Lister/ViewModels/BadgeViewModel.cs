@@ -20,6 +20,8 @@ public class BadgeViewModel : ViewModelBase
 {
     private static Dictionary<string , Bitmap> _pathToImage;
     private static double _rightSpan = 5;
+    private static string _correctness = "correct";
+    private static string _incorrectness = "incorrect";
 
     private const double coefficient = 1.03;
     internal double Scale { get; private set; }
@@ -121,27 +123,17 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    //private double cT;
-    //internal double CanvasTop
-    //{
-    //    get { return cT; }
-    //    set
-    //    {
-    //        this.RaiseAndSetIfChanged (ref cT, value, nameof (CanvasTop));
-    //    }
-    //}
-
-    //private double cL;
-    //internal double CanvasLeft
-    //{
-    //    get { return cL; }
-    //    set
-    //    {
-    //        this.RaiseAndSetIfChanged (ref cL, value, nameof (CanvasLeft));
-    //    }
-    //}
-
     internal bool IsCorrect { get; private set; }
+
+    private string cr;
+    internal string Correctness
+    {
+        get { return cr; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref cr, value, nameof (Correctness));
+        }
+    }
 
 
     static BadgeViewModel ( )
@@ -164,6 +156,7 @@ public class BadgeViewModel : ViewModelBase
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
+        Correctness = _correctness;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -189,6 +182,7 @@ public class BadgeViewModel : ViewModelBase
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
+        Correctness = _correctness;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -412,7 +406,8 @@ public class BadgeViewModel : ViewModelBase
                     atom.Content = beingProcessedLine;
                     TextLineViewModel textLine = new TextLineViewModel (atom);
                     TextLines.Add (textLine);
-                    this.IsCorrect = false;
+                    IsCorrect = false;
+                    Correctness = _incorrectness;
                     break;
                 }
             }

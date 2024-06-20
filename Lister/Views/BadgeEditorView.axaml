@@ -209,21 +209,43 @@
 		   Background="AntiqueWhite">
 
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="100" ></ColumnDefinition>
+				<ColumnDefinition Width="700" ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
-			<Grid.RowDefinitions>
-				<RowDefinition></RowDefinition>
-			</Grid.RowDefinitions>
+			<ItemsControl
+				Name="badges"
+				Grid.Column="0"
+				Width="100"
+				HorizontalAlignment="Left"
+				ItemsSource="{Binding  Path=IncorrectBadges,  Mode=OneWay}">
+				
+				
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Border
+							BorderBrush="Blue"
+							BorderThickness="1">
+
+							<Label
+								FontSize="20"
+								Width="100"
+								Content="{Binding  Path=Correctness,  Mode=OneWay}"
+								Tapped="Splitttt"/>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+			
+			
+			
 
 			<Border
 				Name="workArea"
 				HorizontalAlignment="Left"
-				Margin="18,0"
-				Width="760"
+				Width="680"
 				Height="373"
-				Grid.Column="0"
-				Grid.Row="0"
+				Grid.Column="1"
 				BorderBrush="Brown"
 				Background="AliceBlue"
 				BorderThickness="1">
