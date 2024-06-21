@@ -20,10 +20,10 @@ namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
-        private const double coefficient = 1.1;
         private double _scale = 2.8;
         private Dictionary<BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
+        private TextLineViewModel _focusedLine;
 
         private List <BadgeViewModel> _incorrectBadges;
         internal List <BadgeViewModel> IncorrectBadges
@@ -45,13 +45,28 @@ namespace Lister.ViewModels
                     return;
                 }
 
-                BadgeViewModel beingPrecessed = value [0];
-                _scaleStorage.Add (beingPrecessed, beingPrecessed.Scale);
-                SetStandartScale (beingPrecessed);
-                beingPrecessed.ZoomOn (_scale);
-                beingPrecessed.Show ();
-                BeingProcessedBadge = beingPrecessed;
-                BeingProcessedNumber = 1;
+                SetBeingProcessed (value);
+                SetIcons ();
+            }
+        }
+
+        private ObservableCollection <BadgeCorrectnessViewModel> cL;
+        internal ObservableCollection <BadgeCorrectnessViewModel> CorrectnessIcons
+        {
+            get { return cL; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cL, value, nameof (CorrectnessIcons));
+            }
+        }
+
+        private BadgeCorrectnessViewModel bpI;
+        internal BadgeCorrectnessViewModel ActiveIcon
+        {
+            get { return bpI; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bpI, value, nameof (ActiveIcon));
             }
         }
 
@@ -161,13 +176,18 @@ namespace Lister.ViewModels
             _scaleStorage = new Dictionary <BadgeViewModel, double> ();
             FocusedFontSize = string.Empty;
             SplitterIsEnable = false;
+            CorrectnessIcons = new ObservableCollection<BadgeCorrectnessViewModel> ();
         }
 
+        #region Navigation
 
         internal void ToFirst ( )
         {
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = IncorrectBadges [0];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            ActiveIcon = CorrectnessIcons [0];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
             BeingProcessedNumber = 1;
@@ -181,6 +201,9 @@ namespace Lister.ViewModels
         {
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = IncorrectBadges [BeingProcessedNumber - 2];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            ActiveIcon = CorrectnessIcons [BeingProcessedNumber - 2];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
             BeingProcessedNumber--;
@@ -194,6 +217,9 @@ namespace Lister.ViewModels
         {
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = IncorrectBadges [BeingProcessedNumber];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            ActiveIcon = CorrectnessIcons [BeingProcessedNumber];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
             BeingProcessedNumber++;
@@ -207,6 +233,9 @@ namespace Lister.ViewModels
         {
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = IncorrectBadges [IncorrectBadges. Count - 1];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            ActiveIcon = CorrectnessIcons [CorrectnessIcons. Count - 1];
+            ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
             BeingProcessedNumber = IncorrectBadges. Count;
@@ -230,6 +259,14 @@ namespace Lister.ViewModels
 
                 BeingProcessedBadge.Hide ();
                 BeingProcessedBadge = IncorrectBadges [number - 1];
+
+                if ( ActiveIcon != null ) 
+                {
+                    ActiveIcon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+                }
+
+                ActiveIcon = CorrectnessIcons [number - 1];
+                ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
                 AddToStorage ();
                 BeingProcessedBadge.Show ();
                 BeingProcessedNumber = number;
@@ -244,6 +281,7 @@ namespace Lister.ViewModels
             }
         }
 
+        #endregion
 
         private void AddToStorage ( )
         {
@@ -263,6 +301,7 @@ namespace Lister.ViewModels
             }
         }
 
+        #region Moving
 
         internal void MoveCaptured ( string capturedContent, Point delta )
         {
@@ -283,11 +322,6 @@ namespace Lister.ViewModels
 
             if ( goalLine != null ) 
             {
-                //FormattedText formatted = new FormattedText (lineContent, CultureInfo.CurrentCulture
-                //                                           , FlowDirection.LeftToRight, Typeface.Default
-                //                                           , goalLine.FontSize, null);
-
-                //goalLine.Width = formatted.Width * coefficient;
                 goalLine.TopOffset -= delta.Y;
                 goalLine.LeftOffset -= delta.X;
             } 
@@ -296,7 +330,7 @@ namespace Lister.ViewModels
 
         internal void ToSide ( string focusedContent, string direction )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
+            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
             string lineContent = string.Empty;
             TextLineViewModel goalLine = null;
 
@@ -323,109 +357,106 @@ namespace Lister.ViewModels
                     goalLine.LeftOffset += _scale;
                 }
 
-                if ( direction == "Top" )
+                if ( direction == "Up" )
                 {
                     goalLine.TopOffset -= _scale;
                 }
 
-                if ( direction == "Bottom" )
+                if ( direction == "Down" )
                 {
                     goalLine.TopOffset += _scale;
                 }
+
+                BeingProcessedBadge.CheckCorrectness ();
+                ResetActiveIcon ();
             }
         }
 
 
-        internal void Right ( string focusedContent )
+        internal void Left ( )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
+            if ( _focusedLine != null )
             {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.LeftOffset += _scale;
+                _focusedLine.LeftOffset -= _scale;
             }
         }
 
 
-        internal void Up ( string focusedContent )
+        internal void Right ( )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
+            if ( _focusedLine != null )
             {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.TopOffset -= _scale;
+                _focusedLine.LeftOffset += _scale;
             }
         }
 
 
-        internal void Down ( string focusedContent )
+        internal void Up ( )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
+            if ( _focusedLine != null )
             {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.TopOffset += _scale;
+                _focusedLine.TopOffset -= _scale;
             }
         }
 
+
+        internal void Down ( )
+        {
+            if ( _focusedLine != null )
+            {
+                _focusedLine.TopOffset += _scale;
+            }
+        }
+        #endregion
 
         internal void Focus ( string focusedContent )
         {
             ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
             string lineContent = string.Empty;
-            TextLineViewModel goalLine = GetCoincidence (focusedContent);
+            _focusedLine = GetCoincidence (focusedContent);
 
-            if ( goalLine != null )
+            if ( _focusedLine != null )
             {
-                FocusedFontSize = goalLine.FontSize.ToString ();
+                FocusedFontSize = _focusedLine.FontSize.ToString ();
                 MoversAreEnable = true;
-                //FocusedBorderThickness = new Thickness (1, 1, 1, 1);
+                BeingProcessedBadge. FocusedLine = _focusedLine;
             }
         }
 
 
-        internal TextLineViewModel ? GetCoincidence ( string focusedContent )
+        internal void ReleaseCaptured ( )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
+            if ( _focusedLine != null )
+            {
+                _focusedLine = null;
+            }
+
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
+        }
+
+
+        private void ResetActiveIcon ()
+        {
+            if ( BeingProcessedBadge.IsCorrect )
+            {
+                CorrectnessIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
+                CorrectnessIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+            else
+            {
+                if ( CorrectnessIcons [BeingProcessedNumber - 1].Correctness )
+                {
+                    CorrectnessIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false);
+                    CorrectnessIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                }
+            }
+        }
+
+
+        private TextLineViewModel ? GetCoincidence ( string focusedContent )
+        {
+            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge. TextLines;
             string lineContent = string.Empty;
             TextLineViewModel goalLine = null;
 
@@ -488,6 +519,7 @@ namespace Lister.ViewModels
             BeingProcessedBadge.ReplaceTextLine ( _splittable, splitted );
         }
 
+        #region FontSizeChange
 
         internal void IncreaseFontSize ( string focusedContent )
         {
@@ -541,7 +573,9 @@ namespace Lister.ViewModels
                 FocusedFontSize = goalLine.FontSize.ToString ();
             }
         }
+        #endregion
 
+        #region Scale
 
         internal void SetOriginalScale ( )
         {
@@ -581,7 +615,7 @@ namespace Lister.ViewModels
                 beingPrecessed.ZoomOut (scale);
             }
         }
-
+        #endregion
 
         private void SetEnableBadgeNavigation ()
         {
@@ -621,10 +655,40 @@ namespace Lister.ViewModels
         }
 
 
-        //internal void ReleaseCaptured ( )
-        //{
-        //    BeingProcessedBadge.TextLines [0].TopOffset -= delta.Y;
-        //    BeingProcessedBadge.TextLines [0].LeftOffset -= delta.X;
-        //}
+        private void SetBeingProcessed ( List<BadgeViewModel> incorrectBadges )
+        {
+            BadgeViewModel beingPrecessed = incorrectBadges [0];
+            _scaleStorage.Add (beingPrecessed, beingPrecessed.Scale);
+            SetStandartScale (beingPrecessed);
+            beingPrecessed.ZoomOn (_scale);
+            beingPrecessed.Show ();
+            BeingProcessedBadge = beingPrecessed;
+            BeingProcessedNumber = 1;
+        }
+
+
+        private void SetIcons (  )
+        {
+            if( (IncorrectBadges != null)   &&   (IncorrectBadges. Count > 0) ) 
+            {
+                for ( int index = 0;   index < IncorrectBadges. Count;   index++ ) 
+                {
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (IncorrectBadges [index].IsCorrect);
+                    CorrectnessIcons.Add (icon);
+                    icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+
+                    //bool metBeingProcessed = IncorrectBadges [index].Equals (BeingProcessedBadge);
+
+                    //if ( metBeingProcessed ) 
+                    //{
+                    //    ActiveIcon = icon;
+                    //    icon.BorderColor = new SolidColorBrush (new Color (155, 0, 0, 255));
+                    //}
+                }
+
+                CorrectnessIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+        }
+
     }
 }

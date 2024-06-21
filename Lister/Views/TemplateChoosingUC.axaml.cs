@@ -48,41 +48,14 @@ namespace Lister.Views
             {
                 TemplateIsSelected = true;
                 _vm.ChosenTemplate = chosen;
-                //TryToEnableBadgeCreationButton ();
             }
         }
-
-
-        //private void TryToEnableBadgeCreationButton ()
-        //{
-        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
-        //    bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
-        //    bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
-
-        //    bool itsTimeToEnable = ( singleIsSelected   ||   entireListIsSelected )   &&   TemplateIsSelected;
-        //    if ( itsTimeToEnable )
-        //    {
-        //        buildBadges.IsEnabled = true;
-        //    }
-        //}
 
 
         internal void BuildBadges ( object sender, TappedEventArgs args )
         {
             ModernMainView parent = this.Parent.Parent as ModernMainView;
             SceneUserControl scene = parent.scene;
-
-            //bool singleIsSelected = parent.personChoosing.SinglePersonIsSelected;
-            //bool entireListIsSelected = parent.personChoosing.EntirePersonListIsSelected;
-
-            //if ( singleIsSelected )
-            //{
-            //    _vm.BuildSingleBadge ();
-            //}
-            //if ( entireListIsSelected )
-            //{
-            //    _vm.BuildBadges ();
-            //}
 
             _vm.Build ();
             ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
@@ -91,8 +64,6 @@ namespace Lister.Views
             clearBadges.IsEnabled = true;
             save.IsEnabled = true;
             print.IsEnabled = true;
-
-            //scene.CorrectAlignments ( );
         }
 
 
@@ -168,42 +139,3 @@ namespace Lister.Views
 
     }
 }
-
-
-
-//internal void PassNeighbours ( PersonSourceUserControl personSource, PersonChoosingUserControl personChoosing
-//                             , ZoomNavigationUserControl zoomNavigation, SceneUserControl scene )
-//{
-//    _personChoosing = personChoosing;
-//    _personSource = personSource;
-//    _scene = scene;
-//    _zoomNavigation = zoomNavigation;
-//}
-
-
-//private PersonSourceUserControl _personSource;
-//private ZoomNavigationUserControl _zoomNavigation;
-//private SceneUserControl _scene;
-//private PersonChoosingUserControl _personChoosing;
-
-//private bool _singlePersonIsSelected = false;
-//private bool _entirePersonListIsSelected = false;
-
-//private bool personListIsDropped = false;
-//private bool templateListIsDropped = false;
-//private bool personSelectionGotFocus = false;
-//private bool textStackIsMesuared = false;
-//private bool openedViaButton = false;
-//private bool cursorIsOverPersonList = false;
-//private bool selectionIsChanged = false;
-//private Window owner;
-//private Person selectedPerson;
-//private ushort maxScalability;
-//private ushort minScalability;
-//private short scalabilityDepth;
-//private readonly short scalabilityStep;
-//private short maxDepth;
-//private short minDepth;
-//private double personContainerHeight;
-//private double maxPersonListHeight;
-//private double minPersonListHeight;

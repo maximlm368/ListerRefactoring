@@ -74,7 +74,7 @@ namespace Lister.ViewModels
             options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
             options.Title = "Open Text File";
             options.AllowMultiple = false;
-            Task<IReadOnlyList<IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
+            Task <IReadOnlyList <IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
             chosenFile.ContinueWith

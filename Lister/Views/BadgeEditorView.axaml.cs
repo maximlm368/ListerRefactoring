@@ -25,9 +25,9 @@ namespace Lister.Views
         private ContentControl _focused;
         private bool _capturedExists;
         private bool _pointerIsPressed;
-        
         private Point _pointerPosition;
         private BadgeEditorViewModel _vm;
+
 
         public BadgeEditorView ()
         {
@@ -36,7 +36,8 @@ namespace Lister.Views
             _vm = DataContext as BadgeEditorViewModel;
             workArea.Width -= _widthDelta;
             workArea.Height -= _heightDelta;
-            //this.KeyDown += ToSide;
+            slider.Height -= _heightDelta;
+            left.Focus ();
         }
 
 
@@ -51,6 +52,7 @@ namespace Lister.Views
         {
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
+            slider.Height -= heightDifference;
             _widthDelta += widthDifference;
             _heightDelta += heightDifference;
         }
@@ -90,6 +92,7 @@ namespace Lister.Views
             container = label.Parent as Border;
             container.BorderThickness = new Thickness(1,1,1,1);
             _vm.Focus (content);
+            left.Focus ();
             Cursor = new Cursor(StandardCursorType.SizeAll);
         }
 
@@ -137,10 +140,10 @@ namespace Lister.Views
                 zoomOut.IsEnabled = false;
                 spliter.IsEnabled = false;
                 Cursor = new Cursor (StandardCursorType.Arrow);
+                _vm.ReleaseCaptured ();
             }
         }
-
-        #endregion CapturingAndMovingByMouse
+        #endregion
 
         #region Cursor
 
@@ -171,27 +174,9 @@ namespace Lister.Views
             Cursor = new Cursor (StandardCursorType.Arrow);
         }
 
-        #endregion Cursor
+        #endregion
 
         #region MovingByButtons
-
-        internal void StopConstantly ( object sender, PointerReleasedEventArgs args )
-        {
-            _pointerIsPressed = false;
-        }
-
-
-        internal void Left ( object sender, PointerPressedEventArgs args )
-        {
-            if ( _focused == null ) 
-            {
-                return;
-            }
-
-            string content = (string) _focused.Content;
-            _vm.ToSide ( content, "Left" );
-        }
-
 
         internal void ToSide ( object sender, KeyEventArgs args )
         {
@@ -205,88 +190,9 @@ namespace Lister.Views
             string content = ( string ) _focused.Content;
             _vm.ToSide (content, key);
         }
-
-
-        internal void LeftConstantly ( object sender, PointerPressedEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            _pointerIsPressed = true;
-            string content = ( string ) _focused.Content;
-
-            while (_pointerIsPressed) 
-            {
-                _vm.ToSide (content, "Left");
-                Thread.Sleep (100);
-            }
-        }
-
-
-        internal void Right ( object sender, TappedEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            string content = ( string ) _focused.Content;
-            _vm.Right (content);
-        }
-
-
-        internal void Up ( object sender, TappedEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            string content = ( string ) _focused.Content;
-            _vm.Up (content);
-        }
-
-
-        internal void Down ( object sender, TappedEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            string content = ( string ) _focused.Content;
-            _vm.Down (content);
-        }
-
-        #endregion MovingByButtons
+        #endregion
 
         #region Navigation
-
-        internal void ToFirst ( object sender, TappedEventArgs args ) 
-        {
-            _vm.ToFirst ();
-        }
-
-
-        internal void ToPrevious ( object sender, TappedEventArgs args )
-        {
-            _vm.ToPrevious ();
-        }
-
-
-        internal void ToNext ( object sender, TappedEventArgs args )
-        {
-            _vm.ToNext ();
-        }
-
-
-        internal void ToLast ( object sender, TappedEventArgs args )
-        {
-            _vm.ToLast ();
-        }
-
 
         internal void ToParticularBadge ( object sender, TextChangedEventArgs args )
         {
@@ -295,7 +201,7 @@ namespace Lister.Views
             _vm.ToParticularBadge (text);
         }
 
-        #endregion Navigation
+        #endregion
 
         #region EditFontSize
 
@@ -321,8 +227,7 @@ namespace Lister.Views
             string content = ( string ) _focused.Content;
             _vm.IncreaseFontSize (content);
         }
-
-        #endregion EditFontSize
+        #endregion
 
         internal void Split ( object sender, TappedEventArgs args )
         {
@@ -350,27 +255,27 @@ namespace Lister.Views
 
 
 
-    public class EnumerableLabel : Label 
-    {
-        public static readonly DirectProperty<EnumerableLabel, int> IdProperty =
-            AvaloniaProperty.RegisterDirect<EnumerableLabel, int>
-            (
-               nameof (Id),
-               o => o.Id,
-               ( o, v ) => o.Id = v
-            );
+    //public class EnumerableLabel : Label 
+    //{
+    //    public static readonly DirectProperty<EnumerableLabel, int> IdProperty =
+    //        AvaloniaProperty.RegisterDirect<EnumerableLabel, int>
+    //        (
+    //           nameof (Id),
+    //           o => o.Id,
+    //           ( o, v ) => o.Id = v
+    //        );
 
-        private int _id = 0;
+    //    private int _id = 0;
 
-        public int Id
-        {
-            get { return _id; }
-            set { SetAndRaise (IdProperty, ref _id, value); }
-        }
-
-
-        public EnumerableLabel () : base () { }
+    //    public int Id
+    //    {
+    //        get { return _id; }
+    //        set { SetAndRaise (IdProperty, ref _id, value); }
+    //    }
 
 
-    }
+    //    public EnumerableLabel () : base () { }
+
+
+    //}
 }

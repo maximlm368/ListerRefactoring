@@ -340,30 +340,34 @@ namespace Lister.ViewModels
 
         private void SetPersonList ( ) 
         {
-            int personCount = VisiblePeople. Count;
-            PersonListHeight = _oneHeight * personCount;
+            if ( VisiblePeople != null   &&   VisiblePeople.Count > 0 )
+            {
+                int personCount = VisiblePeople. Count;
+                PersonListHeight = _oneHeight * personCount;
 
-            if ( personCount > 4 )
-            {
-                ShowScroller ();
-                PlaceHolder = _placeHolder;
-                TryToEnableBadgeCreation ( );
-            }
-            else
-            {
-                FirstItemHeight = 0;
-                FirstIsVisible = false;
-                _firstMustBe = false;
-                VisibleHeight = _oneHeight * personCount;
-                PersonListWidth = _withoutScroll - _widthDelta;
-                ScrollerWidth = 0;
-                IsPersonsScrollable = false;
-                PersonsScrollValue = 0;
+                if ( personCount > 4 )
+                {
+                    SetScrollerIfShould ();
+                    PlaceHolder = _placeHolder;
+                }
+                else
+                {
+                    FirstItemHeight = 0;
+                    FirstIsVisible = false;
+                    _firstMustBe = false;
+                    VisibleHeight = _oneHeight * personCount;
+                    PersonListWidth = _withoutScroll - _widthDelta;
+                    ScrollerWidth = 0;
+                    IsPersonsScrollable = false;
+                    PersonsScrollValue = 0;
+                }
+
+                TryToEnableBadgeCreation ();
             }
         }
 
 
-        private void ShowScroller () 
+        private void SetScrollerIfShould () 
         {
             VisibleHeight = _oneHeight * 5;
             PersonListWidth = _withScroll - _widthDelta;
@@ -392,6 +396,7 @@ namespace Lister.ViewModels
                 _firstMustBe = true;
                 FirstItemHeight = _scrollingScratch;
                 PersonsScrollValue = _scrollingScratch;
+                EntirePersonListIsSelected = true;
             }
         }
 
@@ -631,35 +636,22 @@ namespace Lister.ViewModels
 
         private void TryToEnableBadgeCreation ()
         {
-            if ( _templateChoosingVM == null ) 
+            if ( VisiblePeople != null   &&   VisiblePeople.Count > 0 ) 
             {
-                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+                if ( _templateChoosingVM == null )
+                {
+                    _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+                }
+
+                BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected );
+
+                if ( BuildingIsPossible )
+                {
+                    _templateChoosingVM.BuildingIsPossible = true;
+                }
             }
-
-            BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected);
-
-            if ( BuildingIsPossible )
-            {
-                _templateChoosingVM.BuildingIsPossible = true;
-            }
-
-            int df = 0;
         }
     }
 }
 
 
-
-
-//private double tS;
-//internal double PeopleTopShift
-//{
-//    get { return tS; }
-//    set
-//    {
-//        this.RaiseAndSetIfChanged (ref tS, value, nameof (PeopleTopShift));
-//    }
-//}
-
-
-//  private double plH = 89;

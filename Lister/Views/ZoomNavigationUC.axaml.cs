@@ -23,7 +23,6 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<ZoomNavigationViewModel> ();
             _vm = ( ZoomNavigationViewModel ) DataContext;
-            //visiblePageNumber.Text = 1.ToString ();
         }
 
 
@@ -133,7 +132,7 @@ namespace Lister.Views
 
         internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
         {
-            List<BadgeViewModel> incorrects = _vm.GetIncorrectBadges ();
+            List <BadgeViewModel> incorrects = _vm.GetIncorrectBadges ();
 
             ModernMainView ancestorView = this.Parent.Parent as ModernMainView;
             MainWindow owner = ancestorView.Parent as MainWindow;
@@ -146,7 +145,6 @@ namespace Lister.Views
                 badgeEditor.PassIncorrectBadges (incorrects);
                 badgeEditor.PassBackPoint (ancestorView);
                 owner.Content = badgeEditor;
-                //badgeEditor.Focus ();
             }
         }
 

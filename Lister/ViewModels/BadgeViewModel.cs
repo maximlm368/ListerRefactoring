@@ -13,15 +13,14 @@ using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ExtentionsAndAuxiliary;
+using Avalonia.Controls.Shapes;
 
 namespace Lister.ViewModels;
 
 public class BadgeViewModel : ViewModelBase
 {
-    private static Dictionary<string , Bitmap> _pathToImage;
+    private static Dictionary<string, Bitmap> _pathToImage;
     private static double _rightSpan = 5;
-    private static string _correctness = "correct";
-    private static string _incorrectness = "incorrect";
 
     private const double coefficient = 1.03;
     internal double Scale { get; private set; }
@@ -29,14 +28,14 @@ public class BadgeViewModel : ViewModelBase
 
     private Bitmap _bitMap = null;
     private Bitmap bM;
-    internal Bitmap ImageBitmap 
+    internal Bitmap ImageBitmap
     {
         get { return bM; }
         private set
         {
-            this.RaiseAndSetIfChanged ( ref bM, value, nameof (ImageBitmap));
+            this.RaiseAndSetIfChanged (ref bM, value, nameof (ImageBitmap));
         }
-            
+
     }
 
     private double _widht;
@@ -82,6 +81,8 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
+    internal TextLineViewModel FocusedLine { get; set; }
+    private List<TextLineViewModel> IncorrectLines { get; set; }
     private ObservableCollection <TextLineViewModel> tL;
     internal ObservableCollection <TextLineViewModel> TextLines
     {
@@ -125,16 +126,6 @@ public class BadgeViewModel : ViewModelBase
 
     internal bool IsCorrect { get; private set; }
 
-    private string cr;
-    internal string Correctness
-    {
-        get { return cr; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref cr, value, nameof (Correctness));
-        }
-    }
-
 
     static BadgeViewModel ( )
     {
@@ -153,10 +144,10 @@ public class BadgeViewModel : ViewModelBase
         BorderHeight = BadgeHeight + 3;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
+        IncorrectLines = new List <TextLineViewModel> ( );
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
-        Correctness = _correctness;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -164,6 +155,7 @@ public class BadgeViewModel : ViewModelBase
         List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
         SetUpTextLines (atoms);
+        GatherIncorrectLines ( );
 
         List<InsideImage> images = layout.InsideImages;
         SetUpImagesAndGeometryElements (images);
@@ -179,10 +171,10 @@ public class BadgeViewModel : ViewModelBase
         BadgeHeight = layout.OutlineSize. Height;
         BorderHeight = BadgeHeight + 2;
         TextLines = new ObservableCollection<TextLineViewModel> ();
+        IncorrectLines = new List<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
-        Correctness = _correctness;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -315,16 +307,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void PreSetUpTextLines ( List <TextualAtom> orderedTextualFields )
-    {
-        foreach ( TextualAtom atom   in   orderedTextualFields ) 
-        {
-            TextLines.Add (new TextLineViewModel (atom));
-            
-        }
-    }
-
-
     internal void ReplaceTextLine ( TextLineViewModel replaceble, List <TextLineViewModel> replacing )
     {
         TextLines.Remove (replaceble);
@@ -407,9 +389,22 @@ public class BadgeViewModel : ViewModelBase
                     TextLineViewModel textLine = new TextLineViewModel (atom);
                     TextLines.Add (textLine);
                     IsCorrect = false;
-                    Correctness = _incorrectness;
                     break;
                 }
+            }
+        }
+    }
+
+
+    private void GatherIncorrectLines ()
+    {
+        foreach ( TextLineViewModel line in TextLines )
+        {
+            bool isCorrect = CheckBorderViolation (line);
+
+            if ( !isCorrect )
+            {
+                IncorrectLines.Add (line);
             }
         }
     }
@@ -452,5 +447,58 @@ public class BadgeViewModel : ViewModelBase
                 InsideShapes.Add (imageVM);
             }
         }
+    }
+
+
+    internal void CheckCorrectness ( )
+    {
+        bool isCorrect = true;
+
+        if ( FocusedLine == null ) 
+        {
+            return;
+        }
+
+        isCorrect = CheckBorderViolation (FocusedLine);
+
+        foreach ( TextLineViewModel line in TextLines )
+        {
+            if ( line.Equals (FocusedLine) )
+            {
+                continue;
+            }
+
+            double topDifference = Math.Abs (FocusedLine.TopOffset - line.TopOffset);
+            double maxFontsize = Math.Max (FocusedLine. FontSize, line.FontSize);
+            bool isNotOverlayed = topDifference > maxFontsize;
+
+            isCorrect = isCorrect && isNotOverlayed;
+
+            if ( !isCorrect )
+            {
+                break;
+            }
+        }
+
+        IsCorrect = isCorrect;
+    }
+
+
+    private bool CheckBorderViolation ( TextLineViewModel line )
+    {
+        Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, FontWeight.Normal);
+        FormattedText formatted = new FormattedText (line.Content, CultureInfo.CurrentCulture
+                                                            , FlowDirection.LeftToRight, face, line.FontSize, null);
+
+        double rest = BadgeWidth - ( line.LeftOffset + formatted.WidthIncludingTrailingWhitespace );
+        bool notExceedToRight = ( rest > 0 );
+        bool notExceedToLeft = ( line.LeftOffset > 0 );
+        bool notExceedToTop = ( line.TopOffset > 0 );
+        rest = BadgeHeight - ( line.TopOffset + line.FontSize );
+        bool notExceedToBottom = ( rest > 0 );
+
+        bool isCorrect = ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+
+        return isCorrect;
     }
 }

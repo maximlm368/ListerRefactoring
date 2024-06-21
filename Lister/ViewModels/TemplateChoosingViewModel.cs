@@ -61,7 +61,6 @@ public class TemplateChoosingViewModel : ViewModelBase
             if ( valueIsSuitable )
             {
                 this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
-                BuildingIsPossible = true;
             }
 
             TryToEnableBadgeCreationButton ();
@@ -95,10 +94,6 @@ public class TemplateChoosingViewModel : ViewModelBase
                 if (ChosenTemplate == null) 
                 {
                     value = false;
-                }
-                else 
-                {
-                    value = true;
                 }
             }
 

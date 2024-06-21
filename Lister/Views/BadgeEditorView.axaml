@@ -95,7 +95,7 @@
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
 			    Width="48"
-				Tapped="ToFirst"
+				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -104,7 +104,7 @@
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Tapped="ToPrevious"
+				Command="{Binding   Path = ToPrevious,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
@@ -123,7 +123,7 @@
 				Grid.Column="3"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Tapped="ToNext"
+				Command="{Binding   Path = ToNext,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -132,7 +132,7 @@
 				Grid.Column="4"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Tapped="ToLast"
+				Command="{Binding   Path = ToLast,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
 			<Button
@@ -169,7 +169,8 @@
 				Grid.Column="10"
 				HorizontalAlignment="Center"
 				Width="28"
-				PointerPressed="Left"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Left,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -178,7 +179,8 @@
 				Grid.Column="11"
 				HorizontalAlignment="Center"
 				Width="28"
-				
+				KeyDown="ToSide"
+				Command="{Binding   Path = Right,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -187,7 +189,8 @@
 				Grid.Column="12"
 				HorizontalAlignment="Center"
 				Width="28"
-				Tapped="Up"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Up,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -196,7 +199,8 @@
 				Grid.Column="13"
 				HorizontalAlignment="Center"
 				Width="28"
-				Tapped="Down"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Down,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 			
 		</Grid>
@@ -213,30 +217,44 @@
 				<ColumnDefinition Width="700" ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
+			
+			<Border
+				Name="slider"
+				BorderThickness="1"
+				BorderBrush="Brown"
+				Height="373"
+				Grid.Column="0">
+
+		   <ScrollViewer
+				Name="sliderScroller"
+				VerticalScrollBarVisibility="Auto"
+				AllowAutoHide="True">	
+				
 			<ItemsControl
-				Name="badges"
-				Grid.Column="0"
+				Name="badgeStates"
 				Width="100"
 				HorizontalAlignment="Left"
-				ItemsSource="{Binding  Path=IncorrectBadges,  Mode=OneWay}">
+				ItemsSource="{Binding  Path=CorrectnessIcons,  Mode=OneWay}">
 				
 				
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<Border
-							BorderBrush="Blue"
+							BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
 							BorderThickness="1">
 
-							<Label
-								FontSize="20"
-								Width="100"
-								Content="{Binding  Path=Correctness,  Mode=OneWay}"
-								Tapped="Splitttt"/>
+							<Image
+								Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
+								Width="50"
+								/>
+							
+					     
 						</Border>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
-			
+			</ScrollViewer>
+			</Border>
 			
 			
 
@@ -339,3 +357,20 @@
 
 	</StackPanel>
 </UserControl>
+
+
+<!-- 
+
+<Label
+								FontSize="20"
+								Width="100"
+								Content="{Binding  Path=Correctness,  Mode=OneWay}"
+								Tapped="Splitttt"/>
+
+
+
+
+
+
+
+-->

@@ -50,8 +50,6 @@ namespace Lister.Views
 
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
-            //EntirePersonListIsSelected = true;
-            //SinglePersonIsSelected = false;
             _vm.ChosenPerson = null;
 
             if ( _chosen != null )
@@ -61,7 +59,6 @@ namespace Lister.Views
             }
 
             DropOrPickUp ();
-            //TryToEnableBadgeCreationButton ();
         }
 
 
@@ -253,38 +250,9 @@ namespace Lister.Views
             //TryToEnableBadgeCreationButton ();
             DropOrPickUp ();
             _vm.ChosenPerson = chosenPerson;
-
-            //if ( chosenName == "Весь список" ) 
-            //{
-            //    EntirePersonListIsSelected = true;
-            //    SinglePersonIsSelected = false;
-            //    chosenPerson = null;
-            //}
-
-            //if ( chosenPerson != null ) 
-            //{
-            //    SinglePersonIsSelected = true;
-            //    EntirePersonListIsSelected = false;
-            //    _vm.ChosenPerson = chosenPerson;
-            //}
         }
 
         #endregion Choosing
-
-        //private void TryToEnableBadgeCreationButton ()
-        //{
-        //    ModernMainView parent = this.Parent. Parent  as  ModernMainView;
-        //    bool templateIsSelected = parent.templateChoosing.TemplateIsSelected;
-
-        //    bool itsTimeToEnable = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected )   &&   templateIsSelected;
-
-        //    if ( itsTimeToEnable )
-        //    {
-        //        TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
-        //        templateChoosingUC. buildBadges.IsEnabled = true;
-        //    }
-        //}
-
 
         private void DropOrPickUp ()
         {
