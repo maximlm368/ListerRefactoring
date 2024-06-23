@@ -246,7 +246,7 @@
 							<Image
 								Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
 								Width="50"
-								/>
+								Opacity="0.2"/>
 							
 					     
 						</Border>
@@ -326,7 +326,7 @@
 											<Label
 												VerticalAlignment="Center"
 												Height="{Binding Path = Height,  Mode=OneWay}"
-											    
+											  
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 												HorizontalAlignment="Center"

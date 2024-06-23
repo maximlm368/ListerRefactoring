@@ -396,20 +396,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private void GatherIncorrectLines ()
-    {
-        foreach ( TextLineViewModel line in TextLines )
-        {
-            bool isCorrect = CheckBorderViolation (line);
-
-            if ( !isCorrect )
-            {
-                IncorrectLines.Add (line);
-            }
-        }
-    }
-
-
     private void OrderTextlinesByVertical ( List <TextualAtom> textualFields )
     {
         for ( int index = 0;   index < textualFields.Count;   index++ )
@@ -481,6 +467,20 @@ public class BadgeViewModel : ViewModelBase
         }
 
         IsCorrect = isCorrect;
+    }
+
+
+    private void GatherIncorrectLines ( )
+    {
+        foreach ( TextLineViewModel line in TextLines )
+        {
+            bool isCorrect = CheckBorderViolation ( line );
+
+            if ( ! isCorrect )
+            {
+                IncorrectLines.Add ( line );
+            }
+        }
     }
 
 

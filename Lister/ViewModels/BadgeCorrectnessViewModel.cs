@@ -9,14 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lister
+namespace Lister.ViewModels
 {
     internal class BadgeCorrectnessViewModel : ViewModelBase
     {
         //private static string _correctness = "correct";
         //private static string _incorrectness = "incorrect";
-        private static string _correctnessIcon = "D:/MML/ListerNew/Lister.Desktop/bin/Debug/net8.0/GreenCheckMarker.jpg";
-        private static string _incorrectnessIcon = "D:/MML/ListerNew/Lister.Desktop/bin/Debug/net8.0/RedCross.png";
+        private static string _correctnessIcon = "C:/Users/RBT/source/repos/Lister/Lister.Desktop/bin/Debug/net8.0/GreenCheckMarker.png";
+        private static string _incorrectnessIcon = "C:/Users/RBT/source/repos/Lister/Lister.Desktop/bin/Debug/net8.0/RedCross.png";
 
         private bool cr;
         internal bool Correctness
