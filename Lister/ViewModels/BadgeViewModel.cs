@@ -82,7 +82,8 @@ public class BadgeViewModel : ViewModelBase
     }
 
     internal TextLineViewModel FocusedLine { get; set; }
-    private List<TextLineViewModel> IncorrectLines { get; set; }
+    private List <TextLineViewModel> BorderViolentLines { get; set; }
+    private List <TextLineViewModel> OverlayViolentLines { get; set; }
     private ObservableCollection <TextLineViewModel> tL;
     internal ObservableCollection <TextLineViewModel> TextLines
     {
@@ -144,7 +145,8 @@ public class BadgeViewModel : ViewModelBase
         BorderHeight = BadgeHeight + 3;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
-        IncorrectLines = new List <TextLineViewModel> ( );
+        BorderViolentLines = new List <TextLineViewModel> ( );
+        OverlayViolentLines = new List <TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
@@ -171,7 +173,8 @@ public class BadgeViewModel : ViewModelBase
         BadgeHeight = layout.OutlineSize. Height;
         BorderHeight = BadgeHeight + 2;
         TextLines = new ObservableCollection<TextLineViewModel> ();
-        IncorrectLines = new List<TextLineViewModel> ();
+        BorderViolentLines = new List<TextLineViewModel> ();
+        OverlayViolentLines = new List<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
@@ -389,6 +392,7 @@ public class BadgeViewModel : ViewModelBase
                     TextLineViewModel textLine = new TextLineViewModel (atom);
                     TextLines.Add (textLine);
                     IsCorrect = false;
+                    textLine.isBorderViolent = true;
                     break;
                 }
             }
@@ -472,14 +476,20 @@ public class BadgeViewModel : ViewModelBase
 
     private void GatherIncorrectLines ( )
     {
-        foreach ( TextLineViewModel line in TextLines )
+        foreach ( TextLineViewModel line   in   TextLines )
         {
             bool isCorrect = CheckBorderViolation ( line );
 
             if ( ! isCorrect )
             {
-                IncorrectLines.Add ( line );
+                BorderViolentLines.Add ( line );
+                line.isBorderViolent = true;
             }
+        }
+
+        foreach ( TextLineViewModel line   in   TextLines )
+        {
+            
         }
     }
 
@@ -498,6 +508,61 @@ public class BadgeViewModel : ViewModelBase
         bool notExceedToBottom = ( rest > 0 );
 
         bool isCorrect = ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+
+        return isCorrect;
+    }
+
+
+    private bool CheckOverlayViolation ( )
+    {
+        for ( int index = 0;   index < TextLines. Count;   index++ )
+        {
+            TextLineViewModel overlaying = TextLines [ index ];
+
+
+            for ( int ind = index;   ind < TextLines. Count;   ind++ )
+            {
+                TextLineViewModel underlaying = TextLines [ind];
+
+                double topDifference = Math.Abs (overlaying.TopOffset - underlaying.TopOffset);
+                double maxFontsize = Math.Max (overlaying.FontSize, underlaying.FontSize);
+                bool isOverlaying = topDifference < maxFontsize;
+
+                if (isOverlaying) 
+                {
+                    if ( ! overlaying.isOverLayViolent ) 
+                    {
+                        overlaying.isOverLayViolent = true;
+                        OverlayViolentLines.Add (overlaying);
+                    }
+
+                    
+                }
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+        Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, FontWeight.Normal);
+        FormattedText formatted = new FormattedText (line.Content, CultureInfo.CurrentCulture
+                                                            , FlowDirection.LeftToRight, face, line.FontSize, null);
+
+        
+
+
+
+
+
+        bool isCorrect = false;
 
         return isCorrect;
     }

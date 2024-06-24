@@ -16,7 +16,6 @@ namespace DataGateway
         {
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
             _templatesFolderPath = @"./";
-
             DirectoryInfo containingDirectory = new DirectoryInfo ( _templatesFolderPath );
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );

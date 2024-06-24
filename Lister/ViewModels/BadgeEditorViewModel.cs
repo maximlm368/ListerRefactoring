@@ -15,20 +15,66 @@ using System.Globalization;
 using System.Reflection.Metadata;
 using ExtentionsAndAuxiliary;
 using Microsoft.VisualBasic;
+using Avalonia.Media.Imaging;
+using Lister.Extentions;
 
 namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
+        private static string _correctnessIcon = "GreenCheckMarker.jpg";
+        private static string _incorrectnessIcon = "RedCross.png";
         private double _scale = 2.8;
         private Dictionary<BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
+        private FilterChoosing _filterState = FilterChoosing.AllIsChosen;
+        private bool _incorrectsAreSet = false;
 
-        private List <BadgeViewModel> _incorrectBadges;
-        internal List <BadgeViewModel> IncorrectBadges
+        private double cO;
+        internal double CorrectnessOpacity
         {
-            get { return _incorrectBadges; }
+            get { return cO; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cO, value, nameof (CorrectnessOpacity));
+            }
+        }
+
+        private double iO;
+        internal double IncorrectnessOpacity
+        {
+            get { return iO; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref iO, value, nameof (IncorrectnessOpacity));
+            }
+        }
+
+        private Bitmap cR;
+        internal Bitmap CorrectnessIcon
+        {
+            get { return cR; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cR, value, nameof (CorrectnessIcon));
+            }
+        }
+
+        private Bitmap iC;
+        internal Bitmap IncorrectnessIcon
+        {
+            get { return iC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref iC, value, nameof (IncorrectnessIcon));
+            }
+        }
+
+        private List <BadgeViewModel> _visibleBadges;
+        internal List <BadgeViewModel> VisibleBadges
+        {
+            get { return _visibleBadges; }
             set
             {
                 bool isNullOrEmpty = ( value == null )   ||   ( value.Count == 0 );
@@ -38,25 +84,76 @@ namespace Lister.ViewModels
                     return;
                 }
 
-                this.RaiseAndSetIfChanged (ref _incorrectBadges, value, nameof (IncorrectBadges));
-
                 if ( value [0] == null )
                 {
                     return;
                 }
 
+                _visibleBadges = value;
                 SetBeingProcessed (value);
                 SetIcons ();
+
+                if ( ! _incorrectsAreSet ) 
+                {
+                    foreach ( BadgeViewModel badge   in   VisibleBadges )
+                    {
+                        IncorrectBadges.Add (badge);
+                    }
+
+                    _incorrectsAreSet = true;
+                }
+
+                ProcessableCount = VisibleBadges. Count;
             }
         }
 
+        private ObservableCollection <BadgeViewModel> inc;
+        internal ObservableCollection <BadgeViewModel> IncorrectBadges
+        {
+            get { return inc; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref inc, value, nameof (IncorrectBadges));
+            }
+        }
+
+        private ObservableCollection <BadgeViewModel> fx;
+        internal ObservableCollection <BadgeViewModel> FixedBadges
+        {
+            get { return fx; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fx, value, nameof (FixedBadges));
+            }
+        }
+
+        //private int cC;
+        //internal int CorrectCount
+        //{
+        //    get { return cC; }
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref cC, value, nameof (CorrectCount));
+        //    }
+        //}
+
+        //private int inC;
+        //internal int IncorrectCount
+        //{
+        //    get { return inC; }
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref inC, value, nameof (IncorrectCount));
+        //    }
+        //}
+
         private ObservableCollection <BadgeCorrectnessViewModel> cL;
-        internal ObservableCollection <BadgeCorrectnessViewModel> CorrectnessIcons
+        internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
         {
             get { return cL; }
             set
             {
-                this.RaiseAndSetIfChanged (ref cL, value, nameof (CorrectnessIcons));
+                this.RaiseAndSetIfChanged (ref cL, value, nameof (VisibleIcons));
             }
         }
 
@@ -87,6 +184,16 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref bpN, value, nameof (BeingProcessedNumber));
+            }
+        }
+
+        private int pC;
+        internal int ProcessableCount
+        {
+            get { return pC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pC, value, nameof (ProcessableCount));
             }
         }
 
@@ -176,17 +283,34 @@ namespace Lister.ViewModels
             _scaleStorage = new Dictionary <BadgeViewModel, double> ();
             FocusedFontSize = string.Empty;
             SplitterIsEnable = false;
-            CorrectnessIcons = new ObservableCollection<BadgeCorrectnessViewModel> ();
-        }
+
+            IncorrectBadges = new ObservableCollection <BadgeViewModel> ();
+            FixedBadges = new ObservableCollection <BadgeViewModel> ();
+            VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
+
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+            string correctnessIcon = directoryPath + _correctnessIcon;
+            string incorrectnessIcon = directoryPath + _incorrectnessIcon;
+
+            Uri uri = new Uri (correctnessIcon);
+            CorrectnessIcon = ImageHelper.LoadFromResource (uri);
+            uri = new Uri (incorrectnessIcon);
+            IncorrectnessIcon = ImageHelper.LoadFromResource (uri);
+
+            CorrectnessOpacity = 1;
+            IncorrectnessOpacity = 1;
+    }
 
         #region Navigation
 
         internal void ToFirst ( )
         {
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = IncorrectBadges [0];
+            BeingProcessedBadge = VisibleBadges [0];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-            ActiveIcon = CorrectnessIcons [0];
+            ActiveIcon = VisibleIcons [0];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
@@ -200,9 +324,9 @@ namespace Lister.ViewModels
         internal void ToPrevious ( )
         {
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = IncorrectBadges [BeingProcessedNumber - 2];
+            BeingProcessedBadge = VisibleBadges [BeingProcessedNumber - 2];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-            ActiveIcon = CorrectnessIcons [BeingProcessedNumber - 2];
+            ActiveIcon = VisibleIcons [BeingProcessedNumber - 2];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
@@ -216,9 +340,9 @@ namespace Lister.ViewModels
         internal void ToNext ()
         {
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = IncorrectBadges [BeingProcessedNumber];
+            BeingProcessedBadge = VisibleBadges [BeingProcessedNumber];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-            ActiveIcon = CorrectnessIcons [BeingProcessedNumber];
+            ActiveIcon = VisibleIcons [BeingProcessedNumber];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
@@ -232,13 +356,13 @@ namespace Lister.ViewModels
         internal void ToLast ( )
         {
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = IncorrectBadges [IncorrectBadges. Count - 1];
+            BeingProcessedBadge = VisibleBadges [VisibleBadges. Count - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-            ActiveIcon = CorrectnessIcons [CorrectnessIcons. Count - 1];
+            ActiveIcon = VisibleIcons [VisibleIcons. Count - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             AddToStorage ();
             BeingProcessedBadge.Show ();
-            BeingProcessedNumber = IncorrectBadges. Count;
+            BeingProcessedNumber = VisibleBadges. Count;
             SetCorrectScale ( );
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
@@ -251,21 +375,21 @@ namespace Lister.ViewModels
             {
                 int number = int.Parse (numberAsText);
 
-                if ( number > IncorrectBadges.Count   ||   number < 1 )
+                if ( number > VisibleBadges.Count   ||   number < 1 )
                 {
                     BeingProcessedNumber = BeingProcessedNumber;
                     return;
                 }
 
                 BeingProcessedBadge.Hide ();
-                BeingProcessedBadge = IncorrectBadges [number - 1];
+                BeingProcessedBadge = VisibleBadges [number - 1];
 
                 if ( ActiveIcon != null ) 
                 {
                     ActiveIcon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
                 }
 
-                ActiveIcon = CorrectnessIcons [number - 1];
+                ActiveIcon = VisibleIcons [number - 1];
                 ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
                 AddToStorage ();
                 BeingProcessedBadge.Show ();
@@ -440,15 +564,29 @@ namespace Lister.ViewModels
         {
             if ( BeingProcessedBadge.IsCorrect )
             {
-                CorrectnessIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
-                CorrectnessIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
+                VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                FixedBadges.Add(BeingProcessedBadge);
+
+                if ( IncorrectBadges.Contains (BeingProcessedBadge) )
+                {
+                    IncorrectBadges.Remove (BeingProcessedBadge);
+                }
+
             }
             else
             {
-                if ( CorrectnessIcons [BeingProcessedNumber - 1].Correctness )
+                if ( VisibleIcons [BeingProcessedNumber - 1].Correctness )
                 {
-                    CorrectnessIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false);
-                    CorrectnessIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                    VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false);
+                    VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                }
+
+                IncorrectBadges.Add (BeingProcessedBadge);
+
+                if ( FixedBadges.Contains (BeingProcessedBadge) )
+                {
+                    FixedBadges.Remove (BeingProcessedBadge);
                 }
             }
         }
@@ -619,7 +757,7 @@ namespace Lister.ViewModels
 
         private void SetEnableBadgeNavigation ()
         {
-            int badgeCount = IncorrectBadges.Count;
+            int badgeCount = VisibleBadges.Count;
 
             if ( badgeCount > 1 )
             {
@@ -655,9 +793,9 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetBeingProcessed ( List<BadgeViewModel> incorrectBadges )
+        private void SetBeingProcessed ( List <BadgeViewModel> visibleBadges )
         {
-            BadgeViewModel beingPrecessed = incorrectBadges [0];
+            BadgeViewModel beingPrecessed = visibleBadges [0];
             _scaleStorage.Add (beingPrecessed, beingPrecessed.Scale);
             SetStandartScale (beingPrecessed);
             beingPrecessed.ZoomOn (_scale);
@@ -669,12 +807,12 @@ namespace Lister.ViewModels
 
         private void SetIcons (  )
         {
-            if( (IncorrectBadges != null)   &&   (IncorrectBadges. Count > 0) ) 
+            if( (VisibleBadges != null)   &&   (VisibleBadges. Count > 0) ) 
             {
-                for ( int index = 0;   index < IncorrectBadges. Count;   index++ ) 
+                for ( int index = 0;   index < VisibleBadges. Count;   index++ ) 
                 {
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (IncorrectBadges [index].IsCorrect);
-                    CorrectnessIcons.Add (icon);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (VisibleBadges [index].IsCorrect);
+                    VisibleIcons.Add (icon);
                     icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
 
                     //bool metBeingProcessed = IncorrectBadges [index].Equals (BeingProcessedBadge);
@@ -686,9 +824,135 @@ namespace Lister.ViewModels
                     //}
                 }
 
-                CorrectnessIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
             }
         }
 
+
+        internal void FilterCorrects ( )
+        {
+            if (_filterState == FilterChoosing.AllIsChosen) 
+            {
+                _filterState = FilterChoosing.CorrectsIsChosen;
+            }
+            else if ( _filterState == FilterChoosing.CorrectsIsChosen )
+            {
+                _filterState = FilterChoosing.AllIsChosen;
+            }
+            else if ( _filterState == FilterChoosing.IncorrectsIsChosen )
+            {
+                _filterState = FilterChoosing.CorrectsIsChosen;
+            }
+
+            SwitchFilter ();
+        }
+
+
+        internal void FilterIncorrects ()
+        {
+            if ( _filterState == FilterChoosing.AllIsChosen )
+            {
+                _filterState = FilterChoosing.IncorrectsIsChosen;
+            }
+            else if ( _filterState == FilterChoosing.CorrectsIsChosen )
+            {
+                _filterState = FilterChoosing.IncorrectsIsChosen;
+            }
+            else if ( _filterState == FilterChoosing.IncorrectsIsChosen )
+            {
+                _filterState = FilterChoosing.AllIsChosen;
+            }
+
+            SwitchFilter ();
+        }
+
+
+        private void SwitchFilter ( )
+        {
+            VisibleIcons.Clear ();
+            VisibleBadges.Clear ();
+
+            if ( _filterState == FilterChoosing.AllIsChosen ) 
+            {
+                VisibleBadges.AddRange (FixedBadges);
+                VisibleBadges.AddRange (IncorrectBadges);
+                CorrectnessOpacity = 1;
+                IncorrectnessOpacity = 1;
+            }
+            else if ( _filterState == FilterChoosing.CorrectsIsChosen ) 
+            {
+                VisibleBadges.AddRange (FixedBadges);
+                CorrectnessOpacity = 1;
+                IncorrectnessOpacity = 0.3;
+            }
+            else if ( _filterState == FilterChoosing.IncorrectsIsChosen ) 
+            {
+                VisibleBadges.AddRange (IncorrectBadges);
+                CorrectnessOpacity = 0.3;
+                IncorrectnessOpacity = 1;
+            }
+
+            ProcessableCount = VisibleBadges. Count;
+            BeingProcessedNumber = 1;
+
+            if ( ( VisibleBadges != null )   &&   ( VisibleBadges. Count > 0 ) )
+            {
+                for ( int index = 0;   index < VisibleBadges. Count;   index++ )
+                {
+                    BadgeViewModel badge = VisibleBadges [index];
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
+                    VisibleIcons.Add (icon);
+                    icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+                }
+
+                VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+        }
+
+
+        private void FilterByCorrectnes ( bool correctness )
+        {
+            VisibleIcons.Clear();
+
+            if ( ( VisibleBadges != null )  &&  ( VisibleBadges.Count > 0 ) )
+            {
+                for ( int index = 0;   index < VisibleBadges.Count;   index++ )
+                {
+                    BadgeViewModel badge = VisibleBadges [index];
+                    bool correctnessCoincides = badge.IsCorrect.Equals(correctness);
+
+                    if ( correctnessCoincides ) 
+                    {
+                        IncorrectBadges.Add (badge);
+                        BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
+                        VisibleIcons.Add (icon);
+                        icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+                    }
+                }
+
+                VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+        }
+
+
+
+        private enum FilterChoosing 
+        {
+           AllIsChosen = 0,
+           CorrectsIsChosen = 1,
+           IncorrectsIsChosen = 2
+        }
+
+
+        private enum Transition 
+        {
+            FromAllToCorr = 0,
+            FromAllToIncorr = 1,
+            FromCorrToAll = 2,
+            FromCorrToIncorr = 3,
+            FromIncorrToAll = 4,
+            FromIncorrToCorr = 5
+        }
     }
+
 }

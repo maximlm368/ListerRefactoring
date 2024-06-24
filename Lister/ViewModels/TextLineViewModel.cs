@@ -69,6 +69,9 @@ namespace Lister.ViewModels
             }
         }
 
+        internal bool isBorderViolent = false;
+        internal bool isOverLayViolent = false;
+
 
         public TextLineViewModel ( TextualAtom text )
         {

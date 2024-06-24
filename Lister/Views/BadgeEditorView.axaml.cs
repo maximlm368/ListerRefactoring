@@ -61,7 +61,7 @@ namespace Lister.Views
         internal void PassIncorrectBadges ( List<BadgeViewModel> incorrects ) 
         {
             BadgeEditorViewModel viewModel = (BadgeEditorViewModel) DataContext;
-            viewModel.IncorrectBadges = incorrects;
+            viewModel.VisibleBadges = incorrects;
         }
 
 

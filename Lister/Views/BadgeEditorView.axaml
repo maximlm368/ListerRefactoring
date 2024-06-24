@@ -11,15 +11,28 @@
 	<StackPanel>
 
 		<Grid
-			Name="activationAndAcception"
+			Name="zoomAndAcception"
 			Height="40"
-			Margin="10,0"
-			Background="AntiqueWhite">
+			Margin="10,0">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="132" ></ColumnDefinition>
-				<ColumnDefinition Width="132" ></ColumnDefinition>
-				<ColumnDefinition Width="132" ></ColumnDefinition>
+
+				
+				<ColumnDefinition Width="20"></ColumnDefinition>
+
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="64"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				
 				<ColumnDefinition Width="132"></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
@@ -33,112 +46,11 @@
 				HorizontalContentAlignment="Center"
 				Tapped="GoBack"/>
 
-			<Button
-				Name="chooseFile"
-				Content="Редактировать"
-				Width="130"
-				Grid.Column="1"
-				HorizontalContentAlignment="Center" />
-
-			<Button
-				Name="editSourceFile"
-				Width="130"
-				HorizontalContentAlignment="Center"
-			    Content="Принять"
-				Grid.Column="2" />
-
-			<Button
-				Name="spliter"
-				Content="Разделить"
-				Grid.Column="3"
-				HorizontalContentAlignment="Center"
-				Width="130"
-				Tapped="Split"
-				IsEnabled="{Binding   Path = SplitterIsEnable,   Mode=OneWay}" />
-			
-		</Grid>
-
-
-
-		<Grid
-			Name="zoomAndNavigation"
-			Height="40"
-			Margin="10,-2"
-			Background="AliceBlue">
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="64"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-
-				<ColumnDefinition Width="20"></ColumnDefinition>
-
-				<ColumnDefinition Width="30"></ColumnDefinition>
-				<ColumnDefinition Width="64"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
-
-				<ColumnDefinition Width="20"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
-
-				<ColumnDefinition ></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-
-
-			<Button
-				Name="firstBadge"
-				Content="first"
-				Grid.Column="0"
-				HorizontalContentAlignment="Center"
-			    Width="48"
-				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
-				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
-
-			<Button
-				Name="previousBadge"
-				Content="prev"
-				Grid.Column="1"
-				HorizontalContentAlignment="Center"
-				Width="48"
-				Command="{Binding   Path = ToPrevious,   Mode=OneWay}"
-				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
-
-			<TextBox
-				Name="visiblePageNumber"
-				Width="60"
-				FontSize="14"
-				Grid.Column="2"
-				MaxHeight="30"
-				Margin="0,3"
-				TextChanged="ToParticularBadge"
-				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
-
-			<Button
-				Name="nextBadge"
-				Content="next"
-				Grid.Column="3"
-				HorizontalContentAlignment="Center"
-				Width="48"
-				Command="{Binding   Path = ToNext,   Mode=OneWay}"
-				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
-
-			<Button
-				Name="lastBadge"
-				Content="last"
-				Grid.Column="4"
-				HorizontalContentAlignment="Center"
-				Width="48"
-				Command="{Binding   Path = ToLast,   Mode=OneWay}"
-				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
 			<Button
 				Name="zoomOut"
 				Content="-"
-				Grid.Column="6"
+				Grid.Column="2"
 				HorizontalAlignment="Center"
 				Width="28"
 				Tapped="ReduceFontSize"
@@ -148,7 +60,7 @@
 				Name="scalabilityGrade"
 				Width="60"
 				FontSize="14"
-				Grid.Column="7"
+				Grid.Column="3"
 				MaxHeight="30"
 				Margin="0,3"
 				Text="{Binding  Path = FocusedFontSize,  Mode=OneWay}"
@@ -157,7 +69,7 @@
 			<Button
 				Name="zoomOn"
 				Content="+"
-				Grid.Column="8"
+				Grid.Column="4"
 				HorizontalAlignment="Center"
 				Width="28"
 				Tapped="IncreaseFontSize"
@@ -166,7 +78,7 @@
 			<Button
 				Name="left"
 				Content="L"
-				Grid.Column="10"
+				Grid.Column="6"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -176,7 +88,7 @@
 			<Button
 				Name="right"
 				Content="R"
-				Grid.Column="11"
+				Grid.Column="7"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -186,7 +98,7 @@
 			<Button
 				Name="up"
 				Content="U"
-				Grid.Column="12"
+				Grid.Column="8"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -196,15 +108,23 @@
 			<Button
 				Name="down"
 				Content="D"
-				Grid.Column="13"
+				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding   Path = Down,   Mode=OneWay}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="spliter"
+				Content="Разделить"
+				Grid.Column="11"
+				HorizontalContentAlignment="Center"
+				Width="130"
+				Tapped="Split"
+				IsEnabled="{Binding   Path = SplitterIsEnable,   Mode=OneWay}" />
 			
 		</Grid>
-
 
 
 		<Grid
@@ -217,52 +137,89 @@
 				<ColumnDefinition Width="700" ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
-			
-			<Border
-				Name="slider"
-				BorderThickness="1"
-				BorderBrush="Brown"
-				Height="373"
+			<StackPanel
 				Grid.Column="0">
 
-		   <ScrollViewer
-				Name="sliderScroller"
-				VerticalScrollBarVisibility="Auto"
-				AllowAutoHide="True">	
-				
-			<ItemsControl
-				Name="badgeStates"
-				Width="100"
-				HorizontalAlignment="Left"
-				ItemsSource="{Binding  Path=CorrectnessIcons,  Mode=OneWay}">
-				
-				
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<Border
-							BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
-							BorderThickness="1">
+				<Grid
+					Name="filter">
 
-							<Image
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+					<Button
+						Name="chooseCorrects"
+						Width="50"
+						Height="30"
+						Command="{Binding  Path = FilterCorrects}"
+						Grid.Column="0">
+						<Button.Background>
+							<ImageBrush
 								Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
-								Width="50"
-								Opacity="0.2"/>
-							
-					     
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-			</ScrollViewer>
-			</Border>
-			
-			
+								Opacity="{Binding  Path = CorrectnessOpacity,  Mode=OneWay }"/>
+					    </Button.Background>
+					</Button>
 
+					<Button
+						Name="chooseIncorrects"
+						Width="50"
+						Height="30"
+						Command="{Binding  Path = FilterIncorrects}"
+						Grid.Column="1">
+						<Button.Background>
+							<ImageBrush
+								Source = "{Binding  Path = IncorrectnessIcon,  Mode=OneWay }"
+								Opacity="{Binding  Path = IncorrectnessOpacity,  Mode=OneWay }"/>
+						</Button.Background>
+					</Button>
+					
+				</Grid>
+				
+				
+				<Border
+					Name="slider"
+					BorderThickness="1"
+					BorderBrush="Brown"
+					Height="300"
+					Grid.Column="0">
+
+					<ScrollViewer
+						 Name="sliderScroller"
+						 VerticalScrollBarVisibility="Auto"
+						 AllowAutoHide="True">
+
+						<ItemsControl
+							Name="badgeStates"
+							Width="100"
+							HorizontalAlignment="Left"
+							ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
+
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border
+										BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
+										BorderThickness="1">
+
+										<Image
+											Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
+											Width="50"
+											Height="20"/>
+
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Border>
+			</StackPanel>
+			
+			
 			<Border
 				Name="workArea"
 				HorizontalAlignment="Left"
 				Width="680"
-				Height="373"
+				Height="333"
 				Grid.Column="1"
 				BorderBrush="Brown"
 				Background="AliceBlue"
@@ -343,16 +300,143 @@
 
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
-
 							</ItemsControl>
 
 						</Canvas>
 					</Border>
 
-
-
 				</ScrollViewer>
 			</Border>
+		</Grid>
+
+
+		<Grid
+			Name="navigation"
+			Height="40"
+			Margin="10,-2">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="64"></ColumnDefinition>
+				
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+
+			<Button
+				Name="firstBadge"
+				Content="first"
+				Grid.Column="1"
+				HorizontalContentAlignment="Center"
+			    Width="48"
+				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
+				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="previousBadge"
+				Content="prev"
+				Grid.Column="2"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToPrevious,   Mode=OneWay}"
+				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
+
+			<TextBox
+				Name="visiblePageNumber"
+				Width="60"
+				FontSize="14"
+				Grid.Column="3"
+				MaxHeight="30"
+				Margin="0,3"
+				TextChanged="ToParticularBadge"
+				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
+			
+			<Label
+				Content="Из"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>
+
+			<Button
+				Name="nextBadge"
+				Content="next"
+				Grid.Column="6"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToNext,   Mode=OneWay}"
+				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="lastBadge"
+				Content="last"
+				Grid.Column="7"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToLast,   Mode=OneWay}"
+				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
+
+
+		</Grid>
+
+		<Grid
+			Name="counts"
+			Height="40"
+			Margin="10,-2">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+
+			<Label
+				Content="С ошибками :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="1"/>
+
+			<Label
+				Content="{Binding  Path = IncorrectBadges.Count,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="2"/>
+
+			<Label
+				Content="Без ошибок :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = FixedBadges.Count,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>
+
 		</Grid>
 
 	</StackPanel>
@@ -371,6 +455,10 @@
 
 
 
-
+                        <Button.Triggers>
+							<EventTrigger RoutedEvent="FrameworkElement.Tapped">
+								
+							</EventTrigger>
+						</Button.Triggers>
 
 -->
