@@ -283,7 +283,6 @@
 											<Label
 												VerticalAlignment="Center"
 												Height="{Binding Path = Height,  Mode=OneWay}"
-											  
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 												HorizontalAlignment="Center"

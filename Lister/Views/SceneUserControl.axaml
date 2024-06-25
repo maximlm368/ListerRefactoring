@@ -95,10 +95,11 @@
 														
 														<ItemsControl.ItemTemplate>
 															<DataTemplate>
+
 																<Label
 																	Height="{Binding Path = Height,  Mode=OneWay}"
-																	Width="{Binding Path = Width,  Mode=OneWay}"
-																	HorizontalContentAlignment="Center"
+																	
+																	HorizontalContentAlignment="{Binding  Path = Alignment,  Mode=OneWay}"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 										                            Content="{Binding   Path = Content,  Mode=OneWay }" />

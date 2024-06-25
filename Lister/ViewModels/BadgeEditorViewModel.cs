@@ -17,6 +17,7 @@ using ExtentionsAndAuxiliary;
 using Microsoft.VisualBasic;
 using Avalonia.Media.Imaging;
 using Lister.Extentions;
+using System.Linq.Expressions;
 
 namespace Lister.ViewModels
 {
@@ -35,7 +36,7 @@ namespace Lister.ViewModels
         internal double CorrectnessOpacity
         {
             get { return cO; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref cO, value, nameof (CorrectnessOpacity));
             }
@@ -45,7 +46,7 @@ namespace Lister.ViewModels
         internal double IncorrectnessOpacity
         {
             get { return iO; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref iO, value, nameof (IncorrectnessOpacity));
             }
@@ -55,7 +56,7 @@ namespace Lister.ViewModels
         internal Bitmap CorrectnessIcon
         {
             get { return cR; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref cR, value, nameof (CorrectnessIcon));
             }
@@ -65,7 +66,7 @@ namespace Lister.ViewModels
         internal Bitmap IncorrectnessIcon
         {
             get { return iC; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref iC, value, nameof (IncorrectnessIcon));
             }
@@ -111,7 +112,7 @@ namespace Lister.ViewModels
         internal ObservableCollection <BadgeViewModel> IncorrectBadges
         {
             get { return inc; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref inc, value, nameof (IncorrectBadges));
             }
@@ -121,7 +122,7 @@ namespace Lister.ViewModels
         internal ObservableCollection <BadgeViewModel> FixedBadges
         {
             get { return fx; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fx, value, nameof (FixedBadges));
             }
@@ -151,7 +152,7 @@ namespace Lister.ViewModels
         internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
         {
             get { return cL; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref cL, value, nameof (VisibleIcons));
             }
@@ -161,7 +162,7 @@ namespace Lister.ViewModels
         internal BadgeCorrectnessViewModel ActiveIcon
         {
             get { return bpI; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref bpI, value, nameof (ActiveIcon));
             }
@@ -171,7 +172,7 @@ namespace Lister.ViewModels
         internal BadgeViewModel BeingProcessedBadge
         {
             get { return bpB; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref bpB, value, nameof (BeingProcessedBadge));
             }
@@ -181,7 +182,7 @@ namespace Lister.ViewModels
         internal int BeingProcessedNumber
         {
             get { return bpN; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref bpN, value, nameof (BeingProcessedNumber));
             }
@@ -191,7 +192,7 @@ namespace Lister.ViewModels
         internal int ProcessableCount
         {
             get { return pC; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref pC, value, nameof (ProcessableCount));
             }
@@ -201,7 +202,7 @@ namespace Lister.ViewModels
         internal bool FirstIsEnable
         {
             get { return fE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fE, value, nameof (FirstIsEnable));
             }
@@ -211,7 +212,7 @@ namespace Lister.ViewModels
         internal bool PreviousIsEnable
         {
             get { return pE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref pE, value, nameof (PreviousIsEnable));
             }
@@ -221,7 +222,7 @@ namespace Lister.ViewModels
         internal bool NextIsEnable
         {
             get { return nE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref nE, value, nameof (NextIsEnable));
             }
@@ -231,7 +232,7 @@ namespace Lister.ViewModels
         internal bool LastIsEnable
         {
             get { return lE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref lE, value, nameof (LastIsEnable));
             }
@@ -241,7 +242,7 @@ namespace Lister.ViewModels
         internal bool MoversAreEnable
         {
             get { return mE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref mE, value, nameof (MoversAreEnable));
             }
@@ -251,7 +252,7 @@ namespace Lister.ViewModels
         internal bool SplitterIsEnable
         {
             get { return sE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref sE, value, nameof (SplitterIsEnable));
             }
@@ -261,7 +262,7 @@ namespace Lister.ViewModels
         internal string FocusedFontSize
         {
             get { return fS; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fS, value, nameof (FocusedFontSize));
             }
@@ -271,7 +272,7 @@ namespace Lister.ViewModels
         internal Thickness FocusedBorderThickness
         {
             get { return fBT; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fBT, value, nameof (FocusedBorderThickness));
             }
@@ -318,6 +319,7 @@ namespace Lister.ViewModels
             SetCorrectScale ( );
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
+            SplitterIsEnable = false;
         }
 
 
@@ -334,6 +336,7 @@ namespace Lister.ViewModels
             SetCorrectScale( );
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
+            SplitterIsEnable = false;
         }
 
 
@@ -350,6 +353,7 @@ namespace Lister.ViewModels
             SetCorrectScale ( );
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
+            SplitterIsEnable = false;
         }
 
 
@@ -366,6 +370,7 @@ namespace Lister.ViewModels
             SetCorrectScale ( );
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
+            SplitterIsEnable = false;
         }
 
 
@@ -397,6 +402,7 @@ namespace Lister.ViewModels
                 SetCorrectScale ();
                 SetEnableBadgeNavigation ();
                 MoversAreEnable = false;
+                SplitterIsEnable = false;
             }
             catch ( Exception ex )
             {
@@ -552,22 +558,26 @@ namespace Lister.ViewModels
         {
             if ( _focusedLine != null )
             {
+                BeingProcessedBadge.CheckCorrectness ();
+                ResetActiveIcon ();
                 _focusedLine = null;
+                SplitterIsEnable = false;
             }
-
-            BeingProcessedBadge.CheckCorrectness ();
-            ResetActiveIcon ();
         }
 
 
         private void ResetActiveIcon ()
         {
-            if ( BeingProcessedBadge.IsCorrect )
+            if ( BeingProcessedBadge. IsCorrect )
             {
                 VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
                 VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
-                FixedBadges.Add(BeingProcessedBadge);
 
+                if ( ! FixedBadges.Contains(BeingProcessedBadge) ) 
+                {
+                    FixedBadges.Add (BeingProcessedBadge);
+                }
+                
                 if ( IncorrectBadges.Contains (BeingProcessedBadge) )
                 {
                     IncorrectBadges.Remove (BeingProcessedBadge);
@@ -582,7 +592,10 @@ namespace Lister.ViewModels
                     VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
                 }
 
-                IncorrectBadges.Add (BeingProcessedBadge);
+                if ( ! IncorrectBadges.Contains(BeingProcessedBadge) ) 
+                {
+                    IncorrectBadges.Add (BeingProcessedBadge);
+                }
 
                 if ( FixedBadges.Contains (BeingProcessedBadge) )
                 {
@@ -624,8 +637,6 @@ namespace Lister.ViewModels
 
             List<string> strings = content.SplitBySeparators ();
             bool lineIsSplitable = ( strings.Count > 1 );
-            //bool lineIsSplitable = ( strings.Count > 1 ) && ( !line.IsCorrect () );
-
             EnableSplitting (lineIsSplitable, line);
         }
 
@@ -655,6 +666,9 @@ namespace Lister.ViewModels
             double layoutWidth = BeingProcessedBadge. BadgeWidth;
             List <TextLineViewModel> splitted = _splittable.SplitYourself (splittedContents, _scale, layoutWidth);
             BeingProcessedBadge.ReplaceTextLine ( _splittable, splitted );
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
+            SplitterIsEnable = false;
         }
 
         #region FontSizeChange
@@ -678,9 +692,7 @@ namespace Lister.ViewModels
 
             if ( goalLine != null )
             {
-                goalLine.FontSize += _scale;
-                goalLine.Width += _scale;
-                goalLine.Height += _scale;
+                goalLine.Increase (_scale);
                 FocusedFontSize = goalLine.FontSize.ToString ();
             }
         }
@@ -705,9 +717,7 @@ namespace Lister.ViewModels
 
             if ( goalLine != null )
             {
-                goalLine.FontSize -= _scale;
-                goalLine.Width -= _scale;
-                goalLine.Height -= _scale;
+                goalLine.Reduce (_scale);
                 FocusedFontSize = goalLine.FontSize.ToString ();
             }
         }
@@ -906,6 +916,8 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                BeingProcessedBadge = VisibleBadges [0];
+                BeingProcessedBadge.Show ();
             }
         }
 

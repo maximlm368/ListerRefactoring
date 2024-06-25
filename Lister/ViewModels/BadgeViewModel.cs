@@ -14,6 +14,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ExtentionsAndAuxiliary;
 using Avalonia.Controls.Shapes;
+using System;
 
 namespace Lister.ViewModels;
 
@@ -342,8 +343,8 @@ public class BadgeViewModel : ViewModelBase
                 Typeface face = new Typeface (new FontFamily("arial"), FontStyle.Normal, FontWeight.Normal);
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
-                double usefulTextBlockWidth = formatted.Width;
-                bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
+                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + 4;
+                bool lineIsOverflow = ( usefulTextBlockWidth > lineLength );
 
                 if ( ! lineIsOverflow ) 
                 {
@@ -442,35 +443,56 @@ public class BadgeViewModel : ViewModelBase
 
     internal void CheckCorrectness ( )
     {
-        bool isCorrect = true;
+        var dfdf = FocusedLine;
 
         if ( FocusedLine == null ) 
         {
             return;
         }
 
-        isCorrect = CheckBorderViolation (FocusedLine);
+        bool isBorderViolent = CheckBorderViolation (FocusedLine);
 
-        foreach ( TextLineViewModel line in TextLines )
+        if ( ! isBorderViolent ) 
         {
-            if ( line.Equals (FocusedLine) )
+            if ( FocusedLine.isBorderViolent )
             {
-                continue;
+                BorderViolentLines.Remove (FocusedLine);
+                FocusedLine.isBorderViolent = false;
             }
-
-            double topDifference = Math.Abs (FocusedLine.TopOffset - line.TopOffset);
-            double maxFontsize = Math.Max (FocusedLine. FontSize, line.FontSize);
-            bool isNotOverlayed = topDifference > maxFontsize;
-
-            isCorrect = isCorrect && isNotOverlayed;
-
-            if ( !isCorrect )
+        }
+        else 
+        {
+            if ( ! FocusedLine.isBorderViolent ) 
             {
-                break;
+                BorderViolentLines.Add (FocusedLine);
+                FocusedLine.isBorderViolent = true;
             }
         }
 
-        IsCorrect = isCorrect;
+        bool isOverlayViolent = CheckSingleOverlayViolation (0, FocusedLine);
+
+        if ( ! isOverlayViolent )
+        {
+            if ( FocusedLine.isOverLayViolent )
+            {
+                OverlayViolentLines.Remove (FocusedLine);
+                FocusedLine.isOverLayViolent = false;
+            }
+
+        }
+        else 
+        {
+            if ( ! FocusedLine.isOverLayViolent )
+            {
+                OverlayViolentLines.Add (FocusedLine);
+                FocusedLine.isOverLayViolent = true;
+            }
+        }
+
+        bool borderViolentsExist = (BorderViolentLines. Count > 0);
+        bool overlayingExist = (OverlayViolentLines. Count > 0);
+
+        IsCorrect = ! (borderViolentsExist   ||   overlayingExist);
     }
 
 
@@ -478,92 +500,88 @@ public class BadgeViewModel : ViewModelBase
     {
         foreach ( TextLineViewModel line   in   TextLines )
         {
-            bool isCorrect = CheckBorderViolation ( line );
+            bool isViolent = CheckBorderViolation ( line );
 
-            if ( ! isCorrect )
+            if ( isViolent )
             {
                 BorderViolentLines.Add ( line );
                 line.isBorderViolent = true;
             }
         }
 
-        foreach ( TextLineViewModel line   in   TextLines )
-        {
-            
-        }
+        CheckOverlayViolation ();
     }
 
 
     private bool CheckBorderViolation ( TextLineViewModel line )
     {
-        Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, FontWeight.Normal);
-        FormattedText formatted = new FormattedText (line.Content, CultureInfo.CurrentCulture
-                                                            , FlowDirection.LeftToRight, face, line.FontSize, null);
-
-        double rest = BadgeWidth - ( line.LeftOffset + formatted.WidthIncludingTrailingWhitespace );
+        double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
         bool notExceedToRight = ( rest > 0 );
         bool notExceedToLeft = ( line.LeftOffset > 0 );
         bool notExceedToTop = ( line.TopOffset > 0 );
         rest = BadgeHeight - ( line.TopOffset + line.FontSize );
         bool notExceedToBottom = ( rest > 0 );
 
-        bool isCorrect = ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+        bool isViolent = ! ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
 
-        return isCorrect;
+        return isViolent;
     }
 
 
-    private bool CheckOverlayViolation ( )
+    private void CheckOverlayViolation ( )
     {
         for ( int index = 0;   index < TextLines. Count;   index++ )
         {
             TextLineViewModel overlaying = TextLines [ index ];
+            CheckSingleOverlayViolation (index, overlaying );
+        }
+    }
 
 
-            for ( int ind = index;   ind < TextLines. Count;   ind++ )
+    private bool CheckSingleOverlayViolation ( int scratchInLines, TextLineViewModel overlaying )
+    {
+        bool isViolent = false;
+
+        for ( int ind = scratchInLines;   ind < TextLines. Count;   ind++ )
+        {
+            TextLineViewModel underlaying = TextLines [ind];
+
+            if ( underlaying.Equals (overlaying) ) continue; 
+            
+            double verticalDifference = Math.Abs (overlaying.TopOffset - underlaying.TopOffset);
+            double topOffsetOfAbove = Math.Min (overlaying.TopOffset, underlaying.TopOffset);
+            TextLineViewModel above = overlaying;
+
+            if ( topOffsetOfAbove == underlaying.TopOffset )
             {
-                TextLineViewModel underlaying = TextLines [ind];
-
-                double topDifference = Math.Abs (overlaying.TopOffset - underlaying.TopOffset);
-                double maxFontsize = Math.Max (overlaying.FontSize, underlaying.FontSize);
-                bool isOverlaying = topDifference < maxFontsize;
-
-                if (isOverlaying) 
-                {
-                    if ( ! overlaying.isOverLayViolent ) 
-                    {
-                        overlaying.isOverLayViolent = true;
-                        OverlayViolentLines.Add (overlaying);
-                    }
-
-                    
-                }
-
-
+                above = underlaying;
             }
 
+            isViolent = ( verticalDifference < above.FontSize );
 
+            double horizontalDifference = Math.Abs (overlaying.LeftOffset - underlaying.LeftOffset);
+            double leftOffsetOfLeftist = Math.Min (overlaying.LeftOffset, underlaying.LeftOffset);
+            TextLineViewModel leftist = overlaying;
+
+            if ( leftOffsetOfLeftist == underlaying.LeftOffset )
+            {
+                leftist = underlaying;
+            }
+
+            isViolent = isViolent   &&   ( horizontalDifference < leftist.UsefullWidth );
+
+            if ( isViolent )
+            {
+                if ( ! overlaying.isOverLayViolent )
+                {
+                    OverlayViolentLines.Add (overlaying);
+                    overlaying.isOverLayViolent = true;
+                }
+
+                break;
+            }
         }
 
-
-
-
-
-
-
-
-        Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, FontWeight.Normal);
-        FormattedText formatted = new FormattedText (line.Content, CultureInfo.CurrentCulture
-                                                            , FlowDirection.LeftToRight, face, line.FontSize, null);
-
-        
-
-
-
-
-
-        bool isCorrect = false;
-
-        return isCorrect;
+        return isViolent;
     }
 }

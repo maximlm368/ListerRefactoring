@@ -12,6 +12,8 @@ using ContentAssembler;
 using QuestPDF.Infrastructure;
 using ExtentionsAndAuxiliary;
 using System.Reflection;
+using Avalonia.Controls.Shapes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Lister.ViewModels
 {
@@ -33,7 +35,7 @@ namespace Lister.ViewModels
         internal double FontSize
         {
             get { return fs; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fs, value, nameof (FontSize));
             }
@@ -69,20 +71,35 @@ namespace Lister.ViewModels
             }
         }
 
+        private double uW;
+        internal double UsefullWidth
+        {
+            get { return uW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref uW, value, nameof (UsefullWidth));
+            }
+        }
+
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
+        internal bool isWidthViolent = false;
 
 
         public TextLineViewModel ( TextualAtom text )
         {
             _dataSource = text;
-            Alignment = GetAlignmentByString ( text.Alignment );
-            //Alignment = HorizontalAlignment.Center;
+            SetAlignmentByString (text.Alignment);
             FontSize = text.FontSize;
             FontFamily = new FontFamily (text.FontFamily);
             //FontFamily = new FontFamily ("sans-serif");
             Content = text.Content;
             IsSplitable = text.IsSplitable;
+
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            UsefullWidth = formatted.Width + 4;
 
             SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
         }
@@ -96,10 +113,29 @@ namespace Lister.ViewModels
             FontFamily = new FontFamily (text._dataSource.FontFamily);
             Content = text.Content;
             IsSplitable = text.IsSplitable;
+            UsefullWidth = text.UsefullWidth;
 
             SetYourself (text._dataSource.Width, text._dataSource.Height, text._dataSource.TopOffset
                                                                         , text._dataSource.LeftOffset);
         }
+
+
+        //private void SetInherited ( TextualAtom text )
+        //{
+        //    Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+        //    FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+        //                                                        , FlowDirection.LeftToRight, face, FontSize, null);
+        //    double usefulWidth = formatted.WidthIncludingTrailingWhitespace;
+
+        //    if ( usefulWidth > _dataSource.Width )
+        //    {
+        //        isWidthViolent = true;
+        //    }
+
+        //    double height = formatted.Height;
+
+        //    SetYourself (usefulWidth, text.Height, text.TopOffset, text.LeftOffset);
+        //}
 
 
         internal TextLineViewModel GetDimensionalOriginal () 
@@ -112,6 +148,7 @@ namespace Lister.ViewModels
         internal void ZoomOn ( double coefficient )
         {
             FontSize *= coefficient;
+            UsefullWidth *= coefficient;
             base.ZoomOn (coefficient );
         }
 
@@ -119,27 +156,52 @@ namespace Lister.ViewModels
         internal void ZoomOut ( double coefficient )
         {
             FontSize /= coefficient;
+            UsefullWidth /= coefficient;
             base.ZoomOut (coefficient);
         }
 
 
-        private HorizontalAlignment GetAlignmentByString ( string alignmentName ) 
+        internal void Increase ( double additable )
+        {
+            FontSize += additable;
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            UsefullWidth = formatted.Width + 4;
+            Width += additable;
+            Height += additable;
+        }
+
+
+        internal void Reduce ( double subtractable )
+        {
+            FontSize -= subtractable;
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            UsefullWidth = formatted.Width + 4;
+            Width -= subtractable;
+            Height -= subtractable;
+        }
+
+
+        private void SetAlignmentByString ( string alignmentName ) 
         {
             if( alignmentName == "Left" ) 
             {
-                return HorizontalAlignment.Left; 
+                Alignment = HorizontalAlignment.Left; 
             }
             if ( alignmentName == "Right" )
             {
-                return HorizontalAlignment.Right;
+                Alignment = HorizontalAlignment.Right;
             }
             if ( alignmentName == "Center" )
             {
-                return HorizontalAlignment.Center;
+                Alignment = HorizontalAlignment.Center;
             }
             else
             {
-                return HorizontalAlignment.Center;
+                Alignment = HorizontalAlignment.Center;
             }
         }
 
@@ -149,7 +211,7 @@ namespace Lister.ViewModels
             List <TextLineViewModel> result = new List <TextLineViewModel>();
             double previousLeftOffset = LeftOffset;
 
-            foreach ( string content in splittedContents )
+            foreach ( string content   in   splittedContents )
             {
                 TextLineViewModel newLine = new TextLineViewModel (this);
                 newLine.ZoomOn (scale);
@@ -170,17 +232,7 @@ namespace Lister.ViewModels
         }
 
 
-        //internal bool IsCorrect ()
-        //{
-        //    Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
-        //    FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
-        //                                                        , FlowDirection.LeftToRight, face, FontSize, null);
-
-        //    return formatted.Width <= Width;
-        //}
-
-
-        internal void ReplaceContent ( string content )
+        private void ReplaceContent ( string content )
         {
             if ( content == null ) 
             {
@@ -192,6 +244,7 @@ namespace Lister.ViewModels
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             Content = content;
             Width = formatted.WidthIncludingTrailingWhitespace;
+            UsefullWidth = formatted.Width + 4;
         }
     }
 
