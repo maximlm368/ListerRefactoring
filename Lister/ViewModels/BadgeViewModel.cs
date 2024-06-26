@@ -23,7 +23,6 @@ public class BadgeViewModel : ViewModelBase
     private static Dictionary<string, Bitmap> _pathToImage;
     private static double _rightSpan = 5;
 
-    private const double coefficient = 1.03;
     internal double Scale { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
@@ -126,7 +125,27 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
+    private string fS;
+    internal string FocusedFontSize
+    {
+        get { return fS; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref fS, value, nameof (FocusedFontSize));
+        }
+    }
+
     internal bool IsCorrect { get; private set; }
+
+    private bool iC;
+    internal bool IsChanged
+    {
+        get { return iC; }
+        private set
+        {
+            this.RaiseAndSetIfChanged (ref iC, value, nameof (IsChanged));
+        }
+    }
 
 
     static BadgeViewModel ( )
@@ -154,6 +173,7 @@ public class BadgeViewModel : ViewModelBase
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
+        FocusedFontSize = string.Empty;
 
         List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
@@ -165,7 +185,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private BadgeViewModel ( BadgeViewModel badge )
+    private BadgeViewModel ( BadgeViewModel badge, CloningGoal forWhat )
     {
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
@@ -182,12 +202,27 @@ public class BadgeViewModel : ViewModelBase
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
+        FocusedFontSize = string.Empty;
 
-        foreach ( TextLineViewModel line   in   badge.TextLines ) 
+        if ( forWhat == CloningGoal.Outside ) 
         {
-            TextLineViewModel original = line.GetDimensionalOriginal ();
-            TextLines.Add (original);
+            foreach ( TextLineViewModel line   in   badge.TextLines )
+            {
+                TextLineViewModel original = line.GetDimensionalOriginal ();
+                TextLines.Add (original);
+            }
         }
+
+        if ( forWhat == CloningGoal.Inside )
+        {
+            foreach ( TextLineViewModel line   in   badge.TextLines )
+            {
+                TextLines.Add (line);
+            }
+        }
+
+
+
 
         //foreach ( ImageViewModel image in badge.InsideImages )
         //{
@@ -205,7 +240,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel GetDimensionalOriginal () 
     {
-        BadgeViewModel original = new BadgeViewModel ( this );
+        BadgeViewModel original = new BadgeViewModel ( this, CloningGoal.Outside );
         return original;
     }
 
@@ -297,7 +332,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel Clone ()
     {
-        BadgeViewModel clone = new BadgeViewModel (BadgeModel);
+        BadgeViewModel clone = new BadgeViewModel (this, CloningGoal.Inside);
         return clone;
     }
 
@@ -313,12 +348,25 @@ public class BadgeViewModel : ViewModelBase
 
     internal void ReplaceTextLine ( TextLineViewModel replaceble, List <TextLineViewModel> replacing )
     {
+        if ( replaceble.isBorderViolent )
+        {
+            BorderViolentLines.Remove (replaceble);
+        }
+
+        if ( replaceble.isOverLayViolent )
+        {
+            OverlayViolentLines.Remove (replaceble);
+        }
+
         TextLines.Remove (replaceble);
 
         foreach ( TextLineViewModel line   in   replacing )
         {
+            CheckLineCorrectness ( line );
             TextLines.Add (line);
         }
+
+        IsChanged = true;
     }
 
 
@@ -443,56 +491,73 @@ public class BadgeViewModel : ViewModelBase
 
     internal void CheckCorrectness ( )
     {
-        var dfdf = FocusedLine;
-
         if ( FocusedLine == null ) 
         {
             return;
         }
 
-        bool isBorderViolent = CheckBorderViolation (FocusedLine);
-
-        if ( ! isBorderViolent ) 
-        {
-            if ( FocusedLine.isBorderViolent )
-            {
-                BorderViolentLines.Remove (FocusedLine);
-                FocusedLine.isBorderViolent = false;
-            }
-        }
-        else 
-        {
-            if ( ! FocusedLine.isBorderViolent ) 
-            {
-                BorderViolentLines.Add (FocusedLine);
-                FocusedLine.isBorderViolent = true;
-            }
-        }
-
-        bool isOverlayViolent = CheckSingleOverlayViolation (0, FocusedLine);
-
-        if ( ! isOverlayViolent )
-        {
-            if ( FocusedLine.isOverLayViolent )
-            {
-                OverlayViolentLines.Remove (FocusedLine);
-                FocusedLine.isOverLayViolent = false;
-            }
-
-        }
-        else 
-        {
-            if ( ! FocusedLine.isOverLayViolent )
-            {
-                OverlayViolentLines.Add (FocusedLine);
-                FocusedLine.isOverLayViolent = true;
-            }
-        }
+        CheckLineCorrectness (FocusedLine);
 
         bool borderViolentsExist = (BorderViolentLines. Count > 0);
         bool overlayingExist = (OverlayViolentLines. Count > 0);
 
         IsCorrect = ! (borderViolentsExist   ||   overlayingExist);
+    }
+
+
+    internal void CheckCorrectnessAfterCancelation ()
+    {
+        foreach ( TextLineViewModel line   in   TextLines )
+        {
+            CheckLineCorrectness (line);
+        }
+
+        bool borderViolentsExist = ( BorderViolentLines.Count > 0 );
+        bool overlayingExist = ( OverlayViolentLines.Count > 0 );
+
+        IsCorrect = !( borderViolentsExist || overlayingExist );
+    }
+
+
+    private void CheckLineCorrectness ( TextLineViewModel checkable )
+    {
+        bool isBorderViolent = CheckBorderViolation (checkable);
+
+        if ( ! isBorderViolent )
+        {
+            if ( checkable.isBorderViolent )
+            {
+                BorderViolentLines.Remove (checkable);
+                checkable.isBorderViolent = false;
+            }
+        }
+        else
+        {
+            if ( ! checkable.isBorderViolent )
+            {
+                BorderViolentLines.Add (checkable);
+                checkable.isBorderViolent = true;
+            }
+        }
+
+        bool isOverlayViolent = CheckSingleOverlayViolation (0, checkable);
+
+        if ( ! isOverlayViolent )
+        {
+            if ( checkable.isOverLayViolent )
+            {
+                OverlayViolentLines.Remove (checkable);
+                checkable.isOverLayViolent = false;
+            }
+        }
+        else
+        {
+            if ( ! checkable.isOverLayViolent )
+            {
+                OverlayViolentLines.Add (checkable);
+                checkable.isOverLayViolent = true;
+            }
+        }
     }
 
 
@@ -583,5 +648,49 @@ public class BadgeViewModel : ViewModelBase
         }
 
         return isViolent;
+    }
+
+
+    #region FontSizeChange
+
+    internal void IncreaseFontSize ( string focusedContent, double increasing )
+    {
+        ChangeFontSize (increasing, false);
+    }
+
+
+    internal void ReduceFontSize ( string focusedContent, double increasing )
+    {
+        ChangeFontSize (increasing, true);
+    }
+
+
+    private void ChangeFontSize ( double increasing, bool toReduce )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        if ( toReduce )
+        {
+            FocusedLine.Reduce (increasing);
+        }
+        else
+        {
+            FocusedLine.Increase (increasing);
+        }
+
+        IsChanged = true;
+        FocusedFontSize = FocusedLine. FontSize.ToString ();
+        CheckCorrectness ();
+    }
+    #endregion
+
+
+    private enum CloningGoal 
+    {
+        Outside = 0,
+        Inside = 1
     }
 }

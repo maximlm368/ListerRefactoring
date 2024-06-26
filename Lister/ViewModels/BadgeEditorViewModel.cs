@@ -72,10 +72,11 @@ namespace Lister.ViewModels
             }
         }
 
-        private List <BadgeViewModel> _visibleBadges;
+        private Dictionary <BadgeViewModel, BadgeViewModel> _drafts;
+        private List <BadgeViewModel> _vB;
         internal List <BadgeViewModel> VisibleBadges
         {
-            get { return _visibleBadges; }
+            get { return _vB; }
             set
             {
                 bool isNullOrEmpty = ( value == null )   ||   ( value.Count == 0 );
@@ -85,25 +86,28 @@ namespace Lister.ViewModels
                     return;
                 }
 
-                if ( value [0] == null )
-                {
-                    return;
-                }
-
-                _visibleBadges = value;
-                SetBeingProcessed (value);
-                SetIcons ();
+                _vB = new List <BadgeViewModel> ();
 
                 if ( ! _incorrectsAreSet ) 
                 {
-                    foreach ( BadgeViewModel badge   in   VisibleBadges )
+                    foreach ( BadgeViewModel badge   in   value )
                     {
-                        IncorrectBadges.Add (badge);
+                        if ( badge == null )
+                        {
+                            continue;
+                        }
+
+                        BadgeViewModel clone = badge.Clone ();
+                        _drafts.Add (badge, clone);
+                        IncorrectBadges.Add (clone);
+                        VisibleBadges.Add (clone);
                     }
 
                     _incorrectsAreSet = true;
                 }
 
+                SetBeingProcessed (VisibleBadges [0]);
+                SetIcons ();
                 ProcessableCount = VisibleBadges. Count;
             }
         }
@@ -127,26 +131,6 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref fx, value, nameof (FixedBadges));
             }
         }
-
-        //private int cC;
-        //internal int CorrectCount
-        //{
-        //    get { return cC; }
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref cC, value, nameof (CorrectCount));
-        //    }
-        //}
-
-        //private int inC;
-        //internal int IncorrectCount
-        //{
-        //    get { return inC; }
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref inC, value, nameof (IncorrectCount));
-        //    }
-        //}
 
         private ObservableCollection <BadgeCorrectnessViewModel> cL;
         internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
@@ -282,6 +266,7 @@ namespace Lister.ViewModels
         public BadgeEditorViewModel ( )
         {
             _scaleStorage = new Dictionary <BadgeViewModel, double> ();
+            _drafts = new Dictionary <BadgeViewModel, BadgeViewModel> ();
             FocusedFontSize = string.Empty;
             SplitterIsEnable = false;
 
@@ -302,7 +287,51 @@ namespace Lister.ViewModels
 
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
-    }
+        }
+
+
+        internal void CancelChanges ()
+        {
+            if ( FixedBadges.Contains (BeingProcessedBadge) )
+            {
+                FixedBadges.Remove (BeingProcessedBadge);
+            }
+
+            if ( IncorrectBadges.Contains (BeingProcessedBadge) )
+            {
+                IncorrectBadges.Remove (BeingProcessedBadge);
+            }
+
+            double canceledOrinalScale = _scaleStorage [BeingProcessedBadge];
+            _scaleStorage.Remove (BeingProcessedBadge);
+
+            BadgeViewModel draftSource = null;
+
+            foreach ( var keyValue   in   _drafts ) 
+            {
+                if ( keyValue.Value.Equals (BeingProcessedBadge) ) 
+                {
+                    draftSource = keyValue.Key;
+                    break;
+                } 
+            }
+
+            BeingProcessedBadge = draftSource.Clone ();
+            _drafts [draftSource] = BeingProcessedBadge;
+            _scaleStorage.Add (BeingProcessedBadge, canceledOrinalScale);
+            VisibleBadges [BeingProcessedNumber - 1] = BeingProcessedBadge;
+            SetCorrectScale ();
+            BeingProcessedBadge.Show ();
+            BeingProcessedBadge.CheckCorrectnessAfterCancelation ();
+            ResetActiveIcon ();
+        }
+
+
+        internal void GoBack ()
+        {
+            
+        }
+
 
         #region Navigation
 
@@ -509,6 +538,9 @@ namespace Lister.ViewModels
             {
                 _focusedLine.LeftOffset -= _scale;
             }
+
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
         }
 
 
@@ -518,6 +550,9 @@ namespace Lister.ViewModels
             {
                 _focusedLine.LeftOffset += _scale;
             }
+
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
         }
 
 
@@ -527,6 +562,9 @@ namespace Lister.ViewModels
             {
                 _focusedLine.TopOffset -= _scale;
             }
+
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
         }
 
 
@@ -536,6 +574,9 @@ namespace Lister.ViewModels
             {
                 _focusedLine.TopOffset += _scale;
             }
+
+            BeingProcessedBadge.CheckCorrectness ();
+            ResetActiveIcon ();
         }
         #endregion
 
@@ -547,7 +588,7 @@ namespace Lister.ViewModels
 
             if ( _focusedLine != null )
             {
-                FocusedFontSize = _focusedLine.FontSize.ToString ();
+                BeingProcessedBadge. FocusedFontSize = _focusedLine.FontSize.ToString ();
                 MoversAreEnable = true;
                 BeingProcessedBadge. FocusedLine = _focusedLine;
             }
@@ -561,7 +602,10 @@ namespace Lister.ViewModels
                 BeingProcessedBadge.CheckCorrectness ();
                 ResetActiveIcon ();
                 _focusedLine = null;
+                BeingProcessedBadge. FocusedLine = null;
                 SplitterIsEnable = false;
+                MoversAreEnable = false;
+                BeingProcessedBadge. FocusedFontSize = string.Empty;
             }
         }
 
@@ -666,7 +710,6 @@ namespace Lister.ViewModels
             double layoutWidth = BeingProcessedBadge. BadgeWidth;
             List <TextLineViewModel> splitted = _splittable.SplitYourself (splittedContents, _scale, layoutWidth);
             BeingProcessedBadge.ReplaceTextLine ( _splittable, splitted );
-            BeingProcessedBadge.CheckCorrectness ();
             ResetActiveIcon ();
             SplitterIsEnable = false;
         }
@@ -675,51 +718,15 @@ namespace Lister.ViewModels
 
         internal void IncreaseFontSize ( string focusedContent )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
-            {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.Increase (_scale);
-                FocusedFontSize = goalLine.FontSize.ToString ();
-            }
+            BeingProcessedBadge.IncreaseFontSize (focusedContent, _scale);
+            ResetActiveIcon ();
         }
 
 
         internal void ReduceFontSize ( string focusedContent )
         {
-            ObservableCollection<TextLineViewModel> lines = BeingProcessedBadge.TextLines;
-            string lineContent = string.Empty;
-            TextLineViewModel goalLine = null;
-
-            foreach ( TextLineViewModel line in lines )
-            {
-                lineContent = line.Content;
-
-                if ( lineContent == focusedContent )
-                {
-                    goalLine = line;
-                    break;
-                }
-            }
-
-            if ( goalLine != null )
-            {
-                goalLine.Reduce (_scale);
-                FocusedFontSize = goalLine.FontSize.ToString ();
-            }
+            BeingProcessedBadge.ReduceFontSize (focusedContent, _scale);
+            ResetActiveIcon ();
         }
         #endregion
 
@@ -803,14 +810,13 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetBeingProcessed ( List <BadgeViewModel> visibleBadges )
+        private void SetBeingProcessed ( BadgeViewModel beingProcessed )
         {
-            BadgeViewModel beingPrecessed = visibleBadges [0];
-            _scaleStorage.Add (beingPrecessed, beingPrecessed.Scale);
-            SetStandartScale (beingPrecessed);
-            beingPrecessed.ZoomOn (_scale);
-            beingPrecessed.Show ();
-            BeingProcessedBadge = beingPrecessed;
+            _scaleStorage.Add (beingProcessed, beingProcessed.Scale);
+            SetStandartScale (beingProcessed);
+            beingProcessed.ZoomOn (_scale);
+            beingProcessed.Show ();
+            BeingProcessedBadge = beingProcessed;
             BeingProcessedNumber = 1;
         }
 
@@ -821,17 +827,10 @@ namespace Lister.ViewModels
             {
                 for ( int index = 0;   index < VisibleBadges. Count;   index++ ) 
                 {
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (VisibleBadges [index].IsCorrect);
+                    //BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (VisibleBadges [index].IsCorrect);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false);
                     VisibleIcons.Add (icon);
                     icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-
-                    //bool metBeingProcessed = IncorrectBadges [index].Equals (BeingProcessedBadge);
-
-                    //if ( metBeingProcessed ) 
-                    //{
-                    //    ActiveIcon = icon;
-                    //    icon.BorderColor = new SolidColorBrush (new Color (155, 0, 0, 255));
-                    //}
                 }
 
                 VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
@@ -922,29 +921,29 @@ namespace Lister.ViewModels
         }
 
 
-        private void FilterByCorrectnes ( bool correctness )
-        {
-            VisibleIcons.Clear();
+        //private void FilterByCorrectnes ( bool correctness )
+        //{
+        //    VisibleIcons.Clear();
 
-            if ( ( VisibleBadges != null )  &&  ( VisibleBadges.Count > 0 ) )
-            {
-                for ( int index = 0;   index < VisibleBadges.Count;   index++ )
-                {
-                    BadgeViewModel badge = VisibleBadges [index];
-                    bool correctnessCoincides = badge.IsCorrect.Equals(correctness);
+        //    if ( ( VisibleBadges != null )  &&  ( VisibleBadges.Count > 0 ) )
+        //    {
+        //        for ( int index = 0;   index < VisibleBadges.Count;   index++ )
+        //        {
+        //            BadgeViewModel badge = VisibleBadges [index];
+        //            bool correctnessCoincides = badge.IsCorrect.Equals(correctness);
 
-                    if ( correctnessCoincides ) 
-                    {
-                        IncorrectBadges.Add (badge);
-                        BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
-                        VisibleIcons.Add (icon);
-                        icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-                    }
-                }
+        //            if ( correctnessCoincides ) 
+        //            {
+        //                IncorrectBadges.Add (badge);
+        //                BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
+        //                VisibleIcons.Add (icon);
+        //                icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+        //            }
+        //        }
 
-                VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
-            }
-        }
+        //        VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+        //    }
+        //}
 
 
 
@@ -955,16 +954,6 @@ namespace Lister.ViewModels
            IncorrectsIsChosen = 2
         }
 
-
-        private enum Transition 
-        {
-            FromAllToCorr = 0,
-            FromAllToIncorr = 1,
-            FromCorrToAll = 2,
-            FromCorrToIncorr = 3,
-            FromIncorrToAll = 4,
-            FromIncorrToCorr = 5
-        }
     }
 
 }

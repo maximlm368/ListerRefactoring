@@ -16,8 +16,8 @@
 			Margin="10,0">
 
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="132" ></ColumnDefinition>
-
+				<ColumnDefinition Width="100" ></ColumnDefinition>
+				<ColumnDefinition Width="100" ></ColumnDefinition>
 				
 				<ColumnDefinition Width="20"></ColumnDefinition>
 
@@ -41,16 +41,24 @@
 			<Button
 				Name="Back"
 				Content="Назад"
-				Width="130"
+				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
 				Tapped="GoBack"/>
 
+			<Button
+				Name="cancel"
+				Content="Отмена"
+				Width="98"
+				Grid.Column="1"
+				HorizontalContentAlignment="Center"
+				IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
+				Command="{Binding  Path = CancelChanges}"/>
 
 			<Button
 				Name="zoomOut"
 				Content="-"
-				Grid.Column="2"
+				Grid.Column="3"
 				HorizontalAlignment="Center"
 				Width="28"
 				Tapped="ReduceFontSize"
@@ -60,16 +68,16 @@
 				Name="scalabilityGrade"
 				Width="60"
 				FontSize="14"
-				Grid.Column="3"
+				Grid.Column="4"
 				MaxHeight="30"
 				Margin="0,3"
-				Text="{Binding  Path = FocusedFontSize,  Mode=OneWay}"
+				Text="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
 				IsReadOnly="True"/>
 
 			<Button
 				Name="zoomOn"
 				Content="+"
-				Grid.Column="4"
+				Grid.Column="5"
 				HorizontalAlignment="Center"
 				Width="28"
 				Tapped="IncreaseFontSize"
@@ -78,7 +86,7 @@
 			<Button
 				Name="left"
 				Content="L"
-				Grid.Column="6"
+				Grid.Column="7"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -88,7 +96,7 @@
 			<Button
 				Name="right"
 				Content="R"
-				Grid.Column="7"
+				Grid.Column="8"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -98,7 +106,7 @@
 			<Button
 				Name="up"
 				Content="U"
-				Grid.Column="8"
+				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -108,7 +116,7 @@
 			<Button
 				Name="down"
 				Content="D"
-				Grid.Column="9"
+				Grid.Column="10"
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
@@ -118,7 +126,7 @@
 			<Button
 				Name="spliter"
 				Content="Разделить"
-				Grid.Column="11"
+				Grid.Column="12"
 				HorizontalContentAlignment="Center"
 				Width="130"
 				Tapped="Split"
@@ -154,6 +162,7 @@
 						Height="30"
 						Command="{Binding  Path = FilterCorrects}"
 						Grid.Column="0">
+						
 						<Button.Background>
 							<ImageBrush
 								Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
@@ -167,6 +176,7 @@
 						Height="30"
 						Command="{Binding  Path = FilterIncorrects}"
 						Grid.Column="1">
+						
 						<Button.Background>
 							<ImageBrush
 								Source = "{Binding  Path = IncorrectnessIcon,  Mode=OneWay }"

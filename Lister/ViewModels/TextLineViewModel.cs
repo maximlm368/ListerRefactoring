@@ -167,7 +167,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + 4;
+            UsefullWidth = formatted.Width + 2;
             Width += additable;
             Height += additable;
         }
@@ -179,7 +179,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + 4;
+            UsefullWidth = formatted.Width + 2;
             Width -= subtractable;
             Height -= subtractable;
         }
