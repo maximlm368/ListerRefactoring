@@ -105,18 +105,17 @@ namespace Lister.ViewModels
         }
 
 
-        private TextLineViewModel ( TextLineViewModel text )
+        private TextLineViewModel ( TextLineViewModel source )
         {
-            _dataSource = text._dataSource;
-            Alignment = text.Alignment;
-            FontSize = text._dataSource.FontSize;
-            FontFamily = new FontFamily (text._dataSource.FontFamily);
-            Content = text.Content;
-            IsSplitable = text.IsSplitable;
-            UsefullWidth = text.UsefullWidth;
+            _dataSource = source._dataSource;
+            Alignment = source.Alignment;
+            FontSize = source.FontSize;
+            FontFamily = new FontFamily (source._dataSource.FontFamily);
+            Content = source.Content;
+            IsSplitable = source.IsSplitable;
+            UsefullWidth = source.UsefullWidth;
 
-            SetYourself (text._dataSource.Width, text._dataSource.Height, text._dataSource.TopOffset
-                                                                        , text._dataSource.LeftOffset);
+            SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
         }
 
 
@@ -138,10 +137,17 @@ namespace Lister.ViewModels
         //}
 
 
-        internal TextLineViewModel GetDimensionalOriginal () 
+        //internal TextLineViewModel GetDimensionalOriginal () 
+        //{
+        //    TextLineViewModel original = new TextLineViewModel (this._dataSource);
+        //    return original;
+        //}
+
+
+        internal TextLineViewModel Clone ()
         {
-            TextLineViewModel original = new TextLineViewModel (this);
-            return original;
+            TextLineViewModel clone = new TextLineViewModel (this);
+            return clone;
         }
 
 
@@ -213,7 +219,7 @@ namespace Lister.ViewModels
 
             foreach ( string content   in   splittedContents )
             {
-                TextLineViewModel newLine = new TextLineViewModel (this);
+                TextLineViewModel newLine = new TextLineViewModel (this._dataSource);
                 newLine.ZoomOn (scale);
                 newLine.ReplaceContent (content);
                 newLine.LeftOffset = previousLeftOffset;

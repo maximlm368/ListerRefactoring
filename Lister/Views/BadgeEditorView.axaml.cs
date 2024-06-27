@@ -18,10 +18,8 @@ namespace Lister.Views
 {
     public partial class BadgeEditorView : UserControl
     {
-        private static double _scale = 2.8;
         private static double _widthDelta;
         private static double _heightDelta;
-        private ModernMainView _back;
         private ContentControl _focused;
         private bool _capturedExists;
         private bool _pointerIsPressed;
@@ -41,13 +39,6 @@ namespace Lister.Views
         }
 
 
-        internal void Splitttt ( object sender, TappedEventArgs args )
-        {
-            Label label = sender as Label;
-            label.Content = "dfffdfddfdf";
-        }
-
-
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
             workArea.Width -= widthDifference;
@@ -58,7 +49,7 @@ namespace Lister.Views
         }
 
 
-        internal void PassIncorrectBadges ( List<BadgeViewModel> incorrects ) 
+        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects ) 
         {
             BadgeEditorViewModel viewModel = (BadgeEditorViewModel) DataContext;
             viewModel.VisibleBadges = incorrects;
@@ -67,7 +58,8 @@ namespace Lister.Views
 
         internal void PassBackPoint ( ModernMainView back )
         {
-            _back = back;
+            //Back = back;
+            _vm.PassViews (this, back);
         }
 
         #region CapturingAndMovingByMouse
@@ -203,54 +195,6 @@ namespace Lister.Views
 
         #endregion
 
-        #region EditFontSize
-
-        internal void ReduceFontSize ( object sender, TappedEventArgs args )
-        {
-            if ( _focused == null ) 
-            {
-                return;
-            }
-
-            string content = (string) _focused.Content;
-            _vm.ReduceFontSize (content);
-        }
-
-
-        internal void IncreaseFontSize ( object sender, TappedEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            string content = ( string ) _focused.Content;
-            _vm.IncreaseFontSize (content);
-        }
-        #endregion
-
-        internal void Split ( object sender, TappedEventArgs args )
-        {
-            if ( _focused != null )
-            {
-                Label label = _focused as Label;
-                Border container;
-                string content = ( string ) _focused.Content;
-                List<string> strings = content.SplitBySeparators ();
-                _vm.Split (strings);
-                _focused = null;
-            }
-        }
-
-
-        internal void GoBack ( object sender, TappedEventArgs args )
-        {
-            _vm.SetOriginalScale ();
-            MainWindow owner = this.Parent as MainWindow;
-            _back.ChangeSize ( owner.WidthDifference, owner.HeightDifference );
-            owner.ResetDifference ();
-            owner.Content = _back;
-        }
     }
 
 

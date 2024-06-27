@@ -42,6 +42,17 @@ namespace Lister.Views
             _heightDelta -= heightDifference;
             personChoosing.AdjustComboboxWidth (widthDifference);
         }
+
+
+        internal void SetIncorrectBadges ( ObservableCollection <BadgeViewModel> incorrects )
+        {
+            ModernMainViewModel vm = DataContext as ModernMainViewModel;
+            
+            if ( vm != null ) 
+            {
+                vm.SetIncorrectBadges ( incorrects );
+            }
+        }
     }
 }
 

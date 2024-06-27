@@ -44,7 +44,7 @@
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
-				Tapped="GoBack"/>
+			    Command="{Binding  Path = GoBack}"/>
 
 			<Button
 				Name="cancel"
@@ -61,7 +61,7 @@
 				Grid.Column="3"
 				HorizontalAlignment="Center"
 				Width="28"
-				Tapped="ReduceFontSize"
+				Command="{Binding  Path = ReduceFontSize}"
 				IsEnabled="False" />
 
 			<TextBox
@@ -80,7 +80,7 @@
 				Grid.Column="5"
 				HorizontalAlignment="Center"
 				Width="28"
-				Tapped="IncreaseFontSize"
+				Command="{Binding  Path = IncreaseFontSize}"
 				IsEnabled="False" />
 
 			<Button
@@ -90,7 +90,7 @@
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
-				Command="{Binding   Path = Left,   Mode=OneWay}"
+				Command="{Binding   Path = Left}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -100,7 +100,7 @@
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
-				Command="{Binding   Path = Right,   Mode=OneWay}"
+				Command="{Binding   Path = Right}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -110,7 +110,7 @@
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
-				Command="{Binding   Path = Up,   Mode=OneWay}"
+				Command="{Binding   Path = Up}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -120,7 +120,7 @@
 				HorizontalAlignment="Center"
 				Width="28"
 				KeyDown="ToSide"
-				Command="{Binding   Path = Down,   Mode=OneWay}"
+				Command="{Binding   Path = Down}"
 				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
 
 			<Button
@@ -129,7 +129,7 @@
 				Grid.Column="12"
 				HorizontalContentAlignment="Center"
 				Width="130"
-				Tapped="Split"
+				Command="{Binding   Path = Split}"
 				IsEnabled="{Binding   Path = SplitterIsEnable,   Mode=OneWay}" />
 			
 		</Grid>
@@ -191,7 +191,7 @@
 					Name="slider"
 					BorderThickness="1"
 					BorderBrush="Brown"
-					Height="300"
+					Height="303"
 					Grid.Column="0">
 
 					<ScrollViewer
@@ -243,22 +243,22 @@
 
 					<Border
 						Name="badge"
-						BorderThickness="1"
+						BorderThickness="2"
 						BorderBrush="Gray"
-						Width="982"
-						Height="601"
+						Width="{Binding  Path = BeingProcessedBadge.BorderWidth,  Mode=OneWay }"
+						Height="{Binding  Path = BeingProcessedBadge.BorderHeight,  Mode=OneWay }"
 						VerticalAlignment="Center"
 						HorizontalAlignment="Center">
 
 						<Canvas
 							Name="incorrectBadge"
 							VerticalAlignment="Top"
-							Width="980"
-							Height="599">
+							Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
+							Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }">
 
 							<Image
 								Name="backgroundImage"
-								Width="980"
+								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
 							    VerticalAlignment="Top"
 								KeyDown="ToSide"
 								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
@@ -469,5 +469,29 @@
 								
 							</EventTrigger>
 						</Button.Triggers>
+						
+						
+						
+						<Border
+						Name="badge"
+						BorderThickness="1"
+						BorderBrush="Gray"
+						Width="982"
+						Height="601"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center">
+
+						<Canvas
+							Name="incorrectBadge"
+							VerticalAlignment="Top"
+							Width="980"
+							Height="599">
+
+							<Image
+								Name="backgroundImage"
+								Width="980"
+							    VerticalAlignment="Top"
+								KeyDown="ToSide"
+								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 
 -->

@@ -1,4 +1,5 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ContentAssembler;
 using ReactiveUI;
@@ -170,6 +171,7 @@ public class BadgeViewModel : ViewModelBase
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = true;
+        IsChanged = false;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -185,43 +187,39 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private BadgeViewModel ( BadgeViewModel badge, CloningGoal forWhat )
+    private BadgeViewModel ( BadgeViewModel badge )
     {
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
-        BadgeWidth = layout.OutlineSize. Width;
+        BadgeWidth = badge.BadgeWidth;
         BorderWidth = BadgeWidth + 2;
-        BadgeHeight = layout.OutlineSize. Height;
+        BadgeHeight = badge.BadgeHeight;
         BorderHeight = BadgeHeight + 2;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         BorderViolentLines = new List<TextLineViewModel> ();
         OverlayViolentLines = new List<TextLineViewModel> ();
         InsideImages = new ObservableCollection<ImageViewModel> ();
         InsideShapes = new ObservableCollection<ImageViewModel> ();
-        IsCorrect = true;
+        IsCorrect = badge.IsCorrect;
+        Scale = badge.Scale;
         _borderThickness = 1;
-        Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
 
-        if ( forWhat == CloningGoal.Outside ) 
+        foreach ( TextLineViewModel line in badge.TextLines )
         {
-            foreach ( TextLineViewModel line   in   badge.TextLines )
-            {
-                TextLineViewModel original = line.GetDimensionalOriginal ();
-                TextLines.Add (original);
-            }
+            TextLineViewModel clone = line.Clone ();
+            TextLines.Add (clone);
         }
 
-        if ( forWhat == CloningGoal.Inside )
-        {
-            foreach ( TextLineViewModel line   in   badge.TextLines )
-            {
-                TextLines.Add (line);
-            }
-        }
+        Scale = badge.Scale;
 
 
+        //foreach ( TextLineViewModel line in badge.TextLines )
+        //{
+        //    //TextLineViewModel original = line.GetDimensionalOriginal ();
+        //    TextLines.Add (line);
+        //}
 
 
         //foreach ( ImageViewModel image in badge.InsideImages )
@@ -240,8 +238,57 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel GetDimensionalOriginal () 
     {
-        BadgeViewModel original = new BadgeViewModel ( this, CloningGoal.Outside );
+        BadgeViewModel original = new BadgeViewModel (this);
+
+        if ( original.Scale > 1 )
+        {
+            original.ZoomOut (Scale);
+        }
+        else if ( original.Scale < 1 ) 
+        {
+            original.ZoomOn (Scale);
+        }
+        
         return original;
+    }
+
+
+    internal BadgeViewModel Clone ()
+    {
+        BadgeViewModel clone = new BadgeViewModel (this);
+        return clone;
+    }
+
+
+    internal TextLineViewModel ? GetCoincidence ( string focusedContent )
+    {
+        ObservableCollection<TextLineViewModel> lines = TextLines;
+        string lineContent = string.Empty;
+        TextLineViewModel goalLine = null;
+
+        foreach ( TextLineViewModel line   in   lines )
+        {
+            lineContent = line.Content;
+
+            if ( lineContent == focusedContent )
+            {
+                goalLine = line;
+                break;
+            }
+        }
+
+        return goalLine;
+    }
+
+
+    internal void SetFocusedLine ( string focusedContent )
+    {
+        FocusedLine = GetCoincidence (focusedContent);
+
+        if ( FocusedLine != null )
+        {
+            FocusedFontSize = FocusedLine. FontSize.ToString ();
+        }
     }
 
 
@@ -330,13 +377,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal BadgeViewModel Clone ()
-    {
-        BadgeViewModel clone = new BadgeViewModel (this, CloningGoal.Inside);
-        return clone;
-    }
-
-
     internal void SetCorrectScale ( double scale )
     {
         if ( scale != 1 )
@@ -346,7 +386,22 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void ReplaceTextLine ( TextLineViewModel replaceble, List <TextLineViewModel> replacing )
+    internal void Split ( double scale )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        string content = ( string ) FocusedLine. Content;
+        List<string> strings = content.SplitBySeparators ();
+        double layoutWidth = BadgeWidth;
+        List <TextLineViewModel> splitted = FocusedLine.SplitYourself (strings, scale, layoutWidth);
+        ReplaceTextLine (FocusedLine, splitted);
+    }
+
+
+    private void ReplaceTextLine ( TextLineViewModel replaceble, List <TextLineViewModel> replacing )
     {
         if ( replaceble.isBorderViolent )
         {
@@ -653,13 +708,13 @@ public class BadgeViewModel : ViewModelBase
 
     #region FontSizeChange
 
-    internal void IncreaseFontSize ( string focusedContent, double increasing )
+    internal void IncreaseFontSize ( double increasing )
     {
         ChangeFontSize (increasing, false);
     }
 
 
-    internal void ReduceFontSize ( string focusedContent, double increasing )
+    internal void ReduceFontSize ( double increasing )
     {
         ChangeFontSize (increasing, true);
     }
@@ -687,10 +742,129 @@ public class BadgeViewModel : ViewModelBase
     }
     #endregion
 
+    #region Moving
 
-    private enum CloningGoal 
+    internal void MoveCaptured ( string capturedContent, Point delta )
     {
-        Outside = 0,
-        Inside = 1
+        ObservableCollection <TextLineViewModel> lines = TextLines;
+        string lineContent = string.Empty;
+        TextLineViewModel goalLine = null;
+
+        foreach ( TextLineViewModel line in lines )
+        {
+            lineContent = line.Content;
+
+            if ( lineContent == capturedContent )
+            {
+                goalLine = line;
+                break;
+            }
+        }
+
+        if ( goalLine != null )
+        {
+            goalLine.TopOffset -= delta.Y;
+            goalLine.LeftOffset -= delta.X;
+            IsChanged = true;
+        }
     }
+
+
+    internal void ToSide ( string focusedContent, string direction, double shift )
+    {
+        ObservableCollection<TextLineViewModel> lines = TextLines;
+        string lineContent = string.Empty;
+        TextLineViewModel goalLine = null;
+
+        foreach ( TextLineViewModel line in lines )
+        {
+            lineContent = line.Content;
+
+            if ( lineContent == focusedContent )
+            {
+                goalLine = line;
+                break;
+            }
+        }
+
+        if ( goalLine != null )
+        {
+            if ( direction == "Left" )
+            {
+                goalLine.LeftOffset -= shift;
+            }
+
+            if ( direction == "Right" )
+            {
+                goalLine.LeftOffset += shift;
+            }
+
+            if ( direction == "Up" )
+            {
+                goalLine.TopOffset -= shift;
+            }
+
+            if ( direction == "Down" )
+            {
+                goalLine.TopOffset += shift;
+            }
+
+            IsChanged = true;
+            CheckCorrectness ();
+        }
+    }
+
+
+    internal void Left ( double shift )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        FocusedLine. LeftOffset -= shift;
+        IsChanged = true;
+        CheckCorrectness ();
+    }
+
+
+    internal void Right ( double shift )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        FocusedLine. LeftOffset += shift;
+        IsChanged = true;
+        CheckCorrectness ();
+    }
+
+
+    internal void Up ( double shift )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        FocusedLine. TopOffset -= shift;
+        IsChanged = true;
+        CheckCorrectness ();
+    }
+
+
+    internal void Down ( double shift )
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
+
+        FocusedLine. TopOffset += shift;
+        IsChanged = true;
+        CheckCorrectness ();
+    }
+
+    #endregion
 }

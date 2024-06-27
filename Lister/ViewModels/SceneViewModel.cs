@@ -44,7 +44,7 @@ namespace Lister.ViewModels
             }
         }
 
-        internal List<BadgeViewModel> IncorrectBadges { get; private set; }
+        internal List<BadgeViewModel> IncorrectBadges { get; set; }
 
         private string zoomDV;
         internal string ZoomDegreeInView

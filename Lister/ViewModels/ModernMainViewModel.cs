@@ -1,6 +1,7 @@
 ﻿using ContentAssembler;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,18 @@ namespace Lister.ViewModels
             _zoomNavigationVM = zoomNavigationVM;
             _sceneVM = sceneVM;
         }
-        
+
+
+        internal void SetIncorrectBadges ( ObservableCollection <BadgeViewModel> incorrects )
+        {
+            _sceneVM.IncorrectBadges.Clear ();
+
+            foreach ( BadgeViewModel badge   in   incorrects ) 
+            {
+                _sceneVM.IncorrectBadges.Add (badge);
+            }
+        }
+
     }
 
 
