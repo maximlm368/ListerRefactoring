@@ -37,7 +37,7 @@
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
 			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
-			
+			GotFocus="CloseCustomCombobox"
 			DropDownClosed="HandleClosing"
 		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
 
@@ -60,6 +60,7 @@
 			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+			
 			Tapped="BuildBadges"
 			Content="Построить"/>
 		

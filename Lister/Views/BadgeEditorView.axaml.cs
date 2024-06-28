@@ -13,10 +13,13 @@ using ExtentionsAndAuxiliary;
 using System.Globalization;
 using System.IO;
 using Avalonia.Controls.Shapes;
+using Avalonia.ReactiveUI;
+using ReactiveUI;
+using System.Runtime.InteropServices;
 
 namespace Lister.Views
 {
-    public partial class BadgeEditorView : UserControl
+    public partial class BadgeEditorView : ReactiveUserControl <BadgeEditorViewModel>
     {
         private static double _widthDelta;
         private static double _heightDelta;
@@ -36,6 +39,21 @@ namespace Lister.Views
             workArea.Height -= _heightDelta;
             slider.Height -= _heightDelta;
             left.Focus ();
+
+
+            this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
+
+           
+        }
+
+
+        private async Task DoShowDialogAsync ( InteractionContext<DialogViewModel, string?> interaction )
+        {
+            var dialog = new DialogWindow ();
+            dialog.DataContext = interaction.Input;
+
+            var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
+            interaction.SetOutput (result);
         }
 
 

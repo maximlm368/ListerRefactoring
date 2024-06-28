@@ -12,6 +12,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Lister"
 		x:DataType="vm:MainWindowViewModel"
+		WindowStartupLocation="CenterScreen"
 		MinHeight="460"
         MinWidth="800"
 		Height="460"
@@ -19,6 +20,12 @@
 		>
 
 	<views:ModernMainView
-		Name="view"/>
-        
+			Name="view"/>
+
 </Window>
+
+<!--   
+
+<views:ModernMainView
+		Name="view"/>
+-->

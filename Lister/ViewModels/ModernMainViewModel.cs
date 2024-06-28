@@ -29,14 +29,9 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetIncorrectBadges ( ObservableCollection <BadgeViewModel> incorrects )
+        internal void ResetIncorrects ( )
         {
-            _sceneVM.IncorrectBadges.Clear ();
-
-            foreach ( BadgeViewModel badge   in   incorrects ) 
-            {
-                _sceneVM.IncorrectBadges.Add (badge);
-            }
+            _sceneVM.ResetIncorrects ();
         }
 
     }

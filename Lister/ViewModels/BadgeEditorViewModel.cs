@@ -19,6 +19,9 @@ using Avalonia.Media.Imaging;
 using Lister.Extentions;
 using System.Linq.Expressions;
 using Lister.Views;
+using System.Windows.Input;
+using Avalonia.Platform.Storage;
+using System.Reactive.Linq;
 
 namespace Lister.ViewModels
 {
@@ -266,6 +269,9 @@ namespace Lister.ViewModels
             }
         }
 
+        public ICommand BuyMusicCommand { get; }
+        internal Interaction<DialogViewModel, string> ShowDialog { get; }
+        
 
         public BadgeEditorViewModel ( )
         {
@@ -291,11 +297,36 @@ namespace Lister.ViewModels
 
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
+
+            ShowDialog = new Interaction <DialogViewModel, string> ();
+            BuyMusicCommand = ReactiveCommand.CreateFromTask (async () =>
+            {
+                bool changesExist = ChangesExist ();
+
+                if ( changesExist ) 
+                {
+                    DialogViewModel dialogVM = new DialogViewModel ();
+                    var result = await ShowDialog.Handle (dialogVM);
+                    if ( result != null )
+                    {
+                        if ( result == "Yes" )
+                        {
+                            GoBack ();
+                        }
+                    }
+                }
+                else 
+                {
+                    GoBack ();
+                }
+            });
         }
 
 
         internal void CancelChanges ()
         {
+            BeingProcessedBadge.Hide ();
+
             if ( FixedBadges.Contains (BeingProcessedBadge) )
             {
                 FixedBadges.Remove (BeingProcessedBadge);
@@ -335,7 +366,33 @@ namespace Lister.ViewModels
         }
 
 
-        internal void GoBack ()
+        private bool ChangesExist ( )
+        {
+            bool exist = false;
+
+            foreach ( BadgeViewModel badge   in   FixedBadges ) 
+            {
+                if ( badge.IsChanged ) 
+                {
+                    exist = true;
+                    return exist;
+                }
+            }
+
+            foreach ( BadgeViewModel badge   in   IncorrectBadges )
+            {
+                if ( badge.IsChanged )
+                {
+                    exist = true;
+                    return exist;
+                }
+            }
+
+            return exist;
+        }
+
+
+        private void GoBack ()
         {
             SetDraftResultsInSource (FixedBadges);
             SetDraftResultsInSource (IncorrectBadges);
@@ -350,7 +407,7 @@ namespace Lister.ViewModels
 
             MainWindow owner = _view.Parent as MainWindow;
             _back.ChangeSize (owner.WidthDifference, owner.HeightDifference);
-            _back.SetIncorrectBadges (IncorrectBadges);
+            _back.ResetIncorrects ();
             owner.ResetDifference ();
             owner.Content = _back;
         }
@@ -375,7 +432,7 @@ namespace Lister.ViewModels
 
                 if ( badge.IsChanged )
                 {
-                    draftSource.TextLines = badge.TextLines;
+                    badge.ResetPrototype (draftSource);
                 }
             }
         }

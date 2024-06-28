@@ -44,7 +44,7 @@
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
-			    Command="{Binding  Path = GoBack}"/>
+			    Command="{Binding  Path = BuyMusicCommand}"/>
 
 			<Button
 				Name="cancel"

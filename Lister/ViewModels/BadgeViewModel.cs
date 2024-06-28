@@ -89,7 +89,7 @@ public class BadgeViewModel : ViewModelBase
     internal ObservableCollection <TextLineViewModel> TextLines
     {
         get { return tL; }
-        set
+        private set
         {
             this.RaiseAndSetIfChanged (ref tL, value, nameof (TextLines));
         }
@@ -99,7 +99,7 @@ public class BadgeViewModel : ViewModelBase
     internal ObservableCollection <ImageViewModel> InsideImages
     {
         get { return iI; }
-        set
+        private set
         {
             this.RaiseAndSetIfChanged (ref iI, value, nameof (InsideImages));
         }
@@ -109,7 +109,7 @@ public class BadgeViewModel : ViewModelBase
     internal ObservableCollection <ImageViewModel> InsideShapes
     {
         get { return rs; }
-        set
+        private set
         {
             this.RaiseAndSetIfChanged (ref rs, value, nameof (InsideShapes));
         }
@@ -120,7 +120,7 @@ public class BadgeViewModel : ViewModelBase
     internal Avalonia.Thickness BorderThickness
     {
         get { return bT; }
-        set
+        private set
         {
             this.RaiseAndSetIfChanged (ref bT, value, nameof (BorderThickness));
         }
@@ -257,6 +257,13 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeViewModel clone = new BadgeViewModel (this);
         return clone;
+    }
+
+
+    internal void ResetPrototype ( BadgeViewModel prototype )
+    {
+        prototype.IsCorrect = IsCorrect;
+        prototype.TextLines = TextLines;
     }
 
 
@@ -562,15 +569,18 @@ public class BadgeViewModel : ViewModelBase
 
     internal void CheckCorrectnessAfterCancelation ()
     {
-        foreach ( TextLineViewModel line   in   TextLines )
-        {
-            CheckLineCorrectness (line);
-        }
+        //foreach ( TextLineViewModel line   in   TextLines )
+        //{
+        //    CheckLineCorrectness (line);
+        //}
 
-        bool borderViolentsExist = ( BorderViolentLines.Count > 0 );
-        bool overlayingExist = ( OverlayViolentLines.Count > 0 );
+        //bool borderViolentsExist = ( BorderViolentLines.Count > 0 );
+        //bool overlayingExist = ( OverlayViolentLines.Count > 0 );
 
-        IsCorrect = !( borderViolentsExist || overlayingExist );
+        //IsCorrect = ! ( borderViolentsExist   ||   overlayingExist );
+
+        IsCorrect = false;
+        IsChanged = false;
     }
 
 

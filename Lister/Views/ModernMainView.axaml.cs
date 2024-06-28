@@ -11,7 +11,7 @@ namespace Lister.Views
     {
         private double _widthDelta;
         private double _heightDelta;
-        internal List<BadgeViewModel> IncorrectBadges { get; private set; }
+        internal List <BadgeViewModel> IncorrectBadges { get; private set; }
         
 
         public ModernMainView ()
@@ -44,13 +44,13 @@ namespace Lister.Views
         }
 
 
-        internal void SetIncorrectBadges ( ObservableCollection <BadgeViewModel> incorrects )
+        internal void ResetIncorrects ( )
         {
             ModernMainViewModel vm = DataContext as ModernMainViewModel;
             
             if ( vm != null ) 
             {
-                vm.SetIncorrectBadges ( incorrects );
+                vm.ResetIncorrects ( );
             }
         }
     }

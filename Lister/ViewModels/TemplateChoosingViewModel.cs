@@ -140,12 +140,6 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void HandleTapping ( )
-    {
-        
-    }
-
-
     internal void Build ()
     {
         if ( ChosenTemplate == null )

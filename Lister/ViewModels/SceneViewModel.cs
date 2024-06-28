@@ -44,7 +44,7 @@ namespace Lister.ViewModels
             }
         }
 
-        internal List<BadgeViewModel> IncorrectBadges { get; set; }
+        internal List <BadgeViewModel> IncorrectBadges { get; private set; }
 
         private string zoomDV;
         internal string ZoomDegreeInView
@@ -333,6 +333,24 @@ namespace Lister.ViewModels
             return _allPages.Count;
         }
 
+
+        internal void ResetIncorrects ()
+        {
+            List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
+
+            foreach ( BadgeViewModel badge   in   IncorrectBadges ) 
+            {
+                if ( badge.IsCorrect )
+                {
+                    corrects.Add (badge);
+                }
+            }
+
+            foreach ( BadgeViewModel correctBadge   in   corrects )
+            {
+                IncorrectBadges.Remove (correctBadge);
+            }
+        }
 
     }
 }

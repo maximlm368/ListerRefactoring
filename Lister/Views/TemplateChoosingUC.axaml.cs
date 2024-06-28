@@ -26,6 +26,19 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
             TemplateIsSelected = false;
+            
+        }
+
+
+        internal void CloseCustomCombobox ( object sender, GotFocusEventArgs args )
+        {
+            _parent = this.Parent.Parent as ModernMainView;
+            PersonChoosingUserControl personChoosing = _parent. personChoosing;
+            
+            if ( personChoosing != null ) 
+            {
+                personChoosing.CloseCustomCombobox ();
+            }
         }
 
 
@@ -42,6 +55,8 @@ namespace Lister.Views
 
             if ( templateIsIncorrect )
             {
+                TemplateIsSelected = false;
+                _vm.ChosenTemplate = null;
                 int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
             }
             else 

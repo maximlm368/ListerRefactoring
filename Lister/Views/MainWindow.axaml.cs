@@ -6,6 +6,11 @@ using ContentAssembler;
 using DataGateway;
 using Lister.ViewModels;
 
+using Avalonia.ReactiveUI;
+using ReactiveUI;
+using System.Threading.Tasks;
+
+
 namespace Lister.Views;
 
 public partial class MainWindow : Window
@@ -32,16 +37,20 @@ public partial class MainWindow : Window
         //IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
         //IUniformDocumentAssembler docAssembler = new UniformDocAssembler (badgeAppearenceDataSource, peopleDataSource);
 
+
         this.Opened += OnOpened;
-        ModernMainView mainView = (ModernMainView) Content;
+        ModernMainView mainView = ( ModernMainView ) Content;
+
+
         //mainView.SetOwner ( this );
         //mainView.PassAssembler ( docAssembler );
-        
+
         this.SizeChanged += OnSizeChanged;
         _currentWidth = Width;
         _currentHeight = Height;
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
+
     }
 
 
