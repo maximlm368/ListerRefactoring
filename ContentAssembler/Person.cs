@@ -107,7 +107,7 @@ namespace ContentAssembler
                 return false;
             }
 
-            bool isMatching = stringPresentation == this.StringPresentation;
+            bool isMatching = (stringPresentation == this.StringPresentation);
             return isMatching;
         }
 

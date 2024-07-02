@@ -82,6 +82,16 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
+    private Thickness margin;
+    internal Thickness Margin
+    {
+        get { return margin; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
+        }
+    }
+
     internal TextLineViewModel FocusedLine { get; set; }
     private List <TextLineViewModel> BorderViolentLines { get; set; }
     private List <TextLineViewModel> OverlayViolentLines { get; set; }
@@ -447,13 +457,14 @@ public class BadgeViewModel : ViewModelBase
             double topOffset = textAtom.TopOffset;
             string beingProcessedLine = textAtom.Content;
             string additionalLine = string.Empty;
+            FontFamily family = new FontFamily(textAtom.FontFamily);
 
             while ( true )
             {
-                Typeface face = new Typeface (new FontFamily("arial"), FontStyle.Normal, FontWeight.Normal);
+                Typeface face = new Typeface (family, FontStyle.Normal, FontWeight.Normal);
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
-                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + 4;
+                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + TextLineViewModel._additionOnEnd;
                 bool lineIsOverflow = ( usefulTextBlockWidth > lineLength );
 
                 if ( ! lineIsOverflow ) 
@@ -569,16 +580,6 @@ public class BadgeViewModel : ViewModelBase
 
     internal void CheckCorrectnessAfterCancelation ()
     {
-        //foreach ( TextLineViewModel line   in   TextLines )
-        //{
-        //    CheckLineCorrectness (line);
-        //}
-
-        //bool borderViolentsExist = ( BorderViolentLines.Count > 0 );
-        //bool overlayingExist = ( OverlayViolentLines.Count > 0 );
-
-        //IsCorrect = ! ( borderViolentsExist   ||   overlayingExist );
-
         IsCorrect = false;
         IsChanged = false;
     }

@@ -123,7 +123,7 @@ public class PageViewModel : ViewModelBase
 
         SetCorrectScale ();
 
-        _fillableLine = new BadgeLine ( PageWidth , _scale , usefullHeight );
+        _fillableLine = new BadgeLine ( PageWidth , _scale , usefullHeight, true );
         Lines.Add ( _fillableLine );
     }
 
@@ -173,7 +173,7 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    internal PageViewModel AddBadge ( BadgeViewModel badge, bool mustBeZoomed )
+    internal PageViewModel AddBadge ( BadgeViewModel badge )
     {
         PageViewModel beingProcessedPage = this;
         bool shouldScaleBadge = (badge.Scale != this._scale);
@@ -182,7 +182,8 @@ public class PageViewModel : ViewModelBase
         if ( additionSuccess == ActionSuccess.FailureByWidth ) 
         {
             double restHeight = GetRestHeight ();
-            BadgeLine newLine = new BadgeLine (PageWidth, _scale, restHeight);
+            bool isFirstLine = (Lines. Count == 0);
+            BadgeLine newLine = new BadgeLine (PageWidth, _scale, restHeight, isFirstLine);
             additionSuccess = newLine.AddBadge (badge, false);
 
             if ( additionSuccess == ActionSuccess.FailureByWidth )
@@ -192,7 +193,7 @@ public class PageViewModel : ViewModelBase
             else if ( additionSuccess == ActionSuccess.FailureByHeight ) 
             {
                 beingProcessedPage = new PageViewModel (_scale);
-                beingProcessedPage.AddBadge (badge, true);
+                beingProcessedPage.AddBadge (badge);
             }
 
             beingProcessedPage.Lines.Add (newLine);
@@ -209,7 +210,7 @@ public class PageViewModel : ViewModelBase
             }
 
             beingProcessedPage = new PageViewModel (_scale);
-            beingProcessedPage.AddBadge (badge, true);
+            beingProcessedPage.AddBadge (badge);
         }
 
         beingProcessedPage._badgeCount++;
@@ -350,7 +351,7 @@ public class PageViewModel : ViewModelBase
         {
             BadgeViewModel beingProcessedBadge = placebleBadges [index];
             //beingProcessedBadge.SetCorrectScale (desiredScale);
-            PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge, false);
+            PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge);
             bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
 
             if ( timeToAddNewPage )

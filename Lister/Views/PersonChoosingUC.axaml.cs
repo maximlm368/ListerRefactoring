@@ -1,8 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using ContentAssembler;
 using DynamicData;
 using Lister.ViewModels;
@@ -10,6 +13,7 @@ using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
 namespace Lister.Views
 {
@@ -51,6 +55,7 @@ namespace Lister.Views
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
             _vm.ChosenPerson = null;
+            personTextBox.Text = _vm.PlaceHolder;
 
             if ( _chosen != null )
             {
@@ -132,18 +137,19 @@ namespace Lister.Views
                 return;
             }
 
-            DisableButtons ();
+            DisableBuildingButtons ();
+            _vm.DisableBuildigPossibility ();
             TextBox textBox = ( TextBox ) sender;
             string str = textBox.Text;
 
             if ( str != null )
             {
-                string fromSender = textBox.Text.ToLower ();
-                ObservableCollection <Person> foundVisiblePeople = new ObservableCollection <Person> ();
+                string fromSender = str.ToLower ();
+                ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
 
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( person.StringPresentation.ToLower () == fromSender )
+                    if ( fromSender == string.Empty   ||   (person.StringPresentation.ToLower () == fromSender) )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -154,7 +160,8 @@ namespace Lister.Views
 
                     if ( entireName.Contains (fromSender)   &&   entireName != fromSender )
                     {
-                        foundVisiblePeople.Add (person);
+                        VisiblePerson vP = new VisiblePerson (person);
+                        foundVisiblePeople.Add (vP);
                     }
                 }
 
@@ -168,15 +175,13 @@ namespace Lister.Views
         }
 
 
-        private void DisableButtons () 
+        private void DisableBuildingButtons () 
         {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
+            //ModernMainView parent = this.Parent.Parent as ModernMainView;
+            //TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
+            //templateChoosingUC.buildBadges.IsEnabled = false;
 
-            templateChoosingUC. buildBadges.IsEnabled = false;
-            templateChoosingUC. clearBadges.IsEnabled = false;
-            templateChoosingUC. save.IsEnabled = false;
-            templateChoosingUC. print.IsEnabled = false;
+            _vm.ToZeroPersonSelection ();
         }
 
 
@@ -194,45 +199,18 @@ namespace Lister.Views
 
         private void RecoverVisiblePeople ()
         {
-            _vm.VisiblePeople = new () { _vm.People };
+            ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
+
+            foreach ( Person person   in   _vm.People ) 
+            {
+                VisiblePerson vP = new VisiblePerson (person);
+                foundVisiblePeople.Add (vP);
+            }
         }
 
         #endregion PersonListReduction
 
         #region Choosing
-
-        //internal void AcceptFocusedPersonOrScroll ( object sender, KeyEventArgs args )
-        //{
-        //    string key = args.Key.ToString ( );
-        //    bool keyIsEnter = key == "Return";
-
-        //    if ( keyIsEnter )
-        //    {
-        //        Label focused = ( Label ) sender;
-        //        focused.Background = new SolidColorBrush ( 3397631 );
-        //        string chosenName = ( string ) focused.Content;
-        //        Person chosenPerson = _vm.FindPersonByStringPresentation ( chosenName );
-
-        //        if ( chosenPerson == null )
-        //        {
-        //            return;
-        //        }
-
-        //        if ( _chosen != null )
-        //        {
-        //            personTextBox.Text = chosenName;
-        //            SinglePersonIsSelected = true;
-        //            personTextBox.FontWeight = FontWeight.Normal;
-        //            EntirePersonListIsSelected = false;
-        //            _chosen.Background = new SolidColorBrush ( 16777215 );
-        //        }
-
-        //        _chosen = focused;
-        //        _vm.ChosenPerson = chosenPerson;
-        //        DropOrPickUp ( );
-        //    }
-        //}
-
 
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
@@ -247,9 +225,9 @@ namespace Lister.Views
             _chosen = chosenLabel;
             string chosenName = (string) chosenLabel.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
-            //TryToEnableBadgeCreationButton ();
-            DropOrPickUp ();
             _vm.ChosenPerson = chosenPerson;
+            personTextBox.Text = chosenPerson.StringPresentation;
+            DropOrPickUp ();
         }
 
         #endregion Choosing
@@ -258,7 +236,7 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                _vm.HideDropDown ();
+                personTextBox.Text = _vm.HideDropDown ();
                 _personListIsDropped = false;
             }
             else
@@ -348,7 +326,6 @@ namespace Lister.Views
             _runnerIsCaptured = true;
             Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
             _capturingY = inRunnerRelativePosition.Y;
-            int dfd = 0;
         }
 
 

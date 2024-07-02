@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="340"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="350"
              x:Class="Lister.Views.PersonChoosingUserControl"
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
@@ -50,6 +50,7 @@
 				Name="listBorder"
 				Canvas.Top="34"
 				Margin="0,-2"
+				CornerRadius="0"
 				BorderThickness="1"
 				Background="Gray">
 
@@ -69,15 +70,17 @@
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
-						<Label
+							<Label
 							Name="allPersonsSign"
-							FontSize="14"
+							FontSize="13"
 							FontWeight="Bold"
 							Background="LightPink"
+							BorderBrush="{Binding   Path = EntireListColor,  Mode=OneWay }"
+							BorderThickness="2"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
 							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
-							ZIndex="1"
+							ZIndex="2"
 							Tapped="AcceptEntirePersonList"
 							Content="Весь список"/>
 						
@@ -89,14 +92,16 @@
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
-										
-									<Label
-										FontSize="14"
-										Height="24"
-										Background="White"
-										Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
-										Tapped="HandleChoosingByTapping"
-										Content="{Binding   Path = StringPresentation,  Mode=OneWay }"/>
+
+										<Label
+											FontSize="13"
+											Height="25"
+											Background="White"
+											BorderBrush="{Binding   Path = BrushColor,  Mode=OneWay }"
+											BorderThickness="2"
+											Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+											Tapped="HandleChoosingByTapping"
+											Content="{Binding   Path = Person.StringPresentation,  Mode=OneWay }"/>
 
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
@@ -127,7 +132,6 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
 								Background="White"
-								
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
@@ -148,7 +152,6 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
 								Background="White"
-								
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas

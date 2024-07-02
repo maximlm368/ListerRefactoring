@@ -29,7 +29,7 @@ namespace Lister.ViewModels
     {
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
-        private double _scale = 2.65;
+        internal static readonly double _scale = 2.65;
         private Dictionary<BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;

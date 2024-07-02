@@ -26,18 +26,6 @@ namespace Lister.ViewModels
             }
         }
 
-
-        //private ObservableCollection<Thickness> margin;
-        //internal ObservableCollection<Thickness> Margin
-        //{
-        //    get { return margin; }
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
-        //    }
-        //}
-
-
         private Thickness margin;
         internal Thickness Margin
         {
@@ -47,7 +35,6 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
             }
         }
-
 
         private double maxH;
         internal double Height 
@@ -71,19 +58,29 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeLine( double width, double scale, double heightConstraint ) 
+        internal BadgeLine( double width, double scale, double heightConstraint, bool isFirst ) 
         {
-            Badges = new ObservableCollection<BadgeViewModel> ();
+            Badges = new ObservableCollection <BadgeViewModel> ();
+
+            if ( isFirst )
+            {
+                Margin = new Thickness (0, 0, 0, 0);
+            }
+            else 
+            {
+                Margin = new Thickness (0, -1, 0, 0);
+            }
+            
             _scale = scale;
             _restWidth = width;
             _heightConstraint = heightConstraint;
-            int ff = 0;
         }
 
 
         private BadgeLine ( BadgeLine line )
         {
-            Badges = new ObservableCollection<BadgeViewModel> ();
+            Badges = new ObservableCollection <BadgeViewModel> ();
+            Margin = line.Margin;
             _scale = line._scale;
             _restWidth = line._restWidth / _scale;
             _heightConstraint = line._heightConstraint / _scale;
@@ -111,24 +108,32 @@ namespace Lister.ViewModels
 
             bool isFailureByWidth = ( _restWidth < badge.BadgeWidth );
             bool isFailureByHeight = ( _heightConstraint < badge.BadgeHeight );
-            
+
             if ( isFailureByWidth )
             {
                 return ActionSuccess.FailureByWidth;
             }
-            else if ( isFailureByHeight ) 
+            else if ( isFailureByHeight )
             {
                 return ActionSuccess.FailureByHeight;
             }
             else
             {
+                if ( Badges. Count == 0 )
+                {
+                    badge.Margin = new Thickness (0, 0, 0, 0);
+                }
+                else 
+                {
+                    badge.Margin = new Thickness (-1, 0, 0, 0);
+                }
+
                 Badges.Add (badge);
                 _restWidth -= badge.BadgeWidth;
-                Margin = new Thickness (_restWidth/2, 0, 0, 0);
-                
+                //Margin = new Thickness (_restWidth / 2, 0, 0, 0);
+
                 return ActionSuccess.Success;
             }
-            int dfdf = 0;
         }
 
 
@@ -136,8 +141,9 @@ namespace Lister.ViewModels
         {
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
-            double newMarginLeft = Margin.Left * scaleCoefficient;
-            Margin = new Thickness (newMarginLeft, 0, 0, 0);
+
+            //double newMarginLeft = Margin.Left * scaleCoefficient;
+            //Margin = new Thickness (newMarginLeft, 0, 0, 0);
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
@@ -150,8 +156,9 @@ namespace Lister.ViewModels
         {
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
-            double newMarginLeft = Margin.Left / scaleCoefficient;
-            Margin = new Thickness (newMarginLeft, 0, 0, 0);
+
+            //double newMarginLeft = Margin.Left / scaleCoefficient;
+            //Margin = new Thickness (newMarginLeft, 0, 0, 0);
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {

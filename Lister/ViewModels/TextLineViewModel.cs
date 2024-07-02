@@ -19,6 +19,7 @@ namespace Lister.ViewModels
 {
     public class TextLineViewModel : BadgeMember
     {
+        internal static readonly double _additionOnEnd = 4;
         private TextualAtom _dataSource;
 
         private HorizontalAlignment al;
@@ -48,6 +49,16 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref ff, value, nameof (FontFamily));
+            }
+        }
+
+        private Avalonia.Media.FontWeight fW;
+        internal Avalonia.Media.FontWeight FontWeight
+        {
+            get { return fW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref fW, value, nameof (FontWeight));
             }
         }
 
@@ -83,65 +94,40 @@ namespace Lister.ViewModels
 
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
-        internal bool isWidthViolent = false;
 
 
         public TextLineViewModel ( TextualAtom text )
         {
             _dataSource = text;
-            SetAlignmentByString (text.Alignment);
             FontSize = text.FontSize;
             FontFamily = new FontFamily (text.FontFamily);
-            //FontFamily = new FontFamily ("sans-serif");
+            FontWeight = Avalonia.Media.FontWeight.Normal;
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
-            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             UsefullWidth = formatted.Width + 4;
 
             SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
+            SetAlignment (text.Alignment);
         }
 
 
         private TextLineViewModel ( TextLineViewModel source )
         {
             _dataSource = source._dataSource;
-            Alignment = source.Alignment;
             FontSize = source.FontSize;
             FontFamily = new FontFamily (source._dataSource.FontFamily);
+            FontWeight = source.FontWeight;
             Content = source.Content;
             IsSplitable = source.IsSplitable;
             UsefullWidth = source.UsefullWidth;
 
             SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
+            //SetAlignment (source._dataSource.Alignment);
         }
-
-
-        //private void SetInherited ( TextualAtom text )
-        //{
-        //    Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
-        //    FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
-        //                                                        , FlowDirection.LeftToRight, face, FontSize, null);
-        //    double usefulWidth = formatted.WidthIncludingTrailingWhitespace;
-
-        //    if ( usefulWidth > _dataSource.Width )
-        //    {
-        //        isWidthViolent = true;
-        //    }
-
-        //    double height = formatted.Height;
-
-        //    SetYourself (usefulWidth, text.Height, text.TopOffset, text.LeftOffset);
-        //}
-
-
-        //internal TextLineViewModel GetDimensionalOriginal () 
-        //{
-        //    TextLineViewModel original = new TextLineViewModel (this._dataSource);
-        //    return original;
-        //}
 
 
         internal TextLineViewModel Clone ()
@@ -169,45 +155,44 @@ namespace Lister.ViewModels
 
         internal void Increase ( double additable )
         {
+            double oldFontSize = FontSize;
             FontSize += additable;
-            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + 2;
-            Width += additable;
-            Height += additable;
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
+            double proportion = FontSize / oldFontSize;
+            Height *= proportion;
         }
 
 
         internal void Reduce ( double subtractable )
         {
+            double oldFontSize = FontSize;
             FontSize -= subtractable;
-            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + 2;
-            Width -= subtractable;
-            Height -= subtractable;
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
+            double proportion = FontSize / oldFontSize;
+            Height *= proportion;
         }
 
 
-        private void SetAlignmentByString ( string alignmentName ) 
+        private void SetAlignment ( string alignmentName ) 
         {
-            if( alignmentName == "Left" ) 
+            if ( Width <= UsefullWidth )
             {
-                Alignment = HorizontalAlignment.Left; 
+                return;
             }
+
             if ( alignmentName == "Right" )
             {
-                Alignment = HorizontalAlignment.Right;
+                LeftOffset += ( Width - UsefullWidth );
             }
             if ( alignmentName == "Center" )
             {
-                Alignment = HorizontalAlignment.Center;
-            }
-            else
-            {
-                Alignment = HorizontalAlignment.Center;
+                LeftOffset += ( Width - UsefullWidth ) / 2;
             }
         }
 

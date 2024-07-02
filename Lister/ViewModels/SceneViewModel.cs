@@ -169,7 +169,7 @@ namespace Lister.ViewModels
                 VisiblePage.Show ();
             }
 
-            PageViewModel possibleNewVisiblePage = _lastPage.AddBadge (goalVMBadge, true);
+            PageViewModel possibleNewVisiblePage = _lastPage.AddBadge (goalVMBadge);
             bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (_lastPage);
 
             if ( timeToIncrementVisiblePageNumber )

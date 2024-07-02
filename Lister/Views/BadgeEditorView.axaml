@@ -61,6 +61,7 @@
 				Grid.Column="3"
 				HorizontalAlignment="Center"
 				Width="28"
+				KeyDown="ToSide"
 				Command="{Binding  Path = ReduceFontSize}"
 				IsEnabled="False" />
 
@@ -80,6 +81,7 @@
 				Grid.Column="5"
 				HorizontalAlignment="Center"
 				Width="28"
+				KeyDown="ToSide"
 				Command="{Binding  Path = IncreaseFontSize}"
 				IsEnabled="False" />
 
@@ -91,7 +93,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding   Path = Left}"
-				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
 
 			<Button
 				Name="right"
@@ -101,7 +103,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding   Path = Right}"
-				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
 
 			<Button
 				Name="up"
@@ -111,7 +113,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding   Path = Up}"
-				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
 
 			<Button
 				Name="down"
@@ -121,7 +123,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding   Path = Down}"
-				IsEnabled="{Binding   Path = MoversAreEnable,   Mode=OneWay}" />
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
 
 			<Button
 				Name="spliter"
@@ -130,7 +132,7 @@
 				HorizontalContentAlignment="Center"
 				Width="130"
 				Command="{Binding   Path = Split}"
-				IsEnabled="{Binding   Path = SplitterIsEnable,   Mode=OneWay}" />
+				IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}"/>
 			
 		</Grid>
 
@@ -295,7 +297,7 @@
 												Height="{Binding Path = Height,  Mode=OneWay}"
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
-												HorizontalAlignment="Center"
+												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 												DoubleTapped="Focus"
 												PointerPressed="Capture"
 												PointerMoved="Move"

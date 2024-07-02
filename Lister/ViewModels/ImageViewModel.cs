@@ -79,7 +79,7 @@ namespace Lister.ViewModels
             GeometryElementName = image.GeometryElementName;
             ImageKind = image.ImageKind;
 
-            SetYourself (width, height, image.TopShiftOnBackground, image.LeftShiftOnBackground);
+            SetYourself (width, height, image.TopOffset, image.LeftOffset);
         }
 
 

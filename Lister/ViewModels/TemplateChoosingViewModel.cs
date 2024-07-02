@@ -58,11 +58,11 @@ public class TemplateChoosingViewModel : ViewModelBase
         {
             bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
 
-            if ( valueIsSuitable )
-            {
-                this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
-            }
-
+            //if ( valueIsSuitable )
+            //{
+                
+            //}
+            this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
             TryToEnableBadgeCreationButton ();
         }
         get
@@ -247,14 +247,18 @@ public class TemplateChoosingViewModel : ViewModelBase
     {
         if ( _personChoosingVM == null )
         {
-            _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+            _personChoosingVM = App.services.GetRequiredService <PersonChoosingViewModel> ();
         }
 
-        bool buildingIsPossible = ( ChosenTemplate != null );
+        bool buildingIsPossible = ( ChosenTemplate != null )   &&   _personChoosingVM.BuildingIsPossible;
 
         if ( buildingIsPossible )
         {
-            BuildingIsPossible = _personChoosingVM.BuildingIsPossible;
+            BuildingIsPossible = true;
+        }
+        else 
+        {
+            BuildingIsPossible = false;
         }
     }
 }

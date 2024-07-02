@@ -43,6 +43,8 @@ namespace Lister.ViewModels
             }
         }
 
+        internal bool peopleSettingOccured;
+
 
         public PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
                                                                     , PersonChoosingViewModel personChoosing ) 
@@ -50,6 +52,7 @@ namespace Lister.ViewModels
             _uniformAssembler = singleTypeDocumentAssembler;
             _personChoosingVM = personChoosing;
             EditorIsEnable = false;
+            peopleSettingOccured = false;
         }
 
 
@@ -132,15 +135,17 @@ namespace Lister.ViewModels
                 try
                 {
                     List <Person> persons = _uniformAssembler.GetPersons (value);
-                    ObservableCollection <Person> visible = new ();
+                    ObservableCollection <VisiblePerson> visible = new ();
                     List <Person> people = new ();
 
                     foreach ( var person   in   persons )
                     {
-                        visible.Add (person);
+                        VisiblePerson visiblePerson = new VisiblePerson (person);
+                        visible.Add (visiblePerson);
                         people.Add (person);
                     }
 
+                    peopleSettingOccured = true;
                     _personChoosingVM.People = people;
                     _personChoosingVM.VisiblePeople = visible;
                     return value;

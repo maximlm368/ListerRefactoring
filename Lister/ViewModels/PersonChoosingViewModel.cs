@@ -40,29 +40,36 @@ namespace Lister.ViewModels
         private static double _withScroll = 454;
         private static double _withoutScroll = 469;
         private static double _upperHeight = 15;
-        private static double _scrollingScratch = 24;
+        private static double _scrollingScratch = 25;
         private static string _placeHolder = "Весь список";
+        private static int _maxVisibleCount = 4;
+        private static double _oneHeight = 25;
+        private static int _focusedTopEdge = -1;
+        private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
+        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
+        private static SolidColorBrush _focusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
 
         private TemplateChoosingViewModel _templateChoosingVM;
+        private PersonSourceViewModel _personSourceVM;
         private bool _firstMustBe = false;
         private double _widthDelta;
         private Timer _timer;
+        private VisiblePerson _focused;
+        private int _focusedNumber;
         internal bool ScrollingIsOccured { get; set; }
         internal bool SinglePersonIsSelected { get; private set; }
         internal bool EntirePersonListIsSelected { get; private set; }
         internal bool BuildingIsPossible { get; private set; }
-
-        private double _oneHeight;
         internal List <Person> People { get; set; }
 
-        private ObservableCollection <Person> vP;
-        internal ObservableCollection <Person> VisiblePeople
+        private ObservableCollection <VisiblePerson> vP;
+        internal ObservableCollection <VisiblePerson> VisiblePeople
         {
             get { return vP; }
             set
             {
                 this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
-                SetPersonList ();
+                SetPersonList ( );
             }
         }
 
@@ -70,7 +77,7 @@ namespace Lister.ViewModels
         internal string PlaceHolder
         {
             get { return pH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref pH, value, nameof (PlaceHolder));
             }
@@ -92,21 +99,23 @@ namespace Lister.ViewModels
             get { return cP; }
             set
             {
-                if ( value == null ) 
+                this.RaiseAndSetIfChanged (ref cP, value, nameof (ChosenPerson));
+
+                if ( ChosenPerson == null )
                 {
                     EntirePersonListIsSelected = true;
                     SinglePersonIsSelected = false;
                     FontWeight = FontWeight.Bold;
                     PlaceHolder = _placeHolder;
-                    TryToEnableBadgeCreation ();
-                    return;
+                }
+                else 
+                {
+                    EntirePersonListIsSelected = false;
+                    SinglePersonIsSelected = true;
+                    FontWeight = FontWeight.Normal;
+                    //PlaceHolder = ChosenPerson. StringPresentation;
                 }
 
-                this.RaiseAndSetIfChanged ( ref cP , value , nameof ( ChosenPerson ) );
-                EntirePersonListIsSelected = false;
-                SinglePersonIsSelected = true;
-                FontWeight = FontWeight.Normal;
-                PlaceHolder = ChosenPerson. StringPresentation;
                 TryToEnableBadgeCreation ();
             }
         }
@@ -118,6 +127,16 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref vH, value, nameof (VisibleHeight));
+            }
+        }
+
+        private SolidColorBrush eC;
+        internal SolidColorBrush EntireListColor
+        {
+            get { return eC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref eC, value, nameof (EntireListColor));
             }
         }
 
@@ -232,7 +251,7 @@ namespace Lister.ViewModels
 
                 if ( value ) 
                 {
-                    FirstItemHeight = 24;
+                    FirstItemHeight = 28;
                 }
                 else 
                 {
@@ -274,21 +293,29 @@ namespace Lister.ViewModels
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
-            _oneHeight = 24;
             ScrollerCanvasLeft = 454;
-            VisiblePeople = new ObservableCollection<Person> ();
+            VisiblePeople = new ObservableCollection <VisiblePerson> ();
             People = new List<Person> ();
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = false;
             FontWeight = FontWeight.Bold;
+            EntireListColor = _entireListColor;
+            _focused = null;
+            _focusedNumber = -1;
         }
 
 
-        internal void HideDropDown ( )
+        internal string HideDropDown ( )
         {
+            ChosenPerson = _focused.Person;
+            SinglePersonIsSelected = true;
+
             DropDownIsVisible = false;
             FirstItemHeight = 0;
             FirstIsVisible = false;
+
+            TryToEnableBadgeCreation ();
+            return ChosenPerson. StringPresentation;
         }
 
 
@@ -323,13 +350,13 @@ namespace Lister.ViewModels
 
             Person result = null;
 
-            foreach ( Person person   in   VisiblePeople ) 
+            foreach ( VisiblePerson person   in   VisiblePeople ) 
             {
-                bool isIntresting = person.IsMatchingTo (presentation);
+                bool isIntresting = person.Person.IsMatchingTo (presentation);
                 
                 if ( isIntresting ) 
                 {
-                    result = person;
+                    result = person.Person;
                     break;
                 }
             }
@@ -338,65 +365,96 @@ namespace Lister.ViewModels
         }
 
 
+        internal void SetIntrusionInVisiblePeople ( )
+        {
+            _personSourceVM. peopleSettingOccured = false;
+        }
+
+
         private void SetPersonList ( ) 
         {
-            if ( VisiblePeople != null   &&   VisiblePeople.Count > 0 )
+            if ( VisiblePeople != null   &&   VisiblePeople. Count > 0 )
             {
                 int personCount = VisiblePeople. Count;
                 PersonListHeight = _oneHeight * personCount;
+                bool listIsWhole = ( personCount == People. Count );
 
-                if ( personCount > 4 )
+                if ( listIsWhole )
                 {
-                    SetScrollerIfShould ();
-                    PlaceHolder = _placeHolder;
+                    VisibleHeight = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
+                    FirstIsVisible = true;
+                    _firstMustBe = true;
+                    FirstItemHeight = _scrollingScratch;
+                    PersonsScrollValue = _scrollingScratch;
+
+                    if ( _personSourceVM == null )
+                    {
+                        _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
+                    }
+
+                    if ( _personSourceVM. peopleSettingOccured ) 
+                    {
+                        EntirePersonListIsSelected = true;
+                        EntireListColor = new SolidColorBrush ( new Avalonia.Media.Color(255, 0, 0, 0) );
+                        PlaceHolder = _placeHolder;
+                    }
                 }
                 else
                 {
                     FirstItemHeight = 0;
                     FirstIsVisible = false;
                     _firstMustBe = false;
-                    VisibleHeight = _oneHeight * personCount;
-                    PersonListWidth = _withoutScroll - _widthDelta;
-                    ScrollerWidth = 0;
-                    IsPersonsScrollable = false;
+                    VisibleHeight = _oneHeight * Math.Min (_maxVisibleCount, personCount);
+                    EntirePersonListIsSelected = false;
                     PersonsScrollValue = 0;
                 }
 
-                TryToEnableBadgeCreation ();
+                SetScrollerIfShould ();
             }
+            else 
+            {
+                FirstItemHeight = 0;
+                FirstIsVisible = false;
+                _firstMustBe = false;
+                VisibleHeight = 0;
+                PersonListWidth = 0;
+                ScrollerWidth = 0;
+                IsPersonsScrollable = false;
+                PersonsScrollValue = 0;
+            }
+
+            TryToEnableBadgeCreation ();
         }
 
 
         private void SetScrollerIfShould () 
         {
-            VisibleHeight = _oneHeight * 5;
-            PersonListWidth = _withScroll - _widthDelta;
-            ScrollerWidth = _upperHeight;
+            int personCount = VisiblePeople. Count;
 
-            double scrollerWorkAreaHeight = VisibleHeight - (ScrollerWidth * 2);
-            double proportion = PersonListHeight / scrollerWorkAreaHeight;
-            RunnerHeight = VisibleHeight / proportion;
-            RealRunnerHeight = RunnerHeight;
-
-            if (RunnerHeight < 2) 
+            if ( personCount > _maxVisibleCount )
             {
-                RunnerHeight = 2;
+                PersonListWidth = _withScroll - _widthDelta;
+                ScrollerWidth = _upperHeight;
+
+                double scrollerWorkAreaHeight = VisibleHeight - ( ScrollerWidth * 2 );
+                double proportion = PersonListHeight / scrollerWorkAreaHeight;
+                RunnerHeight = VisibleHeight / proportion;
+                RealRunnerHeight = RunnerHeight;
+
+                if ( RunnerHeight < 2 )
+                {
+                    RunnerHeight = 2;
+                }
+
+                RunnerTopCoordinate = _upperHeight;
+                TopSpanHeight = 0;
+                BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
+                IsPersonsScrollable = true;
             }
-
-            RunnerTopCoordinate = _upperHeight;
-            TopSpanHeight = 0;
-            BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
-            IsPersonsScrollable = true;
-
-            bool listIsWhole = (VisiblePeople. Count == People. Count);
-
-            if ( listIsWhole ) 
+            else 
             {
-                FirstIsVisible = true;
-                _firstMustBe = true;
-                FirstItemHeight = _scrollingScratch;
-                PersonsScrollValue = _scrollingScratch;
-                EntirePersonListIsSelected = true;
+                PersonListWidth = _withoutScroll - _widthDelta;
+                ScrollerWidth = 0;
             }
         }
 
@@ -406,7 +464,7 @@ namespace Lister.ViewModels
         {
             if ( IsPersonsScrollable )
             {
-                double step = 24;
+                double step = _oneHeight;
                 double proportion = VisibleHeight / RealRunnerHeight;
                 double runnerStep = step / proportion;
 
@@ -439,7 +497,7 @@ namespace Lister.ViewModels
             int count = ( int ) directionAndCount [ 1 ];
             double limit = (double) directionAndCount [2];
 
-            double step = 24;
+            double step = _oneHeight;
             double proportion = VisibleHeight / RealRunnerHeight;
             double runnerStep = step / proportion;
 
@@ -514,7 +572,7 @@ namespace Lister.ViewModels
         {
             if ( IsPersonsScrollable )
             {
-                double itemHeight = 24;
+                double itemHeight = _oneHeight;
                 double proportion = VisibleHeight / RealRunnerHeight;
                 double wholeSpan = TopSpanHeight + BottomSpanHeight - RunnerHeight;
                 double runnerStep = wholeSpan / count;
@@ -532,30 +590,77 @@ namespace Lister.ViewModels
 
             if ( isDirectionUp )
             {
-                currentPersonsScrollValue += step;
-                double scrollingLimit = GetScrollLimit ();
-                
-                if ( currentPersonsScrollValue > scrollingLimit )
+                if ( _focusedNumber > -1 ) 
                 {
-                    currentPersonsScrollValue = scrollingLimit;
+                    _focusedNumber--;
                 }
 
-                UpRunner (runnerStep);
+                if ( _focused != null ) 
+                {
+                    _focused.BrushColor = _unfocusedColor;
+                }
+
+                if ( _focusedNumber < (_focusedTopEdge - _maxVisibleCount + 1) )
+                {
+                    _focusedTopEdge--;
+                    EntireListColor = _focusedColor;
+                    _focused = null;
+
+                    currentPersonsScrollValue += step;
+                    double scrollingLimit = GetScrollLimit ();
+
+                    if ( currentPersonsScrollValue > scrollingLimit )
+                    {
+                        currentPersonsScrollValue = scrollingLimit;
+                    }
+
+                    UpRunner (runnerStep);
+                }
+                else
+                {
+                    _focused = VisiblePeople [_focusedNumber];
+                    _focused.BrushColor = _focusedColor;
+                }
             }
             else
             {
-                double itemHeight = _scrollingScratch;
-                currentPersonsScrollValue -= step;
-                double listHeight = itemHeight * count;
-                double maxScroll = VisibleHeight - listHeight;
-                bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+                _focusedNumber++;
 
-                if ( scrollExceeds )
+                if ( _focusedNumber > _focusedTopEdge  ) 
                 {
-                    currentPersonsScrollValue = maxScroll;
+                    _focusedTopEdge++;
                 }
+
+                if ( _focused != null ) 
+                {
+                    _focused.BrushColor = _unfocusedColor;
+                }
+                else 
+                {
+                    EntireListColor = _entireListColor;
+                }
+
+                _focused = VisiblePeople [_focusedNumber];
+                _focused.BrushColor = _focusedColor;
+
+
+                if (_focusedNumber > 3) 
+                {
+                    double itemHeight = _scrollingScratch;
+                    currentPersonsScrollValue -= step;
+                    double listHeight = itemHeight * count;
+                    double maxScroll = VisibleHeight - listHeight;
+                    bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                    if ( scrollExceeds )
+                    {
+                        currentPersonsScrollValue = maxScroll;
+                    }
+
+                    DownRunner (runnerStep);
+                }
+
                 
-                DownRunner (runnerStep);
             }
 
             PersonsScrollValue = currentPersonsScrollValue;
@@ -636,7 +741,7 @@ namespace Lister.ViewModels
 
         private void TryToEnableBadgeCreation ()
         {
-            if ( VisiblePeople != null   &&   VisiblePeople.Count > 0 ) 
+            if ( ( VisiblePeople != null )   &&   ( VisiblePeople.Count > 0 ) )
             {
                 if ( _templateChoosingVM == null )
                 {
@@ -645,11 +750,31 @@ namespace Lister.ViewModels
 
                 BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected );
 
-                if ( BuildingIsPossible )
+                if ( BuildingIsPossible   &&   ( _templateChoosingVM.ChosenTemplate != null ) )
                 {
                     _templateChoosingVM.BuildingIsPossible = true;
                 }
             }
+        }
+
+
+        internal void DisableBuildigPossibility ()
+        {
+            _templateChoosingVM.BuildingIsPossible = false;
+        }
+
+
+        internal void ToZeroPersonSelection ()
+        {
+            SinglePersonIsSelected = false;
+            EntirePersonListIsSelected = false;
+
+            if ( _personSourceVM == null )
+            {
+                _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
+            }
+
+            _personSourceVM. peopleSettingOccured = false;
         }
     }
 }

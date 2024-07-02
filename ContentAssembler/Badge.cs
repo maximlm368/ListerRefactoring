@@ -175,8 +175,8 @@ namespace ContentAssembler
         public Size Size { get; private set; }
         public string Color { get; private set; }
         public string GeometryElementName { get; private set; }
-        public double TopShiftOnBackground { get; private set; }
-        public double LeftShiftOnBackground { get; private set; }
+        public double TopOffset { get; private set; }
+        public double LeftOffset { get; private set; }
         public ImageType ImageKind { get; private set; }
 
         public InsideImage ( string path, Size size, string color,
@@ -187,8 +187,8 @@ namespace ContentAssembler
             Size = size;
             Color = color;
             GeometryElementName = geometryElementName;
-            TopShiftOnBackground = topShiftOnBackground;
-            LeftShiftOnBackground = leftShiftOnBackground;
+            TopOffset = topShiftOnBackground;
+            LeftOffset = leftShiftOnBackground;
 
             bool isImageAbsent = string.IsNullOrWhiteSpace (Path);
 

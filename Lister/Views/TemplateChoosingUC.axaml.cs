@@ -17,7 +17,6 @@ namespace Lister.Views
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
         private TemplateViewModel _chosen;
-        internal bool TemplateIsSelected { get; private set; }
 
 
         public TemplateChoosingUserControl ()
@@ -25,7 +24,6 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
-            TemplateIsSelected = false;
             
         }
 
@@ -55,13 +53,11 @@ namespace Lister.Views
 
             if ( templateIsIncorrect )
             {
-                TemplateIsSelected = false;
                 _vm.ChosenTemplate = null;
                 int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
             }
             else 
             {
-                TemplateIsSelected = true;
                 _vm.ChosenTemplate = chosen;
             }
         }

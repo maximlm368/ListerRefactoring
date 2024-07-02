@@ -50,7 +50,8 @@
 							<DataTemplate>
 
 								<ItemsControl
-									HorizontalAlignment="Left"								
+									HorizontalAlignment="Left"
+									Margin="{Binding  Path = Margin,  Mode=OneWay }"
 									ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
 
 									<ItemsControl.ItemsPanel>
@@ -64,6 +65,7 @@
 
 											<Border
 												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }"
+												Margin="{Binding  Path = Margin,  Mode=OneWay }"
 												BorderBrush="Gray">
 
 												<Canvas
@@ -98,10 +100,9 @@
 
 																<Label
 																	Height="{Binding Path = Height,  Mode=OneWay}"
-																	
-																	HorizontalContentAlignment="{Binding  Path = Alignment,  Mode=OneWay}"
 																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-																	FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
+																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+																	FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 										                            Content="{Binding   Path = Content,  Mode=OneWay }" />
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>
@@ -234,7 +235,7 @@
 
 																<Label
 																	Background="AliceBlue"
-																	
+																	HorizontalContentAlignment="{Binding  Path = Alignment,  Mode=OneWay}"
 																	Height="{Binding   Path = Height,  Mode=OneWay }"
 																	Width="{Binding   Path = Width,  Mode=OneWay }"
 																	FontSize="{Binding   Path = FontSize,  Mode=OneWay }"
