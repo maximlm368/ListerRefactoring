@@ -1,0 +1,52 @@
+***** Бейдж без фона (= Бейдж медсестры 2) ***** 
+
+--FamilyName
+forecolor="#5C002D"
+textAlignment="Right"
+font fontName="Century Gothic" 
+size="20" 
+isBold="true
+
+-- FirstName+ " " +PatronymicName
+forecolor="#5C002D"
+textAlignment="Right"
+fontName="Century Gothic" 
+size="11" 
+isBold="true"
+
+
+-- Department
+-- Post
+forecolor="#000000"
+textAlignment="Right"
+font fontName="Century Gothic" 
+size="8" 
+isBold="true"
+
+
+
+***** Бейдж c фоном (= Бейдж  врача 2) ***** 
+background color="#CCAD81"
+
+--FamilyName
+forecolor="#730000"
+textAlignment="Right"
+font fontName="Century Gothic" 
+size="20" 
+isBold="true
+
+-- FirstName+ " " +PatronymicName
+forecolor="#730000"
+textAlignment="Right"
+fontName="Century Gothic" 
+size="11" 
+isBold="true"
+
+
+-- Department
+-- Post
+forecolor="#000000"
+textAlignment="Right"
+font fontName="Century Gothic" 
+size="8" 
+isBold="true"

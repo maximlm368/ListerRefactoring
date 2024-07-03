@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using ContentAssembler;
 using Lister.Views;
 using QuestPDF.Helpers;
@@ -15,12 +16,13 @@ namespace Lister.ViewModels
     public class SceneViewModel : ViewModelBase
     {
         private IUniformDocumentAssembler _docAssembler;
-        
         private double _documentScale;
         private double _scalabilityCoefficient;
         private double _zoomDegree;
         private List <PageViewModel> _allPages;
+        
         private PageViewModel _lastPage;
+        private SceneUserControl _view;
         private Person _chosenPerson;
         private string procentSymbol;
 
@@ -105,6 +107,12 @@ namespace Lister.ViewModels
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
             IncorrectBadges = new List<BadgeViewModel> ();
             EditionMustEnable = false;
+        }
+
+
+        internal void PassView ( SceneUserControl view )
+        {
+            _view = view;
         }
 
 
@@ -349,6 +357,24 @@ namespace Lister.ViewModels
             foreach ( BadgeViewModel correctBadge   in   corrects )
             {
                 IncorrectBadges.Remove (correctBadge);
+            }
+        }
+
+
+        internal void EditIncorrectBadges ( )
+        {
+            ModernMainView ancestorView = _view.Parent.Parent as ModernMainView;
+            //MainWindow owner = ancestorView.Parent as MainWindow;
+            MainWindow owner = MainWindow.GetMainWindow ();
+
+            if ( (owner != null)   &&   (IncorrectBadges. Count > 0) )
+            {
+                BadgeEditorView badgeEditor = new BadgeEditorView ();
+                badgeEditor.ChangeSize (owner.WidthDifference, owner.HeightDifference);
+                owner.ResetDifference ();
+                badgeEditor.PassIncorrectBadges (IncorrectBadges);
+                badgeEditor.PassBackPoint (ancestorView);
+                owner.Content = badgeEditor;
             }
         }
 

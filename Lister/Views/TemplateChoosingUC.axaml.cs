@@ -63,90 +63,89 @@ namespace Lister.Views
         }
 
 
-        internal void BuildBadges ( object sender, TappedEventArgs args )
-        {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            SceneUserControl scene = parent.scene;
+        //internal void BuildBadges ( object sender, TappedEventArgs args )
+        //{
+        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
 
-            _vm.Build ();
-            ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
-            zoomNavigation.EnableZoom ();
-            zoomNavigation.SetEnablePageNavigation ();
-            clearBadges.IsEnabled = true;
-            save.IsEnabled = true;
-            print.IsEnabled = true;
-        }
-
-
-        internal void ClearBadges ( object sender, TappedEventArgs args )
-        {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
-            SceneUserControl scene = parent.scene;
-            SceneViewModel sceneVM = scene.DataContext as SceneViewModel;
-
-            _vm.ClearAllPages ();
-            clearBadges.IsEnabled = false;
-            save.IsEnabled = false;
-            print.IsEnabled = false;
-            zoomNavigation.DisableButtons ();
-            sceneVM.EditionMustEnable = false;
-        }
+        //    _vm.Build ();
+        //    ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
+        //    zoomNavigation.EnableZoom ();
+        //    zoomNavigation.SetEnablePageNavigation ();
+        //    clearBadges.IsEnabled = true;
+        //    save.IsEnabled = true;
+        //    print.IsEnabled = true;
+        //}
 
 
-        internal void GeneratePdf ( object sender, TappedEventArgs args )
-        {
-            List<FilePickerFileType> fileExtentions = [];
-            fileExtentions.Add (FilePickerFileTypes.Pdf);
-            FilePickerSaveOptions options = new ();
-            options.Title = "Open Text File";
-            options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-            var window = TopLevel.GetTopLevel (this);
-            Task<IStorageFile> chosenFile = window.StorageProvider.SaveFilePickerAsync (options);
-            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+        //internal void ClearBadges ( object sender, TappedEventArgs args )
+        //{
+        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
+        //    ZoomNavigationUserControl zoomNavigation = parent.zoomNavigation;
+        //    SceneUserControl scene = parent.scene;
+        //    SceneViewModel sceneVM = scene.DataContext as SceneViewModel;
 
-            chosenFile.ContinueWith
-                (
-                   task =>
-                   {
-                       if ( task.Result != null )
-                       {
-                           string result = task.Result.Path.ToString ();
-                           result = result.Substring (8, result.Length - 8);
-                           Task<bool> pdf = _vm.GeneratePdf (result);
-                           pdf.ContinueWith
-                               (
-                               task =>
-                               {
-                                   if ( pdf.Result == false )
-                                   {
-                                       string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
-
-                                       int idOk = Winapi.MessageBox (0, message, "", 0);
-                                       //GeneratePdf (result);
-                                   }
-                                   else
-                                   {
-                                       Process fileExplorer = new Process ();
-                                       fileExplorer.StartInfo.FileName = "explorer.exe";
-                                       result = result.ExtractPathWithoutFileName ();
-                                       result = result.Replace ('/', '\\');
-                                       fileExplorer.StartInfo.Arguments = result;
-                                       fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                                       fileExplorer.Start ();
-                                   }
-                               }
-                               );
-                       }
-                   }
-                );
-        }
+        //    _vm.ClearAllPages ();
+        //    clearBadges.IsEnabled = false;
+        //    save.IsEnabled = false;
+        //    print.IsEnabled = false;
+        //    zoomNavigation.DisableButtons ();
+        //    sceneVM.EditionMustEnable = false;
+        //}
 
 
-        internal void Print ( object sender, TappedEventArgs args )
-        {
-            _vm.Print ();
-        }
+        //internal void GeneratePdf ( object sender, TappedEventArgs args )
+        //{
+        //    List<FilePickerFileType> fileExtentions = [];
+        //    fileExtentions.Add (FilePickerFileTypes.Pdf);
+        //    FilePickerSaveOptions options = new ();
+        //    options.Title = "Open Text File";
+        //    options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        //    var window = TopLevel.GetTopLevel (this);
+        //    Task<IStorageFile> chosenFile = window.StorageProvider.SaveFilePickerAsync (options);
+        //    TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+        //    chosenFile.ContinueWith
+        //        (
+        //           task =>
+        //           {
+        //               if ( task.Result != null )
+        //               {
+        //                   string result = task.Result.Path.ToString ();
+        //                   result = result.Substring (8, result.Length - 8);
+        //                   Task<bool> pdf = _vm.GeneratePdf (result);
+        //                   pdf.ContinueWith
+        //                       (
+        //                       task =>
+        //                       {
+        //                           if ( pdf.Result == false )
+        //                           {
+        //                               string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
+
+        //                               int idOk = Winapi.MessageBox (0, message, "", 0);
+        //                               //GeneratePdf (result);
+        //                           }
+        //                           else
+        //                           {
+        //                               Process fileExplorer = new Process ();
+        //                               fileExplorer.StartInfo.FileName = "explorer.exe";
+        //                               result = result.ExtractPathWithoutFileName ();
+        //                               result = result.Replace ('/', '\\');
+        //                               fileExplorer.StartInfo.Arguments = result;
+        //                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+        //                               fileExplorer.Start ();
+        //                           }
+        //                       }
+        //                       );
+        //               }
+        //           }
+        //        );
+        //}
+
+
+        //internal void Print ( object sender, TappedEventArgs args )
+        //{
+        //    _vm.Print ();
+        //}
 
     }
 }

@@ -60,8 +60,7 @@
 			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-			
-			Tapped="BuildBadges"
+			Command="{Binding  Path=BuildBadgess}"
 			Content="Построить"/>
 		
 		<Button
@@ -70,8 +69,8 @@
 			HorizontalAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Width="86"
-			IsEnabled="False"
-			Tapped="ClearBadges"
+			IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
+			Command="{Binding  Path=ClearBadges}"
 			Content="Очистить" />
 
 		<Button
@@ -80,8 +79,8 @@
 			HorizontalAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Width="91"
-			IsEnabled="False"
-			Tapped="GeneratePdf"
+			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+			Command="{Binding  Path=GeneratePdf}"
 			Content="Сохранить" />
 		
 		<Button
@@ -90,8 +89,8 @@
 			HorizontalAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Width="71"
-			IsEnabled="False"
-			Tapped="Print"
+			IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
+			Command="{Binding  Path=Print}"
 			Content="Печать"/>
 	</Grid>
   

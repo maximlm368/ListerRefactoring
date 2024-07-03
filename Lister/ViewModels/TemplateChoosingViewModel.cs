@@ -28,6 +28,7 @@ using ExtentionsAndAuxiliary;
 using QuestPDF.Helpers;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Platform.Storage;
 
 
 namespace Lister.ViewModels;
@@ -37,6 +38,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     private ConverterToPdf converter;
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
+    private ZoomNavigationViewModel _zoomNavigationVM;
 
     private List <TemplateViewModel> tF;
     internal List <TemplateViewModel> Templates
@@ -105,11 +107,49 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
     }
 
+    private bool cE;
+    internal bool ClearIsEnable
+    {
+        set
+        {
+            this.RaiseAndSetIfChanged (ref cE, value, nameof (ClearIsEnable));
+        }
+        get
+        {
+            return cE;
+        }
+    }
+
+    private bool sE;
+    internal bool SaveIsEnable
+    {
+        set
+        {
+            this.RaiseAndSetIfChanged (ref sE, value, nameof (SaveIsEnable));
+        }
+        get
+        {
+            return sE;
+        }
+    }
+
+    private bool pE;
+    internal bool PrintIsEnable
+    {
+        set
+        {
+            this.RaiseAndSetIfChanged (ref pE, value, nameof (PrintIsEnable));
+        }
+        get
+        {
+            return pE;
+        }
+    }
+
 
     public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
     {
         List <TemplateName> templateNames = docAssembler.GetBadgeModels ();
-        
         List <TemplateViewModel> templates = new List <TemplateViewModel> ();
 
         foreach ( TemplateName name   in   templateNames ) 
@@ -129,14 +169,24 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         Templates = templates;
-
-        //if ( ! string.IsNullOrEmpty ( problems ) ) 
-        //{
-        //    int idOk = Winapi.MessageBox ( 0, problems, "", 0 );
-        //}
-
         _sceneVM = sceneViewModel;
         converter = new ConverterToPdf ();
+    }
+
+
+    internal void BuildBadgess ()
+    {
+        if ( _zoomNavigationVM == null )
+        {
+            _zoomNavigationVM = App.services.GetRequiredService<ZoomNavigationViewModel> ();
+        }
+
+        Build ();
+        _zoomNavigationVM.EnableZoom ();
+        _zoomNavigationVM.SetEnablePageNavigation ();
+        ClearIsEnable = true;
+        SaveIsEnable = true;
+        PrintIsEnable = true;
     }
 
 
@@ -185,9 +235,72 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void ClearAllPages ()
+    internal void ClearBadges ( )
     {
         _sceneVM.ClearAllPages ();
+        ClearIsEnable = false;
+        SaveIsEnable = false;
+        PrintIsEnable = false;
+
+        if ( _zoomNavigationVM == null )
+        {
+            _zoomNavigationVM = App.services.GetRequiredService<ZoomNavigationViewModel> ();
+        }
+
+        _zoomNavigationVM.DisableButtons ();
+
+        if ( _sceneVM == null )
+        {
+            _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
+        }
+
+        _sceneVM.EditionMustEnable = false;
+    }
+
+
+    internal void GeneratePdf ( )
+    {
+        List<FilePickerFileType> fileExtentions = [];
+        fileExtentions.Add (FilePickerFileTypes.Pdf);
+        FilePickerSaveOptions options = new ();
+        options.Title = "Open Text File";
+        options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
+        Task<IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
+        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+        chosenFile.ContinueWith
+            (
+               task =>
+               {
+                   if ( task.Result != null )
+                   {
+                       string result = task.Result.Path.ToString ();
+                       result = result.Substring (8, result.Length - 8);
+                       Task<bool> pdf = GeneratePdf (result);
+                       pdf.ContinueWith
+                           (
+                           task =>
+                           {
+                               if ( pdf.Result == false )
+                               {
+                                   string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
+                                   int idOk = Winapi.MessageBox (0, message, "", 0);
+                               }
+                               else
+                               {
+                                   Process fileExplorer = new Process ();
+                                   fileExplorer.StartInfo.FileName = "explorer.exe";
+                                   result = result.ExtractPathWithoutFileName ();
+                                   result = result.Replace ('/', '\\');
+                                   fileExplorer.StartInfo.Arguments = result;
+                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                                   fileExplorer.Start ();
+                               }
+                           }
+                           );
+                   }
+               }
+            );
     }
 
 

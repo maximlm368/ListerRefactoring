@@ -461,7 +461,7 @@ public class BadgeViewModel : ViewModelBase
 
             while ( true )
             {
-                Typeface face = new Typeface (family, FontStyle.Normal, FontWeight.Normal);
+                Typeface face = new Typeface (family, FontStyle.Normal, FontWeight.Bold);
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
                 double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + TextLineViewModel._additionOnEnd;

@@ -93,6 +93,12 @@ namespace Lister.Views
                 return;
             }
 
+            if ( key == "Escape" )
+            {
+                DropOrPickUp ();
+                return;
+            }
+
             if ( key == "Up" )
             {
                 ScrollByKey (true);
@@ -103,6 +109,8 @@ namespace Lister.Views
             {
                 ScrollByKey(false);
             }
+
+
         }
 
 
@@ -193,6 +201,7 @@ namespace Lister.Views
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Right" );
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Down" );
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Return" );
+            keyIsUnimpacting = keyIsUnimpacting || ( key == "Escape" );
             return keyIsUnimpacting;
         }
 

@@ -26,32 +26,32 @@ namespace Lister.Views
         }
 
 
-        internal void ToNextPage ( object sender, TappedEventArgs args )
-        {
-            _vm.VisualiseNextPage ();
-            SetEnablePageNavigation ();
-        }
+        //internal void ToNextPage ( object sender, TappedEventArgs args )
+        //{
+        //    _vm.VisualiseNextPage ();
+        //    SetEnablePageNavigation ();
+        //}
 
 
-        internal void ToPreviousPage ( object sender, TappedEventArgs args )
-        {
-            _vm.VisualisePreviousPage ();
-            SetEnablePageNavigation ();
-        }
+        //internal void ToPreviousPage ( object sender, TappedEventArgs args )
+        //{
+        //    _vm.VisualisePreviousPage ();
+        //    SetEnablePageNavigation ();
+        //}
 
 
-        internal void ToLastPage ( object sender, TappedEventArgs args )
-        {
-            _vm.VisualiseLastPage ();
-            SetEnablePageNavigation ();
-        }
+        //internal void ToLastPage ( object sender, TappedEventArgs args )
+        //{
+        //    _vm.VisualiseLastPage ();
+        //    SetEnablePageNavigation ();
+        //}
 
 
-        internal void ToFirstPage ( object sender, TappedEventArgs args )
-        {
-            _vm.VisualiseFirstPage ();
-            SetEnablePageNavigation ();
-        }
+        //internal void ToFirstPage ( object sender, TappedEventArgs args )
+        //{
+        //    _vm.VisualiseFirstPage ();
+        //    SetEnablePageNavigation ();
+        //}
 
 
         internal void StepOnPage ( object sender, TextChangedEventArgs args )
@@ -83,70 +83,70 @@ namespace Lister.Views
         }
 
 
-        internal void ZoomOn ( object sender, TappedEventArgs args )
-        {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            SceneUserControl scene = parent.scene;
+        //internal void ZoomOn ( object sender, TappedEventArgs args )
+        //{
+        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
+        //    SceneUserControl scene = parent.scene;
 
-            if ( _scalabilityDepth < _maxDepth )
-            {
+        //    if ( _scalabilityDepth < _maxDepth )
+        //    {
 
-                _vm.ZoomOn (_scalabilityStep);
-                _scalabilityDepth++;
-            }
+        //        _vm.ZoomOn (_scalabilityStep);
+        //        _scalabilityDepth++;
+        //    }
 
-            if ( _scalabilityDepth == _maxDepth )
-            {
-                zoomOn.IsEnabled = false;
-            }
+        //    if ( _scalabilityDepth == _maxDepth )
+        //    {
+        //        zoomOn.IsEnabled = false;
+        //    }
 
-            if ( ! zoomOut.IsEnabled )
-            {
-                zoomOut.IsEnabled = true;
-            }
-        }
-
-
-        internal void ZoomOut ( object sender, TappedEventArgs args )
-        {
-            ModernMainView parent = this.Parent.Parent as ModernMainView;
-            SceneUserControl scene = parent.scene;
-
-            if ( _scalabilityDepth > _minDepth )
-            {
-                _vm.ZoomOut (_scalabilityStep);
-                _scalabilityDepth--;
-            }
-
-            if ( _scalabilityDepth == _minDepth )
-            {
-                zoomOut.IsEnabled = false;
-            }
-
-            if ( ! zoomOn.IsEnabled )
-            {
-                zoomOn.IsEnabled = true;
-            }
-        }
+        //    if ( ! zoomOut.IsEnabled )
+        //    {
+        //        zoomOut.IsEnabled = true;
+        //    }
+        //}
 
 
-        internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
-        {
-            List <BadgeViewModel> incorrects = _vm.GetIncorrectBadges ();
+        //internal void ZoomOut ( object sender, TappedEventArgs args )
+        //{
+        //    ModernMainView parent = this.Parent.Parent as ModernMainView;
+        //    SceneUserControl scene = parent.scene;
 
-            ModernMainView ancestorView = this.Parent.Parent as ModernMainView;
-            MainWindow owner = ancestorView.Parent as MainWindow;
- 
-            if ( incorrects.Count > 0 )
-            {
-                BadgeEditorView badgeEditor = new BadgeEditorView ();
-                badgeEditor.ChangeSize (owner.WidthDifference, owner.HeightDifference);
-                owner.ResetDifference ();
-                badgeEditor.PassIncorrectBadges (incorrects);
-                badgeEditor.PassBackPoint (ancestorView);
-                owner.Content = badgeEditor;
-            }
-        }
+        //    if ( _scalabilityDepth > _minDepth )
+        //    {
+        //        _vm.ZoomOut (_scalabilityStep);
+        //        _scalabilityDepth--;
+        //    }
+
+        //    if ( _scalabilityDepth == _minDepth )
+        //    {
+        //        zoomOut.IsEnabled = false;
+        //    }
+
+        //    if ( ! zoomOn.IsEnabled )
+        //    {
+        //        zoomOn.IsEnabled = true;
+        //    }
+        //}
+
+
+        //internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
+        //{
+        //    List <BadgeViewModel> incorrects = _vm.GetIncorrectBadges ();
+
+        //    ModernMainView ancestorView = this.Parent.Parent as ModernMainView;
+        //    MainWindow owner = ancestorView.Parent as MainWindow;
+
+        //    if ( incorrects.Count > 0 )
+        //    {
+        //        BadgeEditorView badgeEditor = new BadgeEditorView ();
+        //        badgeEditor.ChangeSize (owner.WidthDifference, owner.HeightDifference);
+        //        owner.ResetDifference ();
+        //        badgeEditor.PassIncorrectBadges (incorrects);
+        //        badgeEditor.PassBackPoint (ancestorView);
+        //        owner.Content = badgeEditor;
+        //    }
+        //}
 
 
         internal void SetNewScale ( object sender, KeyEventArgs args )

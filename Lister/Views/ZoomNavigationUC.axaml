@@ -33,8 +33,8 @@
 			Grid.Column="1"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ToFirstPage"
+			IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = VisualiseFirstPage}"
 			Content="f" />
 		
 		<Button
@@ -42,8 +42,8 @@
 			Grid.Column="2"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ToPreviousPage"
+			IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = VisualisePreviousPage}"
 			Content="p" />
 
 		<TextBox
@@ -62,8 +62,8 @@
 			Grid.Column="4"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ToNextPage"
+			IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = VisualiseNextPage}"
 			Content="n" />
 		
 		<Button
@@ -71,8 +71,8 @@
 			Grid.Column="5"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ToLastPage"
+			IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = VisualiseLastPage}"
 			Content="l" />
 		
 		<Button
@@ -81,8 +81,8 @@
 			Margin="0,3"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ZoomOn"
+			IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = ZoomOn}"
 			Content="+" />
 		
 		<TextBox
@@ -101,8 +101,8 @@
 			Grid.Column="9"
 			HorizontalAlignment="Center"
 			Width="28"
-			IsEnabled="False"
-			Tapped="ZoomOut"
+			IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = ZoomOut}"
 			Content="-" />
 
 		<Button
@@ -111,7 +111,7 @@
 			HorizontalAlignment="Center"
 			Width="126"
 			IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
-			Tapped="EditIncorrectBadges"
+			Command="{Binding   Path = EditIncorrectBadges}"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			Content="Редактировать"/>
 		

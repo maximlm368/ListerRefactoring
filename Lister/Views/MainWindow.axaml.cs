@@ -16,6 +16,7 @@ namespace Lister.Views;
 public partial class MainWindow : Window
 {
     public static IStorageProvider CommonStorageProvider { get; private set; }
+    private static MainWindow _mainWindow;
 
     private PixelSize _screenSize;
     private double _currentWidth;
@@ -51,6 +52,13 @@ public partial class MainWindow : Window
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
 
+        _mainWindow = this;
+    }
+
+
+    internal static MainWindow ? GetMainWindow ( )
+    {
+        return _mainWindow;
     }
 
 

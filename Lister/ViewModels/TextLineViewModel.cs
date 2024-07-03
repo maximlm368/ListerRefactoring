@@ -101,7 +101,7 @@ namespace Lister.ViewModels
             _dataSource = text;
             FontSize = text.FontSize;
             FontFamily = new FontFamily (text.FontFamily);
-            FontWeight = Avalonia.Media.FontWeight.Normal;
+            FontWeight = Avalonia.Media.FontWeight.Bold;
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
@@ -157,7 +157,7 @@ namespace Lister.ViewModels
         {
             double oldFontSize = FontSize;
             FontSize += additable;
-            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
@@ -170,7 +170,7 @@ namespace Lister.ViewModels
         {
             double oldFontSize = FontSize;
             FontSize -= subtractable;
-            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
@@ -230,7 +230,7 @@ namespace Lister.ViewModels
                 content = string.Empty;
             }
 
-            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Normal);
+            Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             Content = content;

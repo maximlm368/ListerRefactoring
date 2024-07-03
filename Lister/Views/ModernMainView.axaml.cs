@@ -11,14 +11,11 @@ namespace Lister.Views
     {
         private double _widthDelta;
         private double _heightDelta;
-        internal List <BadgeViewModel> IncorrectBadges { get; private set; }
         
 
         public ModernMainView ()
         {
             InitializeComponent ();
-            IncorrectBadges = new List<BadgeViewModel> ();
-            
         }
 
 

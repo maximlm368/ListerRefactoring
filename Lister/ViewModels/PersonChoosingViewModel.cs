@@ -44,7 +44,7 @@ namespace Lister.ViewModels
         private static string _placeHolder = "Весь список";
         private static int _maxVisibleCount = 4;
         private static double _oneHeight = 25;
-        private static int _focusedTopEdge = -1;
+        private static int _focusedEdge = 3;
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
         private static SolidColorBrush _focusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -307,15 +307,27 @@ namespace Lister.ViewModels
 
         internal string HideDropDown ( )
         {
-            ChosenPerson = _focused.Person;
-            SinglePersonIsSelected = true;
+            string choosingResult;
+
+            if ( _focused == null )
+            {
+                ChosenPerson = null;
+                EntirePersonListIsSelected = true;
+                choosingResult = _placeHolder;
+            }
+            else 
+            {
+                ChosenPerson = _focused.Person;
+                SinglePersonIsSelected = true;
+                choosingResult = ChosenPerson. StringPresentation;
+            }
 
             DropDownIsVisible = false;
             FirstItemHeight = 0;
             FirstIsVisible = false;
-
             TryToEnableBadgeCreation ();
-            return ChosenPerson. StringPresentation;
+            
+            return choosingResult;
         }
 
 
@@ -465,7 +477,7 @@ namespace Lister.ViewModels
             if ( IsPersonsScrollable )
             {
                 double step = _oneHeight;
-                double proportion = VisibleHeight / RealRunnerHeight;
+                double proportion = ( VisibleHeight - _oneHeight ) / RealRunnerHeight;
                 double runnerStep = step / proportion;
 
                 CompleteScrolling ( isDirectionUp , step , runnerStep , count );
@@ -498,7 +510,7 @@ namespace Lister.ViewModels
             double limit = (double) directionAndCount [2];
 
             double step = _oneHeight;
-            double proportion = VisibleHeight / RealRunnerHeight;
+            double proportion = ( VisibleHeight - _oneHeight ) / RealRunnerHeight;
             double runnerStep = step / proportion;
 
             bool isTimeToStop = false;
@@ -549,7 +561,7 @@ namespace Lister.ViewModels
 
         internal void MoveRunner ( double runnerVerticalDelta, int count )
         {
-            double proportion = VisibleHeight / RealRunnerHeight;
+            double proportion = ( VisibleHeight - _oneHeight ) / RealRunnerHeight;
             double personsVerticalDelta = runnerVerticalDelta * proportion;
             bool isDirectionUp = false;
 
@@ -573,7 +585,7 @@ namespace Lister.ViewModels
             if ( IsPersonsScrollable )
             {
                 double itemHeight = _oneHeight;
-                double proportion = VisibleHeight / RealRunnerHeight;
+                double proportion = (VisibleHeight - _oneHeight) / RealRunnerHeight;
                 double wholeSpan = TopSpanHeight + BottomSpanHeight - RunnerHeight;
                 double runnerStep = wholeSpan / count;
                 CompleteScrolling ( isDirectionUp , itemHeight , runnerStep, count );
@@ -590,33 +602,41 @@ namespace Lister.ViewModels
 
             if ( isDirectionUp )
             {
-                if ( _focusedNumber > -1 ) 
-                {
-                    _focusedNumber--;
-                }
-
-                if ( _focused != null ) 
+                if ( _focused != null )
                 {
                     _focused.BrushColor = _unfocusedColor;
                 }
 
-                if ( _focusedNumber < (_focusedTopEdge - _maxVisibleCount + 1) )
+                bool focusedIsInRange = _focusedNumber > -1;
+
+                if ( focusedIsInRange ) 
                 {
-                    _focusedTopEdge--;
-                    EntireListColor = _focusedColor;
-                    _focused = null;
+                    _focusedNumber--;
 
-                    currentPersonsScrollValue += step;
-                    double scrollingLimit = GetScrollLimit ();
-
-                    if ( currentPersonsScrollValue > scrollingLimit )
+                    if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
                     {
-                        currentPersonsScrollValue = scrollingLimit;
-                    }
+                        EntireListColor = _focusedColor;
+                        _focused = null;
+                        
 
-                    UpRunner (runnerStep);
+                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount ) )
+                        {
+                            currentPersonsScrollValue += step;
+                            double scrollingLimit = GetScrollLimit ();
+
+                            if ( currentPersonsScrollValue > scrollingLimit )
+                            {
+                                currentPersonsScrollValue = scrollingLimit;
+                            }
+
+                            UpRunner (runnerStep);
+
+                            _focusedEdge--;
+                        }
+                    }
                 }
-                else
+
+                if ( _focusedNumber > -1 )
                 {
                     _focused = VisiblePeople [_focusedNumber];
                     _focused.BrushColor = _focusedColor;
@@ -624,43 +644,40 @@ namespace Lister.ViewModels
             }
             else
             {
-                _focusedNumber++;
+                bool focusedIsInRange = (_focusedNumber < (VisiblePeople. Count - 1));
 
-                if ( _focusedNumber > _focusedTopEdge  ) 
+                if ( focusedIsInRange )
                 {
-                    _focusedTopEdge++;
-                }
-
-                if ( _focused != null ) 
-                {
-                    _focused.BrushColor = _unfocusedColor;
-                }
-                else 
-                {
+                    _focusedNumber++;
                     EntireListColor = _entireListColor;
-                }
 
-                _focused = VisiblePeople [_focusedNumber];
-                _focused.BrushColor = _focusedColor;
-
-
-                if (_focusedNumber > 3) 
-                {
-                    double itemHeight = _scrollingScratch;
-                    currentPersonsScrollValue -= step;
-                    double listHeight = itemHeight * count;
-                    double maxScroll = VisibleHeight - listHeight;
-                    bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
-
-                    if ( scrollExceeds )
+                    if ( _focused != null )
                     {
-                        currentPersonsScrollValue = maxScroll;
+                        _focused.BrushColor = _unfocusedColor;
                     }
 
-                    DownRunner (runnerStep);
-                }
+                    _focused = VisiblePeople [_focusedNumber];
+                    _focused.BrushColor = _focusedColor;
 
-                
+
+                    if ( _focusedNumber > _focusedEdge )
+                    {
+                        _focusedEdge++;
+
+                        double itemHeight = _scrollingScratch;
+                        currentPersonsScrollValue -= step;
+                        double listHeight = itemHeight * count;
+                        double maxScroll = VisibleHeight - listHeight;
+                        bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                        if ( scrollExceeds )
+                        {
+                            currentPersonsScrollValue = maxScroll;
+                        }
+
+                        DownRunner (runnerStep);
+                    }
+                }
             }
 
             PersonsScrollValue = currentPersonsScrollValue;
@@ -760,6 +777,11 @@ namespace Lister.ViewModels
 
         internal void DisableBuildigPossibility ()
         {
+            if ( _templateChoosingVM == null )
+            {
+                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+            }
+
             _templateChoosingVM.BuildingIsPossible = false;
         }
 
