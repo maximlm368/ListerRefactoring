@@ -6,7 +6,10 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
 			 xmlns:uc="clr-namespace:Lister.Views"
              x:Class="Lister.Views.BadgeEditorView"
-			 x:DataType="vm:BadgeEditorViewModel">
+			 x:DataType="vm:BadgeEditorViewModel"
+			 Height="460"
+		     Width="800"
+			 >
 
 	<StackPanel>
 

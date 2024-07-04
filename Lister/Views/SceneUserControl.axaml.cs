@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Lister.ViewModels;
@@ -14,6 +15,8 @@ namespace Lister.Views
     public partial class SceneUserControl : UserControl
     {
         private SceneViewModel _vm;
+        private double _widthDelta;
+        private double _heightDelta;
 
 
         public SceneUserControl ()
@@ -24,6 +27,13 @@ namespace Lister.Views
             var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
             this.Margin = new Avalonia.Thickness (5);
+        }
+
+
+        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges )
+        {
+            ModernMainView mainView = ModernMainView.Instance;
+            mainView.EditIncorrectBadges ( incorrectBadges );
         }
 
 

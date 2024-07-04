@@ -26,7 +26,7 @@ namespace Lister.ViewModels
         internal string SourceFilePath
         {
             get { return sFP; }
-            set
+            private set
             {
                 string path = SetPersonsFilePath ( value );
                 this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( SourceFilePath ) );
@@ -37,7 +37,7 @@ namespace Lister.ViewModels
         internal bool EditorIsEnable
         {
             get { return eE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref eE, value, nameof (EditorIsEnable));
             }

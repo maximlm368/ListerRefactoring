@@ -37,6 +37,9 @@ namespace Lister.ViewModels
         private bool _incorrectsAreSet = false;
         private ModernMainView _back;
         private BadgeEditorView _view;
+        
+        internal double WidthDelta { get; set; }
+        internal double HeightDelta { get; set; }
 
         private double cO;
         internal double CorrectnessOpacity
@@ -270,7 +273,7 @@ namespace Lister.ViewModels
         }
 
         public ICommand BuyMusicCommand { get; }
-        internal Interaction<DialogViewModel, string> ShowDialog { get; }
+        internal Interaction <DialogViewModel, string> ShowDialog { get; }
         
 
         public BadgeEditorViewModel ( )
@@ -405,11 +408,15 @@ namespace Lister.ViewModels
                 SetOriginalScale (badge, scale);
             }
 
-            MainWindow owner = _view.Parent as MainWindow;
-            _back.ChangeSize (owner.WidthDifference, owner.HeightDifference);
+            MainWindow mainWindow = _view.Parent as MainWindow;
+            _back.SetProperSize (_view.Width, _view.Height);
+
+            //_back = new ModernMainView ();
+            //_back.ChangeSize (mainWindow.WidthDifference, mainWindow.HeightDifference);
+
+            mainWindow.CancelSizeDifference ();
             _back.ResetIncorrects ();
-            owner.ResetDifference ();
-            owner.Content = _back;
+            mainWindow.Content = _back;
         }
 
 

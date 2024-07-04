@@ -254,7 +254,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
         }
 
-        _sceneVM.EditionMustEnable = false;
+        _sceneVM.ClearBuilt ();
     }
 
 

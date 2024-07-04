@@ -157,7 +157,8 @@ namespace Lister.Views
 
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( fromSender == string.Empty   ||   (person.StringPresentation.ToLower () == fromSender) )
+                    if ( fromSender == string.Empty || ( person.StringPresentation.ToLower () == fromSender ) )
+                    //if ( fromSender == string.Empty )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -185,10 +186,6 @@ namespace Lister.Views
 
         private void DisableBuildingButtons () 
         {
-            //ModernMainView parent = this.Parent.Parent as ModernMainView;
-            //TemplateChoosingUserControl templateChoosingUC = parent.templateChoosing;
-            //templateChoosingUC.buildBadges.IsEnabled = false;
-
             _vm.ToZeroPersonSelection ();
         }
 
@@ -215,6 +212,8 @@ namespace Lister.Views
                 VisiblePerson vP = new VisiblePerson (person);
                 foundVisiblePeople.Add (vP);
             }
+
+            _vm.VisiblePeople = foundVisiblePeople;
         }
 
         #endregion PersonListReduction

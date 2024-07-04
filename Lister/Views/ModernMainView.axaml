@@ -6,7 +6,10 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
              x:Class="Lister.Views.ModernMainView"
-			 x:DataType="vm:ModernMainViewModel" >
+			 x:DataType="vm:ModernMainViewModel"
+			 Height="460"
+			 Width="800"
+			 >
 
 	<StackPanel ZIndex="1" >
 		<uc:PersonSourceUserControl

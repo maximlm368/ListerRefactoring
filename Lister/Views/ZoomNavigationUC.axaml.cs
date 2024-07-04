@@ -17,6 +17,7 @@ namespace Lister.Views
         private readonly short _scalabilityStep = 25;
         private ushort _maxScalability;
         private ushort _minScalability;
+        private SceneViewModel _sceneVM;
 
         public ZoomNavigationUserControl ()
         {
@@ -286,7 +287,27 @@ namespace Lister.Views
         }
 
 
+        //internal void EditIncorrectBadges ( object sender, TappedEventArgs args )
+        //{
+        //    ModernMainView mainView = Parent.Parent as ModernMainView;
+        //    MainWindow window = mainView.Parent as MainWindow;
+        //    //MainWindow window = MainWindow.GetMainWindow ();
 
+        //    if ( _sceneVM == null )
+        //    {
+        //        _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
+        //    }
+
+        //    if ( ( window != null ) && ( _sceneVM.IncorrectBadges.Count > 0 ) )
+        //    {
+        //        BadgeEditorView editorView = new BadgeEditorView ();
+        //        editorView.ChangeSize (window.WidthDifference, window.HeightDifference);
+        //        window.CancelSizeDifference ();
+        //        editorView.PassIncorrectBadges (_sceneVM.IncorrectBadges);
+        //        editorView.PassBackPoint (mainView);
+        //        window.Content = editorView;
+        //    }
+        //}
 
     }
 

@@ -15,6 +15,8 @@ namespace Lister.ViewModels
 {
     public class SceneViewModel : ViewModelBase
     {
+        private static int crutch = 0;
+
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
         private double _scalabilityCoefficient;
@@ -30,7 +32,7 @@ namespace Lister.ViewModels
         internal PageViewModel VisiblePage
         {
             get { return vPage; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref vPage, value, nameof (VisiblePage));
             }
@@ -40,7 +42,7 @@ namespace Lister.ViewModels
         internal int VisiblePageNumber
         {
             get { return vpN; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
             }
@@ -52,7 +54,7 @@ namespace Lister.ViewModels
         internal string ZoomDegreeInView
         {
             get { return zoomDV; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
             }
@@ -62,7 +64,7 @@ namespace Lister.ViewModels
         internal Thickness BorderMargin
         {
             get { return bM; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref bM, value, nameof (BorderMargin));
             }
@@ -72,7 +74,7 @@ namespace Lister.ViewModels
         internal double CanvasTop
         {
             get { return cT; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref cT, value, nameof (CanvasTop));
             }
@@ -82,7 +84,7 @@ namespace Lister.ViewModels
         internal bool EditionMustEnable
         {
             get { return eE; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref eE, value, nameof (EditionMustEnable));
             }
@@ -361,22 +363,35 @@ namespace Lister.ViewModels
         }
 
 
-        internal void EditIncorrectBadges ( )
-        {
-            ModernMainView ancestorView = _view.Parent.Parent as ModernMainView;
-            //MainWindow owner = ancestorView.Parent as MainWindow;
-            MainWindow owner = MainWindow.GetMainWindow ();
+        //internal void EditIncorrectBadges ()
+        //{
+        //    ModernMainView mainView = ModernMainView.Instance;
+        //    MainWindow window = MainWindow.GetMainWindow ();
 
-            if ( (owner != null)   &&   (IncorrectBadges. Count > 0) )
-            {
-                BadgeEditorView badgeEditor = new BadgeEditorView ();
-                badgeEditor.ChangeSize (owner.WidthDifference, owner.HeightDifference);
-                owner.ResetDifference ();
-                badgeEditor.PassIncorrectBadges (IncorrectBadges);
-                badgeEditor.PassBackPoint (ancestorView);
-                owner.Content = badgeEditor;
-            }
+        //    if ( ( window != null )   &&   ( IncorrectBadges.Count > 0 ) )
+        //    {
+        //        BadgeEditorView editorView = new BadgeEditorView ();
+
+        //        editorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
+        //        window.CancelSizeDifference ();
+
+        //        editorView.PassIncorrectBadges (IncorrectBadges);
+        //        editorView.PassBackPoint (mainView);
+        //        window.Content = editorView;
+        //    }
+        //}
+
+
+        internal void EditIncorrectBadges ()
+        {
+            _view.EditIncorrectBadges (IncorrectBadges);
         }
 
+
+        internal void ClearBuilt ()
+        {
+            EditionMustEnable = false;
+            IncorrectBadges = new List <BadgeViewModel> ();
+        }
     }
 }

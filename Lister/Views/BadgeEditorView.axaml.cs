@@ -21,8 +21,9 @@ namespace Lister.Views
 {
     public partial class BadgeEditorView : ReactiveUserControl <BadgeEditorViewModel>
     {
-        private static double _widthDelta;
-        private static double _heightDelta;
+        private static bool _widthIsChanged;
+        private static bool _heightIsChanged;
+
         private ContentControl _focused;
         private bool _capturedExists;
         private bool _pointerIsPressed;
@@ -35,15 +36,10 @@ namespace Lister.Views
             InitializeComponent ();
             this.DataContext = new BadgeEditorViewModel ();
             _vm = DataContext as BadgeEditorViewModel;
-            workArea.Width -= _widthDelta;
-            workArea.Height -= _heightDelta;
-            slider.Height -= _heightDelta;
+
             left.Focus ();
 
-
             this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
-
-           
         }
 
 
@@ -59,11 +55,51 @@ namespace Lister.Views
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
+            Width -= widthDifference;
+            Height -= heightDifference;
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
             slider.Height -= heightDifference;
-            _widthDelta += widthDifference;
-            _heightDelta += heightDifference;
+            _vm.WidthDelta = widthDifference;
+            _vm.HeightDelta = heightDifference;
+        }
+
+
+        internal void SetProperSize ( double properWidth, double properHeight )
+        {
+            if ( properWidth != Width )
+            {
+                _widthIsChanged = true;
+            }
+            else 
+            {
+                _widthIsChanged = false;
+            }
+
+            if ( properHeight != Height )
+            {
+                _heightIsChanged = true;
+            }
+            else 
+            {
+                _heightIsChanged = false;
+            }
+
+            double widthDifference = Width - properWidth;
+            double heightDifference = Height - properHeight;
+            Width = properWidth;
+            Height = properHeight;
+
+            if ( _widthIsChanged ) 
+            {
+                workArea.Width -= widthDifference;
+            }
+
+            if ( _heightIsChanged ) 
+            {
+                workArea.Height -= heightDifference;
+                slider.Height -= heightDifference;
+            }
         }
 
 
@@ -76,7 +112,6 @@ namespace Lister.Views
 
         internal void PassBackPoint ( ModernMainView back )
         {
-            //Back = back;
             _vm.PassViews (this, back);
         }
 

@@ -32,19 +32,8 @@ public partial class MainWindow : Window
 
         CommonStorageProvider = StorageProvider;
 
-        //string badgeTemplatesFolderPath = @"./";
-        //IBadgeAppearenceProvider badgeAppearenceDataSource = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
-        //IPeopleDataSource peopleDataSource = new PeopleSource ();
-        //IResultOfSessionSaver converter = new ContentAssembler.ConverterToPdf ();
-        //IUniformDocumentAssembler docAssembler = new UniformDocAssembler (badgeAppearenceDataSource, peopleDataSource);
-
-
         this.Opened += OnOpened;
         ModernMainView mainView = ( ModernMainView ) Content;
-
-
-        //mainView.SetOwner ( this );
-        //mainView.PassAssembler ( docAssembler );
 
         this.SizeChanged += OnSizeChanged;
         _currentWidth = Width;
@@ -93,13 +82,13 @@ public partial class MainWindow : Window
             ModernMainView mainView = ( ModernMainView ) Content;
             double newWidth = e.NewSize.Width;
             double newHeight = e.NewSize.Height;
-            double widthDifference = _currentWidth - newWidth;
-            double heightDifference = _currentHeight - newHeight;
-            WidthDifference += widthDifference;
-            HeightDifference += heightDifference;
+            double newWidthDifference = _currentWidth - newWidth;
+            double newHeightDifference = _currentHeight - newHeight;
+            WidthDifference += newWidthDifference;
+            HeightDifference += newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
-            mainView.ChangeSize (widthDifference, heightDifference);
+            mainView.ChangeSize (newWidthDifference, newHeightDifference);
         }
         catch ( System.InvalidCastException ex )
         {
@@ -123,7 +112,7 @@ public partial class MainWindow : Window
     }
 
 
-    internal void ResetDifference ( )
+    internal void CancelSizeDifference ( )
     {
         WidthDifference = 0;
         HeightDifference = 0;

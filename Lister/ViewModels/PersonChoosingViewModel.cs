@@ -44,7 +44,8 @@ namespace Lister.ViewModels
         private static string _placeHolder = "Весь список";
         private static int _maxVisibleCount = 4;
         private static double _oneHeight = 25;
-        private static int _focusedEdge = 3;
+        private static readonly int _edge = 3;
+
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
         private static SolidColorBrush _focusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -56,6 +57,8 @@ namespace Lister.ViewModels
         private Timer _timer;
         private VisiblePerson _focused;
         private int _focusedNumber;
+        private int _focusedEdge;
+        private int _topLimit;
         internal bool ScrollingIsOccured { get; set; }
         internal bool SinglePersonIsSelected { get; private set; }
         internal bool EntirePersonListIsSelected { get; private set; }
@@ -87,7 +90,7 @@ namespace Lister.ViewModels
         internal FontWeight FontWeight
         {
             get { return fW; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fW, value, nameof (FontWeight));
             }
@@ -124,7 +127,7 @@ namespace Lister.ViewModels
         internal double VisibleHeight
         {
             get { return vH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref vH, value, nameof (VisibleHeight));
             }
@@ -134,7 +137,7 @@ namespace Lister.ViewModels
         internal SolidColorBrush EntireListColor
         {
             get { return eC; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref eC, value, nameof (EntireListColor));
             }
@@ -144,7 +147,7 @@ namespace Lister.ViewModels
         internal double PersonListWidth
         {
             get { return plW; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref plW, value, nameof (PersonListWidth));
             }
@@ -154,7 +157,7 @@ namespace Lister.ViewModels
         internal double PersonListHeight
         {
             get { return plH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
             }
@@ -164,7 +167,7 @@ namespace Lister.ViewModels
         internal double PersonsScrollValue
         {
             get { return psV; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref psV, value, nameof (PersonsScrollValue));
             }
@@ -175,7 +178,7 @@ namespace Lister.ViewModels
         internal double RunnerHeight
         {
             get { return rH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref rH, value, nameof (RunnerHeight));
             }
@@ -185,7 +188,7 @@ namespace Lister.ViewModels
         internal double RunnerTopCoordinate
         {
             get { return rTC; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref rTC, value, nameof (RunnerTopCoordinate));
             }
@@ -195,7 +198,7 @@ namespace Lister.ViewModels
         internal double TopSpanHeight
         {
             get { return tSH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref tSH, value, nameof (TopSpanHeight));
             }
@@ -205,7 +208,7 @@ namespace Lister.ViewModels
         internal double BottomSpanHeight
         {
             get { return bSH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref bSH, value, nameof (BottomSpanHeight));
             }
@@ -215,7 +218,7 @@ namespace Lister.ViewModels
         internal double ScrollerWidth
         {
             get { return sW; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollerWidth));
             }
@@ -225,7 +228,7 @@ namespace Lister.ViewModels
         internal double ScrollerCanvasLeft
         {
             get { return sCL; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref sCL, value, nameof (ScrollerCanvasLeft));
             }
@@ -235,7 +238,7 @@ namespace Lister.ViewModels
         internal double FirstItemHeight
         {
             get { return fH; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fH, value, nameof (FirstItemHeight));
             }
@@ -245,7 +248,7 @@ namespace Lister.ViewModels
         public bool FirstIsVisible
         {
             get { return fV; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fV, value, nameof (FirstIsVisible));
 
@@ -264,7 +267,7 @@ namespace Lister.ViewModels
         public bool DropDownIsVisible
         {
             get { return dV; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref dV, value, nameof (DropDownIsVisible));
             }
@@ -274,7 +277,7 @@ namespace Lister.ViewModels
         public bool IsPersonsScrollable
         {
             get { return isPS; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref isPS, value, nameof (IsPersonsScrollable));
             }
@@ -300,8 +303,7 @@ namespace Lister.ViewModels
             TextboxIsReadOnly = false;
             FontWeight = FontWeight.Bold;
             EntireListColor = _entireListColor;
-            _focused = null;
-            _focusedNumber = -1;
+            _focusedEdge = _edge;
         }
 
 
@@ -399,6 +401,11 @@ namespace Lister.ViewModels
                     FirstItemHeight = _scrollingScratch;
                     PersonsScrollValue = _scrollingScratch;
 
+                    _focused = null;
+                    EntireListColor = _focusedColor;
+                    _focusedNumber = -1;
+                    _focusedEdge = _edge;
+
                     if ( _personSourceVM == null )
                     {
                         _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
@@ -419,8 +426,14 @@ namespace Lister.ViewModels
                     VisibleHeight = _oneHeight * Math.Min (_maxVisibleCount, personCount);
                     EntirePersonListIsSelected = false;
                     PersonsScrollValue = 0;
+
+                    _focusedNumber = 0;
+                    _focused = VisiblePeople [_focusedNumber];
+                    _focused.BrushColor = _focusedColor;
+                    _focusedEdge = _edge;
                 }
 
+                _topLimit = _focusedNumber;
                 SetScrollerIfShould ();
             }
             else 
@@ -607,19 +620,44 @@ namespace Lister.ViewModels
                     _focused.BrushColor = _unfocusedColor;
                 }
 
-                bool focusedIsInRange = _focusedNumber > -1;
-
-                if ( focusedIsInRange ) 
+                if ( _firstMustBe )
                 {
-                    _focusedNumber--;
+                    bool focusedIsInRange = _focusedNumber > -1;
 
-                    if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
+                    if ( focusedIsInRange )
                     {
-                        EntireListColor = _focusedColor;
-                        _focused = null;
-                        
+                        _focusedNumber--;
 
-                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount ) )
+                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
+                        {
+                            EntireListColor = _focusedColor;
+                            _focused = null;
+
+                            if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 0 ) )
+                            {
+                                currentPersonsScrollValue += step;
+                                double scrollingLimit = GetScrollLimit ();
+
+                                if ( currentPersonsScrollValue > scrollingLimit )
+                                {
+                                    currentPersonsScrollValue = scrollingLimit;
+                                }
+
+                                UpRunner (runnerStep);
+                                _focusedEdge--;
+                            }
+                        }
+                    }
+                }
+                else 
+                {
+                    bool focusedIsInRange = _focusedNumber > 0;
+
+                    if ( focusedIsInRange )
+                    {
+                        _focusedNumber--;
+
+                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
                         {
                             currentPersonsScrollValue += step;
                             double scrollingLimit = GetScrollLimit ();
@@ -630,13 +668,13 @@ namespace Lister.ViewModels
                             }
 
                             UpRunner (runnerStep);
-
                             _focusedEdge--;
                         }
                     }
+
                 }
 
-                if ( _focusedNumber > -1 )
+                if ( (_focusedNumber > -1)   &&   (_focused != null) )
                 {
                     _focused = VisiblePeople [_focusedNumber];
                     _focused.BrushColor = _focusedColor;

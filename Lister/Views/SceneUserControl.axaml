@@ -5,7 +5,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="330"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:SceneViewModel"
-             x:Class="Lister.Views.SceneUserControl">
+             x:Class="Lister.Views.SceneUserControl"
+			 >
 
 	<Border
 		Name="workArea"
