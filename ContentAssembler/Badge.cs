@@ -2,6 +2,7 @@
 using System.IO;
 using System.Drawing;
 using SkiaSharp;
+using QuestPDF.Infrastructure;
 
 
 namespace ContentAssembler
@@ -229,6 +230,8 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFamily { get; private set; }
+        public List<int> Foreground { get; private set; }
+        public string FontWeight { get; private set; }
         private string _content;
         public string Content
         {
@@ -252,7 +255,8 @@ namespace ContentAssembler
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFamily, List<string>? includedAtoms, bool isSplitable )
+                           , double fontSize, string fontFamily, List<int> foreground, string fontWeight
+                           , List<string>? includedAtoms, bool isSplitable )
         {
             _content = "";
             ContentIsSet = false;
@@ -264,6 +268,14 @@ namespace ContentAssembler
             Alignment = alignment;
             FontSize = fontSize;
             FontFamily = fontFamily;
+
+            if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
+            {
+                foreground = new List<int> { 0,0,0 };
+            }
+
+            Foreground = foreground;
+            FontWeight = fontWeight;
             IncludedAtoms = includedAtoms ?? new List<string> ();
             IsSplitable = isSplitable;
             isNeeded = true;
@@ -282,6 +294,8 @@ namespace ContentAssembler
             Alignment = source.Alignment;
             FontSize = source.FontSize;
             FontFamily = source.FontFamily;
+            Foreground = source.Foreground;
+            FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
             IsSplitable = source.IsSplitable;
             isNeeded = true;
@@ -291,7 +305,7 @@ namespace ContentAssembler
         internal TextualAtom Clone () 
         {
             TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFamily,
-                                                                                             IncludedAtoms, IsSplitable);
+                                                 Foreground, FontWeight, IncludedAtoms, IsSplitable);
             return clone;
         }
 

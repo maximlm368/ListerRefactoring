@@ -54,7 +54,7 @@ namespace Lister.Views
 
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
-            _vm.ChosenPerson = null;
+            _vm.SetEntireList ();
             personTextBox.Text = _vm.PlaceHolder;
 
             if ( _chosen != null )
@@ -75,7 +75,7 @@ namespace Lister.Views
 
             if ( reasonExists )
             {
-                _vm.HideDropDown ();
+                _vm.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
             }
 
@@ -95,7 +95,7 @@ namespace Lister.Views
 
             if ( key == "Escape" )
             {
-                DropOrPickUp ();
+                PickUp ();
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                _vm.HideDropDown ();
+                _vm.HideDropDownWithChange ();
                 _personListIsDropped = false;
             }
         }
@@ -233,7 +233,7 @@ namespace Lister.Views
             _chosen = chosenLabel;
             string chosenName = (string) chosenLabel.Content;
             Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
-            _vm.ChosenPerson = chosenPerson;
+            _vm.SetChosenPerson (chosenPerson);
             personTextBox.Text = chosenPerson.StringPresentation;
             DropOrPickUp ();
         }
@@ -244,13 +244,23 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                personTextBox.Text = _vm.HideDropDown ();
+                personTextBox.Text = _vm.HideDropDownWithChange ();
                 _personListIsDropped = false;
             }
             else
             {
                 _vm.ShowDropDown ();
                 _personListIsDropped = true;
+            }
+        }
+
+
+        private void PickUp ()
+        {
+            if ( _personListIsDropped )
+            {
+                _vm.HideDropDownWithoutChange ();
+                _personListIsDropped = false;
             }
         }
 

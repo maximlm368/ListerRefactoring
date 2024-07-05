@@ -21,7 +21,7 @@ class Program
         }
         catch( StackOverflowException ex ) 
         {
-            int fdfd = 0;
+            
         }
 
         

@@ -166,6 +166,7 @@
 						Width="50"
 						Height="30"
 						Command="{Binding  Path = FilterCorrects}"
+						KeyDown="ToParticularBadge"
 						Grid.Column="0">
 						
 						<Button.Background>
@@ -180,6 +181,7 @@
 						Width="50"
 						Height="30"
 						Command="{Binding  Path = FilterIncorrects}"
+						KeyDown="ToParticularBadge"
 						Grid.Column="1">
 						
 						<Button.Background>

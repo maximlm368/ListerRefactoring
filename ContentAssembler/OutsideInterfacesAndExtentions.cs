@@ -2,7 +2,7 @@
 {
     public interface IBadgeAppearenceProvider
     {
-        public OrganizationalDataOfBadge GetBadgeData(string BadgeTemplateName);
+        //public OrganizationalDataOfBadge GetBadgeData(string BadgeTemplateName);
 
         public BadgeLayout GetBadgeLayout ( string badgeTemplateName );
 

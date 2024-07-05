@@ -188,6 +188,33 @@ namespace ExtentionsAndAuxiliary
         }
 
 
+        public static List<int> TranslateIntoIntList ( this string possibleArray )
+        {
+            List<int> result = null;
+            int startPosition = 0;
+
+            for ( int index = 0;   index < possibleArray.Length;   index++ ) 
+            {
+                if ( possibleArray [index] == ',' ) 
+                {
+                    string subStr = possibleArray.Substring ( startPosition, index );
+
+                    try
+                    {
+                        int subResult = int.Parse (subStr);
+                        result.Add (subResult);
+                        startPosition = index + 1;
+                    }
+                    catch ( FormatException ex ) { }
+
+                    
+                }
+            }
+
+            return result;
+        }
+
+
         public static string ExtractPathWithoutFileName ( this string wholePath )
         {
             var builder = new StringBuilder ();

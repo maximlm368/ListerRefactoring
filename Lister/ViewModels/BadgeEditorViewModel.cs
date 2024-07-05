@@ -465,6 +465,11 @@ namespace Lister.ViewModels
 
         internal void ToPrevious ( )
         {
+            if ( BeingProcessedNumber <= 1 ) 
+            {
+                return;
+            }
+
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = VisibleBadges [BeingProcessedNumber - 2];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
@@ -481,6 +486,11 @@ namespace Lister.ViewModels
 
         internal void ToNext ()
         {
+            if ( BeingProcessedNumber >= ProcessableCount )
+            {
+                return;
+            }
+
             BeingProcessedBadge.Hide ();
             BeingProcessedBadge = VisibleBadges [BeingProcessedNumber];
             ActiveIcon. BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));

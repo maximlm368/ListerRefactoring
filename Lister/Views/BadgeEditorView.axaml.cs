@@ -43,7 +43,7 @@ namespace Lister.Views
         }
 
 
-        private async Task DoShowDialogAsync ( InteractionContext<DialogViewModel, string?> interaction )
+        private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
         {
             var dialog = new DialogWindow ();
             dialog.DataContext = interaction.Input;
@@ -114,6 +114,22 @@ namespace Lister.Views
         {
             _vm.PassViews (this, back);
         }
+
+
+        internal void ToParticularBadge ( object sender, KeyEventArgs args )
+        {
+            string key = args.Key.ToString();
+
+            if ( key == "Up" )
+            {
+                _vm.ToPrevious ();
+            }
+            else if ( key == "Down" ) 
+            {
+                _vm.ToNext ();
+            }
+        }
+
 
         #region CapturingAndMovingByMouse
 

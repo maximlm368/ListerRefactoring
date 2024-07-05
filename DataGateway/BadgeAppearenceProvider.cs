@@ -64,7 +64,7 @@ namespace DataGateway
         }
 
 
-        private List<TextualAtom> GetAtoms ( string jsonPath ) 
+        private List <TextualAtom> GetAtoms ( string jsonPath ) 
         {
             List<TextualAtom> atoms = new ();
 
@@ -131,6 +131,9 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
             .TranslateIntoDouble ();
             string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
+            List<int> foreground = GetterFromJson.GetSectionValue (new List<string> { atomName, "Foreground" }, jsonPath)
+            .TranslateIntoIntList();
+            string fontWeight = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontWeight" }, jsonPath);
             string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsSplitable" }, jsonPath);
             bool isShiftable = false;
 
@@ -142,7 +145,7 @@ namespace DataGateway
             catch (Exception ex) {}
 
             TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
-                           , alignment, fontSize, fontFamily, null, isShiftable);
+                           , alignment, fontSize, fontFamily, foreground, fontWeight, null, isShiftable);
 
             return atom;
         }
@@ -166,6 +169,13 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
             childSection = section.GetSection ("FontFamily");
             string fontFamily = GetterFromJson.GetSectionValue (childSection);
+
+            childSection = section.GetSection ("Foreground");
+            List<int> foreground = GetterFromJson.GetSectionValue (childSection).TranslateIntoIntList ();
+
+            childSection = section.GetSection ("FontWeight");
+            string fontWeight = GetterFromJson.GetSectionValue (childSection);
+
             childSection = section.GetSection ("IsSplitable");
             string shiftableString = GetterFromJson.GetSectionValue (childSection);
             bool isShiftable = false;
@@ -179,7 +189,7 @@ namespace DataGateway
 
 
             TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset 
-                                               , alignment, fontSize, fontFamily, united, isShiftable );
+                                               , alignment, fontSize, fontFamily, foreground, fontWeight, united, isShiftable );
             return atom;
         }
 
@@ -244,68 +254,68 @@ namespace DataGateway
         }
 
 
-        public List<FileInfo> GetBadgeModelsNames ()
-        {
-            string badgeModelsFolderPath = @"./";
-            DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
-            FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
-            List<FileInfo> modelNames = new List<FileInfo> ();
+        //public List<FileInfo> GetBadgeModelsNames ()
+        //{
+        //    string badgeModelsFolderPath = @"./";
+        //    DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
+        //    FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
+        //    List<FileInfo> modelNames = new List<FileInfo> ();
 
-            foreach ( FileInfo file in Files )
-            {
-                modelNames.Add (file);
-            }
+        //    foreach ( FileInfo file in Files )
+        //    {
+        //        modelNames.Add (file);
+        //    }
 
-            return modelNames;
-        }
-
-
-        public List<FileInfo> GetBadgeModelsNamess ()
-        {
-            string badgeModelsFolderPath = @"./";
-            DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
-            FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
-            List<FileInfo> modelNames = new List<FileInfo> ();
-
-            foreach ( FileInfo file in Files )
-            {
-                modelNames.Add (file);
-            }
-
-            return modelNames;
-        }
+        //    return modelNames;
+        //}
 
 
-        public OrganizationalDataOfBadge GetBadgeData ( string badgeTemplateName )
-        {
-            double badgeWidth = 350;
-            double badgeHeight = 214;
-            Size badgeSize = new Size ( badgeWidth , badgeHeight );
+        //public List<FileInfo> GetBadgeModelsNamess ()
+        //{
+        //    string badgeModelsFolderPath = @"./";
+        //    DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
+        //    FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
+        //    List<FileInfo> modelNames = new List<FileInfo> ();
 
-            double personTextAreaWidth = 220;
-            double personTextAreaHeight = 147;
-            Size personTextAreaSize = new Size ( personTextAreaWidth , personTextAreaHeight );
+        //    foreach ( FileInfo file in Files )
+        //    {
+        //        modelNames.Add (file);
+        //    }
 
-            double personTextBlockTopShiftOnBackground = 60;
-            double personTextBlockLeftShiftOnBackground = 130;
+        //    return modelNames;
+        //}
 
-            double firstLevelFontSize = 30;
-            double secondLevelFontSize = 16;
-            double thirdLevelFontSize = 11;
 
-            double firstLevelTBHeight = 37;
-            double secondLevelTBHeight = 20;
-            double thirdLevelTBHeight = 14;
+        //public OrganizationalDataOfBadge GetBadgeData ( string badgeTemplateName )
+        //{
+        //    double badgeWidth = 350;
+        //    double badgeHeight = 214;
+        //    Size badgeSize = new Size ( badgeWidth , badgeHeight );
 
-            BadgeDimensions badgeDimensions = new BadgeDimensions ( badgeSize , personTextAreaSize
-                                                  , personTextBlockTopShiftOnBackground , personTextBlockLeftShiftOnBackground
-                                                  , firstLevelFontSize , secondLevelFontSize , thirdLevelFontSize
-                                                  , firstLevelTBHeight , secondLevelTBHeight , thirdLevelTBHeight );
+        //    double personTextAreaWidth = 220;
+        //    double personTextAreaHeight = 147;
+        //    Size personTextAreaSize = new Size ( personTextAreaWidth , personTextAreaHeight );
 
-            OrganizationalDataOfBadge badgeDescriprion = new OrganizationalDataOfBadge ( badgeDimensions , null );
+        //    double personTextBlockTopShiftOnBackground = 60;
+        //    double personTextBlockLeftShiftOnBackground = 130;
 
-            return badgeDescriprion;
-        }
+        //    double firstLevelFontSize = 30;
+        //    double secondLevelFontSize = 16;
+        //    double thirdLevelFontSize = 11;
+
+        //    double firstLevelTBHeight = 37;
+        //    double secondLevelTBHeight = 20;
+        //    double thirdLevelTBHeight = 14;
+
+        //    BadgeDimensions badgeDimensions = new BadgeDimensions ( badgeSize , personTextAreaSize
+        //                                          , personTextBlockTopShiftOnBackground , personTextBlockLeftShiftOnBackground
+        //                                          , firstLevelFontSize , secondLevelFontSize , thirdLevelFontSize
+        //                                          , firstLevelTBHeight , secondLevelTBHeight , thirdLevelTBHeight );
+
+        //    OrganizationalDataOfBadge badgeDescriprion = new OrganizationalDataOfBadge ( badgeDimensions , null );
+
+        //    return badgeDescriprion;
+        //}
 
     }
 }

@@ -5,9 +5,9 @@ using ReactiveUI;
 
 namespace Lister.Views
 {
-     partial class DialogWindow : ReactiveWindow <DialogViewModel>
+    internal partial class DialogWindow : ReactiveWindow <DialogViewModel>
     {
-        public DialogWindow ()
+        internal DialogWindow ()
         {
             InitializeComponent ();
 
