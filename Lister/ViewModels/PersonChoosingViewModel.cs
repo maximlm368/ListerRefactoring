@@ -635,7 +635,7 @@ namespace Lister.ViewModels
             double limit = (double) directionAndCount [2];
 
             double step = _oneHeight;
-            double proportion = ( VisibleHeight - _oneHeight ) / RealRunnerHeight;
+            double proportion = VisibleHeight / RealRunnerHeight;
             double runnerStep = step / proportion;
 
             bool isTimeToStop = false;
@@ -679,7 +679,7 @@ namespace Lister.ViewModels
                 args [ 1 ] = count;
                 args [2] = limit;
 
-                _timer = new Timer ( callBack , args , 0 , 20 );
+                _timer = new Timer ( callBack , args , 0 , 10 );
             }
         }
 

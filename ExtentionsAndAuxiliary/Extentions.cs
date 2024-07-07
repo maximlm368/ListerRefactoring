@@ -190,7 +190,7 @@ namespace ExtentionsAndAuxiliary
 
         public static List<int> TranslateIntoIntList ( this string possibleArray )
         {
-            List<int> result = null;
+            List<int> result = new List<int> ( );
             int startPosition = 0;
 
             for ( int index = 0;   index < possibleArray.Length;   index++ ) 
