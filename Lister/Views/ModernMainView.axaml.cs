@@ -29,7 +29,7 @@ namespace Lister.Views
 
         internal void ReleaseRunner () 
         {
-            personChoosing.ReleasePressed ();
+            personChoosing.ReleaseScrollingLeverage ();
         }
 
 

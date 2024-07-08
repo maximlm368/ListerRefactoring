@@ -32,6 +32,7 @@ using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
 using Avalonia.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace Lister.ViewModels
 {
@@ -415,7 +416,7 @@ namespace Lister.ViewModels
 
             PlaceHolder = _placeHolder;
             EntireListColor = _focusedColor;
-            _focusedNumber = _edge - _focusedEdge;
+            _focusedNumber = _focusedEdge - _maxVisibleCount;
         }
 
 
@@ -614,25 +615,25 @@ namespace Lister.ViewModels
         {
             if ( IsPersonsScrollable )
             {
-                TimerCallback callBack = new TimerCallback ( ShiftCaller );
-                double limit = 0;
+                TimerCallback callBack = new TimerCallback (ShiftCaller);
+                double spanHeightLimit = 0;
 
-                object [ ] args = new object [ 3 ];
-                args [ 0 ] = isDirectionUp;
-                args [ 1 ] = count;
-                args [2] = limit;
+                object [] args = new object [3];
+                args [0] = isDirectionUp;
+                args [1] = count;
+                args [2] = spanHeightLimit;
 
-                _timer = new Timer ( callBack , args, 0 , 100 );
+                _timer = new Timer (callBack, args, 0, 100);
             }
         }
 
 
         private void ShiftCaller ( object args )
         {
-            object [ ] directionAndCount = ( object [ ] ) args;
-            bool isDirectionUp = ( bool ) directionAndCount [ 0 ];
-            int count = ( int ) directionAndCount [ 1 ];
-            double limit = (double) directionAndCount [2];
+            object [] directionAndCount = ( object [] ) args;
+            bool isDirectionUp = ( bool ) directionAndCount [0];
+            int count = ( int ) directionAndCount [1];
+            double spanHeightLimit = ( double ) directionAndCount [2];
 
             double step = _oneHeight;
             double proportion = VisibleHeight / RealRunnerHeight;
@@ -642,24 +643,24 @@ namespace Lister.ViewModels
 
             if ( isDirectionUp )
             {
-                if ( TopSpanHeight < limit )
+                if ( TopSpanHeight <= spanHeightLimit )
                 {
                     StopScrolling ();
                 }
             }
-            else 
+            else
             {
-                if ( BottomSpanHeight < limit )
+                if ( BottomSpanHeight <= spanHeightLimit )
                 {
                     StopScrolling ();
                 }
             }
 
-            CompleteScrolling ( isDirectionUp , step , runnerStep , count, true );
+            CompleteScrolling (isDirectionUp, step, runnerStep, count, true);
         }
 
 
-        internal void StopScrolling ( )
+        internal void StopScrolling ()
         {
             if ( _timer != null )
             {
@@ -668,40 +669,66 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ShiftRunner ( bool isDirectionUp , int count, double limit )
+        internal void GetFocusedNumber ()
+        {
+            int number = _focusedNumber;
+            int visibles = VisiblePeople.Count;
+            int dfdf = 0;
+        }
+
+
+        internal void ShiftRunner ( bool isDirectionUp, int count, double limit )
         {
             if ( IsPersonsScrollable )
             {
-                TimerCallback callBack = new TimerCallback ( ShiftCaller );
+                while ( true ) 
+                {
+                    double step = _oneHeight;
+                    double proportion = VisibleHeight / RealRunnerHeight;
+                    double runnerStep = step / proportion;
 
-                object [ ] args = new object [ 3 ];
-                args [ 0 ] = isDirectionUp;
-                args [ 1 ] = count;
-                args [2] = limit;
+                    bool isTimeToStop = false;
 
-                _timer = new Timer ( callBack , args , 0 , 10 );
+                    if ( isDirectionUp )
+                    {
+                        if ( TopSpanHeight < limit )
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if ( BottomSpanHeight < limit )
+                        {
+                            break;
+                        }
+                    }
+
+                    CompleteScrolling (isDirectionUp, step, runnerStep, count, true);
+                }
             }
         }
 
 
-        internal void MoveRunner ( double runnerVerticalDelta, int count )
+        internal void MoveRunner ( double runnerStep, int count )
         {
-            double proportion = ( VisibleHeight - _oneHeight ) / RealRunnerHeight;
-            double personsVerticalDelta = runnerVerticalDelta * proportion;
+            double proportion = VisibleHeight / RealRunnerHeight;
+            double step = runnerStep * proportion;
+            step = _oneHeight * Math.Round( step / _oneHeight );
             bool isDirectionUp = false;
 
-            if ( personsVerticalDelta > 0 ) 
+            if ( step > 0 ) 
             {
                 isDirectionUp = true;
             }
-            else if( personsVerticalDelta < 0 ) 
+            else if( step < 0 ) 
             {
                 isDirectionUp = false;
-                personsVerticalDelta = personsVerticalDelta * ( -1 );
-                runnerVerticalDelta = runnerVerticalDelta * ( -1 );
+                step = step * ( -1 );
+                runnerStep = runnerStep * ( -1 );
             }
 
-            CompleteScrolling ( isDirectionUp , personsVerticalDelta , runnerVerticalDelta, count, true );
+            CompleteMoving (isDirectionUp, step, runnerStep, count, true);
         }
 
 
@@ -829,7 +856,7 @@ namespace Lister.ViewModels
                     {
                         _focusedEdge++;
 
-                        double itemHeight = _scrollingScratch;
+                        double itemHeight = _oneHeight;
                         currentPersonsScrollValue -= step;
                         double listHeight = itemHeight * itemCount;
                         double maxScroll = VisibleHeight - listHeight;
@@ -841,6 +868,174 @@ namespace Lister.ViewModels
                         }
 
                         if ( scrollerIsInvolved ) 
+                        {
+                            DownRunner (runnerStep);
+                        }
+                    }
+                }
+            }
+
+            PersonsScrollValue = currentPersonsScrollValue;
+            ScrollingIsOccured = true;
+        }
+
+
+        private void CompleteMoving ( bool isDirectionUp, double step, double runnerStep, int itemCount
+                                    , bool scrollerIsInvolved )
+        {
+            double currentPersonsScrollValue = PersonsScrollValue;
+
+            if ( isDirectionUp )
+            {
+                if ( _allListMustBe )
+                {
+                    double stepLoss = 0;
+                    double focusedMustStepAlone = _maxVisibleCount - ( _focusedEdge - _focusedNumber );
+                    stepLoss = ( _oneHeight * focusedMustStepAlone );
+                    int stepInItems = ( int ) ( step / _oneHeight );
+                    _focusedNumber -= stepInItems;
+                    step -= stepLoss;
+
+                    if ( _focusedNumber < -1 )
+                    {
+                        _focusedNumber = -1;
+                        _focusedEdge = _focusedNumber + _maxVisibleCount;
+                    }
+
+                    if ( _focused != null )
+                    {
+                        _focused.BrushColor = _unfocusedColor;
+                    }
+
+
+                    bool focusedIsInRange = (_focusedNumber > -1);
+
+                    if ( focusedIsInRange )
+                    {
+                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
+                        {
+                            EntireListColor = _focusedColor;
+                            _focused = null;
+
+                            if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 0 ) )
+                            {
+                                currentPersonsScrollValue += step;
+                                double scrollingLimit = GetScrollLimit ();
+
+                                if ( currentPersonsScrollValue > scrollingLimit )
+                                {
+                                    currentPersonsScrollValue = scrollingLimit;
+                                }
+
+                                if ( scrollerIsInvolved )
+                                {
+                                    UpRunner (runnerStep);
+                                }
+
+                                _focusedEdge = _focusedNumber + _maxVisibleCount;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    double stepLoss = 0;
+                    double focusedMustStepAlone = _maxVisibleCount - ( _focusedEdge - _focusedNumber ) - 1;
+                    stepLoss = ( _oneHeight * focusedMustStepAlone );
+                    int stepInItems = ( int ) ( step / _oneHeight );
+                    _focusedNumber -= stepInItems;
+                    step -= stepLoss;
+
+                    if ( _focusedNumber < 0 )
+                    {
+                        _focusedNumber = 0;
+                        _focusedEdge = _focusedNumber + _maxVisibleCount;
+                    }
+
+                    if ( _focused != null )
+                    {
+                        _focused.BrushColor = _unfocusedColor;
+                    }
+
+
+                    bool focusedIsInRange = _focusedNumber > 1;
+
+                    if ( focusedIsInRange )
+                    {
+                        _focusedNumber--;
+
+                        if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
+                        {
+                            currentPersonsScrollValue += step;
+                            double scrollingLimit = GetScrollLimit ();
+
+                            if ( currentPersonsScrollValue > scrollingLimit )
+                            {
+                                currentPersonsScrollValue = scrollingLimit;
+                            }
+
+                            if ( scrollerIsInvolved )
+                            {
+                                UpRunner (runnerStep);
+                            }
+
+                            _focusedEdge = _focusedNumber + _maxVisibleCount - 1;
+                        }
+                    }
+
+                }
+
+                if ( ( _focusedNumber > -1 )   &&   ( _focused != null ) )
+                {
+                    _focused = VisiblePeople [_focusedNumber];
+                    _focused.BrushColor = _focusedColor;
+                }
+            }
+            else
+            {
+                bool focusedIsInRange = ( _focusedNumber < ( VisiblePeople.Count - 1 ) );
+
+                if ( focusedIsInRange )
+                {
+                    double stepLoss = 0;
+                    double focusedMustStepAlone = ( _focusedEdge - _focusedNumber );
+                    stepLoss = ( _oneHeight * focusedMustStepAlone );
+
+                    int stepInItems = ( int ) ( step / _oneHeight );
+                    _focusedNumber += stepInItems;
+
+                    step -= stepLoss;
+
+                    if ( _focusedNumber > VisiblePeople. Count ) 
+                    {
+                       _focusedNumber = VisiblePeople. Count;
+                    }
+
+                    EntireListColor = _entireListColor;
+                    
+                    if ( _focused != null )
+                    {
+                        _focused.BrushColor = _unfocusedColor;
+                    }
+                    
+                    _focused = VisiblePeople [_focusedNumber];
+                    _focused.BrushColor = _focusedColor;
+
+                    if ( _focusedNumber > _focusedEdge )
+                    {
+                        _focusedEdge = _focusedNumber;
+                        double itemHeight = _oneHeight;
+                        currentPersonsScrollValue -= step;
+                        double listHeight = itemHeight * itemCount;
+                        double maxScroll = VisibleHeight - listHeight;
+                        bool scrollExceeds = ( currentPersonsScrollValue < maxScroll );
+
+                        if ( scrollExceeds )
+                        {
+                            currentPersonsScrollValue = maxScroll;
+                        }
+
+                        if ( scrollerIsInvolved )
                         {
                             DownRunner (runnerStep);
                         }

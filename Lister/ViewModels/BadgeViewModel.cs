@@ -304,7 +304,8 @@ public class BadgeViewModel : ViewModelBase
 
         if ( FocusedLine != null )
         {
-            FocusedFontSize = FocusedLine. FontSize.ToString ();
+            int visibleFontSize = (int) (FocusedLine. FontSize / Scale);
+            FocusedFontSize = visibleFontSize.ToString ();
         }
     }
 
@@ -748,7 +749,8 @@ public class BadgeViewModel : ViewModelBase
         }
 
         IsChanged = true;
-        FocusedFontSize = FocusedLine. FontSize.ToString ();
+        int visibleFontSize = (int) (FocusedLine. FontSize / Scale);
+        FocusedFontSize = visibleFontSize.ToString ();
         CheckCorrectness ();
     }
     #endregion

@@ -20,6 +20,8 @@ namespace Lister.ViewModels
     public class TextLineViewModel : BadgeMember
     {
         internal static readonly double _additionOnEnd = 4;
+        internal static readonly double _maxFontSizeLimit = 30;
+        internal static readonly double _minFontSizeLimit = 6;
         private TextualAtom _dataSource;
 
         private HorizontalAlignment al;
@@ -157,6 +159,13 @@ namespace Lister.ViewModels
         {
             double oldFontSize = FontSize;
             FontSize += additable;
+
+            if ( FontSize / additable > _maxFontSizeLimit )
+            {
+                FontSize = oldFontSize;
+                return;
+            }
+
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
@@ -170,6 +179,13 @@ namespace Lister.ViewModels
         {
             double oldFontSize = FontSize;
             FontSize -= subtractable;
+
+            if ( FontSize / subtractable < _minFontSizeLimit ) 
+            {
+                FontSize = oldFontSize;
+                return;
+            }
+
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);

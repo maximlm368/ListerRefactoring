@@ -167,7 +167,7 @@ namespace Lister.Extentions
         }
 
 
-        public static async Task<Bitmap?> LoadFromWeb(Uri url)
+        public static async Task <Bitmap ?> LoadFromWeb(Uri url)
         {
             using var httpClient = new HttpClient();
             try

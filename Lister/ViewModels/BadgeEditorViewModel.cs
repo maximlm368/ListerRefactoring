@@ -287,16 +287,28 @@ namespace Lister.ViewModels
             FixedBadges = new ObservableCollection <BadgeViewModel> ();
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
 
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directoryPath = containingDirectory.FullName;
-            string correctnessIcon = directoryPath + _correctnessIcon;
-            string incorrectnessIcon = directoryPath + _incorrectnessIcon;
+            //string workDirectory = @"./";
+            //DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
 
-            Uri uri = new Uri (correctnessIcon);
-            CorrectnessIcon = ImageHelper.LoadFromResource (uri);
-            uri = new Uri (incorrectnessIcon);
-            IncorrectnessIcon = ImageHelper.LoadFromResource (uri);
+            //string directoryPath = containingDirectory.FullName;
+
+
+
+            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
+
+            //string correctnessIcon = directoryPath + _correctnessIcon;
+            //string incorrectnessIcon = directoryPath + _incorrectnessIcon;
+
+            string correctnessIcon = "file:///" + directoryPath + "//" + _correctnessIcon;
+            string incorrectnessIcon = "file:///" + directoryPath + "//" + _incorrectnessIcon;
+
+
+
+
+            Uri correctUri = new Uri (correctnessIcon);
+            CorrectnessIcon = ImageHelper.LoadFromResource (correctUri);
+            Uri incorrectUri = new Uri (incorrectnessIcon);
+            IncorrectnessIcon = ImageHelper.LoadFromResource (incorrectUri);
 
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;

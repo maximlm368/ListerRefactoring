@@ -301,14 +301,6 @@ namespace Lister.Views
             Canvas activator = sender as Canvas;
             _shiftScratch = args.GetPosition ( activator ).Y;
             double limit = 0;
-
-
-            if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height )
-            {
-                _vm.StopScrolling ();
-                return;
-            }
-
             bool isDirectionUp = activator.Name == "topSpan";
 
             if ( isDirectionUp ) 
@@ -322,7 +314,6 @@ namespace Lister.Views
             
             
             int count = personList.ItemCount;
-            _shiftScrollingStarted = true;
             _vm.ShiftRunner ( isDirectionUp, count, limit );
         }
 
@@ -347,11 +338,12 @@ namespace Lister.Views
         }
 
 
-        internal void ReleasePressed ( )
+        internal void ReleaseScrollingLeverage ( )
         {
             if ( _runnerIsCaptured ) 
             {
                 _runnerIsCaptured = false;
+                _vm.GetFocusedNumber ();
             }
 
             if( _tapScrollingStarted )
@@ -359,13 +351,6 @@ namespace Lister.Views
                 _tapScrollingStarted = false;
                 _vm.StopScrolling ( );
             }
-
-            if ( _shiftScrollingStarted )
-            {
-                _shiftScrollingStarted = false;
-                _vm.StopScrolling ( );
-            }
-
         }
 
 

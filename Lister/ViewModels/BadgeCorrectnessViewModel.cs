@@ -15,8 +15,8 @@ namespace Lister.ViewModels
     {
         //private static string _correctness = "correct";
         //private static string _incorrectness = "incorrect";
-        private static string _correctnessIcon = "D:/MML/ListerNew/Lister.Desktop/bin/Debug/net8.0/GreenCheckMarker.jpg";
-        private static string _incorrectnessIcon = "D:/MML/ListerNew/Lister.Desktop/bin/Debug/net8.0/RedCross.png";
+        private static string _correctnessIcon = "GreenCheckMarker.jpg";
+        private static string _incorrectnessIcon = "RedCross.png";
 
         private bool cr;
         internal bool Correctness
@@ -54,13 +54,17 @@ namespace Lister.ViewModels
             if ( isCorrect )
             {
                 Correctness = true;
-                Uri uri = new Uri (_correctnessIcon);
+                string directoryPath = System.IO.Directory.GetCurrentDirectory ();
+                string correctnessIcon = "file:///" + directoryPath + "//" + _correctnessIcon;
+                Uri uri = new Uri (correctnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
             else
             {
                 Correctness = false;
-                Uri uri = new Uri (_incorrectnessIcon);
+                string directoryPath = System.IO.Directory.GetCurrentDirectory ();
+                string incorrectnessIcon = "file:///" + directoryPath + "//" + _incorrectnessIcon;
+                Uri uri = new Uri (incorrectnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
 
