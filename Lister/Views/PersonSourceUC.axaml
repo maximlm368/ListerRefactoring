@@ -28,6 +28,7 @@
 			Height="20"
 			FontSize="14"
 			IsReadOnly="True"
+			Focusable="False"
 			Text="{ Binding   Path = SourceFilePath,   Mode=OneWay }" />
 		
 		<Button 

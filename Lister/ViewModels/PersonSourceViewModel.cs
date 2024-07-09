@@ -126,7 +126,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal string SetPersonsFilePath ( string value )
+        private string SetPersonsFilePath ( string value )
         {
             bool valueIsSuitable = ( value != null )   &&   ( value != string.Empty );
 

@@ -43,9 +43,15 @@
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
+				IsUndoEnabled="False"
+				SelectionForegroundBrush="White"
+				
+				
+				
+				KeyUp="HandlePersonListReduction"
 				KeyDown="DropOrPickUpPersonsOrScroll"
-				KeyUp="HandlePersonListReduction" />
-			
+				 />
+
 			<Border
 				Name="listBorder"
 				Canvas.Top="34"
@@ -192,6 +198,29 @@
 
 
 <!--    
+<TextBox.CommandBindings>
+					<CommandBinding Command="ApplicationCommands.Cut"
+					PreviewExecuted="CommandBinding_PreviewExecutedCut"
+					Executed="CommandBinding_ExecutedCut"/>
+
+					<CommandBinding Command="ApplicationCommands.Copy"
+					PreviewExecuted="CommandBinding_PreviewExecutedCopy"
+					Executed="CommandBinding_ExecutedCopy"/>
+
+					<CommandBinding Command="ApplicationCommands.Paste"
+					PreviewExecuted="CommandBinding_PreviewExecutedPaste"
+					Executed="CommandBinding_ExecutedPaste"/>
+				</TextBox.CommandBindings>
+
+
+
+
+
+
+
+              KeyUp="HandlePersonListReduction"
+              TextChanged="HandleListReduction"
+
 
            <ListBox  Name="personList"  SelectionMode="Single"  AutoScrollToSelectedItem="True" Grid.Column="1"
 					 ScrollViewer.VerticalScrollBarVisibility="Auto"  Height="120"  Width="471" 

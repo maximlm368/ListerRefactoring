@@ -470,10 +470,10 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetIntrusionInVisiblePeople ( )
-        {
-            _personSourceVM. peopleSettingOccured = false;
-        }
+        //internal void SetIntrusionInVisiblePeople ( )
+        //{
+        //    _personSourceVM. peopleSettingOccured = false;
+        //}
 
 
         private void SetPersonList ( ) 
@@ -530,7 +530,7 @@ namespace Lister.ViewModels
                 _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
             }
 
-            if ( _personSourceVM.peopleSettingOccured )
+            if ( _personSourceVM. peopleSettingOccured )
             {
                 EntirePersonListIsSelected = true;
                 EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -728,7 +728,7 @@ namespace Lister.ViewModels
                 runnerStep = runnerStep * ( -1 );
             }
 
-            CompleteMoving (isDirectionUp, step, runnerStep, count, true);
+            CompleteMoving (isDirectionUp, step, runnerStep, VisiblePeople. Count, true);
         }
 
 
@@ -1004,11 +1004,18 @@ namespace Lister.ViewModels
                     int stepInItems = ( int ) ( step / _oneHeight );
                     _focusedNumber += stepInItems;
 
+                    if ( _focusedNumber < 0 )
+                    {
+                        _focusedNumber = 0;
+                        _focusedEdge = _edge;
+                    }
+
                     step -= stepLoss;
 
-                    if ( _focusedNumber > VisiblePeople. Count ) 
+                    if ( _focusedNumber >= VisiblePeople. Count ) 
                     {
-                       _focusedNumber = VisiblePeople. Count;
+                       _focusedNumber = VisiblePeople. Count - 1;
+                        _focusedEdge = _focusedNumber;
                     }
 
                     EntireListColor = _entireListColor;
@@ -1017,9 +1024,23 @@ namespace Lister.ViewModels
                     {
                         _focused.BrushColor = _unfocusedColor;
                     }
+
+
+                    try
+                    {
+                        _focused = VisiblePeople [_focusedNumber];
+                        _focused.BrushColor = _focusedColor;
+                    }
+                    catch ( Exception ex ) 
+                    {
+                        int dfd = _focusedNumber;
+                        int ddd = 0;
                     
-                    _focused = VisiblePeople [_focusedNumber];
-                    _focused.BrushColor = _focusedColor;
+                    }
+
+
+
+                    
 
                     if ( _focusedNumber > _focusedEdge )
                     {

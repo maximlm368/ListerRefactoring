@@ -16,8 +16,8 @@ namespace Lister.Views
 {
     public class CustomViewbox : Viewbox
     {
-        public static readonly DirectProperty<CustomViewbox, bool> IsScrollableProperty =
-             AvaloniaProperty.RegisterDirect<CustomViewbox, bool>
+        public static readonly DirectProperty <CustomViewbox, bool> IsScrollableProperty =
+             AvaloniaProperty.RegisterDirect <CustomViewbox, bool>
              (
                 nameof (IsScrollable),
                 o => o.IsScrollable,
