@@ -31,12 +31,8 @@ namespace Lister.Views
         private bool _shiftScrollingStarted = false;
         private double _capturingY;
         private double _shiftScratch = 0;
-        private bool _choosingChanged = false;
         private PersonChoosingViewModel _vm;
         private string _textBoxText = string.Empty;
-
-        //public bool SinglePersonIsSelected { get; private set; }
-        //public bool EntirePersonListIsSelected { get; private set; }
 
 
         public PersonChoosingUserControl ()
@@ -45,18 +41,10 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
             _vm = (PersonChoosingViewModel) DataContext;
 
-            personTextBox.AddHandler 
-                ( TextBox.PastingFromClipboardEvent, IgnorPastingFromClipboard, RoutingStrategies.Bubble);
+            //personTextBox.AddHandler 
+            //    ( TextBox.PastingFromClipboardEvent, IgnorPastingFromClipboard, RoutingStrategies.Bubble);
 
             personTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
-
-
-        }
-
-
-        private void IgnorPastingFromClipboard ( object? sender, RoutedEventArgs args )
-        {
-            args.Handled = true;
         }
 
 
@@ -66,47 +54,15 @@ namespace Lister.Views
             var x = point.Position.X;
             var y = point.Position.Y;
 
-            if ( point.Properties.IsLeftButtonPressed )
-            {
-                int dffd = 0;
-            }
-            if ( point.Properties.IsRightButtonPressed )
-            {
-                args.Handled = true;
-            }
-
-
-            args.Handled = true;
-        }
-
-
-        private void TextBox1_PreviewKeyUp ( object sender, KeyEventArgs e )
-        {
-            //if ( ( Keyboard.Modifiers & ModifierKeys.Control ) == ModifierKeys.Control && e.Key == Key.V )
+            //if ( point.Properties.IsLeftButtonPressed )
             //{
-            //    e.Handled = true;
+            //}
+            //if ( point.Properties.IsRightButtonPressed )
+            //{
+            //    args.Handled = true;
             //}
 
-
-
-            if ( e.Key.ToString() == "v"   &&   e.KeyModifiers.ToString() == "Control" )
-            {
-                e.Handled = true;
-            }
-        }
-
-
-        internal void IgnorPasting ( object obj, TextChangedEventArgs args )
-        {
-            personTextBox.Text = _textBoxText;
-            int dfd = 0;
-        }
-
-
-        internal void IgnorPasting ( object obj, RoutedEventArgs args )
-        {
-            _textBoxText = personTextBox.Text;
-            int dfd = 0;
+            args.Handled = true;
         }
 
 
@@ -132,8 +88,14 @@ namespace Lister.Views
                 _chosen = null;
             }
 
-            _choosingChanged = true;
             DropOrPickUp ();
+        }
+
+
+        internal void GotFocuse ( object sender, GotFocusEventArgs args )
+        {
+            personTextBox.SelectionStart = personTextBox.Text.Length;
+            personTextBox.SelectionEnd = personTextBox.Text.Length;
         }
 
 
@@ -157,15 +119,8 @@ namespace Lister.Views
         {
             string key = args.Key.ToString ();
 
-            //if ( args.Key.ToString () == "V"   &&   args.KeyModifiers.ToString () == "Control" )
-            //{
-            //    args.Handled = true;
-            //    return;
-            //}
-
             if ( key == "Return" )
             {
-                _choosingChanged = true;
                 DropOrPickUp ();
                 return;
             }
@@ -184,10 +139,8 @@ namespace Lister.Views
 
             if ( key == "Down" )
             {
-                ScrollByKey(false);
+                ScrollByKey (false);
             }
-
-
         }
 
 
@@ -207,7 +160,6 @@ namespace Lister.Views
                 _personListIsDropped = false;
             }
         }
-
         #endregion Drop
 
         #region PersonListReduction
@@ -219,15 +171,6 @@ namespace Lister.Views
 
             if ( keyIsUnimpacting )
             {
-                return;
-            }
-
-            //string fd = args.Key.ToString ();
-            //string dfd = args.KeyModifiers.ToString ();
-
-            if ( args.Key.ToString () == "V"   &&   args.KeyModifiers.ToString () == "Control" )
-            {
-                args.Handled = true;
                 return;
             }
 
@@ -243,8 +186,7 @@ namespace Lister.Views
 
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( fromSender == string.Empty || ( person.StringPresentation.ToLower () == fromSender ) )
-                    //if ( fromSender == string.Empty )
+                    if ( fromSender == string.Empty   ||   ( person.StringPresentation.ToLower () == fromSender ) )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -261,120 +203,9 @@ namespace Lister.Views
                 }
 
                 _vm.VisiblePeople = foundVisiblePeople;
+                _vm.ShowDropDown ();
+                _personListIsDropped = true;
             }
-
-            if ( ! _personListIsDropped ) 
-            {
-                DropOrPickUp ();
-            }
-        }
-
-
-        internal void HandlePasting ( object obj, PointerPressedEventArgs args )
-        {
-            TextBox tb = new TextBox ();
-
-            var binding = new Binding ();
-            //{
-            //    ElementName = "source",
-            //    Path = "Text",
-            //};
-
-            //tb.Bind (TextBox.CanCopyProperty, binding);
-            
-            //Button bt = new Button ();
-            
-
-            
-
-        }
-
-
-        internal void HandlePasting ( object obj, TappedEventArgs args )
-        {
-            args.Handled = true;
-
-
-
-
-        }
-
-
-
-        //private void textBox_PreviewExecuted ( object sender, RoutedEventArgs e )
-        //{
-        //    if ( e.c == ApplicationCommands.Copy ||
-        //        e.Command == ApplicationCommands.Cut ||
-        //        e.Command == ApplicationCommands.Paste )
-        //    {
-        //        e.Handled = true;
-        //    }
-        //}
-
-
-        //private void CommandBinding_CanExecutePaste ( object sender, CanExecuteRoutedEventArgs e )
-        //{
-        //    e.CanExecute = false;
-        //    e.Handled = true;
-        //}
-
-
-
-
-
-        //internal void HandleListReduction ( object sender, TextChangedEventArgs args )
-        //{
-        //    _vm.ToZeroPersonSelection ();
-        //    _vm.DisableBuildigPossibility ();
-        //    TextBox textBox = ( TextBox ) sender;
-        //    string str = textBox.Text;
-
-        //    if ( str == "Весь список" ) 
-        //    {
-        //        return;
-        //    }
-
-        //    if ( str != null )
-        //    {
-        //        string fromSender = str.ToLower ();
-        //        ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
-
-        //        foreach ( Person person   in   _vm.People )
-        //        {
-        //            if ( (person.StringPresentation.ToLower () == fromSender) )
-        //            {
-        //                return;
-        //            }
-
-        //            if ( fromSender == string.Empty )
-        //            {
-        //                RecoverVisiblePeople ();
-        //                return;
-        //            }
-
-        //            string entireName = person.StringPresentation;
-        //            entireName = entireName.ToLower ();
-
-        //            if ( entireName.Contains (fromSender)   &&   entireName != fromSender )
-        //            {
-        //                VisiblePerson vP = new VisiblePerson (person);
-        //                foundVisiblePeople.Add (vP);
-        //            }
-        //        }
-
-        //        _vm.VisiblePeople = foundVisiblePeople;
-        //    }
-
-        //    if ( ! _personListIsDropped )
-        //    {
-        //        DropOrPickUp ();
-        //    }
-        //}
-
-
-        private void DisableBuildingButtons () 
-        {
-            _vm.ToZeroPersonSelection ();
         }
 
 
@@ -393,15 +224,17 @@ namespace Lister.Views
 
         private void RecoverVisiblePeople ()
         {
-            ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
+            ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
 
             foreach ( Person person   in   _vm.People ) 
             {
                 VisiblePerson vP = new VisiblePerson (person);
-                foundVisiblePeople.Add (vP);
+                recovered.Add (vP);
             }
 
-            _vm.VisiblePeople = foundVisiblePeople;
+            _vm.VisiblePeople = recovered;
+            _vm.ShowDropDown ();
+            _personListIsDropped = true;
         }
 
         #endregion PersonListReduction
@@ -433,8 +266,6 @@ namespace Lister.Views
             if ( _personListIsDropped )
             {
                 personTextBox.Text = _vm.HideDropDownWithChange ();
-                personTextBox.SelectionStart = 0;
-                personTextBox.SelectionEnd = personTextBox.Text.Length;
                 _personListIsDropped = false;
             }
             else
@@ -442,6 +273,9 @@ namespace Lister.Views
                 _vm.ShowDropDown ();
                 _personListIsDropped = true;
             }
+
+            personTextBox.SelectionStart = personTextBox.Text.Length;
+            personTextBox.SelectionEnd = personTextBox.Text.Length;
         }
 
 
@@ -508,18 +342,6 @@ namespace Lister.Views
         }
 
 
-        //internal void ResetY ( object sender, PointerEventArgs args )
-        //{
-        //    Canvas activator = sender as Canvas;
-        //    _shiftScratch = args.GetPosition (activator).Y;
-
-        //    if ( _shiftScratch < 0   ||   _shiftScratch > activator.Height ) 
-        //    {
-        //        _vm.StopScrolling ();
-        //    }
-        //}
-
-
         internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
         {
             _runnerIsCaptured = true;
@@ -533,7 +355,6 @@ namespace Lister.Views
             if ( _runnerIsCaptured ) 
             {
                 _runnerIsCaptured = false;
-                _vm.GetFocusedNumber ();
             }
 
             if( _tapScrollingStarted )
@@ -553,9 +374,6 @@ namespace Lister.Views
                 int count = personList.ItemCount;
                 _vm.MoveRunner ( runnerVerticalDelta, count );
             }
-
-            //TextBox tb = new TextBox ();
-            //tb
         }
 
 

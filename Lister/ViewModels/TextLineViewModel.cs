@@ -68,9 +68,14 @@ namespace Lister.ViewModels
         internal string Content
         {
             get { return cn; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref cn, value, nameof (Content));
+
+                Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
+                FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                    , FlowDirection.LeftToRight, face, FontSize, null);
+                UsefullWidth = formatted.Width + 4;
             }
         }
 

@@ -92,7 +92,35 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    internal TextLineViewModel FocusedLine { get; set; }
+    private TextLineViewModel fL;
+    internal TextLineViewModel FocusedLine 
+    {
+        get { return fL; }
+        set 
+        {
+            fL = value;
+
+            if ( (fL == null)   ||   (fL.Content == null) )
+            {
+                FocusedText = string.Empty;
+            }
+            else 
+            {
+                FocusedText = fL.Content;
+            }
+        } 
+    }
+
+    private string fT;
+    internal string FocusedText
+    {
+        get { return fT; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref fT, value, nameof (FocusedText));
+        }
+    }
+
     private List <TextLineViewModel> BorderViolentLines { get; set; }
     private List <TextLineViewModel> OverlayViolentLines { get; set; }
     private ObservableCollection <TextLineViewModel> tL;
@@ -880,4 +908,22 @@ public class BadgeViewModel : ViewModelBase
     }
 
     #endregion
+
+
+    internal void ResetFocusedText ( string newText )
+    {
+        if ( FocusedLine == null ) 
+        {
+            return;
+        }
+
+        if ( FocusedLine. Content != newText ) 
+        {
+            IsChanged = true;
+        }
+
+        FocusedLine. Content = newText;
+        CheckCorrectness ();
+        
+    }
 }

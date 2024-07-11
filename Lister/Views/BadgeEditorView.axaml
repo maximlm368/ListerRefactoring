@@ -36,7 +36,7 @@
 
 				<ColumnDefinition Width="20"></ColumnDefinition>
 				
-				<ColumnDefinition Width="132"></ColumnDefinition>
+				<ColumnDefinition Width="102"></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
@@ -66,7 +66,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding  Path = ReduceFontSize}"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
 
 			<TextBox
 				Name="scalabilityGrade"
@@ -86,7 +86,7 @@
 				Width="28"
 				KeyDown="ToSide"
 				Command="{Binding  Path = IncreaseFontSize}"
-				IsEnabled="False" />
+				IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
 
 			<Button
 				Name="left"
@@ -133,13 +133,40 @@
 				Content="Разделить"
 				Grid.Column="12"
 				HorizontalContentAlignment="Center"
-				Width="130"
+				Width="100"
 				Command="{Binding   Path = Split}"
 				IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}"/>
 			
 		</Grid>
 
 
+
+		<Grid
+			Name="textEdition"
+			Height="40"
+			Margin="10,0">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="605"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+
+			<TextBox
+				Name="editorTextBox"
+				Width="603"
+				FontSize="14"
+				Grid.Column="0"
+				MaxHeight="30"
+				Margin="0,3"
+				HorizontalAlignment="Center"
+				Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
+				TextChanged="HandleTextEdition"/>
+
+		</Grid>
+		
+		
+		
 		<Grid
 		   Name="badgeArea"
 		   Margin="10,5"
@@ -198,7 +225,7 @@
 					Name="slider"
 					BorderThickness="1"
 					BorderBrush="Brown"
-					Height="303"
+					Height="263"
 					Grid.Column="0">
 
 					<ScrollViewer
@@ -236,7 +263,7 @@
 				Name="workArea"
 				HorizontalAlignment="Left"
 				Width="680"
-				Height="333"
+				Height="293"
 				Grid.Column="1"
 				BorderBrush="Brown"
 				Background="AliceBlue"

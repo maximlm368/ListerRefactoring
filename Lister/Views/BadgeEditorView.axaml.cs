@@ -131,6 +131,13 @@ namespace Lister.Views
         }
 
 
+        internal void HandleTextEdition ( object sender, TextChangedEventArgs args )
+        {
+            string edited = editorTextBox.Text;
+            _vm.ResetFocusedText (edited);
+        }
+
+
         #region CapturingAndMovingByMouse
 
         internal void Focus ( object sender, TappedEventArgs args ) 

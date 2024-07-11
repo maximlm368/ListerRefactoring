@@ -9,6 +9,7 @@ using Lister.ViewModels;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Threading.Tasks;
+using Avalonia.Interactivity;
 
 
 namespace Lister.Views;

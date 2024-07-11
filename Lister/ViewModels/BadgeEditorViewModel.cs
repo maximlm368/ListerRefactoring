@@ -29,7 +29,7 @@ namespace Lister.ViewModels
     {
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
-        internal static readonly double _scale = 2.65;
+        internal static readonly double _scale = 2.45;
         private Dictionary<BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
@@ -252,6 +252,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool zE;
+        internal bool ZoommerIsEnable
+        {
+            get { return zE; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref zE, value, nameof (ZoommerIsEnable));
+            }
+        }
+
         private string fS;
         internal string FocusedFontSize
         {
@@ -341,6 +351,9 @@ namespace Lister.ViewModels
         internal void CancelChanges ()
         {
             BeingProcessedBadge.Hide ();
+            MoversAreEnable = false;
+            SplitterIsEnable = false;
+            ZoommerIsEnable = false;
 
             if ( FixedBadges.Contains (BeingProcessedBadge) )
             {
@@ -920,6 +933,13 @@ namespace Lister.ViewModels
                 SetToCorrectScale (BeingProcessedBadge);
                 BeingProcessedBadge.Show ();
             }
+        }
+
+
+        internal void ResetFocusedText ( string newText )
+        {
+            BeingProcessedBadge.ResetFocusedText ( newText );
+            ResetActiveIcon ();
         }
 
 

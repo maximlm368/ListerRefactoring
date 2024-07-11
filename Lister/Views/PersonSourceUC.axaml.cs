@@ -21,5 +21,11 @@ namespace Lister.Views
             var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
         }
+
+
+        internal void SetPath ( string path )
+        {
+            _vm.SetPath ( this.GetType(), path);
+        }
     }
 }

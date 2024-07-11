@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using ContentAssembler;
@@ -21,6 +22,7 @@ namespace Lister.ViewModels
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
         private PersonSourceUserControl _view;
+        private static readonly string _viewTypeName = "PersonSourceUserControl";
 
         private string sFP;
         internal string SourceFilePath
@@ -53,6 +55,16 @@ namespace Lister.ViewModels
             _personChoosingVM = personChoosing;
             EditorIsEnable = false;
             peopleSettingOccured = false;
+        }
+
+
+        internal void SetPath ( Type passerType, string path )
+        {
+            if ( passerType.Name == _viewTypeName ) 
+            {
+                SourceFilePath = path;
+                EditorIsEnable = true;
+            }
         }
 
 
@@ -94,6 +106,19 @@ namespace Lister.ViewModels
                            {
                                EditorIsEnable = true;
                                _personChoosingVM.TextboxIsReadOnly = false;
+
+                               string workDirectory = @"./";
+                               DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+                               string directoryPath = containingDirectory.FullName;
+                               string keeperPath = directoryPath + ModernMainView._sourcePathKeeper;
+                               FileInfo fileInf = new FileInfo (keeperPath);
+
+                               if ( fileInf.Exists )
+                               {
+                                   List<string> lines = new List<string> ();
+                                   lines.Add (SourceFilePath);
+                                   File.WriteAllLines (keeperPath, lines);
+                               }
                            }
                        }
                    }
@@ -116,6 +141,7 @@ namespace Lister.ViewModels
                 FileName = SourceFilePath,
                 UseShellExecute = true
             };
+
             try
             {
                 Process.Start (procInfo);
@@ -126,15 +152,15 @@ namespace Lister.ViewModels
         }
 
 
-        private string SetPersonsFilePath ( string value )
+        private string SetPersonsFilePath ( string path )
         {
-            bool valueIsSuitable = ( value != null )   &&   ( value != string.Empty );
+            bool valueIsSuitable = ( path != null )   &&   ( path != string.Empty );
 
             if ( valueIsSuitable )
             {
                 try
                 {
-                    List <Person> persons = _uniformAssembler.GetPersons (value);
+                    List <Person> persons = _uniformAssembler.GetPersons (path);
                     ObservableCollection <VisiblePerson> visible = new ();
                     List <Person> people = new ();
 
@@ -148,7 +174,7 @@ namespace Lister.ViewModels
                     peopleSettingOccured = true;
                     _personChoosingVM.People = people;
                     _personChoosingVM.VisiblePeople = visible;
-                    return value;
+                    return path;
                 }
                 catch ( IOException ex )
                 {

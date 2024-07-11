@@ -157,9 +157,11 @@ class ConverterToPdf
                         (
                            layers =>
                            {
-                               layers.PrimaryLayer ().Border (0.5f, Unit.Point).BorderColor (Colors.Grey.Medium)
-                                .Image (image)
-                                .FitArea ();
+                               layers.PrimaryLayer ()
+                               .Border (0.5f, Unit.Point)
+                               .BorderColor (Colors.Grey.Medium)
+                               .Image (image)
+                               .FitArea ();
 
                                RenderTextLines (layers, beingRendered.TextLines);
                                RenderInsideImages (layers, beingRendered.InsideImages);
@@ -178,12 +180,13 @@ class ConverterToPdf
             float paddingTop = ( float ) textLine.TopOffset;
             string fontFamily = textLine.FontFamily. Name;
             float fontSize = ( float ) textLine.FontSize;
+            float maxWidth = ( float ) textLine.Width;
 
             layers
                .Layer ()
                .PaddingLeft (paddingLeft, Unit.Point)
                .PaddingTop (paddingTop, Unit.Point)
-               .Text (text)
+               .Text (text).DirectionFromRightToLeft()
                .FontFamily (fontFamily)
                .Bold()
                .FontSize (fontSize);

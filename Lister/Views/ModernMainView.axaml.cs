@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Lister.ViewModels;
 using System.Collections.ObjectModel;
@@ -11,6 +12,8 @@ namespace Lister.Views
     {
         private static double _widthDelta;
         private static double _heightDelta;
+        internal static readonly string _sourcePathKeeper = "keeper.txt";
+        internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
 
         internal static double ProperWidth { get; private set; }
@@ -24,6 +27,33 @@ namespace Lister.Views
 
             ProperWidth = Width;
             ProperHeight = Height;
+
+            Loaded += OnLoaded;
+        }
+
+
+        internal void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+            string keeperPath = directoryPath + _sourcePathKeeper;
+            FileInfo fileInf = new FileInfo (keeperPath);
+
+            if ( fileInf.Exists )
+            {
+                string [] lines = File.ReadAllLines (keeperPath);
+                
+                try
+                {
+                    personSource.SetPath (lines [0]);
+                }
+                catch ( IndexOutOfRangeException ex ) { }
+            }
+            else 
+            {
+                File.Create(keeperPath).Close();
+            }
         }
 
 
