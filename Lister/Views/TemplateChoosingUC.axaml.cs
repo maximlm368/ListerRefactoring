@@ -2,17 +2,20 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.ReactiveUI;
 using ContentAssembler;
 using ExtentionsAndAuxiliary;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class TemplateChoosingUserControl : UserControl
+    public partial class TemplateChoosingUserControl : ReactiveUserControl <TemplateChoosingViewModel>
     {
+        private static readonly string _jsonError = "В json файле неверный путь к файлу изображения";
         private const double coefficient = 1.1;
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
@@ -24,7 +27,6 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
-            
         }
 
 
@@ -54,7 +56,10 @@ namespace Lister.Views
             if ( templateIsIncorrect )
             {
                 _vm.ChosenTemplate = null;
-                int idOk = Winapi.MessageBox (0, "Выбраный файл открыт в другом приложении. Закройте его.", "", 0);
+
+                var messegeDialog = new MessageDialog ();
+                messegeDialog.Message = _jsonError;
+                messegeDialog.ShowDialog (MainWindow._mainWindow);
             }
             else 
             {

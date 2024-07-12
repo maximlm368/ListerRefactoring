@@ -186,7 +186,7 @@ class ConverterToPdf
                .Layer ()
                .PaddingLeft (paddingLeft, Unit.Point)
                .PaddingTop (paddingTop, Unit.Point)
-               .Text (text).DirectionFromRightToLeft()
+               .Text (text)
                .FontFamily (fontFamily)
                .Bold()
                .FontSize (fontSize);

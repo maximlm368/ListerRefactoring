@@ -2,16 +2,20 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.ReactiveUI;
 using Lister.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class ModernMainView : UserControl
+    public partial class ModernMainView : ReactiveUserControl <ModernMainViewModel>
     {
         private static double _widthDelta;
         private static double _heightDelta;
+        private ModernMainViewModel _vm;
         internal static readonly string _sourcePathKeeper = "keeper.txt";
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
@@ -29,6 +33,9 @@ namespace Lister.Views
             ProperHeight = Height;
 
             Loaded += OnLoaded;
+
+            DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
+            _vm = ( ModernMainViewModel ) DataContext;
         }
 
 

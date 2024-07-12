@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="ContentAssembler">
+      <HintPath>..\ContentAssembler\bin\Debug\net8.0\ContentAssembler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

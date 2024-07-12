@@ -17,7 +17,7 @@ namespace Lister.Views;
 public partial class MainWindow : Window
 {
     public static IStorageProvider CommonStorageProvider { get; private set; }
-    private static MainWindow _mainWindow;
+    internal static MainWindow _mainWindow;
 
     private PixelSize _screenSize;
     private double _currentWidth;

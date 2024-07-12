@@ -2,6 +2,7 @@
 using Avalonia.Platform;
 using Lister.ViewModels;
 using System.Text;
+using System.Collections;
 
 namespace Lister.Extentions 
 {

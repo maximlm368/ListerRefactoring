@@ -282,7 +282,7 @@ namespace Lister.ViewModels
             }
         }
 
-        public ICommand BuyMusicCommand { get; }
+        public ICommand GoBackCommand { get; }
         internal Interaction <DialogViewModel, string> ShowDialog { get; }
         
 
@@ -299,16 +299,11 @@ namespace Lister.ViewModels
 
             //string workDirectory = @"./";
             //DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-
             //string directoryPath = containingDirectory.FullName;
-
-
-
-            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-
             //string correctnessIcon = directoryPath + _correctnessIcon;
             //string incorrectnessIcon = directoryPath + _incorrectnessIcon;
 
+            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
             string correctnessIcon = "file:///" + directoryPath + "//" + _correctnessIcon;
             string incorrectnessIcon = "file:///" + directoryPath + "//" + _incorrectnessIcon;
 
@@ -324,7 +319,7 @@ namespace Lister.ViewModels
             IncorrectnessOpacity = 1;
 
             ShowDialog = new Interaction <DialogViewModel, string> ();
-            BuyMusicCommand = ReactiveCommand.CreateFromTask (async () =>
+            GoBackCommand = ReactiveCommand.CreateFromTask (async () =>
             {
                 bool changesExist = ChangesExist ();
 
@@ -332,6 +327,7 @@ namespace Lister.ViewModels
                 {
                     DialogViewModel dialogVM = new DialogViewModel ();
                     var result = await ShowDialog.Handle (dialogVM);
+                    
                     if ( result != null )
                     {
                         if ( result == "Yes" )

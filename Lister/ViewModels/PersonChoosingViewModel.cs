@@ -345,7 +345,6 @@ namespace Lister.ViewModels
 
         internal void HideDropDownWithoutChange ()
         {
-            //DropDownIsVisible = false;
             DropDownOpacity = 0;
             VisibleHeight = 0;
             FirstItemHeight = 0;
@@ -355,10 +354,8 @@ namespace Lister.ViewModels
 
         internal void ShowDropDown ()
         {
-            //DropDownIsVisible = true;
             DropDownOpacity = 1;
             VisibleHeight = _visibleHeightStorage;
-
             FirstIsVisible = _allListMustBe;
 
             if (_allListMustBe) 
@@ -488,35 +485,6 @@ namespace Lister.ViewModels
             if ( VisiblePeople != null   &&   VisiblePeople. Count > 0 )
             {
                 int count = VisiblePeople. Count;
-
-                //if ( count > 50 )
-                //{
-                //    _preloadingShortVisiblePeople = new ObservableCollection<VisiblePerson> ();
-
-                //    foreach ( VisiblePerson person in VisiblePeople )
-                //    {
-                //        _preloadingShortVisiblePeople.Add (person);
-                //    }
-
-                //    VisiblePeople.Clear ();
-
-
-                //    int counter = 0;
-
-                //    foreach ( VisiblePerson person in _preloadingShortVisiblePeople )
-                //    {
-                //        VisiblePeople.Add (person);
-                //        counter++;
-
-                //        if ( counter == 50 )
-                //        {
-                //            break;
-                //        }
-                //    }
-                //}
-
-
-
                 PersonListHeight = _oneHeight * count;
                 bool listIsWhole = ( count == People. Count );
 
@@ -537,7 +505,7 @@ namespace Lister.ViewModels
                 FirstItemHeight = 0;
                 FirstIsVisible = false;
                 _allListMustBe = false;
-                VisibleHeight = 0;
+                _visibleHeightStorage = 0;
                 PersonListWidth = 0;
                 ScrollerWidth = 0;
                 IsPersonsScrollable = false;
@@ -568,7 +536,7 @@ namespace Lister.ViewModels
                 _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
             }
 
-            //if ( _personSourceVM. peopleSettingOccured )
+            //if ( _personSourceVM.peopleSettingOccured )
             //{
             //    EntirePersonListIsSelected = true;
             //    EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -596,7 +564,7 @@ namespace Lister.ViewModels
             _focusedNumber = 0;
             _focused = VisiblePeople [_focusedNumber];
             _focused.BrushColor = _focusedColor;
-            _focusedEdge = _edge;
+           _focusedEdge = _edge;
         }
 
 

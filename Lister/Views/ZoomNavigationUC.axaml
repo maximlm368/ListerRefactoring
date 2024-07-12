@@ -14,6 +14,10 @@
 			<ColumnDefinition Width="30"></ColumnDefinition>
 			<ColumnDefinition Width="30"></ColumnDefinition>
 			<ColumnDefinition Width="64"></ColumnDefinition>
+
+			<ColumnDefinition Width="40"></ColumnDefinition>
+			<ColumnDefinition Width="60"></ColumnDefinition>
+			
 			<ColumnDefinition Width="30"></ColumnDefinition>
 			<ColumnDefinition Width="30"></ColumnDefinition>
 			<ColumnDefinition Width="30"></ColumnDefinition>
@@ -56,10 +60,27 @@
 			TextChanged="StepOnPage"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"/>
+		
+		<Label
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			FontSize="14"
+			Grid.Column="4"
+			Content="из"
+			/>
+
+		<Label
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			FontSize="14"
+			Grid.Column="5"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
+			Content="{Binding   Path = PageCount,   Mode=OneWay}"
+			/>
 
 		<Button
 			Name="nextPage"
-			Grid.Column="4"
+			Grid.Column="6"
 			HorizontalAlignment="Center"
 			Width="28"
 			IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
@@ -68,46 +89,47 @@
 		
 		<Button
 			Name="lastPage"
-			Grid.Column="5"
+			Grid.Column="7"
 			HorizontalAlignment="Center"
 			Width="28"
 			IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseLastPage}"
 			Content="l" />
-		
+
 		<Button
-			Name="zoomOn"
-			Grid.Column="7"
-			Margin="0,3"
-			HorizontalAlignment="Center"
-			Width="28"
-			IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
-			Command="{Binding   Path = ZoomOn}"
-			Content="+" />
-		
-		<TextBox
-			Name="scalabilityGrade"
-			Grid.Column="8"
-			Width="60"
-			MaxHeight="30"
-			FontSize="14"
-			IsReadOnly="True"
-			KeyUp="SetNewScale"
-			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
-			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
-		
-		<Button
-			Name="zoomOut" 
+			Name="zoomOut"
 			Grid.Column="9"
 			HorizontalAlignment="Center"
 			Width="28"
 			IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = ZoomOut}"
 			Content="-" />
+		
+		<TextBox
+			Name="scalabilityGrade"
+			Grid.Column="10"
+			Width="60"
+			MaxHeight="30"
+			FontSize="14"
+			IsReadOnly="True"
+			Focusable="False"
+			KeyUp="SetNewScale"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
+			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
+
+		<Button
+			Name="zoomOn"
+			Grid.Column="11"
+			Margin="0,3"
+			HorizontalAlignment="Center"
+			Width="28"
+			IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
+			Command="{Binding   Path = ZoomOn}"
+			Content="+" />
 
 		<Button
 			Name="edit"
-			Grid.Column="11"
+			Grid.Column="13"
 			HorizontalAlignment="Center"
 			Width="126"
 			IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"

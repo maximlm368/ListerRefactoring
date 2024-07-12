@@ -62,4 +62,9 @@
     <ProjectReference Include="..\DataGateway\DataGateway.csproj" />
     <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
   </ItemGroup>
+
+	
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\MessageDialog.axaml" />
+  </ItemGroup>
 </Project>

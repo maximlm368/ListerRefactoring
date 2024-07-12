@@ -19,6 +19,7 @@ namespace Lister.ViewModels
 {
     public class PersonSourceViewModel : ViewModelBase
     {
+        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
         private PersonSourceUserControl _view;
@@ -178,7 +179,9 @@ namespace Lister.ViewModels
                 }
                 catch ( IOException ex )
                 {
-                    int idOk = Winapi.MessageBox ( 0 , "Выбраный файл открыт в другом приложении. Закройте его." , "" , 0 );
+                    var messegeDialog = new MessageDialog ();
+                    messegeDialog.Message = _fileIsOpenMessage;
+                    messegeDialog.ShowDialog (MainWindow._mainWindow);
                     return string.Empty;
                 }
             }

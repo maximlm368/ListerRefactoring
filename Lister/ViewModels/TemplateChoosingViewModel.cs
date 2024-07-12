@@ -29,13 +29,16 @@ using QuestPDF.Helpers;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Platform.Storage;
+using System.Reactive.Linq;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 
 namespace Lister.ViewModels;
 
 public class TemplateChoosingViewModel : ViewModelBase
 {
-    private ConverterToPdf converter;
+    private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+    private ConverterToPdf _converter;
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
     private ZoomNavigationViewModel _zoomNavigationVM;
@@ -170,7 +173,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         Templates = templates;
         _sceneVM = sceneViewModel;
-        converter = new ConverterToPdf ();
+        _converter = new ConverterToPdf ();
     }
 
 
@@ -266,6 +269,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         options.Title = "Open Text File";
         options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
         Task<IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
+
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
         chosenFile.ContinueWith
@@ -277,14 +281,16 @@ public class TemplateChoosingViewModel : ViewModelBase
                        string result = task.Result.Path.ToString ();
                        result = result.Substring (8, result.Length - 8);
                        Task<bool> pdf = GeneratePdf (result);
+
                        pdf.ContinueWith
                            (
                            task =>
                            {
                                if ( pdf.Result == false )
                                {
-                                   string message = "Выбраный файл открыт в другом приложении. Закройте его и повторите.";
-                                   int idOk = Winapi.MessageBox (0, message, "", 0);
+                                   var messegeDialog = new MessageDialog ();
+                                   messegeDialog.Message = _fileIsOpenMessage;
+                                   messegeDialog.ShowDialog (MainWindow._mainWindow);
                                }
                                else
                                {
@@ -296,8 +302,7 @@ public class TemplateChoosingViewModel : ViewModelBase
                                    fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
                                    fileExplorer.Start ();
                                }
-                           }
-                           );
+                           }, uiScheduler);
                    }
                }
             );
@@ -307,7 +312,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     internal Task<bool> GeneratePdf ( string fileToSave )
     {
         List <PageViewModel> pages = GetAllPages ();
-        Task<bool> task = new Task<bool> (() => { return converter.ConvertToExtention (pages, fileToSave); });
+        Task<bool> task = new Task<bool> (() => { return _converter.ConvertToExtention (pages, fileToSave); });
         task.Start ();
         return task;
     }
@@ -317,13 +322,13 @@ public class TemplateChoosingViewModel : ViewModelBase
     {
         List <PageViewModel> pages = GetAllPages ();
         string fileToSave = @"intermidiate.pdf";
-        Task pdf = new Task (() => { converter.ConvertToExtention (pages, fileToSave); });
+        Task pdf = new Task (() => { _converter.ConvertToExtention (pages, fileToSave); });
         pdf.Start ();
         pdf.ContinueWith
                (
                   savingTask =>
                   {
-                      int length = converter.intermidiateFiles.Count;
+                      int length = _converter.intermidiateFiles.Count;
 
                       ProcessStartInfo info = new ()
                       {

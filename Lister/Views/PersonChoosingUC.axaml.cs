@@ -22,6 +22,8 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
+        private readonly int _inputLimit = 100;
+        private string _previousText;
         private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
         private bool _personListIsDropped = false;
@@ -181,12 +183,13 @@ namespace Lister.Views
 
             if ( str != null )
             {
+                RestrictInput (str);
                 string fromSender = str.ToLower ();
-                ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
+                ObservableCollection<VisiblePerson> foundVisiblePeople = new ObservableCollection<VisiblePerson> ();
 
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( fromSender == string.Empty   ||   ( person.StringPresentation.ToLower () == fromSender ) )
+                    if ( (fromSender == string.Empty)   ||   ( person.StringPresentation.ToLower () == fromSender ) )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -195,7 +198,7 @@ namespace Lister.Views
                     string entireName = person.StringPresentation;
                     entireName = entireName.ToLower ();
 
-                    if ( entireName.Contains (fromSender)   &&   entireName != fromSender )
+                    if ( entireName.Contains (fromSender)   &&   (entireName != fromSender) )
                     {
                         VisiblePerson vP = new VisiblePerson (person);
                         foundVisiblePeople.Add (vP);
@@ -205,6 +208,20 @@ namespace Lister.Views
                 _vm.VisiblePeople = foundVisiblePeople;
                 _vm.ShowDropDown ();
                 _personListIsDropped = true;
+            }
+        }
+
+
+        private void RestrictInput ( string input )
+        {
+            if ( input.Length >= _inputLimit )
+            {
+                personTextBox.Text = _previousText;
+                input = _previousText;
+            }
+            else 
+            {
+                _previousText = input;
             }
         }
 

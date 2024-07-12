@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using ContentAssembler;
 
 namespace ExtentionsAndAuxiliary
 {
@@ -327,6 +328,57 @@ namespace ExtentionsAndAuxiliary
             return result;
         }
     }
+
+
+
+    public class RusStringComparer <T> : IComparer <T>
+    {
+        public int Compare ( T first, T second )
+        {
+            int result = -1;
+
+            if ( typeof (T).FullName == "ContentAssembler.Person" )
+            {
+                Person firstPerson = first as Person;
+                Person secondPerson = second as Person;
+
+                string firstStr = firstPerson.StringPresentation;
+                string secondStr = secondPerson.StringPresentation;
+
+                for ( int index = 0;   index < firstStr.Length;   index++ )
+                {
+                    char firstChar = firstStr [index];
+
+                    if ( index > (secondStr.Length - 1) ) 
+                    {
+                        return 1;
+                    }
+
+                    char secondChar = secondStr [index];
+                    int firstInt = ( int ) firstChar;
+                    int secondInt = ( int ) secondChar;
+
+                    if ( firstInt < secondInt )
+                    {
+                        result = -1;
+                        break;
+                    }
+                    else if ( firstInt == secondInt )
+                    {
+                        result = 0;
+                    }
+                    else
+                    {
+                        result = 1;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
+
 
 
     public enum FileDialogMode

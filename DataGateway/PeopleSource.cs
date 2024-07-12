@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExtentionsAndAuxiliary;
+using System.Collections.Generic;
 
 namespace DataGateway
 {
@@ -18,6 +20,7 @@ namespace DataGateway
         public List<Person> GetPersons(string ? filePath)
         {
             List<Person> result = [];
+            
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding (1251);
             using StreamReader reader = new StreamReader(filePath, encoding, true);
@@ -35,6 +38,9 @@ namespace DataGateway
                     result.Add (person);
                 }
             }
+
+            IComparer <Person> comparer = new RusStringComparer <Person> ();
+            result.Sort ( comparer );
 
             return result;
         }

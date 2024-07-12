@@ -80,7 +80,7 @@
 			HorizontalContentAlignment="Center"
 			Width="91"
 			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
-			Command="{Binding  Path=GeneratePdf}"
+			Command="{Binding  Path = GeneratePdf}"
 			Content="Сохранить" />
 		
 		<Button

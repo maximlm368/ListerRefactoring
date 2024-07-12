@@ -38,6 +38,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private int pC;
+        internal int PageCount
+        {
+            get { return pC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref pC, value, nameof (PageCount));
+            }
+        }
+
         private int vpN;
         internal int VisiblePageNumber
         {
@@ -153,6 +163,7 @@ namespace Lister.ViewModels
                 _allPages.AddRange (newPages);
                 _lastPage = _allPages.Last ();
                 VisiblePage = _allPages [VisiblePageNumber - 1];
+                PageCount = _allPages.Count;
                 VisiblePage.Show ();
             }
         }
@@ -192,6 +203,7 @@ namespace Lister.ViewModels
             }
 
             VisiblePageNumber = _allPages.Count;
+            PageCount = _allPages.Count;
             goalVMBadge.Show ();
         }
 
