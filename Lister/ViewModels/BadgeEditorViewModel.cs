@@ -27,7 +27,7 @@ namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
-        private static string _correctnessIcon = "GreenCheckMarker.jpg";
+        private static string _correctnessIcon = "GreenCheckMarker.png";
         private static string _incorrectnessIcon = "RedCross.png";
         internal static readonly double _scale = 2.45;
         private Dictionary<BadgeViewModel, double> _scaleStorage;
@@ -935,7 +935,7 @@ namespace Lister.ViewModels
         internal void ResetFocusedText ( string newText )
         {
             BeingProcessedBadge.ResetFocusedText ( newText );
-            ResetActiveIcon ();
+            ResetActiveIcon ( );
         }
 
 

@@ -251,7 +251,7 @@ public class BadgeViewModel : ViewModelBase
         }
 
         Scale = badge.Scale;
-
+        GatherIncorrectLines ( );
 
         //foreach ( TextLineViewModel line in badge.TextLines )
         //{
