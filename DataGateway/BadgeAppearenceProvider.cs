@@ -131,8 +131,10 @@ namespace DataGateway
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
             .TranslateIntoDouble ();
             string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
-            List<int> foreground = GetterFromJson.GetSectionValue (new List<string> { atomName, "Foreground" }, jsonPath)
-            .TranslateIntoIntList();
+
+            List<byte> foreground = GetterFromJson.GetSectionValue (new List<string> { atomName, "Foreground" }, jsonPath)
+            .TranslateIntoByteList();
+
             string fontWeight = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontWeight" }, jsonPath);
             string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsSplitable" }, jsonPath);
             bool isShiftable = false;
@@ -171,7 +173,7 @@ namespace DataGateway
             string fontFamily = GetterFromJson.GetSectionValue (childSection);
 
             childSection = section.GetSection ("Foreground");
-            List<int> foreground = GetterFromJson.GetSectionValue (childSection).TranslateIntoIntList ();
+            List<byte> foreground = GetterFromJson.GetSectionValue (childSection).TranslateIntoByteList ();
 
             childSection = section.GetSection ("FontWeight");
             string fontWeight = GetterFromJson.GetSectionValue (childSection);

@@ -25,6 +25,10 @@ public class BadgeViewModel : ViewModelBase
     private static double _rightSpan = 5;
 
     internal double Scale { get; private set; }
+    internal double LeftSpan { get; private set; }
+    internal double TopSpan { get; private set; }
+    internal double RightSpan { get; private set; }
+    internal double BottomSpan { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
     private Bitmap _bitMap = null;
@@ -197,6 +201,12 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;
+
+        LeftSpan = layout.LeftSpan;
+        TopSpan = layout.TopSpan;
+        RightSpan = layout.RightSpan;
+        BottomSpan = layout.BottomSpan;
+
         BadgeWidth = layout.OutlineSize. Width;
         BorderWidth = BadgeWidth + 2;
         _widht = BadgeWidth;
@@ -229,6 +239,12 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
+
+        LeftSpan = layout.LeftSpan;
+        TopSpan = layout.TopSpan;
+        RightSpan = layout.RightSpan;
+        BottomSpan = layout.BottomSpan;
+
         BadgeWidth = badge.BadgeWidth;
         BorderWidth = BadgeWidth + 2;
         BadgeHeight = badge.BadgeHeight;
@@ -375,6 +391,11 @@ public class BadgeViewModel : ViewModelBase
         BorderHeight *= coefficient;
         Scale *= coefficient;
 
+        LeftSpan *= coefficient;
+        TopSpan *= coefficient;
+        RightSpan *= coefficient;
+        BottomSpan *= coefficient;
+
         foreach ( TextLineViewModel line   in   TextLines ) 
         {
             line.ZoomOn (coefficient);
@@ -402,6 +423,11 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth /= coefficient;
         BorderHeight /= coefficient;
         Scale /= coefficient;
+
+        LeftSpan /= coefficient;
+        TopSpan /= coefficient;
+        RightSpan /= coefficient;
+        BottomSpan /= coefficient;
 
         foreach ( TextLineViewModel line   in   TextLines )
         {
@@ -683,6 +709,21 @@ public class BadgeViewModel : ViewModelBase
         bool notExceedToBottom = ( rest > 0 );
 
         bool isViolent = ! ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+
+        return isViolent;
+    }
+
+
+    private bool CheckInsideSpansViolation ( TextLineViewModel line )
+    {
+        double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
+        bool notExceedToRight = ( rest >= RightSpan );
+        bool notExceedToLeft = ( line.LeftOffset >= LeftSpan );
+        bool notExceedToTop = ( line.TopOffset >= TopSpan );
+        rest = BadgeHeight - ( line.TopOffset + line.FontSize );
+        bool notExceedToBottom = ( rest >= BottomSpan );
+
+        bool isViolent = ! ( notExceedToRight   &&   notExceedToLeft   &&   notExceedToTop   &&   notExceedToBottom );
 
         return isViolent;
     }

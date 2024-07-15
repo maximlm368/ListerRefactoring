@@ -240,6 +240,11 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     internal void ClearBadges ( )
     {
+        if ( _sceneVM == null )
+        {
+            _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
+        }
+
         _sceneVM.ClearAllPages ();
         ClearIsEnable = false;
         SaveIsEnable = false;
@@ -252,12 +257,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         _zoomNavigationVM.DisableButtons ();
 
-        if ( _sceneVM == null )
-        {
-            _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
-        }
-
-        _sceneVM.ClearBuilt ();
+        //_sceneVM.ClearBuilt ();
     }
 
 
@@ -324,7 +324,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         string fileToSave = @"intermidiate.pdf";
         Task pdf = new Task (() => { _converter.ConvertToExtention (pages, fileToSave); });
         pdf.Start ();
-        pdf.ContinueWith
+        Task printTask = pdf.ContinueWith
                (
                   savingTask =>
                   {
@@ -340,8 +340,7 @@ public class TemplateChoosingViewModel : ViewModelBase
                           WindowStyle = ProcessWindowStyle.Minimized
                       };
 
-                      Process.Start (info)?.WaitForExit (20_000);
-                      File.Delete (fileToSave);
+                      bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
                   }
                );
     }

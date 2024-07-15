@@ -96,6 +96,11 @@ namespace Lister.Views
 
         internal void GotFocuse ( object sender, GotFocusEventArgs args )
         {
+            if ( personTextBox.Text == null )
+            {
+                return;
+            }
+
             personTextBox.SelectionStart = personTextBox.Text.Length;
             personTextBox.SelectionEnd = personTextBox.Text.Length;
         }
@@ -187,9 +192,11 @@ namespace Lister.Views
                 string fromSender = str.ToLower ();
                 ObservableCollection<VisiblePerson> foundVisiblePeople = new ObservableCollection<VisiblePerson> ();
 
+                //|| ( person.StringPresentation.ToLower () == fromSender )   &&   (entireName != fromSender)
+
                 foreach ( Person person   in   _vm.People )
                 {
-                    if ( (fromSender == string.Empty)   ||   ( person.StringPresentation.ToLower () == fromSender ) )
+                    if ( (fromSender == string.Empty) )
                     {
                         RecoverVisiblePeople ();
                         return;
@@ -198,7 +205,7 @@ namespace Lister.Views
                     string entireName = person.StringPresentation;
                     entireName = entireName.ToLower ();
 
-                    if ( entireName.Contains (fromSender)   &&   (entireName != fromSender) )
+                    if ( entireName.Contains (fromSender) )
                     {
                         VisiblePerson vP = new VisiblePerson (person);
                         foundVisiblePeople.Add (vP);
@@ -280,6 +287,11 @@ namespace Lister.Views
 
         private void DropOrPickUp ()
         {
+            if ( personTextBox.Text == null ) 
+            {
+                return;
+            }
+
             if ( _personListIsDropped )
             {
                 personTextBox.Text = _vm.HideDropDownWithChange ();

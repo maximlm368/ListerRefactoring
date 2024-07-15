@@ -20,11 +20,14 @@ namespace Lister.ViewModels
     public class PersonSourceViewModel : ViewModelBase
     {
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+        private static readonly string _fileIsAbsentMessage = "Файл не найден.";
+        private static readonly string _viewTypeName = "PersonSourceUserControl";
+        
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
         private PersonSourceUserControl _view;
-        private static readonly string _viewTypeName = "PersonSourceUserControl";
 
+        private bool _pathIsFromKeeper;
         private string sFP;
         internal string SourceFilePath
         {
@@ -32,6 +35,13 @@ namespace Lister.ViewModels
             private set
             {
                 string path = SetPersonsFilePath ( value );
+                _pathIsFromKeeper = false;
+
+                if ( (SourceFilePath != null)   &&   (SourceFilePath != string.Empty)   &&   (path == string.Empty) ) 
+                {
+                    path = SourceFilePath;
+                }
+
                 this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( SourceFilePath ) );
             }
         }
@@ -63,6 +73,7 @@ namespace Lister.ViewModels
         {
             if ( passerType.Name == _viewTypeName ) 
             {
+                _pathIsFromKeeper = true;
                 SourceFilePath = path;
                 EditorIsEnable = true;
             }
@@ -161,11 +172,11 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    List <Person> persons = _uniformAssembler.GetPersons (path);
-                    ObservableCollection <VisiblePerson> visible = new ();
-                    List <Person> people = new ();
+                    List<Person> persons = _uniformAssembler.GetPersons (path);
+                    ObservableCollection<VisiblePerson> visible = new ();
+                    List<Person> people = new ();
 
-                    foreach ( var person   in   persons )
+                    foreach ( var person in persons )
                     {
                         VisiblePerson visiblePerson = new VisiblePerson (person);
                         visible.Add (visiblePerson);
@@ -180,8 +191,13 @@ namespace Lister.ViewModels
                 catch ( IOException ex )
                 {
                     var messegeDialog = new MessageDialog ();
-                    messegeDialog.Message = _fileIsOpenMessage;
-                    messegeDialog.ShowDialog (MainWindow._mainWindow);
+
+                    if ( ! _pathIsFromKeeper )
+                    {
+                        messegeDialog.Message = _fileIsOpenMessage;
+                        messegeDialog.ShowDialog (MainWindow._mainWindow);
+                    }
+
                     return string.Empty;
                 }
             }

@@ -33,7 +33,7 @@ namespace Lister.ViewModels
         private short _scalabilityDepth = 0;
         private short _maxDepth = 5;
         private short _minDepth = -5;
-        private readonly short _scalabilityStep = 25;
+        //private readonly short _scalabilityStep = 25;
 
         private SceneViewModel sc;
         internal SceneViewModel SceneVM
@@ -192,7 +192,7 @@ namespace Lister.ViewModels
             if ( _scalabilityDepth < _maxDepth )
             {
 
-                SceneVM.ZoomOn (_scalabilityStep);
+                SceneVM.ZoomOn ();
                 _scalabilityDepth++;
             }
 
@@ -212,7 +212,7 @@ namespace Lister.ViewModels
         {
             if ( _scalabilityDepth > _minDepth )
             {
-                SceneVM.ZoomOut (_scalabilityStep);
+                SceneVM.ZoomOut ();
                 _scalabilityDepth--;
             }
 

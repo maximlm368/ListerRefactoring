@@ -15,7 +15,7 @@ namespace Lister.ViewModels
     {
         //private static string _correctness = "correct";
         //private static string _incorrectness = "incorrect";
-        private static string _correctnessIcon = "GreenCheckMarker.png";
+        private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
 
         private bool cr;

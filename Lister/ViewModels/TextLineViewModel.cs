@@ -79,6 +79,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private IBrush fG;
+        internal IBrush Foreground
+        {
+            get { return fG; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fG, value, nameof (Foreground));
+            }
+        }
+
         private bool ish;
         internal bool IsSplitable
         {
@@ -112,6 +122,13 @@ namespace Lister.ViewModels
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
+            byte red = text.Foreground [0];
+            byte green = text.Foreground [1];
+            byte blue = text.Foreground [2];
+
+            SolidColorBrush foreground = new SolidColorBrush (new Color (255, red, green, blue));
+            Foreground = foreground;
+
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
@@ -131,6 +148,7 @@ namespace Lister.ViewModels
             Content = source.Content;
             IsSplitable = source.IsSplitable;
             UsefullWidth = source.UsefullWidth;
+            Foreground = source.Foreground;
 
             SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
             //SetAlignment (source._dataSource.Alignment);
@@ -259,8 +277,5 @@ namespace Lister.ViewModels
             UsefullWidth = formatted.Width + 4;
         }
     }
-
-
-
 
 }

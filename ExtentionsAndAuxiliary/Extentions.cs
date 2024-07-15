@@ -189,26 +189,24 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<int> TranslateIntoIntList ( this string possibleArray )
+        public static List<byte> TranslateIntoByteList ( this string possibleArray )
         {
-            List<int> result = new List<int> ( );
+            List<byte> result = new List<byte> ( );
             int startPosition = 0;
 
             for ( int index = 0;   index < possibleArray.Length;   index++ ) 
             {
-                if ( possibleArray [index] == ',' ) 
+                if ( (possibleArray [index] == ',')   ||    (index == possibleArray.Length - 1) ) 
                 {
-                    string subStr = possibleArray.Substring ( startPosition, index );
+                    string subStr = possibleArray.Substring ( startPosition, (index - startPosition) );
 
                     try
                     {
-                        int subResult = int.Parse (subStr);
+                        byte subResult = byte.Parse (subStr);
                         result.Add (subResult);
                         startPosition = index + 1;
                     }
                     catch ( FormatException ex ) { }
-
-                    
                 }
             }
 

@@ -12,27 +12,27 @@ namespace Lister.ViewModels
     abstract public class BadgeMember : ViewModelBase
     {
         private double wd;
-        internal double Width
+        public double Width
         {
             get { return wd; }
-            set
+            protected set
             {
                 this.RaiseAndSetIfChanged (ref wd, value, nameof (Width));
             }
         }
 
         private double ht;
-        internal double Height
+        public double Height
         {
             get { return ht; }
-            set
+            protected set
             {
                 this.RaiseAndSetIfChanged (ref ht, value, nameof (Height));
             }
         }
 
         private double tof;
-        internal double TopOffset
+        public double TopOffset
         {
             get { return tof; }
             set
@@ -42,7 +42,7 @@ namespace Lister.ViewModels
         }
 
         private double lof;
-        internal double LeftOffset
+        public double LeftOffset
         {
             get { return lof; }
             set

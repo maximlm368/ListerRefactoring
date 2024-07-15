@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
@@ -16,10 +17,10 @@ namespace Lister.Views
     public partial class TemplateChoosingUserControl : ReactiveUserControl <TemplateChoosingViewModel>
     {
         private static readonly string _jsonError = "В json файле неверный путь к файлу изображения";
+        private static TemplateViewModel _chosen;
         private const double coefficient = 1.1;
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
-        private TemplateViewModel _chosen;
 
 
         public TemplateChoosingUserControl ()
@@ -27,6 +28,19 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
+
+            Loaded += OnLoaded;
+        }
+
+
+        internal void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            _vm.ChosenTemplate = _chosen;
+
+            if ( _chosen != null ) 
+            {
+                templateChoosing.PlaceholderText = _vm.ChosenTemplate. Name;
+            }
         }
 
 
@@ -56,7 +70,7 @@ namespace Lister.Views
             if ( templateIsIncorrect )
             {
                 _vm.ChosenTemplate = null;
-
+                _chosen = null;
                 var messegeDialog = new MessageDialog ();
                 messegeDialog.Message = _jsonError;
                 messegeDialog.ShowDialog (MainWindow._mainWindow);
@@ -64,6 +78,7 @@ namespace Lister.Views
             else 
             {
                 _vm.ChosenTemplate = chosen;
+                _chosen = chosen;
             }
         }
 

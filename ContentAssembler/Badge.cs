@@ -42,14 +42,37 @@ namespace ContentAssembler
 
     public class BadgeLayout
     {
+        private List<double> _spans;
         public Size OutlineSize { get; private set; }
+        public double LeftSpan { get; private set; }
+        public double TopSpan { get; private set; }
+        public double RightSpan { get; private set; }
+        public double BottomSpan { get; private set; }
         public List <TextualAtom> TextualFields { get; private set; }
         public List <InsideImage> InsideImages { get; private set; }
 
 
-        public BadgeLayout ( Size outlineSize, List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
+        public BadgeLayout ( Size outlineSize, List<double> ? spans
+                           , List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
         {
             OutlineSize = outlineSize;
+            _spans = spans;
+
+            if ( (spans != null)   &&   (spans.Count == 4) ) 
+            {
+                LeftSpan = spans [0];
+                TopSpan = spans [1];
+                RightSpan = spans [2];
+                BottomSpan = spans [3];
+            }
+            else 
+            {
+                LeftSpan = 0;
+                TopSpan = 0;
+                RightSpan = 0;
+                BottomSpan = 0;
+            }
+
             TextualFields = textualFields ?? new List <TextualAtom> ();
             InsideImages = insideImages ?? new List <InsideImage> ();
         }
@@ -64,7 +87,7 @@ namespace ContentAssembler
                 atoms.Add (atom.Clone ());
             }
 
-            BadgeLayout clone = new BadgeLayout (OutlineSize, atoms, InsideImages);
+            BadgeLayout clone = new BadgeLayout (OutlineSize, _spans, atoms, InsideImages);
             return clone;
         }
 
@@ -230,7 +253,7 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFamily { get; private set; }
-        public List<int> Foreground { get; private set; }
+        public List<byte> Foreground { get; private set; }
         public string FontWeight { get; private set; }
         private string _content;
         public string Content
@@ -255,7 +278,7 @@ namespace ContentAssembler
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFamily, List<int> foreground, string fontWeight
+                           , double fontSize, string fontFamily, List<byte> foreground, string fontWeight
                            , List<string>? includedAtoms, bool isSplitable )
         {
             _content = "";
@@ -271,7 +294,7 @@ namespace ContentAssembler
 
             if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
             {
-                foreground = new List<int> { 0,0,0 };
+                foreground = new List<byte> { 0,0,0 };
             }
 
             Foreground = foreground;

@@ -119,6 +119,7 @@ namespace Lister.ViewModels
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
             IncorrectBadges = new List<BadgeViewModel> ();
             EditionMustEnable = false;
+            PageCount = 1;
         }
 
 
@@ -210,23 +211,39 @@ namespace Lister.ViewModels
 
         internal void ClearAllPages ()
         {
-            if ( _allPages.Count > 0 )
+            if ( _allPages.Count <= 0 )
             {
-                //for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
-                //{
-                //    _allPages [pageCounter].Clear ();
-                //}
+                return;
+            }
 
-                _allPages.Clear ();
-                VisiblePage = new PageViewModel (_documentScale);
-                _lastPage = VisiblePage;
-                _allPages.Add (_lastPage);
-                VisiblePageNumber = 1;
+            _allPages.Clear ();
+            VisiblePage = new PageViewModel (_documentScale);
+            _lastPage = VisiblePage;
+            _allPages.Add (_lastPage);
+            VisiblePageNumber = 1;
+            PageCount = 1;
+
+            EditionMustEnable = false;
+            IncorrectBadges = new List<BadgeViewModel> ();
+
+            if ( _documentScale > 1 )
+            {
+                while ( _documentScale != 1 )
+                {
+                    ZoomOut ();
+                }
+            }
+            else if ( _documentScale < 1 ) 
+            {
+                while ( _documentScale != 1 )
+                {
+                    ZoomOn ();
+                }
             }
         }
 
 
-        internal void ZoomOn ( short step )
+        internal void ZoomOn ( )
         {
             _documentScale *= _scalabilityCoefficient;
 
@@ -248,7 +265,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOut ( short step )
+        internal void ZoomOut ( )
         {
             _documentScale /= _scalabilityCoefficient;
 
@@ -358,9 +375,9 @@ namespace Lister.ViewModels
 
         internal void ResetIncorrects ()
         {
-            List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
+            List<BadgeViewModel> corrects = new List<BadgeViewModel> ();
 
-            foreach ( BadgeViewModel badge   in   IncorrectBadges ) 
+            foreach ( BadgeViewModel badge in IncorrectBadges )
             {
                 if ( badge.IsCorrect )
                 {
@@ -368,9 +385,28 @@ namespace Lister.ViewModels
                 }
             }
 
-            foreach ( BadgeViewModel correctBadge   in   corrects )
+            foreach ( BadgeViewModel correctBadge in corrects )
             {
                 IncorrectBadges.Remove (correctBadge);
+            }
+        }
+
+
+        internal void EditIncorrectBadges ()
+        {
+            _view.EditIncorrectBadges (IncorrectBadges);
+        }
+
+
+        internal void SetEdition ()
+        {
+            if ( IncorrectBadges.Count > 0 )
+            {
+                EditionMustEnable = true;
+            }
+            else 
+            {
+                EditionMustEnable = false;
             }
         }
 
@@ -394,16 +430,13 @@ namespace Lister.ViewModels
         //}
 
 
-        internal void EditIncorrectBadges ()
-        {
-            _view.EditIncorrectBadges (IncorrectBadges);
-        }
 
 
-        internal void ClearBuilt ()
-        {
-            EditionMustEnable = false;
-            IncorrectBadges = new List <BadgeViewModel> ();
-        }
+
+        //internal void ClearBuilt ()
+        //{
+        //    EditionMustEnable = false;
+        //    IncorrectBadges = new List <BadgeViewModel> ();
+        //}
     }
 }

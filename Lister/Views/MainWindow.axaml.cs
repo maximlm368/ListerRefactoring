@@ -10,6 +10,7 @@ using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 
 
 namespace Lister.Views;
@@ -44,6 +45,12 @@ public partial class MainWindow : Window
 
         _mainWindow = this;
     }
+
+
+    //internal void Eff ( object sender, EffectiveViewportChangedEventArgs args )
+    //{
+    //    int dfdf = 0;
+    //}
 
 
     internal static MainWindow ? GetMainWindow ( )

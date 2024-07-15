@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Lister.ViewModels;
@@ -27,6 +28,14 @@ namespace Lister.Views
             var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
             this.Margin = new Avalonia.Thickness (5);
+
+            Loaded += OnLoaded;
+        }
+
+
+        private void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            _vm.SetEdition ();
         }
 
 

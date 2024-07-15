@@ -330,6 +330,7 @@
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+												Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
 												DoubleTapped="Focus"
 												PointerPressed="Capture"
 												PointerMoved="Move"
