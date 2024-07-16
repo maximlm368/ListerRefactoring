@@ -47,7 +47,8 @@
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
-			    Command="{Binding  Path = GoBackCommand}"/>
+			    Command="{Binding  Path = GoBackCommand}"
+				KeyDown="ToParticularBadge"/>
 
 			<Button
 				Name="cancel"
@@ -56,7 +57,8 @@
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
 				IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
-				Command="{Binding  Path = CancelChanges}"/>
+				Command="{Binding  Path = CancelChanges}"
+				KeyDown="ToParticularBadge"/>
 
 			<Button
 				Name="zoomOut"
@@ -75,6 +77,7 @@
 				Grid.Column="4"
 				MaxHeight="30"
 				Margin="0,3"
+				KeyDown="ToParticularBadge"
 				Text="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
 				IsReadOnly="True"/>
 
@@ -135,6 +138,7 @@
 				HorizontalContentAlignment="Center"
 				Width="100"
 				Command="{Binding   Path = Split}"
+				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}"/>
 			
 		</Grid>
@@ -161,6 +165,7 @@
 				Margin="0,3"
 				HorizontalAlignment="Center"
 				Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
+		        KeyDown="ToParticularBadge"
 				TextChanged="HandleTextEdition"/>
 
 		</Grid>
@@ -248,7 +253,8 @@
 										<Image
 											Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
 											Width="50"
-											Height="20"/>
+											Height="20"
+											Tapped="ToParticularBadge"/>
 
 									</Border>
 								</DataTemplate>
@@ -321,6 +327,7 @@
 
 										<Border
 											BorderBrush="Blue"
+											Background="{Binding   Path = Background,  Mode=OneWay }"
 											BorderThickness="{Binding Path = FocusedBorderThickness,  Mode=OneWay}"
 											Height="{Binding Path = FontSize,  Mode=OneWay}">
 
@@ -381,6 +388,7 @@
 				HorizontalContentAlignment="Center"
 			    Width="48"
 				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
+				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -390,6 +398,7 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToPrevious,   Mode=OneWay}"
+				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
@@ -423,6 +432,7 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToNext,   Mode=OneWay}"
+				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -432,6 +442,7 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToLast,   Mode=OneWay}"
+				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
 
@@ -444,9 +455,6 @@
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="100"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="20"></ColumnDefinition>
 				<ColumnDefinition Width="100"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
@@ -466,20 +474,6 @@
 				VerticalContentAlignment="Center"
 				FontSize="14"
 				Grid.Column="2"/>
-
-			<Label
-				Content="Без ошибок :"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Center"
-				FontSize="14"
-				Grid.Column="4"/>
-
-			<Label
-				Content="{Binding  Path = FixedBadges.Count,  Mode=OneWay}"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Center"
-				FontSize="14"
-				Grid.Column="5"/>
 
 		</Grid>
 
@@ -528,5 +522,29 @@
 							    VerticalAlignment="Top"
 								KeyDown="ToSide"
 								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
+								
+								
+								
+								
+								
+			<Label
+				Content="Без ошибок :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = FixedBadges.Count,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>	
+				
+				
+				
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>		
 
 -->

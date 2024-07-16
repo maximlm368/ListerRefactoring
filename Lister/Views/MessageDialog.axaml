@@ -14,12 +14,15 @@
 
 		<Canvas>
 
-			<Label
+			<TextBlock
 				Name="message"
+				Margin="50,0,50,0"
 				Canvas.Top="100"
 				Width="500"
 				FontSize="16"
-				HorizontalContentAlignment="Center"
+				TextWrapping="WrapWithOverflow"
+				MaxLines="3"
+				
 				/>
 
 			<Button

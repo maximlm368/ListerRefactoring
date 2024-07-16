@@ -8,12 +8,15 @@
              x:Class="Lister.Views.SceneUserControl"
 			 >
 
+	<StackPanel>
+	
+	
 	<Border
 		Name="workArea"
 		HorizontalAlignment="Left"
 		Margin="18,0"
 		Width="760"
-		Height="310"
+		Height="270"
 		BorderBrush="Brown"
 		BorderThickness="1">
 		
@@ -111,70 +114,6 @@
 
 													</ItemsControl>
 
-
-
-													<ItemsControl
-														ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }">
-
-														<ItemsControl.ItemsPanel>
-															<ItemsPanelTemplate>
-																<Canvas
-																	Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-																	Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
-															</ItemsPanelTemplate>
-														</ItemsControl.ItemsPanel>
-
-														<ItemsControl.Styles>
-															<Style Selector="ItemsControl ContentPresenter">
-																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
-																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
-															</Style>
-														</ItemsControl.Styles>
-														
-														<ItemsControl.ItemTemplate>
-															<DataTemplate>
-
-																<Image
-																	Source = "{Binding   Path = Path,  Mode=OneWay }"
-																	Width="{Binding   Path = Width,   Mode=OneWay }"/>
-
-															</DataTemplate>
-														</ItemsControl.ItemTemplate>
-													</ItemsControl>
-
-													
-													
-													<ItemsControl
-														ItemsSource="{Binding  Path = InsideShapes,  Mode=OneWay }">
-														
-														<ItemsControl.ItemsPanel>
-															<ItemsPanelTemplate>
-																<Canvas
-																	Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-																	Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
-															</ItemsPanelTemplate>
-														</ItemsControl.ItemsPanel>
-
-														<ItemsControl.Styles>
-															<Style Selector="ItemsControl ContentPresenter">
-																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
-																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
-															</Style>
-														</ItemsControl.Styles>
-														
-														<ItemsControl.ItemTemplate>
-															<DataTemplate>
-
-																<Rectangle
-																	Width="{Binding  Path = Width,  Mode=OneWay }"
-																	Height="{Binding  Path = Height,  Mode=OneWay }"
-																	Fill="{Binding  Path = Color,  Mode=OneWay }"/>
-
-															</DataTemplate>
-														</ItemsControl.ItemTemplate>
-													</ItemsControl>
-
-
 												</Canvas>
 				
 											</Border>
@@ -193,8 +132,55 @@
 
 		</ScrollViewer>
 	</Border>
+
+
+		<Grid
+			Name="counts"
+			Height="40"
+			Margin="10,-2">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+			<Label
+				Content="Всего :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="1"/>
+
+			<Label
+				Content="{Binding  Path = BadgeCount,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="2"/>
+			
+			<Label
+				Content="С ошибками :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>
+
+		</Grid>
+		
+	</StackPanel>
 	
-    
 </UserControl>
 
 
@@ -338,5 +324,74 @@
 							  
 							  
 							  Margin="{Binding  Path = Margin,  Mode=OneWay }"
+							  
+							  
+							  
+							  
+							  
+							  
+							  
+							  
+							  
+							  <ItemsControl
+														ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }">
+
+														<ItemsControl.ItemsPanel>
+															<ItemsPanelTemplate>
+																<Canvas
+																	Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																	Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+															</ItemsPanelTemplate>
+														</ItemsControl.ItemsPanel>
+
+														<ItemsControl.Styles>
+															<Style Selector="ItemsControl ContentPresenter">
+																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+															</Style>
+														</ItemsControl.Styles>
+														
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Image
+																	Source = "{Binding   Path = Path,  Mode=OneWay }"
+																	Width="{Binding   Path = Width,   Mode=OneWay }"/>
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
+
+													
+													
+													<ItemsControl
+														ItemsSource="{Binding  Path = InsideShapes,  Mode=OneWay }">
+														
+														<ItemsControl.ItemsPanel>
+															<ItemsPanelTemplate>
+																<Canvas
+																	Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																	Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+															</ItemsPanelTemplate>
+														</ItemsControl.ItemsPanel>
+
+														<ItemsControl.Styles>
+															<Style Selector="ItemsControl ContentPresenter">
+																<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+															</Style>
+														</ItemsControl.Styles>
+														
+														<ItemsControl.ItemTemplate>
+															<DataTemplate>
+
+																<Rectangle
+																	Width="{Binding  Path = Width,  Mode=OneWay }"
+																	Height="{Binding  Path = Height,  Mode=OneWay }"
+																	Fill="{Binding  Path = Color,  Mode=OneWay }"/>
+
+															</DataTemplate>
+														</ItemsControl.ItemTemplate>
+													</ItemsControl>
 					
 			-->

@@ -17,8 +17,9 @@ namespace Lister.Views
             {
                 if ( value != null ) 
                 {
-                    message.Content = value;
+                    message.Text = value;
                     _message = value;
+                   
                 }
             }
         }

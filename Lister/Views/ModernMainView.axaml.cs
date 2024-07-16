@@ -89,6 +89,7 @@ namespace Lister.Views
             scene.workArea.Height -= heightDifference;
             _heightDelta -= heightDifference;
             personChoosing.AdjustComboboxWidth (widthDifference);
+            personChoosing.CloseCustomCombobox ();
         }
 
 

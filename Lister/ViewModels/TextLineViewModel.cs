@@ -19,9 +19,17 @@ namespace Lister.ViewModels
 {
     public class TextLineViewModel : BadgeMember
     {
-        internal static readonly double _additionOnEnd = 4;
         internal static readonly double _maxFontSizeLimit = 30;
         internal static readonly double _minFontSizeLimit = 6;
+        internal static double FrameSpanOnEnd { get; private set; }
+
+
+        static TextLineViewModel () 
+        {
+            FrameSpanOnEnd = 2;
+        }
+
+
         private TextualAtom _dataSource;
 
         private HorizontalAlignment al;
@@ -75,7 +83,7 @@ namespace Lister.ViewModels
                 Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
                 FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, FontSize, null);
-                UsefullWidth = formatted.Width + 4;
+                UsefullWidth = formatted.Width + FrameSpanOnEnd;
             }
         }
 
@@ -83,9 +91,19 @@ namespace Lister.ViewModels
         internal IBrush Foreground
         {
             get { return fG; }
-            set
+            private set
             {
                 this.RaiseAndSetIfChanged (ref fG, value, nameof (Foreground));
+            }
+        }
+
+        private IBrush bG;
+        internal IBrush Background
+        {
+            get { return bG; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bG, value, nameof (Background));
             }
         }
 
@@ -112,7 +130,6 @@ namespace Lister.ViewModels
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
 
-
         public TextLineViewModel ( TextualAtom text )
         {
             _dataSource = text;
@@ -132,7 +149,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + 4;
+            UsefullWidth = formatted.Width + FrameSpanOnEnd;
 
             SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
             SetAlignment (text.Alignment);
@@ -166,6 +183,7 @@ namespace Lister.ViewModels
         {
             FontSize *= coefficient;
             UsefullWidth *= coefficient;
+            //AdditionOnEnd *= coefficient;
             base.ZoomOn (coefficient );
         }
 
@@ -174,6 +192,7 @@ namespace Lister.ViewModels
         {
             FontSize /= coefficient;
             UsefullWidth /= coefficient;
+            //AdditionOnEnd /= coefficient;
             base.ZoomOut (coefficient);
         }
 
@@ -192,7 +211,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
         }
@@ -212,7 +231,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (_additionOnEnd * BadgeEditorViewModel._scale);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
         }
@@ -274,7 +293,7 @@ namespace Lister.ViewModels
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             Content = content;
             Width = formatted.WidthIncludingTrailingWhitespace;
-            UsefullWidth = formatted.Width + 4;
+            UsefullWidth = formatted.Width + FrameSpanOnEnd;
         }
     }
 

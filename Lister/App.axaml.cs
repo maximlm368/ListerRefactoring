@@ -11,6 +11,7 @@ using Splat;
 
 namespace Lister;
 
+
 public partial class App : Application
 {
     public static ServiceProvider services;
@@ -80,6 +81,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
         collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
+        collection.AddSingleton <IBadLineColorProvider, BadgeAppearenceProvider> ();
         collection.AddSingleton <ModernMainViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
@@ -94,45 +96,3 @@ public static class ServiceCollectionExtensions
 }
 
 
-//public class BadgeAppearenceProviderFactory : IServiceProvider
-//{
-//    public object ? GetService ( Type serviceType )
-//    {
-//        string badgeTemplatesFolderPath = @"./";
-//        BadgeAppearenceProvider badgeAppearenceProvider = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
-//        return badgeAppearenceProvider;
-//    }
-//}
-
-
-
-//if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-//{
-//    desktop.MainWindow = mainWindow;
-//    mainWindow.DataContext = new MainWindowViewModel ();
-//    PixelSize screenSize = desktop.MainWindow.Screens.Primary.Bounds.Size;
-//    int screenWidth = screenSize.Width;
-//    mainWindow.SetWidth (screenWidth);
-//}
-//else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
-//{
-//    singleViewPlatform.MainView = mainWindow;
-//}
-
-//IBadgeAppearenceProvider badgeAppearenceDataSource = new BadgeAppearenceProvider (badgeTemplatesFolderPath);
-//IPeopleDataSource peopleDataSource = new PeopleSource ();
-//IResultOfSessionSaver converter = new Lister.ViewModels.ConverterToPdf ();
-//IUniformDocumentAssembler docAssembler = new UniformDocAssembler (converter, badgeAppearenceDataSource, peopleDataSource);
-//ContentAssembler.Size pageSize = new ContentAssembler.Size (794, 1123);
-
-//PersonChoosingViewModel personChoosingVM = new PersonChoosingViewModel (docAssembler, pageSize);
-//PersonSourceViewModel personSourceVM = new PersonSourceViewModel (docAssembler, pageSize, personChoosingVM);
-//TemplateChoosingViewModel templateChoosingVM = new TemplateChoosingViewModel (docAssembler, pageSize);
-//ZoomNavigationViewModel zoomNavigationVM = new ZoomNavigationViewModel (docAssembler, pageSize);
-//SceneViewModel sceneVM = new SceneViewModel (docAssembler, pageSize);
-
-//PersonChoosingUserControl personChoosing = new PersonChoosingUserControl () { DataContext = personChoosingVM };
-//PersonSourceUserControl personSource = new PersonSourceUserControl () { DataContext = personSourceVM };
-//TemplateChoosingUserControl templateChoosing = new TemplateChoosingUserControl () { DataContext = templateChoosingVM };
-//ZoomNavigationUserControl zoomNavigation = new ZoomNavigationUserControl () { DataContext = zoomNavigationVM };
-//SceneUserControl scene = new SceneUserControl () { DataContext = sceneVM };

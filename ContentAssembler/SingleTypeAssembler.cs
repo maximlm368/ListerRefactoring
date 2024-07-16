@@ -45,7 +45,7 @@ namespace ContentAssembler
         }
 
 
-        public List<Badge> CreateBadgesByModel ( string templateName )
+        public List <Badge> CreateBadgesByModel ( string templateName )
         {
             bool argumentIsNull = string.IsNullOrEmpty (templateName);
 

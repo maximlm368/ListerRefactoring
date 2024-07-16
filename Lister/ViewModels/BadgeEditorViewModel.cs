@@ -350,6 +350,8 @@ namespace Lister.ViewModels
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
+            _view.zoomOn.IsEnabled = false;
+            _view.zoomOut.IsEnabled = false;
 
             if ( FixedBadges.Contains (BeingProcessedBadge) )
             {
@@ -662,7 +664,6 @@ namespace Lister.ViewModels
             if ( BeingProcessedBadge. IsCorrect )
             {
                 VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
-                VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
 
                 if ( ! FixedBadges.Contains(BeingProcessedBadge) ) 
                 {
@@ -680,7 +681,6 @@ namespace Lister.ViewModels
                 if ( VisibleIcons [BeingProcessedNumber - 1].Correctness )
                 {
                     VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false);
-                    VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
                 }
 
                 if ( ! IncorrectBadges.Contains(BeingProcessedBadge) ) 
@@ -693,6 +693,8 @@ namespace Lister.ViewModels
                     FixedBadges.Remove (BeingProcessedBadge);
                 }
             }
+
+            VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
         }
 
 
@@ -811,7 +813,7 @@ namespace Lister.ViewModels
                 NextIsEnable = false;
                 LastIsEnable = false;
             }
-            else if ( ( BeingProcessedNumber == 1 ) && ( badgeCount > 1 ) )
+            else if ( ( BeingProcessedNumber == 1 )   &&   ( badgeCount > 1 ) )
             {
                 FirstIsEnable = false;
                 PreviousIsEnable = false;
@@ -937,31 +939,6 @@ namespace Lister.ViewModels
             BeingProcessedBadge.ResetFocusedText ( newText );
             ResetActiveIcon ( );
         }
-
-
-        //private void FilterByCorrectnes ( bool correctness )
-        //{
-        //    VisibleIcons.Clear();
-
-        //    if ( ( VisibleBadges != null )  &&  ( VisibleBadges.Count > 0 ) )
-        //    {
-        //        for ( int index = 0;   index < VisibleBadges.Count;   index++ )
-        //        {
-        //            BadgeViewModel badge = VisibleBadges [index];
-        //            bool correctnessCoincides = badge.IsCorrect.Equals(correctness);
-
-        //            if ( correctnessCoincides ) 
-        //            {
-        //                IncorrectBadges.Add (badge);
-        //                BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
-        //                VisibleIcons.Add (icon);
-        //                icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
-        //            }
-        //        }
-
-        //        VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
-        //    }
-        //}
 
 
 

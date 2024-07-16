@@ -269,6 +269,16 @@ namespace Lister.Views
             _vm.ToParticularBadge (text);
         }
 
+
+        internal void ToParticularBadge ( object sender, TappedEventArgs args )
+        {
+            Avalonia.Controls.Image image = sender as Avalonia.Controls.Image;
+
+
+
+            
+        }
+
         #endregion
 
     }

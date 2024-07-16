@@ -58,6 +58,26 @@ namespace Lister.ViewModels
             }
         }
 
+        private int bC;
+        internal int BadgeCount
+        {
+            get { return bC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref bC, value, nameof (BadgeCount));
+            }
+        }
+
+        private int ibC;
+        internal int IncorrectBadgeCount
+        {
+            get { return ibC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref ibC, value, nameof (IncorrectBadgeCount));
+            }
+        }
+
         internal List <BadgeViewModel> IncorrectBadges { get; private set; }
 
         private string zoomDV;
@@ -146,7 +166,10 @@ namespace Lister.ViewModels
                     {
                         IncorrectBadges.Add (beingProcessedBadgeVM);
                         EditionMustEnable = true;
+                        IncorrectBadgeCount++;
                     }
+
+                    BadgeCount++;
                 }
 
                 List <PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
@@ -180,6 +203,7 @@ namespace Lister.ViewModels
             {
                 IncorrectBadges.Add (goalVMBadge);
                 EditionMustEnable = true;
+                IncorrectBadgeCount++;
             }
 
             bool placingStartedAfterEntireListAddition = !_lastPage.Equals (VisiblePage);
@@ -203,6 +227,7 @@ namespace Lister.ViewModels
                 VisiblePage.Show ();
             }
 
+            BadgeCount++;
             VisiblePageNumber = _allPages.Count;
             PageCount = _allPages.Count;
             goalVMBadge.Show ();
@@ -222,6 +247,8 @@ namespace Lister.ViewModels
             _allPages.Add (_lastPage);
             VisiblePageNumber = 1;
             PageCount = 1;
+            BadgeCount = 0;
+            IncorrectBadgeCount = 0;
 
             EditionMustEnable = false;
             IncorrectBadges = new List<BadgeViewModel> ();
@@ -377,7 +404,7 @@ namespace Lister.ViewModels
         {
             List<BadgeViewModel> corrects = new List<BadgeViewModel> ();
 
-            foreach ( BadgeViewModel badge in IncorrectBadges )
+            foreach ( BadgeViewModel badge   in   IncorrectBadges )
             {
                 if ( badge.IsCorrect )
                 {
@@ -385,10 +412,12 @@ namespace Lister.ViewModels
                 }
             }
 
-            foreach ( BadgeViewModel correctBadge in corrects )
+            foreach ( BadgeViewModel correctBadge   in   corrects )
             {
                 IncorrectBadges.Remove (correctBadge);
             }
+
+            IncorrectBadgeCount = IncorrectBadges. Count;
         }
 
 

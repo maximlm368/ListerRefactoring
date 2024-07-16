@@ -16,13 +16,20 @@ using Avalonia.Interactivity;
 using ExtentionsAndAuxiliary;
 using Avalonia.Controls.Shapes;
 using System;
+using DataGateway;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.ViewModels;
+
 
 public class BadgeViewModel : ViewModelBase
 {
     private static Dictionary<string, Bitmap> _pathToImage;
     private static double _rightSpan = 5;
+
+    private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
+    private string _badLineColor;
+    private IBadLineColorProvider _badLineColorProvider;
 
     internal double Scale { get; private set; }
     internal double LeftSpan { get; private set; }
@@ -225,6 +232,13 @@ public class BadgeViewModel : ViewModelBase
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
 
+        if ( _badLineColorProvider == null ) 
+        {
+            _badLineColorProvider = App.services.GetRequiredService<IBadLineColorProvider> ();
+        }
+
+        _badLineColor = _badLineColorProvider.GetBadLineColor (badgeModel.BadgeLayout.TemplateName);
+
         List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
         SetUpTextLines (atoms);
@@ -259,6 +273,7 @@ public class BadgeViewModel : ViewModelBase
         _borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
+        _badLineColor = badge._badLineColor;
 
         foreach ( TextLineViewModel line in badge.TextLines )
         {
@@ -483,6 +498,12 @@ public class BadgeViewModel : ViewModelBase
         if ( replaceble.isOverLayViolent )
         {
             OverlayViolentLines.Remove (replaceble);
+            
+        }
+
+        if ( ! replaceble.isBorderViolent   &&   ! replaceble.isOverLayViolent ) 
+        {
+            DeleteBadColor (replaceble);
         }
 
         TextLines.Remove (replaceble);
@@ -519,7 +540,7 @@ public class BadgeViewModel : ViewModelBase
                 Typeface face = new Typeface (family, FontStyle.Normal, FontWeight.Bold);
                 FormattedText formatted = new FormattedText (beingProcessedLine, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, fontSize, null);
-                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + TextLineViewModel._additionOnEnd;
+                double usefulTextBlockWidth = formatted.WidthIncludingTrailingWhitespace + TextLineViewModel.FrameSpanOnEnd;
                 bool lineIsOverflow = ( usefulTextBlockWidth > lineLength );
 
                 if ( ! lineIsOverflow ) 
@@ -640,9 +661,18 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
+    //internal void ToFalseCorrectness ( string callerTypeName )
+    //{
+    //    if ( callerTypeName == _semiProtectedTypeName ) 
+    //    {
+        
+    //    }
+    //}
+
+
     private void CheckLineCorrectness ( TextLineViewModel checkable )
     {
-        bool isBorderViolent = CheckBorderViolation (checkable);
+        bool isBorderViolent = CheckInsideSpansViolation (checkable);
 
         if ( ! isBorderViolent )
         {
@@ -658,6 +688,7 @@ public class BadgeViewModel : ViewModelBase
             {
                 BorderViolentLines.Add (checkable);
                 checkable.isBorderViolent = true;
+                SetBadColor ( checkable );
             }
         }
 
@@ -677,7 +708,13 @@ public class BadgeViewModel : ViewModelBase
             {
                 OverlayViolentLines.Add (checkable);
                 checkable.isOverLayViolent = true;
+                SetBadColor ( checkable );
             }
+        }
+
+        if ( ! checkable.isBorderViolent   &&   ! checkable.isOverLayViolent )
+        {
+            DeleteBadColor (checkable);
         }
     }
 
@@ -686,12 +723,13 @@ public class BadgeViewModel : ViewModelBase
     {
         foreach ( TextLineViewModel line   in   TextLines )
         {
-            bool isViolent = CheckBorderViolation ( line );
+            bool isViolent = CheckInsideSpansViolation ( line );
 
             if ( isViolent )
             {
                 BorderViolentLines.Add ( line );
                 line.isBorderViolent = true;
+                SetBadColor ( line );
             }
         }
 
@@ -699,19 +737,52 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private bool CheckBorderViolation ( TextLineViewModel line )
+    private void SetBadColor ( TextLineViewModel setable )
     {
-        double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
-        bool notExceedToRight = ( rest > 0 );
-        bool notExceedToLeft = ( line.LeftOffset > 0 );
-        bool notExceedToTop = ( line.TopOffset > 0 );
-        rest = BadgeHeight - ( line.TopOffset + line.FontSize );
-        bool notExceedToBottom = ( rest > 0 );
+        if ( _badLineColor == null )
+        {
+            setable.Background = null;
+        }
+        else 
+        {
+            List<int> rgb = _badLineColor.TranslateIntoIntList ();
 
-        bool isViolent = ! ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+            if ( rgb.Count == 3 )
+            {
+                byte r = ( byte ) rgb [0];
+                byte g = ( byte ) rgb [1];
+                byte b = ( byte ) rgb [2];
 
-        return isViolent;
+                IBrush brush = new SolidColorBrush (new Color (255, r, g, b));
+                setable.Background = brush;
+            }
+            else 
+            {
+                setable.Background = null;
+            }
+        }
     }
+
+
+    private void DeleteBadColor ( TextLineViewModel setable )
+    {
+        setable.Background = null;
+    }
+
+
+    //private bool CheckBorderViolation ( TextLineViewModel line )
+    //{
+    //    double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
+    //    bool notExceedToRight = ( rest > 0 );
+    //    bool notExceedToLeft = ( line.LeftOffset > 0 );
+    //    bool notExceedToTop = ( line.TopOffset > 0 );
+    //    rest = BadgeHeight - ( line.TopOffset + line.FontSize );
+    //    bool notExceedToBottom = ( rest > 0 );
+
+    //    bool isViolent = ! ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
+
+    //    return isViolent;
+    //}
 
 
     private bool CheckInsideSpansViolation ( TextLineViewModel line )
@@ -777,6 +848,7 @@ public class BadgeViewModel : ViewModelBase
                 {
                     OverlayViolentLines.Add (overlaying);
                     overlaying.isOverLayViolent = true;
+                    SetBadColor ( overlaying );
                 }
 
                 break;

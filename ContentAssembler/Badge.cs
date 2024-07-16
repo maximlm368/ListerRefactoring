@@ -43,6 +43,7 @@ namespace ContentAssembler
     public class BadgeLayout
     {
         private List<double> _spans;
+        public string TemplateName { get; private set; }
         public Size OutlineSize { get; private set; }
         public double LeftSpan { get; private set; }
         public double TopSpan { get; private set; }
@@ -52,10 +53,11 @@ namespace ContentAssembler
         public List <InsideImage> InsideImages { get; private set; }
 
 
-        public BadgeLayout ( Size outlineSize, List<double> ? spans
+        public BadgeLayout ( Size outlineSize, string templateName, List<double> ? spans
                            , List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
         {
             OutlineSize = outlineSize;
+            TemplateName = templateName;
             _spans = spans;
 
             if ( (spans != null)   &&   (spans.Count == 4) ) 
@@ -87,7 +89,7 @@ namespace ContentAssembler
                 atoms.Add (atom.Clone ());
             }
 
-            BadgeLayout clone = new BadgeLayout (OutlineSize, _spans, atoms, InsideImages);
+            BadgeLayout clone = new BadgeLayout (OutlineSize, TemplateName, _spans, atoms, InsideImages);
             return clone;
         }
 
