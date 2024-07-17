@@ -60,7 +60,7 @@
 			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-			Command="{Binding  Path=BuildBadgess}"
+			Command="{Binding  Path=BuildBadges}"
 			Content="Построить"/>
 		
 		<Button

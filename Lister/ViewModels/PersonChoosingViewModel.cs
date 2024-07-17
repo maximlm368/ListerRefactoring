@@ -60,7 +60,7 @@ namespace Lister.ViewModels
         private int _focusedNumber;
         private int _focusedEdge;
         private int _topLimit;
-        private bool _personIsSetInSetter;
+        private bool _chosenPersonIsSetInSetter;
         internal bool ScrollingIsOccured { get; set; }
         internal bool SinglePersonIsSelected { get; private set; }
         internal bool EntirePersonListIsSelected { get; private set; }
@@ -107,7 +107,7 @@ namespace Lister.ViewModels
             {
                 this.RaiseAndSetIfChanged (ref cP, value, nameof (ChosenPerson));
 
-                _personIsSetInSetter = true;
+                _chosenPersonIsSetInSetter = true;
 
                 if ( ChosenPerson == null )
                 {
@@ -296,9 +296,9 @@ namespace Lister.ViewModels
 
         public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
         {
-            ScrollerCanvasLeft = 454;
+            ScrollerCanvasLeft = _withScroll;
             VisiblePeople = new ObservableCollection <VisiblePerson> ();
-            People = new List<Person> ();
+            People = new List <Person> ();
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = false;
             FontWeight = FontWeight.Bold;
@@ -314,41 +314,58 @@ namespace Lister.ViewModels
 
             if ( _focused == null )
             {
-                if ( ! _personIsSetInSetter ) 
+                if ( ! _chosenPersonIsSetInSetter ) 
                 {
                     ChosenPerson = null;
-                    EntirePersonListIsSelected = true;
-                    SinglePersonIsSelected = false;
+                    SetEntireListChoosingConsequences ();
                 }
 
                 choosingResult = _placeHolder;
             }
             else 
             {
-                if ( ! _personIsSetInSetter )
+                if ( ! _chosenPersonIsSetInSetter )
                 {
                     ChosenPerson = _focused.Person;
-                    SinglePersonIsSelected = true;
-                    EntirePersonListIsSelected = false;
+                    SetPersonChoosingConsequences ();
                 }
 
                 choosingResult = ChosenPerson. StringPresentation;
             }
 
-            _personIsSetInSetter = false;
-            HideDropDownWithoutChange ();
+            _chosenPersonIsSetInSetter = false;
+            string placeholder = HideDropDownWithoutChange ();
+
+            if ( placeholder != null ) 
+            {
+                choosingResult = placeholder;
+            }
+            
             TryToEnableBadgeCreation ();
             
             return choosingResult;
         }
 
 
-        internal void HideDropDownWithoutChange ()
+        internal string ? HideDropDownWithoutChange ()
         {
+            string placeholder = null;
+
+            if ( (VisiblePeople. Count == 0)   &&   (People. Count > 0) ) 
+            {
+                RecoverVisiblePeople ();
+                PlaceHolder = _placeHolder;
+                FontWeight = FontWeight.Bold;
+                placeholder = _placeHolder;
+                PlaceHolder = _placeHolder;
+            }
+
             DropDownOpacity = 0;
             VisibleHeight = 0;
             FirstItemHeight = 0;
             FirstIsVisible = false;
+
+            return placeholder;
         }
 
 
@@ -367,8 +384,6 @@ namespace Lister.ViewModels
 
         internal void SetChosenPerson ( Person person )
         {
-            ChosenPerson = person;
-
             int seekingScratch = _focusedNumber - _maxVisibleCount;
 
             if ( seekingScratch < 0 )
@@ -386,7 +401,7 @@ namespace Lister.ViewModels
             for ( int index = seekingScratch;   index <= seekingEnd;   index++ )
             {
                 VisiblePerson foundPerson = VisiblePeople [index];
-                bool isCoincidence = ChosenPerson.Equals (foundPerson.Person);
+                bool isCoincidence = person.Equals (foundPerson.Person);
 
                 if ( isCoincidence )
                 {
@@ -410,8 +425,6 @@ namespace Lister.ViewModels
 
         internal void SetEntireList ( )
         {
-            ChosenPerson = null;
-
             if ( _focused != null )
             {
                 _focused.BrushColor = _unfocusedColor;
@@ -517,9 +530,7 @@ namespace Lister.ViewModels
 
 
         internal void SetEntireList ( int personCount )
-        {
-            //VisibleHeight = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
-            
+        { 
             _visibleHeightStorage = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
             FirstIsVisible = true;
             _allListMustBe = true;
@@ -530,18 +541,6 @@ namespace Lister.ViewModels
             EntireListColor = _focusedColor;
             _focusedNumber = -1;
             _focusedEdge = _edge;
-
-            if ( _personSourceVM == null )
-            {
-                _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
-            }
-
-            //if ( _personSourceVM.peopleSettingOccured )
-            //{
-            //    EntirePersonListIsSelected = true;
-            //    EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
-            //    PlaceHolder = _placeHolder;
-            //}
 
             EntirePersonListIsSelected = true;
             EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -1137,6 +1136,21 @@ namespace Lister.ViewModels
             }
 
             _personSourceVM. peopleSettingOccured = false;
+        }
+
+
+        internal void RecoverVisiblePeople ()
+        {
+            ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
+
+            foreach ( Person person   in   People )
+            {
+                VisiblePerson vP = new VisiblePerson (person);
+                recovered.Add (vP);
+            }
+
+            VisiblePeople = recovered;
+            ShowDropDown ();
         }
     }
 }

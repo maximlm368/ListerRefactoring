@@ -13,6 +13,7 @@ using DynamicData;
 using Lister.ViewModels;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
+using QuestPDF.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
@@ -114,7 +115,13 @@ namespace Lister.Views
 
             if ( reasonExists )
             {
-                _vm.HideDropDownWithoutChange ();
+                string placeholder = _vm.HideDropDownWithoutChange ();
+
+                if ( placeholder != null ) 
+                {
+                    personTextBox.Text = placeholder;
+                }
+                
                 _personListIsDropped = false;
             }
 
@@ -190,7 +197,7 @@ namespace Lister.Views
             {
                 RestrictInput (str);
                 string fromSender = str.ToLower ();
-                ObservableCollection<VisiblePerson> foundVisiblePeople = new ObservableCollection<VisiblePerson> ();
+                ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
 
                 //|| ( person.StringPresentation.ToLower () == fromSender )   &&   (entireName != fromSender)
 
@@ -248,16 +255,7 @@ namespace Lister.Views
 
         private void RecoverVisiblePeople ()
         {
-            ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
-
-            foreach ( Person person   in   _vm.People ) 
-            {
-                VisiblePerson vP = new VisiblePerson (person);
-                recovered.Add (vP);
-            }
-
-            _vm.VisiblePeople = recovered;
-            _vm.ShowDropDown ();
+            _vm.RecoverVisiblePeople ();
             _personListIsDropped = true;
         }
 
@@ -312,7 +310,13 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                _vm.HideDropDownWithoutChange ();
+                string placeholder = _vm.HideDropDownWithoutChange ();
+
+                if ( placeholder != null )
+                {
+                    personTextBox.Text = placeholder;
+                }
+
                 _personListIsDropped = false;
             }
         }

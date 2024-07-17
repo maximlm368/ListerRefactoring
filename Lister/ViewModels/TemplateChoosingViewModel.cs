@@ -38,6 +38,8 @@ namespace Lister.ViewModels;
 public class TemplateChoosingViewModel : ViewModelBase
 {
     private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+    private static readonly string _title = "Ошибка";
+    private static readonly string _suggestedFileNames = "MyPdf";
     private ConverterToPdf _converter;
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
@@ -177,7 +179,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void BuildBadgess ()
+    internal void BuildBadges ()
     {
         if ( _zoomNavigationVM == null )
         {
@@ -207,7 +209,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         if ( _personChoosingVM.EntirePersonListIsSelected ) 
         {
-            BuildBadges ();
+            BuildAllBadges ();
         }
         else if( _personChoosingVM.SinglePersonIsSelected )
         {
@@ -216,7 +218,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void BuildBadges ()
+    internal void BuildAllBadges ()
     {
         if ( ChosenTemplate == null )
         {
@@ -261,13 +263,14 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void GeneratePdf ( )
+    internal void GeneratePdf ()
     {
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add (FilePickerFileTypes.Pdf);
         FilePickerSaveOptions options = new ();
-        options.Title = "Open Text File";
-        options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
+        options.Title = _title;
+        options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        options.SuggestedFileName = _suggestedFileNames;
         Task<IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
 
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();

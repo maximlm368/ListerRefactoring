@@ -249,7 +249,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private BadgeViewModel ( BadgeViewModel badge )
+    private BadgeViewModel ( BadgeViewModel badge, bool shouldGatheIncorrectLines )
     {
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
@@ -282,7 +282,11 @@ public class BadgeViewModel : ViewModelBase
         }
 
         Scale = badge.Scale;
-        GatherIncorrectLines ( );
+
+        if ( shouldGatheIncorrectLines ) 
+        {
+            GatherIncorrectLines ();
+        }
 
         //foreach ( TextLineViewModel line in badge.TextLines )
         //{
@@ -307,7 +311,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel GetDimensionalOriginal () 
     {
-        BadgeViewModel original = new BadgeViewModel (this);
+        BadgeViewModel original = new BadgeViewModel (this, false);
 
         if ( original.Scale > 1 )
         {
@@ -324,7 +328,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel Clone ()
     {
-        BadgeViewModel clone = new BadgeViewModel (this);
+        BadgeViewModel clone = new BadgeViewModel (this, true);
         return clone;
     }
 
@@ -661,15 +665,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    //internal void ToFalseCorrectness ( string callerTypeName )
-    //{
-    //    if ( callerTypeName == _semiProtectedTypeName ) 
-    //    {
-        
-    //    }
-    //}
-
-
     private void CheckLineCorrectness ( TextLineViewModel checkable )
     {
         bool isBorderViolent = CheckInsideSpansViolation (checkable);
@@ -770,21 +765,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    //private bool CheckBorderViolation ( TextLineViewModel line )
-    //{
-    //    double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
-    //    bool notExceedToRight = ( rest > 0 );
-    //    bool notExceedToLeft = ( line.LeftOffset > 0 );
-    //    bool notExceedToTop = ( line.TopOffset > 0 );
-    //    rest = BadgeHeight - ( line.TopOffset + line.FontSize );
-    //    bool notExceedToBottom = ( rest > 0 );
-
-    //    bool isViolent = ! ( notExceedToRight && notExceedToLeft && notExceedToTop && notExceedToBottom );
-
-    //    return isViolent;
-    //}
-
-
     private bool CheckInsideSpansViolation ( TextLineViewModel line )
     {
         double rest = BadgeWidth - ( line.LeftOffset + line.UsefullWidth );
@@ -848,6 +828,7 @@ public class BadgeViewModel : ViewModelBase
                 {
                     OverlayViolentLines.Add (overlaying);
                     overlaying.isOverLayViolent = true;
+
                     SetBadColor ( overlaying );
                 }
 
