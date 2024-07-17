@@ -172,9 +172,9 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    List <Person> persons = _uniformAssembler.GetPersons (path);
-                    ObservableCollection <VisiblePerson> visible = new ();
-                    List <Person> people = new ();
+                    List<Person> persons = _uniformAssembler.GetPersons (path);
+                    ObservableCollection<VisiblePerson> visible = new ();
+                    List<Person> people = new ();
 
                     foreach ( var person in persons )
                     {

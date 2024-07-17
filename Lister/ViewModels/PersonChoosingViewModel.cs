@@ -45,7 +45,6 @@ namespace Lister.ViewModels
         private static string _placeHolder = "Весь список";
         private static int _maxVisibleCount = 4;
         private static double _oneHeight = 25;
-        private static double _allListHeight = 25;
         private static readonly int _edge = 3;
 
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
@@ -333,44 +332,23 @@ namespace Lister.ViewModels
                     EntirePersonListIsSelected = false;
                 }
 
-                if ( ChosenPerson == null ) 
-                {
-                    ChosenPerson = _focused.Person;
-                }
-
                 choosingResult = ChosenPerson. StringPresentation;
             }
 
             _personIsSetInSetter = false;
             HideDropDownWithoutChange ();
-            //TryToEnableBadgeCreation ();
+            TryToEnableBadgeCreation ();
             
             return choosingResult;
         }
 
 
-        internal string ? HideDropDownWithoutChange ()
+        internal void HideDropDownWithoutChange ()
         {
-            string returnable = null;
-
             DropDownOpacity = 0;
             VisibleHeight = 0;
             FirstItemHeight = 0;
             FirstIsVisible = false;
-
-            if ( ( VisiblePeople.Count == 0 ) && ( People.Count > 0 ) )
-            {
-                RecoverVisiblePeople (false);
-
-                ChosenPerson = null;
-                _focused = null;
-                PlaceHolder = _placeHolder;
-                EntireListColor = _focusedColor;
-                _focusedNumber = _focusedEdge - _maxVisibleCount;
-                returnable = _placeHolder;
-            }
-
-            return returnable;
         }
 
 
@@ -538,25 +516,6 @@ namespace Lister.ViewModels
         }
 
 
-        internal void RecoverVisiblePeople ( bool shouldShow )
-        {
-            ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
-
-            foreach ( Person person in People )
-            {
-                VisiblePerson vP = new VisiblePerson (person);
-                recovered.Add (vP);
-            }
-
-            VisiblePeople = recovered;
-
-            if ( shouldShow ) 
-            {
-                ShowDropDown ();
-            }
-        }
-
-
         internal void SetEntireList ( int personCount )
         {
             //VisibleHeight = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
@@ -576,6 +535,13 @@ namespace Lister.ViewModels
             {
                 _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
             }
+
+            //if ( _personSourceVM.peopleSettingOccured )
+            //{
+            //    EntirePersonListIsSelected = true;
+            //    EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
+            //    PlaceHolder = _placeHolder;
+            //}
 
             EntirePersonListIsSelected = true;
             EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
@@ -1132,7 +1098,7 @@ namespace Lister.ViewModels
 
         private void TryToEnableBadgeCreation ()
         {
-            if ( ( VisiblePeople != null )   &&   ( VisiblePeople. Count > 0 ) )
+            if ( ( VisiblePeople != null )   &&   ( VisiblePeople.Count > 0 ) )
             {
                 if ( _templateChoosingVM == null )
                 {
