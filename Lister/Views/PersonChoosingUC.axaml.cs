@@ -134,7 +134,12 @@ namespace Lister.Views
 
             if ( key == "Escape" )
             {
-                PickUp ();
+                if ( _personListIsDropped )
+                {
+                    _vm.HideDropDownWithoutChange ();
+                    _personListIsDropped = false;
+                }
+
                 return;
             }
 
@@ -181,8 +186,8 @@ namespace Lister.Views
                 return;
             }
 
-            _vm.ToZeroPersonSelection ();
-            _vm.DisableBuildigPossibility ();
+            //_vm.ToZeroPersonSelection ();
+            //_vm.DisableBuildigPossibility ();
             TextBox textBox = ( TextBox ) sender;
             string str = textBox.Text;
 
@@ -191,8 +196,6 @@ namespace Lister.Views
                 RestrictInput (str);
                 string fromSender = str.ToLower ();
                 ObservableCollection<VisiblePerson> foundVisiblePeople = new ObservableCollection<VisiblePerson> ();
-
-                //|| ( person.StringPresentation.ToLower () == fromSender )   &&   (entireName != fromSender)
 
                 foreach ( Person person   in   _vm.People )
                 {
@@ -248,16 +251,7 @@ namespace Lister.Views
 
         private void RecoverVisiblePeople ()
         {
-            ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
-
-            foreach ( Person person   in   _vm.People ) 
-            {
-                VisiblePerson vP = new VisiblePerson (person);
-                recovered.Add (vP);
-            }
-
-            _vm.VisiblePeople = recovered;
-            _vm.ShowDropDown ();
+            _vm.RecoverVisiblePeople (true);
             _personListIsDropped = true;
         }
 
@@ -305,16 +299,6 @@ namespace Lister.Views
 
             personTextBox.SelectionStart = personTextBox.Text.Length;
             personTextBox.SelectionEnd = personTextBox.Text.Length;
-        }
-
-
-        private void PickUp ()
-        {
-            if ( _personListIsDropped )
-            {
-                _vm.HideDropDownWithoutChange ();
-                _personListIsDropped = false;
-            }
         }
 
 

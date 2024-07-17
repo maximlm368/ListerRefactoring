@@ -103,6 +103,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             }
 
             this.RaiseAndSetIfChanged (ref isC, value, nameof (BuildingIsPossible));
+            int dff = 0;
         }
         get
         {
@@ -174,22 +175,6 @@ public class TemplateChoosingViewModel : ViewModelBase
         Templates = templates;
         _sceneVM = sceneViewModel;
         _converter = new ConverterToPdf ();
-    }
-
-
-    internal void BuildBadgess ()
-    {
-        if ( _zoomNavigationVM == null )
-        {
-            _zoomNavigationVM = App.services.GetRequiredService<ZoomNavigationViewModel> ();
-        }
-
-        Build ();
-        _zoomNavigationVM.EnableZoom ();
-        _zoomNavigationVM.SetEnablePageNavigation ();
-        ClearIsEnable = true;
-        SaveIsEnable = true;
-        PrintIsEnable = true;
     }
 
 
