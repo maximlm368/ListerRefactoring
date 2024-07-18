@@ -11,7 +11,8 @@
 		     Width="800"
 			 >
 
-	<StackPanel>
+	<StackPanel
+		Name="panel">
 
 		<Grid
 			Name="zoomAndAcception"
@@ -143,8 +144,7 @@
 			
 		</Grid>
 
-
-
+		
 		<Grid
 			Name="textEdition"
 			Height="40"
@@ -228,10 +228,12 @@
 				
 				<Border
 					Name="slider"
+					Focusable="True"
 					BorderThickness="1"
 					BorderBrush="Brown"
 					Height="263"
-					Grid.Column="0">
+					Grid.Column="0"
+					KeyDown="ToParticularBadge">
 
 					<ScrollViewer
 						 Name="sliderScroller"

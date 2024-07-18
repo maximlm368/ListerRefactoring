@@ -30,7 +30,7 @@ namespace Lister.ViewModels
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
         internal static readonly double _scale = 2.45;
-        private Dictionary<BadgeViewModel, double> _scaleStorage;
+        private Dictionary <BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
         private FilterChoosing _filterState = FilterChoosing.AllIsChosen;
@@ -483,6 +483,9 @@ namespace Lister.ViewModels
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
+            ZoommerIsEnable = false;
+
+            ReleaseCaptured ();
         }
 
 
@@ -504,6 +507,9 @@ namespace Lister.ViewModels
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
+            ZoommerIsEnable = false;
+
+            ReleaseCaptured ();
         }
 
 
@@ -525,6 +531,9 @@ namespace Lister.ViewModels
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
+            ZoommerIsEnable = false;
+
+            ReleaseCaptured ();
         }
 
 
@@ -541,6 +550,26 @@ namespace Lister.ViewModels
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
+            ZoommerIsEnable = false;
+
+            ReleaseCaptured ();
+        }
+
+
+        internal void ToParticularBadge ( BadgeViewModel goalBadge )
+        {
+            string numberAsText = string.Empty;
+
+            for ( int index = 0;   index < VisibleBadges. Count;   index++ )
+            {
+                if ( goalBadge.Equals (VisibleBadges [index]) ) 
+                {
+                    numberAsText = (index + 1).ToString ();
+                    break;
+                }
+            }
+
+            ToParticularBadge (numberAsText);
         }
 
 
@@ -550,7 +579,7 @@ namespace Lister.ViewModels
             {
                 int number = int.Parse (numberAsText);
 
-                if ( number > VisibleBadges.Count   ||   number < 1 )
+                if ( number > VisibleBadges. Count   ||   number < 1 )
                 {
                     BeingProcessedNumber = BeingProcessedNumber;
                     return;
@@ -572,6 +601,9 @@ namespace Lister.ViewModels
                 SetEnableBadgeNavigation ();
                 MoversAreEnable = false;
                 SplitterIsEnable = false;
+                ZoommerIsEnable = false;
+
+                ReleaseCaptured ();
             }
             catch ( Exception ex )
             {
@@ -641,6 +673,9 @@ namespace Lister.ViewModels
             if ( BeingProcessedBadge. FocusedLine != null )
             {
                 MoversAreEnable = true;
+                ZoommerIsEnable = true;
+
+                EnableSplitting (focusedContent);
             }
         }
 
@@ -653,8 +688,12 @@ namespace Lister.ViewModels
                 BeingProcessedBadge. FocusedLine = null;
                 BeingProcessedBadge. FocusedFontSize = string.Empty;
                 ResetActiveIcon ();
-                SplitterIsEnable = false;
+                ZoommerIsEnable = false;
                 MoversAreEnable = false;
+                SplitterIsEnable = false;
+                FocusedBorderThickness = new Thickness (0, 0, 0, 0);
+
+                _view.ReleaseCaptured ( );
             }
         }
 
@@ -663,7 +702,7 @@ namespace Lister.ViewModels
         {
             if ( BeingProcessedBadge. IsCorrect )
             {
-                VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true);
+                VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true, BeingProcessedBadge);
 
                 if ( ! FixedBadges.Contains(BeingProcessedBadge) ) 
                 {
@@ -680,7 +719,7 @@ namespace Lister.ViewModels
             {
                 if ( VisibleIcons [BeingProcessedNumber - 1].Correctness )
                 {
-                    VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false);
+                    VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false, BeingProcessedBadge);
                 }
 
                 if ( ! IncorrectBadges.Contains(BeingProcessedBadge) ) 
@@ -838,7 +877,7 @@ namespace Lister.ViewModels
             {
                 for ( int index = 0;   index < VisibleBadges. Count;   index++ ) 
                 {
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, VisibleBadges [index]);
                     VisibleIcons.Add (icon);
                     icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
                 }
@@ -921,7 +960,7 @@ namespace Lister.ViewModels
                 for ( int index = 0;   index < VisibleBadges. Count;   index++ )
                 {
                     BadgeViewModel badge = VisibleBadges [index];
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect, VisibleBadges [index]);
                     VisibleIcons.Add (icon);
                     icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
                 }

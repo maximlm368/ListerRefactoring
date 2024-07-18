@@ -172,19 +172,25 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    List<Person> persons = _uniformAssembler.GetPersons (path);
-                    ObservableCollection<VisiblePerson> visible = new ();
-                    List<Person> people = new ();
+                    List <Person> persons = _uniformAssembler.GetPersons (path);
+                    ObservableCollection <VisiblePerson> visible = new ();
+                    List <Person> people = new ();
+                    List <VisiblePerson> visiblePeopleStorage = new ();
+                    //ObservableCollection <VisiblePerson> visiblePeopleReserve = new ();
 
-                    foreach ( var person in persons )
+                    foreach ( var person   in   persons )
                     {
                         VisiblePerson visiblePerson = new VisiblePerson (person);
                         visible.Add (visiblePerson);
+                        visiblePeopleStorage.Add (visiblePerson);
+                        //visiblePeopleReserve.Add (visiblePerson);
                         people.Add (person);
                     }
 
                     peopleSettingOccured = true;
                     _personChoosingVM.People = people;
+                    _personChoosingVM.VisiblePeopleStorage = visiblePeopleStorage;
+                    //_personChoosingVM.VisiblePeopleReserve = visiblePeopleReserve;
                     _personChoosingVM.VisiblePeople = visible;
                     return path;
                 }

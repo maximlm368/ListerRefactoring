@@ -14,6 +14,8 @@ class Program
     [STAThread]
     public static void Main ( string [] args )
     {
+        bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
+
         try 
         {
             BuildAvaloniaApp ()
@@ -21,10 +23,7 @@ class Program
         }
         catch( StackOverflowException ex ) 
         {
-            
         }
-
-        
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

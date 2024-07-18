@@ -156,7 +156,9 @@ namespace Lister.Views
             zoomOn.IsEnabled = true;
             zoomOut.IsEnabled = true;
             string content = ( string ) _focused.Content;
-            _vm.EnableSplitting(content);
+
+            //_vm.EnableSplitting(content);
+            
             container = label.Parent as Border;
             container.BorderThickness = new Thickness(1,1,1,1);
             _vm.Focus (content);
@@ -201,9 +203,12 @@ namespace Lister.Views
             if ( _capturedExists )
             {
                 _capturedExists = false;
+
                 Border container = _focused.Parent as Border;
                 container.BorderThickness = new Thickness (0, 0, 0, 0);
+
                 _focused = null;
+
                 zoomOn.IsEnabled = false;
                 zoomOut.IsEnabled = false;
                 spliter.IsEnabled = false;
@@ -273,10 +278,10 @@ namespace Lister.Views
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
             Avalonia.Controls.Image image = sender as Avalonia.Controls.Image;
+            BadgeCorrectnessViewModel context = image.DataContext as BadgeCorrectnessViewModel;
+            BadgeViewModel boundBadge = context.BoundBadge;
 
-
-
-            
+            _vm.ToParticularBadge (boundBadge);
         }
 
         #endregion

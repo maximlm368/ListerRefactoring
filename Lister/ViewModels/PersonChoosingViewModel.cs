@@ -66,8 +66,9 @@ namespace Lister.ViewModels
         internal bool EntirePersonListIsSelected { get; private set; }
         internal bool BuildingIsPossible { get; private set; }
         internal List <Person> People { get; set; }
+        internal List <VisiblePerson> VisiblePeopleStorage { get; set; }
+        //internal ObservableCollection <VisiblePerson> VisiblePeopleReserve { get; set; }
 
-        //private ObservableCollection <VisiblePerson> _preloadingShortVisiblePeople;
         private ObservableCollection <VisiblePerson> vP;
         internal ObservableCollection <VisiblePerson> VisiblePeople
         {
@@ -1143,14 +1144,27 @@ namespace Lister.ViewModels
         {
             ObservableCollection <VisiblePerson> recovered = new ObservableCollection <VisiblePerson> ();
 
-            foreach ( Person person   in   People )
+            foreach ( VisiblePerson person   in   VisiblePeopleStorage )
             {
-                VisiblePerson vP = new VisiblePerson (person);
-                recovered.Add (vP);
+                person.BrushColor = _unfocusedColor;
+                recovered.Add (person);
             }
 
-            VisiblePeople = recovered;
-            ShowDropDown ();
+            if ( recovered.Count > 10 )
+            {
+                ObservableCollection <VisiblePerson> subCollection = new ObservableCollection <VisiblePerson> ();
+
+                for ( int index = 0;   index < 10;   index++ )
+                {
+                    subCollection.Add (recovered [index]);
+                }
+
+                VisiblePeople = subCollection;
+                ShowDropDown ();
+            }
+
+            //VisiblePeople = recovered;
+            //ShowDropDown ();
         }
     }
 }

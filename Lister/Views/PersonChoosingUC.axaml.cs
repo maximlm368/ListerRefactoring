@@ -23,6 +23,7 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
+        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
         private readonly int _inputLimit = 100;
         private string _previousText;
         private bool _buttonIsPressed = false;
@@ -199,29 +200,48 @@ namespace Lister.Views
                 string fromSender = str.ToLower ();
                 ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
 
-                //|| ( person.StringPresentation.ToLower () == fromSender )   &&   (entireName != fromSender)
+                DateTime start = DateTime.Now;
+                int startMil = start.Millisecond;
 
-                foreach ( Person person   in   _vm.People )
+                foreach ( VisiblePerson person   in   _vm.VisiblePeopleStorage )
                 {
+                    person.BrushColor = _unfocusedColor;
+
                     if ( (fromSender == string.Empty) )
                     {
                         RecoverVisiblePeople ();
                         return;
                     }
 
-                    string entireName = person.StringPresentation;
+                    string entireName = person.Person. StringPresentation;
                     entireName = entireName.ToLower ();
 
                     if ( entireName.Contains (fromSender) )
                     {
-                        VisiblePerson vP = new VisiblePerson (person);
-                        foundVisiblePeople.Add (vP);
+                        foundVisiblePeople.Add (person);
                     }
                 }
 
-                _vm.VisiblePeople = foundVisiblePeople;
-                _vm.ShowDropDown ();
-                _personListIsDropped = true;
+                DateTime afterWhile = DateTime.Now;
+                int afterMil = afterWhile.Millisecond;
+
+                if ( foundVisiblePeople.Count > 10 )
+                {
+                    ObservableCollection <VisiblePerson> subCollection = new ObservableCollection <VisiblePerson> ();
+
+                    for ( int index = 0;   index < 10;   index++ )
+                    {
+                        subCollection.Add (foundVisiblePeople [index]);
+                    }
+
+                    _vm.VisiblePeople = subCollection;
+                    _vm.ShowDropDown ();
+                    _personListIsDropped = true;
+                }
+
+                //_vm.VisiblePeople = foundVisiblePeople;
+                //_vm.ShowDropDown ();
+                //_personListIsDropped = true;
             }
         }
 

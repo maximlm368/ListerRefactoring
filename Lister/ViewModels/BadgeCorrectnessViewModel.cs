@@ -13,8 +13,6 @@ namespace Lister.ViewModels
 {
     internal class BadgeCorrectnessViewModel : ViewModelBase
     {
-        //private static string _correctness = "correct";
-        //private static string _incorrectness = "incorrect";
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
 
@@ -48,9 +46,13 @@ namespace Lister.ViewModels
             }
         }
 
+        internal BadgeViewModel BoundBadge { get; private set; }
 
-        internal BadgeCorrectnessViewModel ( bool isCorrect ) 
+
+        internal BadgeCorrectnessViewModel ( bool isCorrect, BadgeViewModel boundBadge ) 
         {
+            BoundBadge = boundBadge;
+
             if ( isCorrect )
             {
                 Correctness = true;
