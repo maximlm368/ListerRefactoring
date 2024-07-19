@@ -15,12 +15,22 @@ namespace Lister.ViewModels
         internal Person Person { get; private set; }
 
         private SolidColorBrush bC;
-        internal SolidColorBrush BrushColor
+        internal SolidColorBrush BorderBrushColor
         {
             get { return bC; }
             set
             {
-                this.RaiseAndSetIfChanged (ref bC, value, nameof (BrushColor));
+                this.RaiseAndSetIfChanged (ref bC, value, nameof (BorderBrushColor));
+            }
+        }
+
+        private SolidColorBrush bgC;
+        internal SolidColorBrush BackgroundBrushColor
+        {
+            get { return bgC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref bgC, value, nameof (BackgroundBrushColor));
             }
         }
 
@@ -29,7 +39,8 @@ namespace Lister.ViewModels
         {
             //Id = id;
             Person = person;
-            BrushColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            BorderBrushColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+            BackgroundBrushColor = new SolidColorBrush (new Color (255, 255, 255, 255));
         }
     }
 }

@@ -100,8 +100,8 @@
 										<Label
 											FontSize="13"
 											Height="25"
-											Background="White"
-											BorderBrush="{Binding   Path = BrushColor,  Mode=OneWay }"
+											Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
+											BorderBrush="{Binding   Path = BorderBrushColor,  Mode=OneWay }"
 											BorderThickness="2"
 											Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 											Tapped="HandleChoosingByTapping"

@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using static SkiaSharp.HarfBuzz.SKShaper;
 
@@ -192,56 +193,34 @@ namespace Lister.Views
             _vm.ToZeroPersonSelection ();
             _vm.DisableBuildigPossibility ();
             TextBox textBox = ( TextBox ) sender;
-            string str = textBox.Text;
+            string input = textBox.Text;
 
-            if ( str != null )
+            if ( input != null )
             {
-                RestrictInput (str);
-                string fromSender = str.ToLower ();
-                ObservableCollection <VisiblePerson> foundVisiblePeople = new ObservableCollection <VisiblePerson> ();
+                RestrictInput (input);
 
-                DateTime start = DateTime.Now;
-                int startMil = start.Millisecond;
-
-                foreach ( VisiblePerson person   in   _vm.VisiblePeopleStorage )
+                if ( ( input == string.Empty ) )
                 {
-                    person.BrushColor = _unfocusedColor;
+                    RecoverVisiblePeople ();
+                    _personListIsDropped = true;
+                    return;
+                }
 
-                    if ( (fromSender == string.Empty) )
-                    {
-                        RecoverVisiblePeople ();
-                        return;
-                    }
+                List <VisiblePerson> foundVisiblePeople = new List <VisiblePerson> ();
 
+                foreach ( VisiblePerson person   in   _vm.PeopleStorage )
+                {
+                    person.BorderBrushColor = _unfocusedColor;
                     string entireName = person.Person. StringPresentation;
-                    entireName = entireName.ToLower ();
 
-                    if ( entireName.Contains (fromSender) )
+                    if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
                     {
                         foundVisiblePeople.Add (person);
                     }
                 }
 
-                DateTime afterWhile = DateTime.Now;
-                int afterMil = afterWhile.Millisecond;
-
-                if ( foundVisiblePeople.Count > 10 )
-                {
-                    ObservableCollection <VisiblePerson> subCollection = new ObservableCollection <VisiblePerson> ();
-
-                    for ( int index = 0;   index < 10;   index++ )
-                    {
-                        subCollection.Add (foundVisiblePeople [index]);
-                    }
-
-                    _vm.VisiblePeople = subCollection;
-                    _vm.ShowDropDown ();
-                    _personListIsDropped = true;
-                }
-
-                //_vm.VisiblePeople = foundVisiblePeople;
-                //_vm.ShowDropDown ();
-                //_personListIsDropped = true;
+                _vm.SetInvolvedPeople (foundVisiblePeople);
+                _personListIsDropped = true;
             }
         }
 
@@ -286,18 +265,18 @@ namespace Lister.Views
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             Label chosenLabel = ( Label ) sender;
-            chosenLabel.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
 
-            if ( _chosen != null )
-            {
-                _chosen.Background = new SolidColorBrush ( new Color ( 255 , 255 , 255 , 255 ) );
-            }
+            //chosenLabel.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
+
+            //if ( _chosen != null )
+            //{
+            //    _chosen.Background = new SolidColorBrush (new Color (255, 255, 255, 255));
+            //}
 
             _chosen = chosenLabel;
-            string chosenName = (string) chosenLabel.Content;
-            Person chosenPerson = _vm.FindPersonByStringPresentation (chosenName);
-            _vm.SetChosenPerson (chosenPerson);
-            personTextBox.Text = chosenPerson.StringPresentation;
+            string chosenName = ( string ) chosenLabel.Content;
+            _vm.SetChosenPerson (chosenName);
+            personTextBox.Text = chosenName;
             DropOrPickUp ();
         }
 
@@ -358,8 +337,7 @@ namespace Lister.Views
         internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
             bool isDirectionUp = args.Delta.Y > 0;
-            int count = personList.ItemCount;
-            _vm.ScrollByWheel ( isDirectionUp, count );
+            _vm.ScrollByWheel ( isDirectionUp );
         }
 
 
@@ -389,9 +367,7 @@ namespace Lister.Views
                 limit = bottomSpan.Height - args.GetPosition (activator).Y;
             }
             
-            
-            int count = personList.ItemCount;
-            _vm.ShiftRunner ( isDirectionUp, count, limit );
+            _vm.ShiftRunner ( isDirectionUp, limit );
         }
 
 
@@ -424,16 +400,14 @@ namespace Lister.Views
             {
                 Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
                 double runnerVerticalDelta = _capturingY - pointerPosition.Y;
-                int count = personList.ItemCount;
-                _vm.MoveRunner ( runnerVerticalDelta, count );
+                _vm.MoveRunner ( runnerVerticalDelta );
             }
         }
 
 
         private void ScrollByKey ( bool isDirectionUp )
         {
-            int count = personList.ItemCount;
-            _vm.ScrollByKey ( isDirectionUp, count );
+            _vm.ScrollByKey ( isDirectionUp );
         }
 
 
