@@ -18,6 +18,7 @@ using Avalonia.Controls.Shapes;
 using System;
 using DataGateway;
 using Microsoft.Extensions.DependencyInjection;
+using iText.Kernel.Geom;
 
 namespace Lister.ViewModels;
 
@@ -879,13 +880,13 @@ public class BadgeViewModel : ViewModelBase
 
     #region Moving
 
-    internal void MoveCaptured ( string capturedContent, Point delta )
+    internal void MoveCaptured ( string capturedContent, Avalonia.Point delta )
     {
         ObservableCollection <TextLineViewModel> lines = TextLines;
         string lineContent = string.Empty;
         TextLineViewModel goalLine = null;
 
-        foreach ( TextLineViewModel line in lines )
+        foreach ( TextLineViewModel line   in   lines )
         {
             lineContent = line.Content;
 
@@ -900,6 +901,7 @@ public class BadgeViewModel : ViewModelBase
         {
             goalLine.TopOffset -= delta.Y;
             goalLine.LeftOffset -= delta.X;
+            PreventHiding (goalLine);
             IsChanged = true;
         }
     }
@@ -945,7 +947,40 @@ public class BadgeViewModel : ViewModelBase
             }
 
             IsChanged = true;
+            PreventHiding (goalLine);
             CheckCorrectness ();
+        }
+    }
+
+
+    private void PreventHiding ( TextLineViewModel preventable )
+    {
+        bool isHidedBeyondRight = ( preventable.LeftOffset > (BadgeWidth - RightSpan) );
+
+        if ( isHidedBeyondRight ) 
+        {
+            preventable.LeftOffset = (BadgeWidth - RightSpan);
+        }
+
+        bool isHidedBeyondLeft = ( preventable.LeftOffset < ( preventable.UsefullWidth - LeftSpan ) * ( -1 ) );
+
+        if ( isHidedBeyondLeft )
+        {
+            preventable.LeftOffset = ( preventable.UsefullWidth - LeftSpan ) * ( -1 );
+        }
+
+        bool isHidedBeyondBottom = ( preventable.TopOffset > ( BadgeHeight - BottomSpan ) );
+
+        if ( isHidedBeyondBottom )
+        {
+            preventable.TopOffset = (BadgeHeight - BottomSpan);
+        }
+
+        bool isHidedBeyondTop = ( preventable.TopOffset < ( preventable.Height / 2 ) * ( -1 ) );
+
+        if ( isHidedBeyondTop )
+        {
+            preventable.TopOffset = ( preventable.Height / 2 ) * ( -1 );
         }
     }
 
@@ -1017,6 +1052,7 @@ public class BadgeViewModel : ViewModelBase
         }
 
         FocusedLine. Content = newText;
+        PreventHiding (FocusedLine);
         CheckCorrectness ();
         
     }

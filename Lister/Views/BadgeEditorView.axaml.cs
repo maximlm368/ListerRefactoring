@@ -16,6 +16,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Lister.Views
 {
@@ -26,9 +27,11 @@ namespace Lister.Views
 
         private ContentControl _focused;
         private bool _capturedExists;
+        private bool _focusedExists;
         private bool _pointerIsPressed;
         private Point _pointerPosition;
         private BadgeEditorViewModel _vm;
+        private Stopwatch _focusTime;
 
 
         public BadgeEditorView ()
@@ -116,21 +119,6 @@ namespace Lister.Views
         }
 
 
-        internal void ToParticularBadge ( object sender, KeyEventArgs args )
-        {
-            string key = args.Key.ToString();
-
-            if ( key == "Up" )
-            {
-                _vm.ToPrevious ();
-            }
-            else if ( key == "Down" ) 
-            {
-                _vm.ToNext ();
-            }
-        }
-
-
         internal void HandleTextEdition ( object sender, TextChangedEventArgs args )
         {
             string edited = editorTextBox.Text;
@@ -142,6 +130,10 @@ namespace Lister.Views
 
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
+            scalabilityGrade.IsEnabled = true;
+            editorTextBox.IsEnabled = true;
+            _focusedExists = true;
+
             Label label = sender as Label;
             Border container;
 
@@ -164,6 +156,8 @@ namespace Lister.Views
             _vm.Focus (content);
             left.Focus ();
             Cursor = new Cursor(StandardCursorType.SizeAll);
+            
+            _focusTime = Stopwatch.StartNew();
         }
 
 
@@ -198,22 +192,56 @@ namespace Lister.Views
         }
 
 
-        internal void ReleaseCaptured ()
+        internal void ReleaseCaptured ( )
         {
-            if ( _capturedExists )
+            if ( _capturedExists && ( _focused != null ) )
             {
                 _capturedExists = false;
+                scalabilityGrade.IsEnabled = false;
+                editorTextBox.IsEnabled = false;
+                _focusedExists = false;
 
-                Border container = _focused.Parent as Border;
-                container.BorderThickness = new Thickness (0, 0, 0, 0);
-
-                _focused = null;
+                if ( _focused != null )
+                {
+                    Border container = _focused.Parent as Border;
+                    container.BorderThickness = new Thickness (0, 0, 0, 0);
+                    _focused = null;
+                }
 
                 zoomOn.IsEnabled = false;
                 zoomOut.IsEnabled = false;
                 spliter.IsEnabled = false;
                 Cursor = new Cursor (StandardCursorType.Arrow);
                 _vm.ReleaseCaptured ();
+            }
+            else 
+            {
+                if ( _focusTime != null ) 
+                {
+                    _focusTime.Stop ();
+                    TimeSpan timeSpan = _focusTime.Elapsed;
+
+                    if ( timeSpan.Ticks > 1000000000 )
+                    {
+                        _capturedExists = false;
+                        scalabilityGrade.IsEnabled = false;
+                        editorTextBox.IsEnabled = false;
+                        _focusedExists = false;
+
+                        if ( _focused != null )
+                        {
+                            Border container = _focused.Parent as Border;
+                            container.BorderThickness = new Thickness (0, 0, 0, 0);
+                            _focused = null;
+                        }
+
+                        zoomOn.IsEnabled = false;
+                        zoomOut.IsEnabled = false;
+                        spliter.IsEnabled = false;
+                        Cursor = new Cursor (StandardCursorType.Arrow);
+                        _vm.ReleaseCaptured ();
+                    }
+                }
             }
         }
         #endregion
@@ -271,7 +299,35 @@ namespace Lister.Views
         {
             TextBox textBox = sender as TextBox;
             string text = textBox.Text;
-            _vm.ToParticularBadge (text);
+
+            try
+            {
+                int badgeNumber = ( int ) UInt32.Parse (textBox.Text);
+
+                if ( ( badgeNumber < 1 )   ||   ( badgeNumber > _vm.VisibleBadges. Count ) )
+                {
+                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+                    return;
+                }
+
+                if ( ( text.Length > 1 )   &&   ( text [0] == '0' ) )
+                {
+                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+                    return;
+                }
+
+                _vm.ToParticularBadge (text);
+                //visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+            }
+            catch ( System.FormatException e )
+            {
+                visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+            }
+            catch ( System.OverflowException e )
+            {
+                visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+            }
+
         }
 
 
@@ -282,6 +338,21 @@ namespace Lister.Views
             BadgeViewModel boundBadge = context.BoundBadge;
 
             _vm.ToParticularBadge (boundBadge);
+        }
+
+
+        internal void ToParticularBadge ( object sender, KeyEventArgs args )
+        {
+            string key = args.Key.ToString ();
+
+            if ( key == "Up" )
+            {
+                _vm.ToPrevious ();
+            }
+            else if ( key == "Down" )
+            {
+                _vm.ToNext ();
+            }
         }
 
         #endregion

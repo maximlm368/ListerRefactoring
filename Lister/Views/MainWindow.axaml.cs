@@ -134,7 +134,11 @@ public partial class MainWindow : Window
             ModernMainView mainView = ( ModernMainView ) Content;
             mainView.CloseCustomCombobox ();
         }
-        catch( InvalidCastException ex) {}
+        catch( InvalidCastException ex) 
+        {
+            //BadgeEditorView mainView = ( BadgeEditorView ) Content;
+            //mainView.ReleaseCaptured ();
+        }
     }
 
 

@@ -40,11 +40,11 @@ namespace Lister.ViewModels
     {
         private static double _withScroll = 454;
         private static double _withoutScroll = 469;
-        private static double _upperHeight = 15;
-        private static double _scrollingScratch = 25;
-        private static string _placeHolder = "Весь список";
-        private static int _maxVisibleCount = 4;
-        private static double _oneHeight = 25;
+        private static readonly double _upperHeight = 15;
+        private static readonly double _scrollingScratch = 25;
+        private static readonly string _placeHolder = "Весь список";
+        private static readonly int _maxVisibleCount = 4;
+        private static readonly double _oneHeight = 25;
         private static readonly int _edge = 3;
 
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
@@ -59,6 +59,7 @@ namespace Lister.ViewModels
         private double _widthDelta;
         private Timer _timer;
         private VisiblePerson _focused;
+        private VisiblePerson _tapped;
         private int _focusedNumber;
         private int _focusedEdge;
         private int _topLimit;
@@ -398,8 +399,13 @@ namespace Lister.ViewModels
             List <VisiblePerson> peopleStorage = new ();
             List <VisiblePerson> involvedPeople = new ();
 
-            foreach ( var person   in   persons )
+            foreach ( Person person in persons )
             {
+                if (IsEmpty(person))
+                {
+                    continue;
+                }
+
                 VisiblePerson visiblePerson = new VisiblePerson (person);
                 peopleStorage.Add (visiblePerson);
                 involvedPeople.Add (visiblePerson);
@@ -407,6 +413,20 @@ namespace Lister.ViewModels
 
             PeopleStorage = peopleStorage;
             InvolvedPeople = involvedPeople;
+        }
+
+
+        internal bool IsEmpty ( Person person )
+        {
+            bool isEmpty = false;
+
+            isEmpty = isEmpty   ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) );
+
+            return isEmpty;
         }
 
 
@@ -444,6 +464,8 @@ namespace Lister.ViewModels
                         EntireListColor = _entireListColor;
                     }
 
+                    SetTappedNull ();
+                    _tapped = foundPerson;
                     _focused = foundPerson;
                     _focused.BorderBrushColor = _focusedBorderColor;
                     _focused.BackgroundBrushColor = _focusedBackgroundColor;
@@ -615,6 +637,7 @@ namespace Lister.ViewModels
 
         internal void SetInvolvedPeople ( List <VisiblePerson> involvedPeople )
         {
+            SetTappedNull ();
             InvolvedPeople = involvedPeople;
             _scrollValue = 0;
             ShowDropDown ();
@@ -700,6 +723,8 @@ namespace Lister.ViewModels
 
         internal void RecoverVisiblePeople ()
         {
+            SetTappedNull ();
+            _scrollValue = _scrollingScratch;
             List <VisiblePerson> recovered = new List <VisiblePerson> ();
 
             foreach ( VisiblePerson person   in   PeopleStorage )
@@ -710,6 +735,16 @@ namespace Lister.ViewModels
 
             InvolvedPeople = recovered;
             ShowDropDown ();
+        }
+
+
+        private void SetTappedNull ()
+        {
+            if ( _tapped != null )
+            {
+                _tapped.BackgroundBrushColor = _unfocusedColor;
+                _tapped = null;
+            }
         }
     }
 }

@@ -11,13 +11,13 @@ namespace DataGateway
 {
     public class PeopleSource : IPeopleDataSource
     {
-        public string sourcePath { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string sourcePath { get; set; }
 
 
         public PeopleSource() { }
 
 
-        public List<Person> GetPersons(string ? filePath)
+        public List <Person> GetPersons (string ? filePath)
         {
             List<Person> result = [];
             

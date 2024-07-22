@@ -42,6 +42,8 @@ namespace Lister.Views
             {
                 templateChoosing.PlaceholderText = _vm.ChosenTemplate. Name;
             }
+
+            _vm.PassView (this);
         }
 
 
@@ -81,6 +83,18 @@ namespace Lister.Views
                 _vm.ChosenTemplate = chosen;
                 _chosen = chosen;
             }
+        }
+
+
+        internal void SetCursorWait ( )
+        {
+            Cursor = new Cursor (StandardCursorType.Wait);
+        }
+
+
+        internal void SetCursorArrow ()
+        {
+            Cursor = new Cursor (StandardCursorType.Arrow);
         }
 
 

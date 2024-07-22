@@ -151,7 +151,7 @@ namespace Lister.ViewModels
 
         internal void BuildBadges ( string templateName )
         {
-            List<Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
+            List <Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
 
             if ( requiredBadges.Count > 0 )
             {
@@ -159,6 +159,13 @@ namespace Lister.ViewModels
 
                 for ( int index = 0;   index < requiredBadges.Count;   index++ )
                 {
+                    Person person = requiredBadges [index].Person;
+
+                    if ( _personChoosingVM.IsEmpty( person ) ) 
+                    {
+                        continue;
+                    }
+
                     BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
                     allBadges.Add (beingProcessedBadgeVM);
 

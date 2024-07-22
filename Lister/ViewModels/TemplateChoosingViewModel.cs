@@ -39,7 +39,9 @@ public class TemplateChoosingViewModel : ViewModelBase
 {
     private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
     private static readonly string _title = "Ошибка";
+    private static readonly string _saveTitle = "Сохранение документа";
     private static readonly string _suggestedFileNames = "MyPdf";
+    private TemplateChoosingUserControl _view;
     private ConverterToPdf _converter;
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
@@ -179,6 +181,12 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
+    internal void PassView ( TemplateChoosingUserControl view )
+    {
+        _view = view;
+    }
+
+
     internal void BuildBadges ()
     {
         if ( _zoomNavigationVM == null )
@@ -209,12 +217,15 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         if ( _personChoosingVM.EntirePersonListIsSelected ) 
         {
+            _view.SetCursorWait ();
             BuildAllBadges ();
         }
         else if( _personChoosingVM.SinglePersonIsSelected )
         {
             BuildSingleBadge ();
         }
+
+        _view.SetCursorArrow ();
     }
 
 
@@ -268,7 +279,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add (FilePickerFileTypes.Pdf);
         FilePickerSaveOptions options = new ();
-        options.Title = _title;
+        options.Title = _saveTitle;
         options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
         options.SuggestedFileName = _suggestedFileNames;
         Task<IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
@@ -292,6 +303,7 @@ public class TemplateChoosingViewModel : ViewModelBase
                                if ( pdf.Result == false )
                                {
                                    var messegeDialog = new MessageDialog ();
+                                   messegeDialog.Title = _title;
                                    messegeDialog.Message = _fileIsOpenMessage;
                                    messegeDialog.ShowDialog (MainWindow._mainWindow);
                                }

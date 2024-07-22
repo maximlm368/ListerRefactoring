@@ -602,13 +602,14 @@ namespace Lister.ViewModels
                 MoversAreEnable = false;
                 SplitterIsEnable = false;
                 ZoommerIsEnable = false;
+                _view. editorTextBox.IsEnabled = false;
+                _view. scalabilityGrade.IsEnabled = false;
 
                 ReleaseCaptured ();
             }
             catch ( Exception ex )
             {
                 BeingProcessedNumber = BeingProcessedNumber;
-                return;
             }
         }
 
@@ -693,7 +694,7 @@ namespace Lister.ViewModels
                 SplitterIsEnable = false;
                 FocusedBorderThickness = new Thickness (0, 0, 0, 0);
 
-                _view.ReleaseCaptured ( );
+                //_view.ReleaseCaptured ( );
             }
         }
 
