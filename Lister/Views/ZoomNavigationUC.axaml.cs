@@ -58,10 +58,11 @@ namespace Lister.Views
         internal void StepOnPage ( object sender, TextChangedEventArgs args )
         {
             TextBox textBox = ( TextBox ) sender;
+            string text = textBox.Text;
 
             try
             {
-                int pageNumber = ( int ) UInt32.Parse (textBox.Text);
+                int pageNumber = ( int ) UInt32.Parse (text);
 
                 if ( pageNumber == 0 )
                 {
@@ -73,11 +74,14 @@ namespace Lister.Views
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
                 SetEnablePageNavigation ();
             }
-            catch ( System.FormatException e )
+            catch ( System.FormatException exp )
             {
-                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+                if ( ! string.IsNullOrWhiteSpace(text) ) 
+                {
+                    visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+                }
             }
-            catch ( System.OverflowException e )
+            catch ( System.OverflowException exp )
             {
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
             }

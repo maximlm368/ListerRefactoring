@@ -67,4 +67,18 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\MessageDialog.axaml" />
   </ItemGroup>
+
+	
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\Doctors.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+  </ItemGroup>
+
+	
+  <ItemGroup>
+    <None Update="Resources\TextFile1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

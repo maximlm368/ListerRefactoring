@@ -165,7 +165,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
             if ( name.isFound ) 
             {
-                brush = new SolidColorBrush (new Color (255, 0, 0, 0));
+                brush = new SolidColorBrush (MainWindow.black);
             }
             else 
             {
@@ -218,6 +218,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         if ( _personChoosingVM.EntirePersonListIsSelected ) 
         {
             _view.SetCursorWait ();
+            DisableButtons ();
             BuildAllBadges ();
         }
         else if( _personChoosingVM.SinglePersonIsSelected )
@@ -226,6 +227,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         _view.SetCursorArrow ();
+        EnableButtons ();
     }
 
 
@@ -269,8 +271,22 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         _zoomNavigationVM.DisableButtons ();
+    }
 
-        //_sceneVM.ClearBuilt ();
+
+    internal void DisableButtons ()
+    {
+        ClearIsEnable = false;
+        SaveIsEnable = false;
+        PrintIsEnable= false;
+    }
+
+
+    internal void EnableButtons ()
+    {
+        ClearIsEnable = true;
+        SaveIsEnable = true;
+        PrintIsEnable = true;
     }
 
 

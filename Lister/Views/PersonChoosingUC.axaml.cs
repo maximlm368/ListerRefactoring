@@ -24,7 +24,7 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
+        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
         private readonly int _inputLimit = 100;
         private string _previousText;
         private bool _buttonIsPressed = false;

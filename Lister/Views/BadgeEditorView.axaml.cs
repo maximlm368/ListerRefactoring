@@ -25,12 +25,14 @@ namespace Lister.Views
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
 
+        private Image _currentIcon;
         private ContentControl _focused;
         private bool _capturedExists;
         private bool _focusedExists;
         private bool _pointerIsPressed;
         private Point _pointerPosition;
         private BadgeEditorViewModel _vm;
+        private bool _isReleaseLocked;
         private Stopwatch _focusTime;
 
 
@@ -128,6 +130,12 @@ namespace Lister.Views
 
         #region CapturingAndMovingByMouse
 
+        internal void HandleGettingFocus ( object sender, GotFocusEventArgs args )
+        {
+            _isReleaseLocked = true;
+        }
+
+
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
             scalabilityGrade.IsEnabled = true;
@@ -150,14 +158,16 @@ namespace Lister.Views
             string content = ( string ) _focused.Content;
 
             //_vm.EnableSplitting(content);
-            
+
             container = label.Parent as Border;
-            container.BorderThickness = new Thickness(1,1,1,1);
+            container.BorderThickness = new Thickness (1, 1, 1, 1);
             _vm.Focus (content);
             left.Focus ();
-            Cursor = new Cursor(StandardCursorType.SizeAll);
-            
-            _focusTime = Stopwatch.StartNew();
+            Cursor = new Cursor (StandardCursorType.SizeAll);
+
+            _isReleaseLocked = true;
+
+            _focusTime = Stopwatch.StartNew ();
         }
 
 
@@ -194,55 +204,51 @@ namespace Lister.Views
 
         internal void ReleaseCaptured ( )
         {
-            if ( _capturedExists && ( _focused != null ) )
+            if ( _capturedExists )
             {
-                _capturedExists = false;
-                scalabilityGrade.IsEnabled = false;
-                editorTextBox.IsEnabled = false;
-                _focusedExists = false;
-
-                if ( _focused != null )
-                {
-                    Border container = _focused.Parent as Border;
-                    container.BorderThickness = new Thickness (0, 0, 0, 0);
-                    _focused = null;
-                }
-
-                zoomOn.IsEnabled = false;
-                zoomOut.IsEnabled = false;
-                spliter.IsEnabled = false;
-                Cursor = new Cursor (StandardCursorType.Arrow);
-                _vm.ReleaseCaptured ();
+                Release ();
             }
-            else 
+            else if ( (_focused != null)   &&   (_focusTime != null) )
             {
-                if ( _focusTime != null ) 
+                if ( ! _isReleaseLocked )
+                {
+                    Release ();
+                }
+                else 
                 {
                     _focusTime.Stop ();
                     TimeSpan timeSpan = _focusTime.Elapsed;
 
-                    if ( timeSpan.Ticks > 1000000000 )
+                    if ( timeSpan.Ticks > 100_000_000 )
                     {
-                        _capturedExists = false;
-                        scalabilityGrade.IsEnabled = false;
-                        editorTextBox.IsEnabled = false;
-                        _focusedExists = false;
-
-                        if ( _focused != null )
-                        {
-                            Border container = _focused.Parent as Border;
-                            container.BorderThickness = new Thickness (0, 0, 0, 0);
-                            _focused = null;
-                        }
-
-                        zoomOn.IsEnabled = false;
-                        zoomOut.IsEnabled = false;
-                        spliter.IsEnabled = false;
-                        Cursor = new Cursor (StandardCursorType.Arrow);
-                        _vm.ReleaseCaptured ();
+                        Release ();
                     }
+
+                    _isReleaseLocked = false;
                 }
             }
+        }
+
+
+        private void Release ( )
+        {
+            _capturedExists = false;
+            scalabilityGrade.IsEnabled = false;
+            editorTextBox.IsEnabled = false;
+            _focusedExists = false;
+
+            if ( _focused != null )
+            {
+                Border container = _focused.Parent as Border;
+                container.BorderThickness = new Thickness (0, 0, 0, 0);
+                _focused = null;
+            }
+
+            zoomOn.IsEnabled = false;
+            zoomOut.IsEnabled = false;
+            spliter.IsEnabled = false;
+            Cursor = new Cursor (StandardCursorType.Arrow);
+            _vm.ReleaseCaptured ();
         }
         #endregion
 
@@ -317,17 +323,18 @@ namespace Lister.Views
                 }
 
                 _vm.ToParticularBadge (text);
-                //visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
             }
             catch ( System.FormatException e )
             {
-                visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+                if ( ! string.IsNullOrWhiteSpace(text) ) 
+                {
+                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+                }
             }
             catch ( System.OverflowException e )
             {
                 visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
             }
-
         }
 
 

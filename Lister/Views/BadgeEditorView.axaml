@@ -78,12 +78,13 @@
 				Grid.Column="4"
 				MaxHeight="30"
 				Margin="0,3"
+				GotFocus="HandleGettingFocus"
 				KeyDown="ToParticularBadge"
 				Text="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
 				IsReadOnly="True"
 				IsTabStop="False"
 				Focusable="False"
-				IsEnabled="False"/>
+				IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
 
 			<Button
 				Name="zoomOn"
@@ -167,9 +168,10 @@
 				MaxHeight="30"
 				Margin="0,3"
 				HorizontalAlignment="Center"
-				IsEnabled="False"
+				IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
 				Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
 		        KeyDown="ToParticularBadge"
+				GotFocus="HandleGettingFocus"
 				TextChanged="HandleTextEdition"/>
 
 		</Grid>

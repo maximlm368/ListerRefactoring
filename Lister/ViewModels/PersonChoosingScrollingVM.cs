@@ -41,19 +41,19 @@ namespace Lister.ViewModels
         #region Scrolling
 
         private double _scrollValue;
+        private double _runnerStep;
+        private double _scrollingLength;
 
 
         internal void ScrollByWheel ( bool isDirectionUp )
         {
             double step = _oneHeight;
-            double proportion = 0;
             double runnerStep = 0;
             bool scrollerIsInvolved;
 
             if ( IsPersonsScrollable )
             {
-                proportion = ( VisibleHeight ) / RealRunnerHeight;
-                runnerStep = step / proportion;
+                runnerStep = _runnerStep;
                 scrollerIsInvolved = true;
             }
             else
@@ -88,9 +88,7 @@ namespace Lister.ViewModels
             double spanHeightLimit = ( double ) directionAndCount [1];
 
             double step = _oneHeight;
-            double proportion = VisibleHeight / RealRunnerHeight;
-            double runnerStep = step / proportion;
-
+            double runnerStep = _runnerStep;
             bool isTimeToStop = false;
 
             if ( isDirectionUp )
@@ -128,9 +126,7 @@ namespace Lister.ViewModels
                 while ( true )
                 {
                     double step = _oneHeight;
-                    double proportion = VisibleHeight / RealRunnerHeight;
-                    double runnerStep = step / proportion;
-
+                    double runnerStep = _runnerStep;
                     bool isTimeToStop = false;
 
                     if ( isDirectionUp )
@@ -156,7 +152,10 @@ namespace Lister.ViewModels
 
         internal void MoveRunner ( double runnerStep )
         {
-            double proportion = VisibleHeight / RealRunnerHeight;
+            double listHeight = _oneHeight * InvolvedPeople. Count;
+            listHeight = listHeight - VisibleHeight;
+
+            double proportion = listHeight / _scrollingLength;
             double step = runnerStep * proportion;
             step = _oneHeight * Math.Round (step / _oneHeight);
             bool isDirectionUp = false;
@@ -181,14 +180,12 @@ namespace Lister.ViewModels
         internal void ScrollByKey ( bool isDirectionUp )
         {
             double step = _oneHeight;
-            double proportion = 0;
             double runnerStep = 0;
             bool scrollerIsInvolved;
 
             if ( IsPersonsScrollable )
             {
-                proportion = ( VisibleHeight ) / RealRunnerHeight;
-                runnerStep = step / proportion;
+                runnerStep = _runnerStep;
                 scrollerIsInvolved = true;
             }
             else

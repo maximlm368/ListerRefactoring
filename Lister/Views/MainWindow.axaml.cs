@@ -11,12 +11,16 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Media;
 
 
 namespace Lister.Views;
 
 public partial class MainWindow : Window
 {
+    public static readonly Color white = new Color (255, 255, 255, 255);
+    public static readonly Color black = new Color (255, 0, 0, 0);
+
     public static IStorageProvider CommonStorageProvider { get; private set; }
     internal static MainWindow _mainWindow;
 

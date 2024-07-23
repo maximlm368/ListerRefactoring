@@ -40,6 +40,7 @@ namespace Lister.ViewModels
     {
         private static double _withScroll = 454;
         private static double _withoutScroll = 469;
+        private static readonly double _minRunnerHeight = 10;
         private static readonly double _upperHeight = 15;
         private static readonly double _scrollingScratch = 25;
         private static readonly string _placeHolder = "Весь список";
@@ -48,8 +49,8 @@ namespace Lister.ViewModels
         private static readonly int _edge = 3;
 
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
-        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
-        private static SolidColorBrush _focusedBorderColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
+        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
+        private static SolidColorBrush _focusedBorderColor = new SolidColorBrush (MainWindow.black);
         private static SolidColorBrush _focusedBackgroundColor = 
                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 200));
 
@@ -596,7 +597,7 @@ namespace Lister.ViewModels
             _focusedEdge = _edge;
 
             EntirePersonListIsSelected = true;
-            EntireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 0));
+            EntireListColor = new SolidColorBrush (MainWindow.black);
             PlaceHolder = _placeHolder;
 
             SetVisiblePeople (0);
@@ -658,14 +659,16 @@ namespace Lister.ViewModels
                 RunnerHeight = _visibleHeightStorage / proportion;
                 RealRunnerHeight = RunnerHeight;
 
-                if ( RunnerHeight < 2 )
+                if ( RunnerHeight < _minRunnerHeight )
                 {
-                    RunnerHeight = 2;
+                    RunnerHeight = _minRunnerHeight;
                 }
 
                 RunnerTopCoordinate = _upperHeight;
                 TopSpanHeight = 0;
                 BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
+                _runnerStep = BottomSpanHeight / (InvolvedPeople. Count - _maxVisibleCount);
+                _scrollingLength = BottomSpanHeight;
                 IsPersonsScrollable = true;
             }
             else 
