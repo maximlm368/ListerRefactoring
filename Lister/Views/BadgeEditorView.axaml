@@ -1,14 +1,14 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
 			 xmlns:uc="clr-namespace:Lister.Views"
-             x:Class="Lister.Views.BadgeEditorView"
+			 x:Class="Lister.Views.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel"
 			 Height="460"
-		     Width="800"
+			 Width="800"
 			 >
 
 	<StackPanel
@@ -48,7 +48,7 @@
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
-			    Command="{Binding  Path = GoBackCommand}"
+				Command="{Binding  Path = GoBackCommand}"
 				KeyDown="ToParticularBadge"/>
 
 			<Button
@@ -71,7 +71,7 @@
 				Command="{Binding  Path = ReduceFontSize}"
 				IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
 
-			<TextBox
+			<Label
 				Name="scalabilityGrade"
 				Width="60"
 				FontSize="14"
@@ -80,8 +80,12 @@
 				Margin="0,3"
 				GotFocus="HandleGettingFocus"
 				KeyDown="ToParticularBadge"
-				Text="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
-				IsReadOnly="True"
+				Content="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				BorderBrush="black"
+				CornerRadius = "3"
+				BorderThickness="1"
 				IsTabStop="False"
 				Focusable="False"
 				IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
@@ -170,7 +174,7 @@
 				HorizontalAlignment="Center"
 				IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
 				Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
-		        KeyDown="ToParticularBadge"
+				KeyDown="ToParticularBadge"
 				GotFocus="HandleGettingFocus"
 				TextChanged="HandleTextEdition"/>
 
@@ -211,7 +215,7 @@
 							<ImageBrush
 								Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
 								Opacity="{Binding  Path = CorrectnessOpacity,  Mode=OneWay }"/>
-					    </Button.Background>
+						</Button.Background>
 					</Button>
 
 					<Button
@@ -307,7 +311,7 @@
 							<Image
 								Name="backgroundImage"
 								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
-							    VerticalAlignment="Top"
+								VerticalAlignment="Top"
 								KeyDown="ToSide"
 								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 
@@ -351,7 +355,7 @@
 												PointerMoved="Move"
 												PointerEntered="SetCrossCursor"
 												PointerExited="SetArrowCursor"
-											    KeyDown="ToSide"
+												KeyDown="ToSide"
 												IsEnabled="True"
 												Content="{Binding   Path = Content,  Mode=OneWay }" />
 
@@ -394,7 +398,7 @@
 				Content="first"
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
-			    Width="48"
+				Width="48"
 				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
 				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
@@ -501,7 +505,7 @@
 
 
 
-                        <Button.Triggers>
+						<Button.Triggers>
 							<EventTrigger RoutedEvent="FrameworkElement.Tapped">
 								
 							</EventTrigger>
@@ -527,7 +531,7 @@
 							<Image
 								Name="backgroundImage"
 								Width="980"
-							    VerticalAlignment="Top"
+								VerticalAlignment="Top"
 								KeyDown="ToSide"
 								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 								
@@ -553,6 +557,58 @@
 				
 				<ColumnDefinition Width="20"></ColumnDefinition>
 				<ColumnDefinition Width="100"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>		
+				<ColumnDefinition Width="50"></ColumnDefinition>	
+				
+				
+				
+						<TextBox
+			
+			Grid.Column="10"
+			Width="60"
+			MaxHeight="30"
+			FontSize="14"
+			IsReadOnly="True"
+			Focusable="False"
+			KeyUp="SetNewScale"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
+			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
+			
+			
+			
+			
+				<StackPanel>
+
+		<Canvas>
+
+			<TextBlock
+				Name="message"
+				Margin="50,0,50,0"
+				Canvas.Top="100"
+				Width="500"
+				FontSize="16"
+				TextWrapping="WrapWithOverflow"
+				MaxLines="3"
+				
+				/>
+
+			<Button
+				Name="ok"
+				Width="100"
+				Height="40"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Canvas.Top="200"
+				Canvas.Left="200"
+				Content="Ok"
+				Tapped="HandleTapped"
+				/>
+
+		</Canvas>
+	</StackPanel>
+			
+			
+			
+			
+			
 
 -->

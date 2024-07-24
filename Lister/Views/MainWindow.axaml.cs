@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform;
 
 
 namespace Lister.Views;
@@ -46,6 +47,7 @@ public partial class MainWindow : Window
         _currentHeight = Height;
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
+        this.PositionChanged += RestrictPosition;
 
         _mainWindow = this;
     }
@@ -157,6 +159,24 @@ public partial class MainWindow : Window
         {
             BadgeEditorView mainView = ( BadgeEditorView ) Content;
             mainView.ReleaseCaptured ();
+        }
+    }
+
+
+    internal void RestrictPosition ( object sender, PixelPointEventArgs args )
+    {
+        PixelPoint currentPosition = this.Position;
+
+        var screens = Screens;
+        int count = screens.All.Count;
+
+        Screen screen = screens.All [0];
+        int screenHeight = screen.WorkingArea.Height;
+        int screenWidth = screen.WorkingArea.Width;
+
+        if ( currentPosition.Y > (screenHeight - 50) ) 
+        {
+            this.Position = new PixelPoint (currentPosition.X, ( screenHeight - 50 ));
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static QuestPDF.Helpers.Colors;
+using MessageBox.Avalonia.Views;
 
 namespace Lister.ViewModels
 {
@@ -184,8 +185,12 @@ namespace Lister.ViewModels
 
                     if ( ! _pathIsFromKeeper )
                     {
-                        messegeDialog.Message = _fileIsOpenMessage;
-                        messegeDialog.ShowDialog (MainWindow._mainWindow);
+                        //messegeDialog.Message = _fileIsOpenMessage;
+                        //messegeDialog.ShowDialog (MainWindow._mainWindow);
+
+                        MsBoxCustomWindow msBox = new MsBoxCustomWindow ();
+                        msBox.Show ();
+
                     }
 
                     return string.Empty;

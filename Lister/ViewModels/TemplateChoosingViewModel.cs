@@ -31,6 +31,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Platform.Storage;
 using System.Reactive.Linq;
 using static SkiaSharp.HarfBuzz.SKShaper;
+using Avalonia.Remote.Protocol.Viewport;
+using MessageBox.Avalonia.Views;
 
 
 namespace Lister.ViewModels;
@@ -322,6 +324,9 @@ public class TemplateChoosingViewModel : ViewModelBase
                                    messegeDialog.Title = _title;
                                    messegeDialog.Message = _fileIsOpenMessage;
                                    messegeDialog.ShowDialog (MainWindow._mainWindow);
+
+                                   //MsBoxCustomWindow msBox = new MsBoxCustomWindow ();
+                                   //msBox.Show ();
                                }
                                else
                                {

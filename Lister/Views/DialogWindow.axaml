@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
-		MaxWidth="500"
-		MaxHeight="300"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="100"
+		MaxWidth="350"
+		MaxHeight="100"
 		WindowStartupLocation="CenterScreen"
         x:Class="Lister.Views.DialogWindow"
         Title="DialogWindow">
@@ -14,35 +14,36 @@
 	<Canvas>
 	
 		<Label
-			Canvas.Top="100"
-			Canvas.Left="100"
-			FontSize="16"
+			Canvas.Top="40"
+			Canvas.Left="66"
+			FontSize="12"
 			Content="Сохранить изменения и вернуться ?"/>
 		
-	<Button
-		Name="yes"
-		Width="100"
-		Height="40"
-		HorizontalContentAlignment="Center"
-		VerticalContentAlignment="Center"
-		Canvas.Top="200"
-		Canvas.Left="140"
-		Content="Да"
-		Command="{Binding  Path = ChooseYes}"
-		/>
-	<Button
-		Name="no"
-		Width="100"
-		Height="40"
-		HorizontalContentAlignment="Center"
-		VerticalContentAlignment="Center"
-		Canvas.Top="200"
-		Canvas.Left="260"
-		Content="Нет"
-		Command="{Binding  Path = ChooseNo}"
-		/>
+			<Button
+				Name="yes"
+				Width="80"
+				Height="20"
+				
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Canvas.Top="80"
+				Canvas.Left="90"
+				Content="Да"
+				Command="{Binding  Path = ChooseYes}"
+				/>
+			<Button
+				Name="no"
+				Width="80"
+				Height="20"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Canvas.Top="80"
+				Canvas.Left="180"
+				Content="Нет"
+				Command="{Binding  Path = ChooseNo}"
+				/>
 		
-	</Canvas>
+		</Canvas>
 	</StackPanel>
 		
 		

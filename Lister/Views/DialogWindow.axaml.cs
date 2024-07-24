@@ -11,8 +11,17 @@ namespace Lister.Views
         {
             InitializeComponent ();
 
+            this.Icon = null;
+
+            this.CanResize = false;
+
+            this.ExtendClientAreaToDecorationsHint = false;
+
             this.WhenActivated (action => action (ViewModel!.ChooseYes.Subscribe (Close)));
             this.WhenActivated (action => action (ViewModel!.ChooseNo.Subscribe (Close)));
+
+            yes.CornerRadius = new Avalonia.CornerRadius ();
+            no.CornerRadius = new Avalonia.CornerRadius ();
         }
     }
 }

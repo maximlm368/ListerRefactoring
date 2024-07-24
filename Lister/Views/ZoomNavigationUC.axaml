@@ -105,17 +105,20 @@
 			Command="{Binding   Path = ZoomOut}"
 			Content="-" />
 		
-		<TextBox
+		<Label
 			Name="scalabilityGrade"
+			FontSize="14"
 			Grid.Column="10"
 			Width="60"
-			MaxHeight="30"
-			FontSize="14"
-			IsReadOnly="True"
-			Focusable="False"
-			KeyUp="SetNewScale"
+			MaxHeight="32"
+			HorizontalContentAlignment="Left"
+			VerticalContentAlignment="Center"
+			BorderBrush="black"
+			CornerRadius = "3"
+			BorderThickness="1"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
-			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
+			Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"
+			/>
 
 		<Button
 			Name="zoomOn"

@@ -21,15 +21,19 @@
 			Padding="10"
 			Content="Источник:"/>
 		
-		<TextBox  
+		<Label
 			Name="personsSourceFile"
-			Grid.Column="1"
-			VerticalAlignment="Center"
-			Height="20"
 			FontSize="14"
-			IsReadOnly="True"
-			Focusable="False"
-			Text="{ Binding   Path = SourceFilePath,   Mode=OneWay }" />
+			Grid.Column="1"
+			MaxHeight="32"
+			HorizontalContentAlignment="Left"
+			VerticalContentAlignment="Center"
+			BorderBrush="black"
+			CornerRadius = "3"
+			BorderThickness="1"
+			Content="{Binding  Path = SourceFilePath,  Mode=OneWay}"
+			/>
+		
 		
 		<Button 
 			Name="chooseFile"

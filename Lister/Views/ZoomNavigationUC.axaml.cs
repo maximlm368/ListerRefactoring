@@ -154,48 +154,48 @@ namespace Lister.Views
         //}
 
 
-        internal void SetNewScale ( object sender, KeyEventArgs args )
-        {
-            string key = args.Key.ToString ();
-            string scale = scalabilityGrade.Text;
-            bool scaleIsCorrect = ( scale != null ) && ( IsScaleStringCorrect (scale) );
+        //internal void SetNewScale ( object sender, KeyEventArgs args )
+        //{
+        //    string key = args.Key.ToString ();
+        //    string scale = scalabilityGrade.Text;
+        //    bool scaleIsCorrect = ( scale != null ) && ( IsScaleStringCorrect (scale) );
 
-            if ( scaleIsCorrect )
-            {
-                if ( IsKeyCorrect (key) )
-                {
+        //    if ( scaleIsCorrect )
+        //    {
+        //        if ( IsKeyCorrect (key) )
+        //        {
 
-                }
+        //        }
 
 
-            }
+        //    }
 
-            TextBox textBox = ( TextBox ) sender;
-            string text = textBox.Text;
-            bool textExists = ( text != null ) && ( text != string.Empty );
+        //    TextBox textBox = ( TextBox ) sender;
+        //    string text = textBox.Text;
+        //    bool textExists = ( text != null ) && ( text != string.Empty );
 
-            if ( textExists )
-            {
-                if ( text.Contains ('%') )
-                {
-                    text = text.Remove (text.Length - 1);
-                }
+        //    if ( textExists )
+        //    {
+        //        if ( text.Contains ('%') )
+        //        {
+        //            text = text.Remove (text.Length - 1);
+        //        }
 
-                //try
-                //{
-                //    int scale = ( int ) UInt32.Parse (text);
-                //    string procent = "%";
+        //        //try
+        //        //{
+        //        //    int scale = ( int ) UInt32.Parse (text);
+        //        //    string procent = "%";
 
-                //    if ( text.Contains (' ') )
-                //    {
-                //        int spaceIndex = text.IndexOf (' ');
-                //    }
-                //}
-                //catch ( FormatException ex )
-                //{ }
-            }
+        //        //    if ( text.Contains (' ') )
+        //        //    {
+        //        //        int spaceIndex = text.IndexOf (' ');
+        //        //    }
+        //        //}
+        //        //catch ( FormatException ex )
+        //        //{ }
+        //    }
 
-        }
+        //}
 
 
         private bool IsScaleStringCorrect ( string beingProcessed )
