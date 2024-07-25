@@ -20,8 +20,11 @@ using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class BadgeEditorView : ReactiveUserControl <BadgeEditorViewModel>
+    public partial class BadgeEditorView : UserControl
+        //ReactiveUserControl <BadgeEditorViewModel>
     {
+        private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
+
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
 
@@ -44,18 +47,18 @@ namespace Lister.Views
 
             left.Focus ();
 
-            this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
+            //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
 
 
-        private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
-        {
-            var dialog = new DialogWindow ();
-            dialog.DataContext = interaction.Input;
+        //private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
+        //{
+        //    var dialog = new DialogWindow ();
+        //    dialog.DataContext = interaction.Input;
 
-            var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
-            interaction.SetOutput (result);
-        }
+        //    var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
+        //    interaction.SetOutput (result);
+        //}
 
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
@@ -118,6 +121,27 @@ namespace Lister.Views
         internal void PassBackPoint ( ModernMainView back )
         {
             _vm.PassViews (this, back);
+        }
+
+
+        internal void CheckBacking ( )
+        {
+            var dialog = new DialogWindow ();
+            dialog.Message = _question;
+            Task result = dialog.ShowDialog (MainWindow._mainWindow);
+            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+            result.ContinueWith 
+            (
+                task => 
+                {
+                    if ( dialog.Result == dialog.yes )
+                    {
+                        _vm.ComplateGoBack (this);
+                    }
+                },
+                uiScheduler
+            );
         }
 
 

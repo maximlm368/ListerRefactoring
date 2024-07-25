@@ -14,6 +14,9 @@ namespace DataGateway
 
     public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider
     {
+        public static string _resourceUriFolderName = "//Resources//";
+        public static string _resourceFolderName = "/Resources/";
+
         private readonly string _defaultColor = "150,150,150";
         private string _templatesFolderPath;
         private List<string> _textualAtomNames;
@@ -57,7 +60,7 @@ namespace DataGateway
             string jsonPath = _nameAndJson [ templateName ];
             string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
             string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            backgroundPath = "file:///" + directoryPath + "//" + backgroundPath;
+            backgroundPath = "file:///" + directoryPath + _resourceUriFolderName + backgroundPath;
             return backgroundPath;
         }
 
@@ -284,7 +287,7 @@ namespace DataGateway
                 string jsonPath = template.Value;
                 string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
                 string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
-                string imagePath = directoryPath + "/" + backgroundPath;
+                string imagePath = directoryPath + _resourceFolderName + backgroundPath;
                 bool isFound = true;
 
                 try

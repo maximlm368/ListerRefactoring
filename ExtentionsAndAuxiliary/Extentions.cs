@@ -71,22 +71,22 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SplitBySeparators ( this string str )
+        public static List<string> SplitBySeparators ( this string str, List<char> separators )
         {
             List<string> result = new List<string> ();
-            string rest = string.Empty;
 
-            if ( str == null )
+            if ( (separators == null)   ||   (separators.Count < 1)   ||   ( str == null ) ) 
             {
                 return result;
             }
 
+            string rest = string.Empty;
             int splitedStartIndex = 0;
             int splitedLength = 2;
 
             for ( int index = 1;   index < str.Length - 1;   index++ )
             {
-                if (( str [index] == ' ' )   ||   ( str [index] == '-' ))
+                if ( separators.Contains (str [index]))
                 {
                     string splited = str.Substring (splitedStartIndex, splitedLength);
                     rest = str.Substring (index + 1, str.Length - index - 1);

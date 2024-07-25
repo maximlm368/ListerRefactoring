@@ -1,23 +1,37 @@
-﻿using Avalonia.Media.Imaging;
-using Avalonia.Media;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using ContentAssembler;
+using static System.Net.Mime.MediaTypeNames;
+using System.Collections.ObjectModel;
+using Avalonia.Media;
+using System.Globalization;
+using System.Reflection.Metadata;
+using ExtentionsAndAuxiliary;
+using Microsoft.VisualBasic;
+using Avalonia.Media.Imaging;
 using Lister.Extentions;
+using System.Linq.Expressions;
 using Lister.Views;
+using System.Windows.Input;
+using Avalonia.Platform.Storage;
+using System.Reactive.Linq;
 
 namespace Lister.ViewModels
 {
-    public class DialogViewModel : ViewModelBase
+    public class MessageViewModel : ViewModelBase
     {
         public static string _resourceUriFolderName = "//Resources//";
         private static string _warnImageName = "warning-alert.ico";
 
-        private DialogWindow _view;
+        private readonly int _lineHeight = 16;
+        private int _topMargin = 54;
 
         private SolidColorBrush lB;
         internal SolidColorBrush LineBackground
@@ -49,36 +63,36 @@ namespace Lister.ViewModels
             }
         }
 
-
-        //public ReactiveCommand <Unit, string ?> ChooseYes { get; }
-        //public ReactiveCommand <Unit, string ?> ChooseNo { get; }
-
-
-        //public DialogViewModel ()
-        //{
-        //    string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-        //    string correctnessIcon = "file:///" + directoryPath + "//" + _warnImageName;
-        //    Uri correctUri = new Uri (correctnessIcon);
-        //    WarnImage = ImageHelper.LoadFromResource (correctUri);
-
-        //    CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
-        //    LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
-
-        //    ChooseYes = ReactiveCommand.Create (() =>
-        //    {
-        //        return "Yes";
-        //    });
-
-        //    ChooseNo = ReactiveCommand.Create (() =>
-        //    {
-        //        return "No";
-        //    });
-        //}
-
-
-        public DialogViewModel ( DialogWindow view )
+        private List<string> mL;
+        internal List<string> MessageLines
         {
-            _view = view;
+            get { return mL; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref mL, value, nameof (MessageLines));
+
+                foreach ( string line in MessageLines )
+                {
+                    _topMargin -= _lineHeight;
+                }
+
+                messageMargin = new Thickness (10, _topMargin, 0, 0);
+            }
+        }
+
+        private Thickness mM;
+        internal Thickness messageMargin
+        {
+            get { return mM; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref mM, value, nameof (messageMargin));
+            }
+        }
+
+
+        public MessageViewModel () 
+        {
             string directoryPath = System.IO.Directory.GetCurrentDirectory ();
             string correctnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
@@ -86,18 +100,6 @@ namespace Lister.ViewModels
 
             CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
             LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
-        }
-
-
-        internal void ChooseYes ()
-        {
-            _view.ChooseYes ();
-        }
-
-
-        internal void ChooseNo ()
-        {
-            _view.ChooseNo ();
         }
     }
 }

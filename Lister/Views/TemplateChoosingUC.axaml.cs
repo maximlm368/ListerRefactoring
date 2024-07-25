@@ -17,7 +17,7 @@ namespace Lister.Views
     public partial class TemplateChoosingUserControl : ReactiveUserControl <TemplateChoosingViewModel>
     {
         private static readonly string _jsonError = 
-        "Невозможно загрузить этот шаблон. Обратитесь к разработчику по телефону 324-708";
+        "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
         private static TemplateViewModel _chosen;
         private const double coefficient = 1.1;
         private ModernMainView _parent;

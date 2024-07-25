@@ -111,7 +111,7 @@
 			Grid.Column="10"
 			Width="60"
 			MaxHeight="32"
-			HorizontalContentAlignment="Left"
+			HorizontalContentAlignment="Center"
 			VerticalContentAlignment="Center"
 			BorderBrush="black"
 			CornerRadius = "3"

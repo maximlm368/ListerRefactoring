@@ -1,13 +1,119 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="100"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="130"
+		x:Class="Lister.Views.DialogWindow"
+		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
+		xmlns:vm="clr-namespace:Lister.ViewModels"
 		MaxWidth="350"
-		MaxHeight="100"
+		MaxHeight="130"
 		WindowStartupLocation="CenterScreen"
-        x:Class="Lister.Views.DialogWindow"
-        Title="DialogWindow">
+		x:DataType="vm:DialogViewModel"
+		
+		
+		ExtendClientAreaToDecorationsHint = "true"
+		ExtendClientAreaChromeHints = "NoChrome"
+		ExtendClientAreaTitleBarHeightHint = "0"
+		>
+
+	<UserControl
+		Width="350"
+		Height="130"
+		BorderBrush = "gray"
+        BorderThickness = "1"
+		>
+		<StackPanel>
+
+			<Label
+				Content ="Сохранение изменений"
+				FontSize ="12"
+				Margin ="5,5,0,0"
+				/>
+
+			<Grid Height="70"  Margin ="0,-5,0,0">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition  Width="30"></ColumnDefinition>
+					<ColumnDefinition  Width="320"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+
+				<Image
+					Grid.Column="0"
+					Width="35"
+					Margin ="10,0,0,0"
+					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+
+				<TextBlock
+					Name="message"
+					Grid.Column="1"
+					Width="320"
+					FontSize="12"
+					Margin ="10,37,0,0"
+					TextWrapping="WrapWithOverflow"
+					MaxLines="3"
+					/>
+			</Grid>
+
+			<Canvas
+				Name ="Line"
+				Width="348"
+				Height="1"
+				Margin ="0,-5,0,0"
+				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+			    />
+
+			<Canvas
+				Width="348"
+				Height="39"
+				Margin ="0,-2,0,0"
+				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }"
+				>
+
+				<Button
+					Name="Yes"
+					Width="80"
+					Height="24"
+					FontSize="11"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					CornerRadius = "0"
+					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+					BorderBrush = "gray"
+					BorderThickness = "1"
+					Canvas.Top="8"
+					Canvas.Left="170"
+					Content="Да"
+					Command="{Binding  Path = ChooseYes}"
+					/>
+
+				<Button
+					Name="No"
+					Width="80"
+					Height="24"
+					FontSize="11"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					CornerRadius = "0"
+					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+					BorderBrush = "gray"
+					BorderThickness = "1"
+					Canvas.Top="8"
+					Canvas.Left="260"
+					Content="Нет"
+					Command="{Binding  Path = ChooseNo}"
+					/>
+
+			</Canvas>
+
+		</StackPanel>
+	</UserControl>
+		
+		
+</Window>
+
+
+<!--
 
 	<StackPanel>
 	
@@ -45,6 +151,5 @@
 		
 		</Canvas>
 	</StackPanel>
-		
-		
-</Window>
+
+-->

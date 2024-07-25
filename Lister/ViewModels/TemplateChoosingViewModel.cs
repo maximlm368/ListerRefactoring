@@ -321,12 +321,8 @@ public class TemplateChoosingViewModel : ViewModelBase
                                if ( pdf.Result == false )
                                {
                                    var messegeDialog = new MessageDialog ();
-                                   messegeDialog.Title = _title;
                                    messegeDialog.Message = _fileIsOpenMessage;
                                    messegeDialog.ShowDialog (MainWindow._mainWindow);
-
-                                   //MsBoxCustomWindow msBox = new MsBoxCustomWindow ();
-                                   //msBox.Show ();
                                }
                                else
                                {

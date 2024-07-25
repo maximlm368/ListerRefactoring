@@ -185,11 +185,10 @@ namespace Lister.ViewModels
 
                     if ( ! _pathIsFromKeeper )
                     {
-                        //messegeDialog.Message = _fileIsOpenMessage;
-                        //messegeDialog.ShowDialog (MainWindow._mainWindow);
+                        messegeDialog.Message = _fileIsOpenMessage;
+                        messegeDialog.ShowDialog (MainWindow._mainWindow);
 
-                        MsBoxCustomWindow msBox = new MsBoxCustomWindow ();
-                        msBox.Show ();
+
 
                     }
 

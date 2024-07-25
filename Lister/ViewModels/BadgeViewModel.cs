@@ -486,7 +486,7 @@ public class BadgeViewModel : ViewModelBase
         }
 
         string content = ( string ) FocusedLine. Content;
-        List<string> strings = content.SplitBySeparators ();
+        List<string> strings = content.SplitBySeparators (new List<char> () { ' ', '-' });
         double layoutWidth = BadgeWidth;
         List <TextLineViewModel> splitted = FocusedLine.SplitYourself (strings, scale, layoutWidth);
         ReplaceTextLine (FocusedLine, splitted);

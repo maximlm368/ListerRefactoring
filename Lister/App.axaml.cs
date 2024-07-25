@@ -92,6 +92,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <TemplateChoosingViewModel> ();
         collection.AddSingleton <ZoomNavigationViewModel> ();
         collection.AddSingleton <TextLineViewModel> ();
+        collection.AddSingleton <MessageViewModel> ();
     }
 }
 

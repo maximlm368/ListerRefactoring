@@ -399,7 +399,7 @@
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Command="{Binding   Path = ToFirst,   Mode=OneWay}"
+				Command="{Binding   Path = ToFirst}"
 				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
@@ -409,7 +409,7 @@
 				Grid.Column="2"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Command="{Binding   Path = ToPrevious,   Mode=OneWay}"
+				Command="{Binding   Path = ToPrevious}"
 				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
@@ -443,7 +443,7 @@
 				Grid.Column="6"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Command="{Binding   Path = ToNext,   Mode=OneWay}"
+				Command="{Binding   Path = ToNext}"
 				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
@@ -453,7 +453,7 @@
 				Grid.Column="7"
 				HorizontalContentAlignment="Center"
 				Width="48"
-				Command="{Binding   Path = ToLast,   Mode=OneWay}"
+				Command="{Binding   Path = ToLast}"
 				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
@@ -606,9 +606,6 @@
 		</Canvas>
 	</StackPanel>
 			
-			
-			
-			
-			
+
 
 -->

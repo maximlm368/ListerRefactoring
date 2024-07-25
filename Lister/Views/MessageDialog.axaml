@@ -2,14 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="100"
+        mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="130"
         x:Class="Lister.Views.MessageDialog"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
-        Title="Ошибка"
-		MaxWidth="350"
-		MaxHeight="100"
+		xmlns:vm="clr-namespace:Lister.ViewModels"
+		MaxWidth="360"
+		MaxHeight="130"
 		WindowStartupLocation="CenterScreen"
-		
+		x:DataType="vm:MessageViewModel"
 		
 		
 		ExtendClientAreaToDecorationsHint = "true"
@@ -18,42 +18,93 @@
 		>
 
 	<UserControl
-		Width="350"
-		Height="100"
+		Width="360"
+		Height="130"
 		BorderBrush = "gray"
         BorderThickness = "1"
 		>
 	<StackPanel>
 
-		<Label Content ="hfjdhfjdshf"  FontSize ="16" />
+		<Label 
+			Content ="Ошибка"
+			FontSize ="12"
+			Margin ="5,5,0,0"
+			/>
 		
-		
-		<Canvas>
+		<Grid Height="70"  Margin ="0,-5,0,0">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition  Width="30"></ColumnDefinition>
+				<ColumnDefinition  Width="330"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+					
+			<Image
+				Grid.Column="0"
+				Width="35"
+				Margin ="10,0,0,0"
+				Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
 
-			<TextBlock
-				Name="message"
-				Margin="50,0,50,0"
-				Canvas.Top="10"
-				Width="500"
-				FontSize="16"
-				TextWrapping="WrapWithOverflow"
-				Text ="JHGSHGSDHGSGHSGHSHGSHGSGHFSHGSDHGSHGSGHHGHJFHGSJFGHFDLGHFDGHSDLGHSL"
-				MaxLines="3"
-				/>
+			
+			<ItemsControl
+				Name="messageLines"
+				Grid.Column="1"
+				Width="330"
+				Margin ="{Binding  Path=messageMargin,  Mode=OneWay}"
+				HorizontalAlignment="Left"
+				ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+					
+							<TextBlock
+								Width="330"
+								FontSize="12"
+								Text ="{Binding,  Mode=OneWay}"
+								TextWrapping="WrapWithOverflow"
+					            MaxLines="3"
+								/>
+						
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+			
+			
+		</Grid>
+
+		<Canvas
+			Name ="Line"
+			Width="358"
+			Height="1"
+			Margin ="0,-5,0,0"
+			Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+			/>
+
+		<Canvas
+			Width="358"
+			Height="39"
+			Margin ="0,-2,0,0"
+			Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }"
+			>	
 
 			<Button
 				Name="ok"
-				Width="100"
-				Height="40"
+				Width="80"
+				Height="24"
+				FontSize="11"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				Canvas.Top="200"
-				Canvas.Left="200"
+				CornerRadius = "0"
+				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+				BorderBrush = "gray"
+				BorderThickness = "1"
+				Canvas.Top="8"
+				Canvas.Left="270"
 				Content="Ok"
 				Tapped="HandleTapped"
 				/>
 
 		</Canvas>
+			
 	</StackPanel>
     </UserControl>
 		

@@ -13,6 +13,8 @@ namespace Lister.ViewModels
 {
     internal class BadgeCorrectnessViewModel : ViewModelBase
     {
+        public static string _resourceUriFolderName = "//Resources//";
+        public static string _resourceFolderName = "/Resources/";
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
 
@@ -57,7 +59,7 @@ namespace Lister.ViewModels
             {
                 Correctness = true;
                 string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-                string correctnessIcon = "file:///" + directoryPath + "//" + _correctnessIcon;
+                string correctnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _correctnessIcon;
                 Uri uri = new Uri (correctnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
@@ -65,7 +67,7 @@ namespace Lister.ViewModels
             {
                 Correctness = false;
                 string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-                string incorrectnessIcon = "file:///" + directoryPath + "//" + _incorrectnessIcon;
+                string incorrectnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _incorrectnessIcon;
                 Uri uri = new Uri (incorrectnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }

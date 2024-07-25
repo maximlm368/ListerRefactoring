@@ -27,6 +27,8 @@ namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
+        public static string _resourceUriFolderName = "//Resources//";
+        public static string _resourceFolderName = "/Resources/";
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
         internal static readonly double _scale = 2.45;
@@ -283,9 +285,9 @@ namespace Lister.ViewModels
             }
         }
 
-        public ICommand GoBackCommand { get; }
-        internal Interaction <DialogViewModel, string> ShowDialog { get; }
-        
+        //public ICommand GoBackCommand { get; }
+        //internal Interaction <DialogViewModel, string> ShowDialog { get; }
+
 
         public BadgeEditorViewModel ( )
         {
@@ -305,8 +307,8 @@ namespace Lister.ViewModels
             //string incorrectnessIcon = directoryPath + _incorrectnessIcon;
 
             string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + "//" + _correctnessIcon;
-            string incorrectnessIcon = "file:///" + directoryPath + "//" + _incorrectnessIcon;
+            string correctnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _correctnessIcon;
+            string incorrectnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _incorrectnessIcon;
 
 
 
@@ -319,29 +321,29 @@ namespace Lister.ViewModels
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
 
-            ShowDialog = new Interaction <DialogViewModel, string> ();
-            GoBackCommand = ReactiveCommand.CreateFromTask (async () =>
-            {
-                bool changesExist = ChangesExist ();
+            //ShowDialog = new Interaction <DialogViewModel, string> ();
+            //GoBackCommand = ReactiveCommand.CreateFromTask (async () =>
+            //{
+            //    bool changesExist = ChangesExist ();
 
-                if ( changesExist ) 
-                {
-                    DialogViewModel dialogVM = new DialogViewModel ();
-                    var result = await ShowDialog.Handle (dialogVM);
+            //    if ( changesExist ) 
+            //    {
+            //        DialogViewModel dialogVM = new DialogViewModel ();
+            //        var result = await ShowDialog.Handle (dialogVM);
                     
-                    if ( result != null )
-                    {
-                        if ( result == "Yes" )
-                        {
-                            GoBack ();
-                        }
-                    }
-                }
-                else 
-                {
-                    GoBack ();
-                }
-            });
+            //        if ( result != null )
+            //        {
+            //            if ( result == "Yes" )
+            //            {
+            //                GoBack ();
+            //            }
+            //        }
+            //    }
+            //    else 
+            //    {
+            //        GoBack ();
+            //    }
+            //});
         }
 
 
@@ -417,6 +419,32 @@ namespace Lister.ViewModels
             }
 
             return exist;
+        }
+
+
+
+        internal void GoBackCommand ()
+        {
+            bool changesExist = ChangesExist ();
+
+            if ( changesExist )
+            {
+                _view.CheckBacking ();
+            }
+            else
+            {
+                GoBack ();
+            }
+        }
+
+
+        internal void ComplateGoBack ( BadgeEditorView caller )
+        {
+            if ( _view.Equals(caller) )
+            {
+                GoBack();
+            }
+            
         }
 
 
@@ -760,7 +788,7 @@ namespace Lister.ViewModels
                 return;
             }
 
-            List<string> strings = content.SplitBySeparators ();
+            List<string> strings = content.SplitBySeparators ( new List<char> () { ' ', '-' } );
             bool lineIsSplitable = ( strings.Count > 1 );
             EnableSplitting (lineIsSplitable, line);
         }
