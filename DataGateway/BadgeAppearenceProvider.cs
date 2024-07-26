@@ -18,7 +18,7 @@ namespace DataGateway
         public static string _resourceFolderName = "/Resources/";
 
         private readonly string _defaultColor = "150,150,150";
-        private string _templatesFolderPath;
+        private readonly string _templatesFolderPath = @"./Resources";
         private List<string> _textualAtomNames;
         private Dictionary<string, string> _nameAndJson;
         private Dictionary<string, string> _nameAndColor;
@@ -27,7 +27,6 @@ namespace DataGateway
         public BadgeAppearenceProvider (  )
         {
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            _templatesFolderPath = @"./";
             DirectoryInfo containingDirectory = new DirectoryInfo ( _templatesFolderPath );
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );

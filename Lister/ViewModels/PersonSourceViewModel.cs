@@ -20,7 +20,7 @@ namespace Lister.ViewModels
 {
     public class PersonSourceViewModel : ViewModelBase
     {
-        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
         private static readonly string _fileIsAbsentMessage = "Файл не найден.";
         private static readonly string _viewTypeName = "PersonSourceUserControl";
         
@@ -70,8 +70,29 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetPath ( Type passerType, string path )
+        internal void SetPath ( Type passerType, string ? path )
         {
+            if ( (path != null)   &&   ( path != string.Empty ) ) 
+            {
+                FileInfo fileInfo = new FileInfo ( path );
+
+                if ( fileInfo.Exists ) 
+                {
+                    try
+                    {
+                        FileStream stream = fileInfo.OpenRead ();
+                        stream.Close ();
+                    }
+                    catch ( System.IO.IOException ex ) 
+                    {
+                        SourceFilePath = null;
+                        EditorIsEnable = false;
+
+                        return;
+                    }
+                }
+            }
+
             if ( passerType.Name == _viewTypeName ) 
             {
                 _pathIsFromKeeper = true;
@@ -115,10 +136,11 @@ namespace Lister.ViewModels
                            result = result.Substring (8, result.Length - 8);
                            SourceFilePath = result;
 
-                           if ( SourceFilePath != string.Empty )
+                           if ( ( SourceFilePath != null )   &&   (SourceFilePath != string.Empty) )
                            {
                                EditorIsEnable = true;
                                _personChoosingVM.TextboxIsReadOnly = false;
+                               _personChoosingVM.TextboxIsFocusable = true;
 
                                string workDirectory = @"./";
                                DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
@@ -132,6 +154,12 @@ namespace Lister.ViewModels
                                    lines.Add (SourceFilePath);
                                    File.WriteAllLines (keeperPath, lines);
                                }
+                           }
+                           else 
+                           {
+                               EditorIsEnable = false;
+                               _personChoosingVM.TextboxIsReadOnly = true;
+                               _personChoosingVM.TextboxIsFocusable = false;
                            }
                        }
                    }
@@ -173,7 +201,7 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    List <Person> persons = _uniformAssembler.GetPersons (path);
+                    List<Person> persons = _uniformAssembler.GetPersons (path);
                     _personChoosingVM.SetPersons (persons);
                     peopleSettingOccured = true;
 
@@ -183,18 +211,20 @@ namespace Lister.ViewModels
                 {
                     var messegeDialog = new MessageDialog ();
 
-                    if ( ! _pathIsFromKeeper )
+                    if ( !_pathIsFromKeeper )
                     {
                         messegeDialog.Message = _fileIsOpenMessage;
                         messegeDialog.ShowDialog (MainWindow._mainWindow);
-
-
-
                     }
 
                     return string.Empty;
                 }
             }
+            else
+            {
+                _personChoosingVM.SetPersons (null);
+            }
+
             return string.Empty;
         }
     }

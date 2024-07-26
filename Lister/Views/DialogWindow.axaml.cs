@@ -62,7 +62,6 @@ namespace Lister.Views
             DataContext = _viewModel;
             CanResize = false;
             No.Focus (NavigationMethod.Tab, KeyModifiers.None);
-            message.FontWeight = Avalonia.Media.FontWeight.SemiBold;
         }
 
 

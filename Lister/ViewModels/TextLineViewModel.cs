@@ -202,7 +202,7 @@ namespace Lister.ViewModels
             double oldFontSize = FontSize;
             FontSize += additable;
 
-            if ( FontSize / additable > _maxFontSizeLimit )
+            if ( Math.Round(FontSize / additable) > _maxFontSizeLimit )
             {
                 FontSize = oldFontSize;
                 return;
@@ -222,7 +222,7 @@ namespace Lister.ViewModels
             double oldFontSize = FontSize;
             FontSize -= subtractable;
 
-            if ( FontSize / subtractable < _minFontSizeLimit ) 
+            if ( Math.Round(FontSize / subtractable) < _minFontSizeLimit ) 
             {
                 FontSize = oldFontSize;
                 return;

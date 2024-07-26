@@ -60,6 +60,7 @@ namespace Lister.Views
             else 
             {
                 File.Create(keeperPath).Close();
+                personSource.SetPath (null);
             }
         }
 

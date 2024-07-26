@@ -181,11 +181,56 @@ namespace Lister.Views
             zoomOut.IsEnabled = true;
             string content = ( string ) _focused.Content;
 
+            int labelNumber = 0;
+            int counter = 0;
+            bool shouldBreak = false;
+
+            var children = textLines.GetLogicalChildren ();
+
+            foreach ( var child in children )
+            {
+                var ch = child.GetLogicalChildren ();
+
+
+                foreach ( var border in ch )
+                {
+                    var lablels = border.GetLogicalChildren ();
+
+
+
+
+                    foreach ( var lab in lablels )
+                    {
+                        
+
+                        if ( _focused.Equals(lab) ) 
+                        {
+                            labelNumber = counter;
+                            shouldBreak = true;
+                            break;
+                        }
+                    }
+
+                    if ( shouldBreak ) 
+                    {
+                        break;
+                    }
+                }
+
+                if ( shouldBreak )
+                {
+                    break;
+                }
+
+                counter++;
+            }
+
+
             //_vm.EnableSplitting(content);
 
             container = label.Parent as Border;
             container.BorderThickness = new Thickness (1, 1, 1, 1);
-            _vm.Focus (content);
+            _vm.Focus (content, labelNumber);
             left.Focus ();
             Cursor = new Cursor (StandardCursorType.SizeAll);
 
@@ -389,30 +434,4 @@ namespace Lister.Views
         #endregion
 
     }
-
-
-
-    //public class EnumerableLabel : Label 
-    //{
-    //    public static readonly DirectProperty<EnumerableLabel, int> IdProperty =
-    //        AvaloniaProperty.RegisterDirect<EnumerableLabel, int>
-    //        (
-    //           nameof (Id),
-    //           o => o.Id,
-    //           ( o, v ) => o.Id = v
-    //        );
-
-    //    private int _id = 0;
-
-    //    public int Id
-    //    {
-    //        get { return _id; }
-    //        set { SetAndRaise (IdProperty, ref _id, value); }
-    //    }
-
-
-    //    public EnumerableLabel () : base () { }
-
-
-    //}
 }

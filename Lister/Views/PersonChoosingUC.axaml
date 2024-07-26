@@ -41,6 +41,7 @@
 				FontSize="14"
 				Background="White"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
+				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				SelectionForegroundBrush="White"
@@ -186,6 +187,7 @@
 			VerticalContentAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Focusable="False"
+			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 			Tapped="DropOrPickUpPersons"
 			Content="v"/>
 

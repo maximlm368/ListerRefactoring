@@ -296,6 +296,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool tIF;
+        public bool TextboxIsFocusable
+        {
+            get { return tIF; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref tIF, value, nameof (TextboxIsFocusable));
+            }
+        }
+
         private double dO;
         public double DropDownOpacity
         {
@@ -313,6 +323,7 @@ namespace Lister.ViewModels
             ScrollerCanvasLeft = _withScroll;
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = false;
+            TextboxIsFocusable = true;
             FontWeight = FontWeight.Bold;
             EntireListColor = _entireListColor;
             _focusedEdge = _edge;
@@ -395,8 +406,16 @@ namespace Lister.ViewModels
         #endregion
 
 
-        internal void SetPersons ( List <Person> persons )
+        internal void SetPersons ( List <Person> ? persons )
         {
+            if ( persons == null )
+            {
+                TextboxIsFocusable = false;
+                TextboxIsReadOnly = true;
+
+                return;
+            }
+
             List <VisiblePerson> peopleStorage = new ();
             List <VisiblePerson> involvedPeople = new ();
 

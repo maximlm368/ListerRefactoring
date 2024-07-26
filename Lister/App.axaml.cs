@@ -14,6 +14,8 @@ namespace Lister;
 
 public partial class App : Application
 {
+    public static string _resourceUriFolderName = "//Resources//";
+    public static string _resourceFolderName = "/Resources/";
     public static ServiceProvider services;
 
 

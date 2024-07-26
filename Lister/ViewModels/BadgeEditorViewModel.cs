@@ -22,13 +22,12 @@ using Lister.Views;
 using System.Windows.Input;
 using Avalonia.Platform.Storage;
 using System.Reactive.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Lister.ViewModels
 {
     public class BadgeEditorViewModel : ViewModelBase
     {
-        public static string _resourceUriFolderName = "//Resources//";
-        public static string _resourceFolderName = "/Resources/";
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
         internal static readonly double _scale = 2.45;
@@ -37,7 +36,6 @@ namespace Lister.ViewModels
         private TextLineViewModel _focusedLine;
         private FilterChoosing _filterState = FilterChoosing.AllIsChosen;
         private bool _incorrectsAreSet = false;
-        private int _currentNumber = 1;
         private ModernMainView _back;
         private BadgeEditorView _view;
         
@@ -307,8 +305,8 @@ namespace Lister.ViewModels
             //string incorrectnessIcon = directoryPath + _incorrectnessIcon;
 
             string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _correctnessIcon;
-            string incorrectnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _incorrectnessIcon;
+            string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _correctnessIcon;
+            string incorrectnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _incorrectnessIcon;
 
 
 
@@ -503,6 +501,7 @@ namespace Lister.ViewModels
         internal void ToFirst ( )
         {
             BeingProcessedBadge.Hide ();
+            FilterProcessableBadge (BeingProcessedNumber);
             BeingProcessedBadge = VisibleBadges [0];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.white);
             ActiveIcon = VisibleIcons [0];
@@ -527,6 +526,7 @@ namespace Lister.ViewModels
             }
 
             BeingProcessedBadge.Hide ();
+            FilterProcessableBadge (BeingProcessedNumber);
             BeingProcessedBadge = VisibleBadges [BeingProcessedNumber - 2];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.white);
             ActiveIcon = VisibleIcons [BeingProcessedNumber - 2];
@@ -551,12 +551,20 @@ namespace Lister.ViewModels
             }
 
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = VisibleBadges [BeingProcessedNumber];
+            int number = BeingProcessedNumber + 1;
+            bool filterOccured = FilterProcessableBadge (BeingProcessedNumber);
+
+            if ( filterOccured )
+            {
+                number--;
+            }
+
+            BeingProcessedBadge = VisibleBadges [number - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.white);
-            ActiveIcon = VisibleIcons [BeingProcessedNumber];
+            ActiveIcon = VisibleIcons [number - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
             BeingProcessedBadge.Show ();
-            BeingProcessedNumber++;
+            BeingProcessedNumber = number;
             SetToCorrectScale (BeingProcessedBadge);
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
@@ -570,9 +578,17 @@ namespace Lister.ViewModels
         internal void ToLast ( )
         {
             BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = VisibleBadges [VisibleBadges. Count - 1];
+            int number = VisibleBadges. Count;
+            bool filterOccured = FilterProcessableBadge (BeingProcessedNumber);
+
+            if ( filterOccured )
+            {
+                number--;
+            }
+
+            BeingProcessedBadge = VisibleBadges [number - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.white);
-            ActiveIcon = VisibleIcons [VisibleIcons. Count - 1];
+            ActiveIcon = VisibleIcons [number - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
             BeingProcessedBadge.Show ();
             BeingProcessedNumber = VisibleBadges. Count;
@@ -623,7 +639,7 @@ namespace Lister.ViewModels
                 BeingProcessedBadge.Hide ();
                 bool filterOccured = FilterProcessableBadge (number);
 
-                if ( filterOccured   &&   (number > _currentNumber) ) 
+                if ( filterOccured   &&   (number > BeingProcessedNumber) ) 
                 {
                     number--;
                 }
@@ -646,7 +662,6 @@ namespace Lister.ViewModels
                 ZoommerIsEnable = false;
                 _view. editorTextBox.IsEnabled = false;
                 _view. scalabilityGrade.IsEnabled = false;
-                _currentNumber = number;
 
                 ReleaseCaptured ();
             }
@@ -710,16 +725,16 @@ namespace Lister.ViewModels
         }
         #endregion
 
-        internal void Focus ( string focusedContent )
+        internal void Focus ( string focusedContent, int elementNumber )
         {
-            BeingProcessedBadge.SetFocusedLine ( focusedContent );
+            BeingProcessedBadge.SetFocusedLine ( focusedContent, elementNumber );
 
             if ( BeingProcessedBadge. FocusedLine != null )
             {
                 MoversAreEnable = true;
                 ZoommerIsEnable = true;
 
-                EnableSplitting (focusedContent);
+                EnableSplitting (focusedContent, elementNumber);
             }
         }
 
@@ -775,13 +790,14 @@ namespace Lister.ViewModels
                 }
             }
 
-            VisibleIcons [BeingProcessedNumber - 1].BorderColor = new SolidColorBrush (MainWindow.black);
+            ActiveIcon = VisibleIcons [BeingProcessedNumber - 1];
+            ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
         }
 
 
-        internal void EnableSplitting ( string content )
+        internal void EnableSplitting ( string content, int elementNumber )
         {
-            TextLineViewModel line = BeingProcessedBadge.GetCoincidence (content);
+            TextLineViewModel line = BeingProcessedBadge.GetCoincidence (content, elementNumber);
 
             if ( line == null )
             {
@@ -924,7 +940,8 @@ namespace Lister.ViewModels
                     icon.BorderColor = new SolidColorBrush (MainWindow.white);
                 }
 
-                VisibleIcons [0].BorderColor = new SolidColorBrush (MainWindow.black);
+                ActiveIcon = VisibleIcons [0];
+                ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
             }
         }
 
@@ -955,7 +972,7 @@ namespace Lister.ViewModels
             if ( filterOccured ) 
             {
                 VisibleBadges.Remove (BeingProcessedBadge);
-                VisibleIcons.Remove (VisibleIcons [_currentNumber - 1]);
+                VisibleIcons.Remove (VisibleIcons [BeingProcessedNumber - 1]);
                 ProcessableCount = VisibleBadges. Count;
                 filterOccured = true;
             }
@@ -1047,10 +1064,11 @@ namespace Lister.ViewModels
                     BadgeViewModel badge = VisibleBadges [index];
                     BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (badge.IsCorrect, VisibleBadges [index]);
                     VisibleIcons.Add (icon);
-                    icon.BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
+                    icon.BorderColor = new SolidColorBrush (MainWindow.white);
                 }
 
-                VisibleIcons [0].BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                ActiveIcon = VisibleIcons [0];
+                ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
                 BeingProcessedBadge = VisibleBadges [0];
                 SetToCorrectScale (BeingProcessedBadge);
                 BeingProcessedBadge.Show ();

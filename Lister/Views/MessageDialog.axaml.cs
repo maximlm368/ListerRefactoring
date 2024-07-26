@@ -30,12 +30,15 @@ namespace Lister.Views
                         lines = new List<string> () { value };
                     }
 
+                    List<string> pureLines = new List<string> ();
+
                     foreach ( string line   in   lines ) 
                     {
-                        line.Trim ();
+                        string pureLine = line.Trim ();
+                        pureLines.Add ( pureLine );
                     }
 
-                    _vm.MessageLines = lines;
+                    _vm.MessageLines = pureLines;
                     _message = value;
                 }
             }

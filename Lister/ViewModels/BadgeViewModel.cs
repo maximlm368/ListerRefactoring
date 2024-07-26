@@ -341,30 +341,33 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal TextLineViewModel ? GetCoincidence ( string focusedContent )
+    internal TextLineViewModel ? GetCoincidence ( string focusedContent, int elementNumber )
     {
         ObservableCollection<TextLineViewModel> lines = TextLines;
         string lineContent = string.Empty;
         TextLineViewModel goalLine = null;
+        int counter = 0;
 
         foreach ( TextLineViewModel line   in   lines )
         {
             lineContent = line.Content;
 
-            if ( lineContent == focusedContent )
+            if ( (lineContent == focusedContent)   &&   (elementNumber == counter) )
             {
                 goalLine = line;
                 break;
             }
+
+            counter++;
         }
 
         return goalLine;
     }
 
 
-    internal void SetFocusedLine ( string focusedContent )
+    internal void SetFocusedLine ( string focusedContent, int elementNumber )
     {
-        FocusedLine = GetCoincidence (focusedContent);
+        FocusedLine = GetCoincidence (focusedContent, elementNumber);
 
         if ( FocusedLine != null )
         {
@@ -726,6 +729,7 @@ public class BadgeViewModel : ViewModelBase
                 BorderViolentLines.Add ( line );
                 line.isBorderViolent = true;
                 SetBadColor ( line );
+                IsCorrect = false;
             }
         }
 
@@ -872,7 +876,7 @@ public class BadgeViewModel : ViewModelBase
         }
 
         IsChanged = true;
-        int visibleFontSize = (int) (FocusedLine. FontSize / Scale);
+        int visibleFontSize = (int) Math.Round (FocusedLine. FontSize / Scale);
         FocusedFontSize = visibleFontSize.ToString ();
         CheckCorrectness ();
     }

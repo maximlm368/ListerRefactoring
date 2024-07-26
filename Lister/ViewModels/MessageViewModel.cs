@@ -27,7 +27,6 @@ namespace Lister.ViewModels
 {
     public class MessageViewModel : ViewModelBase
     {
-        public static string _resourceUriFolderName = "//Resources//";
         private static string _warnImageName = "warning-alert.ico";
 
         private readonly int _lineHeight = 16;
@@ -94,7 +93,7 @@ namespace Lister.ViewModels
         public MessageViewModel () 
         {
             string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + _resourceUriFolderName + _warnImageName;
+            string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
 
