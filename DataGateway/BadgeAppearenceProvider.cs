@@ -27,7 +27,7 @@ namespace DataGateway
         public BadgeAppearenceProvider (  )
         {
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            DirectoryInfo containingDirectory = new DirectoryInfo ( _templatesFolderPath );
+            DirectoryInfo containingDirectory = new DirectoryInfo (_templatesFolderPath);
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );
             _nameAndColor = new Dictionary<string , string> ( );

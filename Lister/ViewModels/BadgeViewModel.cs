@@ -371,7 +371,7 @@ public class BadgeViewModel : ViewModelBase
 
         if ( FocusedLine != null )
         {
-            int visibleFontSize = (int) (FocusedLine. FontSize / Scale);
+            int visibleFontSize = ( int ) Math.Round (FocusedLine. FontSize / Scale);
             FocusedFontSize = visibleFontSize.ToString ();
         }
     }
@@ -410,8 +410,8 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
-        BorderWidth *= coefficient;
-        BorderHeight *= coefficient;
+        BorderWidth = BadgeWidth + 2;
+        BorderHeight = BadgeHeight + 2;
         Scale *= coefficient;
 
         LeftSpan *= coefficient;
@@ -443,8 +443,8 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth /= coefficient;
         BadgeHeight /= coefficient;
-        BorderWidth /= coefficient;
-        BorderHeight /= coefficient;
+        BorderWidth = BadgeWidth + 2;
+        BorderHeight = BadgeHeight + 2;
         Scale /= coefficient;
 
         LeftSpan /= coefficient;
@@ -884,76 +884,50 @@ public class BadgeViewModel : ViewModelBase
 
     #region Moving
 
-    internal void MoveCaptured ( string capturedContent, Avalonia.Point delta )
+    internal void MoveCaptured ( Avalonia.Point delta )
     {
-        ObservableCollection <TextLineViewModel> lines = TextLines;
-        string lineContent = string.Empty;
-        TextLineViewModel goalLine = null;
-
-        foreach ( TextLineViewModel line   in   lines )
+        if ( FocusedLine == null )
         {
-            lineContent = line.Content;
-
-            if ( lineContent == capturedContent )
-            {
-                goalLine = line;
-                break;
-            }
+            return;
         }
 
-        if ( goalLine != null )
-        {
-            goalLine.TopOffset -= delta.Y;
-            goalLine.LeftOffset -= delta.X;
-            PreventHiding (goalLine);
-            IsChanged = true;
-        }
+        FocusedLine. TopOffset -= delta.Y;
+        FocusedLine. LeftOffset -= delta.X;
+        PreventHiding (FocusedLine);
+        IsChanged = true;
     }
 
 
-    internal void ToSide ( string focusedContent, string direction, double shift )
+    internal void ToSide ( string direction, double shift )
     {
-        ObservableCollection<TextLineViewModel> lines = TextLines;
-        string lineContent = string.Empty;
-        TextLineViewModel goalLine = null;
-
-        foreach ( TextLineViewModel line in lines )
+        if ( FocusedLine == null )
         {
-            lineContent = line.Content;
-
-            if ( lineContent == focusedContent )
-            {
-                goalLine = line;
-                break;
-            }
+            return;
         }
 
-        if ( goalLine != null )
+        if ( direction == "Left" )
         {
-            if ( direction == "Left" )
-            {
-                goalLine.LeftOffset -= shift;
-            }
-
-            if ( direction == "Right" )
-            {
-                goalLine.LeftOffset += shift;
-            }
-
-            if ( direction == "Up" )
-            {
-                goalLine.TopOffset -= shift;
-            }
-
-            if ( direction == "Down" )
-            {
-                goalLine.TopOffset += shift;
-            }
-
-            IsChanged = true;
-            PreventHiding (goalLine);
-            CheckCorrectness ();
+            FocusedLine. LeftOffset -= shift;
         }
+
+        if ( direction == "Right" )
+        {
+            FocusedLine. LeftOffset += shift;
+        }
+
+        if ( direction == "Up" )
+        {
+            FocusedLine. TopOffset -= shift;
+        }
+
+        if ( direction == "Down" )
+        {
+            FocusedLine. TopOffset += shift;
+        }
+
+        IsChanged = true;
+        PreventHiding (FocusedLine);
+        CheckCorrectness ();
     }
 
 

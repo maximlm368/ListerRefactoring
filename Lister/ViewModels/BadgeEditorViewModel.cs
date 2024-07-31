@@ -684,15 +684,15 @@ namespace Lister.ViewModels
 
         #region Moving
 
-        internal void MoveCaptured ( string capturedContent, Point delta )
+        internal void MoveCaptured ( Point delta )
         {
-            BeingProcessedBadge.MoveCaptured (capturedContent, delta);
+            BeingProcessedBadge.MoveCaptured ( delta);
         }
 
 
-        internal void ToSide ( string focusedContent, string direction )
+        internal void ToSide ( string direction )
         {
-            BeingProcessedBadge.ToSide (focusedContent, direction, _scale);
+            BeingProcessedBadge.ToSide (direction, _scale);
             ResetActiveIcon ();
         }
 

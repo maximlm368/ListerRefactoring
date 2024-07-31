@@ -75,7 +75,6 @@ public static class ServiceCollectionExtensions
         //collection.AddSingleton <IBadgeAppearenceProvider> 
         //                           (( factory ) => (BadgeAppearenceProvider) factory.GetService(serviceType));
 
-        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider>();
         collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
 
         //collection.AddSingleton<IResultOfSessionSaver, Lister.ViewModels.ConverterToPdf> ();

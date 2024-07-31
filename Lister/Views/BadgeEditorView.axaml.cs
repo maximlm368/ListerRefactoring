@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
@@ -44,7 +45,6 @@ namespace Lister.Views
             InitializeComponent ();
             this.DataContext = new BadgeEditorViewModel ();
             _vm = DataContext as BadgeEditorViewModel;
-
             left.Focus ();
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
@@ -191,18 +191,12 @@ namespace Lister.Views
             {
                 var ch = child.GetLogicalChildren ();
 
-
                 foreach ( var border in ch )
                 {
                     var lablels = border.GetLogicalChildren ();
 
-
-
-
                     foreach ( var lab in lablels )
                     {
-                        
-
                         if ( _focused.Equals(lab) ) 
                         {
                             labelNumber = counter;
@@ -235,7 +229,6 @@ namespace Lister.Views
             Cursor = new Cursor (StandardCursorType.SizeAll);
 
             _isReleaseLocked = true;
-
             _focusTime = Stopwatch.StartNew ();
         }
 
@@ -251,8 +244,7 @@ namespace Lister.Views
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;
                 Point delta = new Point (horizontalDelta, verticalDelta);
-                string capturedContent = label.Content.ToString () ?? string.Empty;
-                _vm.MoveCaptured (capturedContent, delta);
+                _vm.MoveCaptured (delta);
             }
         }
 
@@ -362,9 +354,7 @@ namespace Lister.Views
             }
 
             string key = args.Key.ToString ();
-
-            string content = ( string ) _focused.Content;
-            _vm.ToSide (content, key);
+            _vm.ToSide (key);
         }
         #endregion
 

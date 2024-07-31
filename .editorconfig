@@ -57,6 +57,7 @@ csharp_style_prefer_local_over_anonymous_function = true:suggestion
 csharp_style_prefer_index_operator = true:suggestion
 csharp_space_around_binary_operators = before_and_after
 csharp_indent_labels = one_less_than_current
+csharp_style_prefer_range_operator = true:suggestion
 
 [*.vb]
 #### Стили именования ####

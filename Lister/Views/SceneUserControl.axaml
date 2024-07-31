@@ -70,6 +70,8 @@
 											<Border
 												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }"
 												Margin="{Binding  Path = Margin,  Mode=OneWay }"
+											    Width="{Binding  Path = BorderWidth,  Mode=OneWay }"
+							                    Height="{Binding  Path = BorderHeight,  Mode=OneWay }"
 												BorderBrush="Gray">
 
 												<Canvas
@@ -186,6 +188,9 @@
 
 
 <!--
+Height="{Binding Path = Height,  Mode=OneWay}"
+
+
 			Width= "{Binding   Path = PageWidth,   Mode=OneWay }"
 			    Height="{Binding   Path = PageHeight,   Mode=OneWay }"
 				

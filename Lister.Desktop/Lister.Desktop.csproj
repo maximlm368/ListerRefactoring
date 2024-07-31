@@ -8,6 +8,17 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ImplicitUsings>enable</ImplicitUsings>
+	
+	<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
+	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+	<PublishSelfContained>true</PublishSelfContained>
+	<RollForward>LatestMinor</RollForward>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<EmitEntryPoint>true</EmitEntryPoint>
+	
+	 <StartupObject>Lister.Desktop.Program</StartupObject>
+	
+	<PackRelease>true</PackRelease>
   </PropertyGroup>
 
   <ItemGroup>

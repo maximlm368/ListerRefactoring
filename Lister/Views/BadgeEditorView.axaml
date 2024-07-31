@@ -304,13 +304,15 @@
 
 						<Canvas
 							Name="incorrectBadge"
-							VerticalAlignment="Top"
+							VerticalAlignment="Center"
+						    HorizontalAlignment="Center"
 							Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
 							Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }">
 
 							<Image
 								Name="backgroundImage"
 								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
+								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
 								VerticalAlignment="Top"
 								KeyDown="ToSide"
 								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
@@ -494,6 +496,8 @@
 
 
 <!-- 
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 <Label
 								FontSize="20"

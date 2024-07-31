@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Lister.ViewModels;
 using Lister.Views;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

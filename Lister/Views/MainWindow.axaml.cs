@@ -53,22 +53,9 @@ public partial class MainWindow : Window
     }
 
 
-    //internal void Eff ( object sender, EffectiveViewportChangedEventArgs args )
-    //{
-    //    int dfdf = 0;
-    //}
-
-
     internal static MainWindow ? GetMainWindow ( )
     {
         return _mainWindow;
-    }
-
-
-    internal void SetWidth (int width) 
-    {
-        MainView mainView = ( MainView ) Content;
-        mainView.SetWidth (width);
     }
 
 
@@ -84,8 +71,6 @@ public partial class MainWindow : Window
         int windowHeight = ( int ) this.DesiredSize.Height / 2;
         int x = ( _screenSize.Width - windowWidth ) / 2;
         int y = ( _screenSize.Height - windowHeight ) / 2;
-        //this.Position = new Avalonia.PixelPoint (x, y);
-        int wqw = 0;
     }
 
 

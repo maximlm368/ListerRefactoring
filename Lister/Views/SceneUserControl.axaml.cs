@@ -6,7 +6,6 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Lister.ViewModels;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using System.Drawing;
 using System.Reactive.Subjects;
