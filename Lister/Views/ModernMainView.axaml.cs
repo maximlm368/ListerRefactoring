@@ -55,7 +55,10 @@ namespace Lister.Views
                 {
                     personSource.SetPath (lines [0]);
                 }
-                catch ( IndexOutOfRangeException ex ) { }
+                catch ( IndexOutOfRangeException ex ) 
+                {
+                    personSource.SetPath (null);
+                }
             }
             else 
             {

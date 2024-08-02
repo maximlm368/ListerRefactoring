@@ -360,6 +360,8 @@ public class TemplateChoosingViewModel : ViewModelBase
                   {
                       int length = _converter.intermidiateFiles.Count;
 
+                      IStorageItem sItem = null;
+                    
                       ProcessStartInfo info = new ()
                       {
                           FileName = fileToSave,

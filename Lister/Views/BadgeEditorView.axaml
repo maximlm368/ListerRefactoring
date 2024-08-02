@@ -188,28 +188,29 @@
 		   Background="AntiqueWhite">
 
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="100" ></ColumnDefinition>
-				<ColumnDefinition Width="700" ></ColumnDefinition>
+				<ColumnDefinition Width="50" ></ColumnDefinition>
+				<ColumnDefinition Width="750" ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
 			<StackPanel
 				Grid.Column="0">
 
-				<Grid
-					Name="filter">
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="50" ></ColumnDefinition>
-						<ColumnDefinition Width="50" ></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-
+				<Border
+					Name="filterSwitcher"
+					Focusable="True"
+					BorderThickness="1"
+					BorderBrush="Brown"
+					Height="62"
+					KeyDown="ToParticularBadge">
+				
+					<StackPanel>
+					
 					<Button
 						Name="chooseCorrects"
-						Width="50"
+						Width="48"
 						Height="30"
 						Command="{Binding  Path = FilterCorrects}"
-						KeyDown="ToParticularBadge"
-						Grid.Column="0">
+						KeyDown="ToParticularBadge">
 						
 						<Button.Background>
 							<ImageBrush
@@ -223,8 +224,7 @@
 						Width="50"
 						Height="30"
 						Command="{Binding  Path = FilterIncorrects}"
-						KeyDown="ToParticularBadge"
-						Grid.Column="1">
+						KeyDown="ToParticularBadge">
 						
 						<Button.Background>
 							<ImageBrush
@@ -232,17 +232,16 @@
 								Opacity="{Binding  Path = IncorrectnessOpacity,  Mode=OneWay }"/>
 						</Button.Background>
 					</Button>
+				    </StackPanel>
+					</Border>
 					
-				</Grid>
-				
-				
 				<Border
 					Name="slider"
 					Focusable="True"
 					BorderThickness="1"
 					BorderBrush="Brown"
-					Height="263"
-					Grid.Column="0"
+					Height="223"
+					Margin ="0,20,0,0"
 					KeyDown="ToParticularBadge">
 
 					<ScrollViewer
@@ -252,22 +251,25 @@
 
 						<ItemsControl
 							Name="badgeStates"
-							Width="100"
+							Width="50"
 							HorizontalAlignment="Left"
 							ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 									<Border
+										HorizontalAlignment="Left"
+										Width="48"
 										BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
 										BorderThickness="1">
-
+										
 										<Image
 											Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
-											Width="50"
-											Height="20"
+											Width="46"
+											Height="32"
+											HorizontalAlignment="Left"
 											Tapped="ToParticularBadge"/>
-
+											
 									</Border>
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
@@ -281,7 +283,7 @@
 				Name="workArea"
 				HorizontalAlignment="Left"
 				Width="680"
-				Height="293"
+				Height="305"
 				Grid.Column="1"
 				BorderBrush="Brown"
 				Background="AliceBlue"
@@ -295,7 +297,7 @@
 
 					<Border
 						Name="badge"
-						BorderThickness="2"
+						BorderThickness="1"
 						BorderBrush="Gray"
 						Width="{Binding  Path = BeingProcessedBadge.BorderWidth,  Mode=OneWay }"
 						Height="{Binding  Path = BeingProcessedBadge.BorderHeight,  Mode=OneWay }"
@@ -311,6 +313,8 @@
 
 							<Image
 								Name="backgroundImage"
+								Canvas.Top="0"
+								Canvas.Left="0"
 								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
 								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
 								VerticalAlignment="Top"
@@ -340,14 +344,14 @@
 									<DataTemplate>
 
 										<Border
-											BorderBrush="Blue"
+											Padding="{Binding  Path = Padding,  Mode=OneWay}"
 											Background="{Binding   Path = Background,  Mode=OneWay }"
-											BorderThickness="{Binding Path = FocusedBorderThickness,  Mode=OneWay}"
+											BorderThickness="1"
 											Height="{Binding Path = FontSize,  Mode=OneWay}">
-
+										
 											<Label
-												VerticalAlignment="Center"
-												Height="{Binding Path = Height,  Mode=OneWay}"
+												VerticalContentAlignment="Center"
+												Height="{Binding  Path = Height,  Mode=OneWay}"
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
@@ -362,7 +366,7 @@
 												Content="{Binding   Path = Content,  Mode=OneWay }" />
 
 										</Border>
-
+											
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
@@ -465,7 +469,7 @@
 		<Grid
 			Name="counts"
 			Height="40"
-			Margin="10,-2">
+			Margin="10,-7">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -496,6 +500,33 @@
 
 
 <!-- 
+//container.BorderThickness = new Thickness (0, 0, 0, 0);
+
+
+
+
+<Border
+											BorderBrush="Blue"
+											Background="{Binding   Path = Background,  Mode=OneWay }"
+											BorderThickness="{Binding Path = FocusedBorderThickness,  Mode=OneWay}"
+											Height="{Binding Path = Height,  Mode=OneWay}">
+
+
+
+
+
+<Grid
+					Name="filter">
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+
+
+Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+MinHeight="{Binding Path = Height,  Mode=OneWay}"
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

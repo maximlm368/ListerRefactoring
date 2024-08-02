@@ -30,7 +30,7 @@ namespace Lister.ViewModels
     {
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
-        internal static readonly double _scale = 2.45;
+        internal static readonly double _scale = 2.5;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
@@ -107,8 +107,9 @@ namespace Lister.ViewModels
                             continue;
                         }
 
-                        AddToStorage ( badge );
+                        AddToStorage (badge);
                         BadgeViewModel clone = badge.Clone ();
+
                         _drafts.Add (badge, clone);
                         IncorrectBadges.Add (clone);
                         VisibleBadges.Add (clone);
@@ -119,7 +120,7 @@ namespace Lister.ViewModels
 
                 SetBeingProcessed (VisibleBadges [0]);
                 SetIcons ();
-                ProcessableCount = VisibleBadges. Count;
+                ProcessableCount = VisibleBadges.Count;
             }
         }
 
@@ -850,11 +851,7 @@ namespace Lister.ViewModels
 
         private void SetStandardScale ( BadgeViewModel beingPrecessed ) 
         {
-            if ( beingPrecessed.Scale > 1 )
-            {
-                beingPrecessed.ZoomOut (beingPrecessed.Scale);
-            }
-            if ( beingPrecessed.Scale < 1 )
+            if ( beingPrecessed.Scale != 1 )
             {
                 beingPrecessed.ZoomOut (beingPrecessed.Scale);
             }
@@ -863,12 +860,7 @@ namespace Lister.ViewModels
 
         private void SetOriginalScale ( BadgeViewModel beingPrecessed, double scale )
         {
-            if ( scale > 1 )
-            {
-                beingPrecessed.ZoomOn (scale);
-            }
-
-            if ( scale < 1 )
+            if ( scale != 1 )
             {
                 beingPrecessed.ZoomOn (scale);
             }
@@ -924,7 +916,7 @@ namespace Lister.ViewModels
         {
             beingProcessed.Show ();
             BeingProcessedBadge = beingProcessed;
-            SetToCorrectScale ( BeingProcessedBadge );
+            SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedNumber = 1;
         }
 

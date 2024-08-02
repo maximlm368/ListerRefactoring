@@ -11,6 +11,8 @@ namespace Lister.ViewModels
 {
     abstract public class BadgeMember : ViewModelBase
     {
+        private readonly double _correctionStep = 0.6;
+
         private double wd;
         public double Width
         {
@@ -63,19 +65,37 @@ namespace Lister.ViewModels
 
         protected void ZoomOn ( double coefficient )
         {
+            //double coef = coefficient * 1.002;
+
+            //if ( coefficient == 2.5 )
+            //{
+            //    coef = coefficient * 1.02;
+            //}
+
+            double degree = Math.Log (coefficient, 1.25);
+            double coef = coefficient * Math.Pow (1.002, degree);
+
+
+
             Width *= coefficient;
             Height *= coefficient;
             TopOffset *= coefficient;
             LeftOffset *= coefficient;
+            //LeftOffset += _correctionStep;
         }
 
 
         protected void ZoomOut ( double coefficient )
         {
+            double degree = Math.Log (coefficient, 1.25);
+            double coef = coefficient * Math.Pow (1.002, degree);
+
+
             Width /= coefficient;
             Height /= coefficient;
             TopOffset /= coefficient;
             LeftOffset /= coefficient;
+            //LeftOffset -= _correctionStep;
         }
     }
 }

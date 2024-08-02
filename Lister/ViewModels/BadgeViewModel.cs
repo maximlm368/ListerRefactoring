@@ -19,6 +19,7 @@ using System;
 using DataGateway;
 using Microsoft.Extensions.DependencyInjection;
 using iText.Kernel.Geom;
+using QuestPDF.Fluent;
 
 namespace Lister.ViewModels;
 
@@ -26,9 +27,9 @@ namespace Lister.ViewModels;
 public class BadgeViewModel : ViewModelBase
 {
     private static Dictionary<string, Bitmap> _pathToImage;
-    private static double _rightSpan = 5;
 
     private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
+    private readonly double _interLineAddition = 1;
     private string _badLineColor;
     private IBadLineColorProvider _badLineColorProvider;
 
@@ -71,6 +72,26 @@ public class BadgeViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged (ref bH, value, nameof (BadgeHeight));
+        }
+    }
+
+    private double hC;
+    internal double HeightCrutch
+    {
+        get { return hC; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref hC, value, nameof (HeightCrutch));
+        }
+    }
+
+    private double bHC;
+    internal double BorderHeightCrutch
+    {
+        get { return bHC; }
+        set
+        {
+            this.RaiseAndSetIfChanged (ref bHC, value, nameof (BorderHeightCrutch));
         }
     }
 
@@ -219,13 +240,13 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth = BadgeWidth + 2;
         _widht = BadgeWidth;
         BadgeHeight = layout.OutlineSize. Height;
-        BorderHeight = BadgeHeight + 3;
+        BorderHeight = BadgeHeight + 2;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
         BorderViolentLines = new List <TextLineViewModel> ( );
         OverlayViolentLines = new List <TextLineViewModel> ();
-        InsideImages = new ObservableCollection<ImageViewModel> ();
-        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        InsideImages = new ObservableCollection <ImageViewModel> ();
+        InsideShapes = new ObservableCollection <ImageViewModel> ();
         IsCorrect = true;
         IsChanged = false;
         _borderThickness = 1;
@@ -243,22 +264,22 @@ public class BadgeViewModel : ViewModelBase
         List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
         SetUpTextLines (atoms);
-        GatherIncorrectLines ( );
+        GatherIncorrectLines ();
 
         List<InsideImage> images = layout.InsideImages;
         SetUpImagesAndGeometryElements (images);
     }
 
 
-    private BadgeViewModel ( BadgeViewModel badge, bool shouldGatheIncorrectLines )
+    private BadgeViewModel ( BadgeViewModel badge )
     {
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
 
-        LeftSpan = layout.LeftSpan;
-        TopSpan = layout.TopSpan;
-        RightSpan = layout.RightSpan;
-        BottomSpan = layout.BottomSpan;
+        LeftSpan = badge.LeftSpan;
+        TopSpan = badge.TopSpan;
+        RightSpan = badge.RightSpan;
+        BottomSpan = badge.BottomSpan;
 
         BadgeWidth = badge.BadgeWidth;
         BorderWidth = BadgeWidth + 2;
@@ -276,7 +297,7 @@ public class BadgeViewModel : ViewModelBase
         FocusedFontSize = string.Empty;
         _badLineColor = badge._badLineColor;
 
-        foreach ( TextLineViewModel line in badge.TextLines )
+        foreach ( TextLineViewModel line   in   badge.TextLines )
         {
             TextLineViewModel clone = line.Clone ();
             TextLines.Add (clone);
@@ -284,10 +305,6 @@ public class BadgeViewModel : ViewModelBase
 
         Scale = badge.Scale;
 
-        if ( shouldGatheIncorrectLines ) 
-        {
-            GatherIncorrectLines ();
-        }
 
         //foreach ( TextLineViewModel line in badge.TextLines )
         //{
@@ -312,7 +329,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel GetDimensionalOriginal () 
     {
-        BadgeViewModel original = new BadgeViewModel (this, false);
+        BadgeViewModel original = new BadgeViewModel (this);
 
         if ( original.Scale > 1 )
         {
@@ -329,7 +346,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel Clone ()
     {
-        BadgeViewModel clone = new BadgeViewModel (this, true);
+        BadgeViewModel clone = new BadgeViewModel (this);
         return clone;
     }
 
@@ -410,8 +427,10 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
+
         BorderWidth = BadgeWidth + 2;
         BorderHeight = BadgeHeight + 2;
+
         Scale *= coefficient;
 
         LeftSpan *= coefficient;
@@ -433,9 +452,6 @@ public class BadgeViewModel : ViewModelBase
         //{
         //    shape.ZoomOn (coefficient);
         //}
-
-        _borderThickness *= coefficient;
-        BorderThickness = new Avalonia.Thickness (_borderThickness);
     }
 
 
@@ -443,8 +459,10 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeWidth /= coefficient;
         BadgeHeight /= coefficient;
+
         BorderWidth = BadgeWidth + 2;
         BorderHeight = BadgeHeight + 2;
+
         Scale /= coefficient;
 
         LeftSpan /= coefficient;
@@ -466,9 +484,6 @@ public class BadgeViewModel : ViewModelBase
         //{
         //    shape.ZoomOut (coefficient);
         //}
-
-        _borderThickness /= coefficient;
-        BorderThickness = new Avalonia.Thickness (_borderThickness);
     }
 
 
@@ -539,9 +554,9 @@ public class BadgeViewModel : ViewModelBase
             double lineLength = textAtom.Width;
             textAtom.TopOffset += summaryVerticalOffset;
             double topOffset = textAtom.TopOffset;
-            string beingProcessedLine = textAtom.Content;
+            string beingProcessedLine = textAtom.Content.Trim();
             string additionalLine = string.Empty;
-            FontFamily family = new FontFamily(textAtom.FontFamily);
+            FontFamily family = new FontFamily (textAtom.FontFamily);
 
             while ( true )
             {
@@ -555,8 +570,8 @@ public class BadgeViewModel : ViewModelBase
                 {
                     if ( isTimeToShiftNextLine )
                     {
-                        summaryVerticalOffset += textAtom.FontSize;
-                        topOffset += textAtom.FontSize;
+                        summaryVerticalOffset += (textAtom.FontSize + _interLineAddition);
+                        topOffset += ( textAtom.FontSize + _interLineAddition );
                     }
 
                     if ( isSplitingOccured )
@@ -572,7 +587,7 @@ public class BadgeViewModel : ViewModelBase
 
                     if ( additionalLine != string.Empty ) 
                     {
-                        beingProcessedLine = additionalLine;
+                        beingProcessedLine = additionalLine.Trim();
                         additionalLine = string.Empty;
                         continue;
                     }
@@ -586,7 +601,7 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( (splited.Count > 0)   &&   textAtom.IsSplitable )
                 {
-                    beingProcessedLine = splited [0];
+                    beingProcessedLine = splited [0].Trim();
                     additionalLine = splited [1] + " " + additionalLine;
                     isSplitingOccured = true;
                 }
@@ -833,7 +848,6 @@ public class BadgeViewModel : ViewModelBase
                 {
                     OverlayViolentLines.Add (overlaying);
                     overlaying.isOverLayViolent = true;
-
                     SetBadColor ( overlaying );
                 }
 
@@ -954,11 +968,11 @@ public class BadgeViewModel : ViewModelBase
             preventable.TopOffset = (BadgeHeight - BottomSpan);
         }
 
-        bool isHidedBeyondTop = ( preventable.TopOffset < ( preventable.Height / 2 ) * ( -1 ) );
+        bool isHidedBeyondTop = ( preventable.TopOffset < ( preventable.Height / 4 ) * ( -1 ) );
 
         if ( isHidedBeyondTop )
         {
-            preventable.TopOffset = ( preventable.Height / 2 ) * ( -1 );
+            preventable.TopOffset = ( preventable.Height / 4 ) * ( -1 );
         }
     }
 

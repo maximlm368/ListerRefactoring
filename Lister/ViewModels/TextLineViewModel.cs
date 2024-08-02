@@ -14,13 +14,16 @@ using ExtentionsAndAuxiliary;
 using System.Reflection;
 using Avalonia.Controls.Shapes;
 using static System.Net.Mime.MediaTypeNames;
+using Avalonia;
 
 namespace Lister.ViewModels
 {
     public class TextLineViewModel : BadgeMember
     {
-        internal static readonly double _maxFontSizeLimit = 30;
-        internal static readonly double _minFontSizeLimit = 6;
+        private static readonly double _maxFontSizeLimit = 30;
+        private static readonly double _minFontSizeLimit = 6;
+        private static readonly double _divider = 4;
+        private static readonly double _parentToChildCoeff = 2.5;
         internal static double FrameSpanOnEnd { get; private set; }
 
 
@@ -39,6 +42,16 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref al, value, nameof (Alignment));
+            }
+        }
+
+        private Thickness pd;
+        internal Thickness Padding
+        {
+            get { return pd; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref pd, value, nameof (Padding));
             }
         }
 
@@ -151,8 +164,12 @@ namespace Lister.ViewModels
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             UsefullWidth = formatted.Width + FrameSpanOnEnd;
 
-            SetYourself (text.Width, text.Height, text.TopOffset, text.LeftOffset);
+            double correctHeight = FontSize * _parentToChildCoeff;
+
+            SetYourself (text.Width, correctHeight, text.TopOffset, text.LeftOffset);
             SetAlignment (text.Alignment);
+
+            Padding = SetPadding ();
         }
 
 
@@ -164,11 +181,25 @@ namespace Lister.ViewModels
             FontWeight = source.FontWeight;
             Content = source.Content;
             IsSplitable = source.IsSplitable;
+            Padding = new Thickness (0, -FontSize / _divider);
             UsefullWidth = source.UsefullWidth;
             Foreground = source.Foreground;
+            Background = source.Background;
 
             SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
-            //SetAlignment (source._dataSource.Alignment);
+
+            Padding = SetPadding ();
+        }
+
+
+        private Thickness SetPadding ()
+        {
+            Thickness padding;
+            double verticalPadding = ( FontSize - Height ) / 2;
+            double df = Height / FontSize;
+            padding = new Thickness (0, verticalPadding);
+
+            return padding;
         }
 
 
@@ -181,19 +212,37 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ( double coefficient )
         {
-            FontSize *= coefficient;
+            double degree = Math.Log (coefficient, 1.25);
+            double coef = coefficient * Math.Pow (1.001, degree);
+
+            //if ( coefficient == 2.5 ) 
+            //{
+            //    coef = coefficient * Math.Pow(1.001, degree);
+            //}
+
+            FontSize *= coef;
             UsefullWidth *= coefficient;
-            //AdditionOnEnd *= coefficient;
             base.ZoomOn (coefficient );
+
+            Padding = SetPadding ();
         }
 
 
         internal void ZoomOut ( double coefficient )
         {
-            FontSize /= coefficient;
+            double degree = Math.Log (coefficient, 1.25);
+            double coef = coefficient * Math.Pow (1.001, degree);
+
+            //if ( coefficient == 2.5 )
+            //{
+            //    coef = coefficient * 1.006;
+            //}
+
+            FontSize /= coef;
             UsefullWidth /= coefficient;
-            //AdditionOnEnd /= coefficient;
             base.ZoomOut (coefficient);
+
+            Padding = SetPadding ();
         }
 
 
@@ -214,6 +263,7 @@ namespace Lister.ViewModels
             UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
+            Padding = SetPadding ();
         }
 
 
@@ -234,6 +284,7 @@ namespace Lister.ViewModels
             UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
+            Padding = SetPadding ();
         }
 
 

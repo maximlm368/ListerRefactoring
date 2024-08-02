@@ -79,6 +79,9 @@
 											        Height="{Binding   Path = BadgeHeight,   Mode=OneWay }">
 							                        
 													<Image
+														Canvas.Top="0"
+														Canvas.Left="0"
+														VerticalAlignment="Top"
 														Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
 														Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"
 														Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
@@ -104,13 +107,22 @@
 														<ItemsControl.ItemTemplate>
 															<DataTemplate>
 
-																<Label
-																	Height="{Binding Path = Height,  Mode=OneWay}"
-																	FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-																	FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
-																	FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
-																	Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
-										                            Content="{Binding   Path = Content,  Mode=OneWay }" />
+																<Border
+																	Padding="{Binding  Path = Padding,  Mode=OneWay}"
+																	BorderThickness="1"
+																	Height="{Binding  Path = FontSize,  Mode=OneWay}">
+
+																	<Label
+																		VerticalContentAlignment="Center"
+																		Height="{Binding  Path = Height,  Mode=OneWay}"
+																		FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+																		FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+																		FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+																		Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+																		Content="{Binding   Path = Content,  Mode=OneWay }" />
+
+																</Border>
+																	
 															</DataTemplate>
 														</ItemsControl.ItemTemplate>
 
@@ -189,6 +201,9 @@
 
 <!--
 Height="{Binding Path = Height,  Mode=OneWay}"
+Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"
+
+
 
 
 			Width= "{Binding   Path = PageWidth,   Mode=OneWay }"

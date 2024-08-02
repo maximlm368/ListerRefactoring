@@ -9,6 +9,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <Deterministic>False</Deterministic>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -21,6 +22,7 @@
 	<RollForward>LatestMinor</RollForward>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<EmitEntryPoint>true</EmitEntryPoint>
+	<Optimize>False</Optimize>
 	
 	
 	

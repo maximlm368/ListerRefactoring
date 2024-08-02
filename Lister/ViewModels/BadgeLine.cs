@@ -46,8 +46,6 @@ namespace Lister.ViewModels
                     if ( badge.BorderHeight > maxH ) 
                     {
                         maxH = badge.BorderHeight;
-                        double fd = badge.BadgeHeight;
-                        int dfddf = 0;
                     }
                 }
 

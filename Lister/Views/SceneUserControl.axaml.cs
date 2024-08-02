@@ -35,6 +35,10 @@ namespace Lister.Views
         private void OnLoaded ( object sender, RoutedEventArgs args )
         {
             _vm.SetEdition ();
+
+
+            Label label = new Label ();
+            label.VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
         }
 
 

@@ -19,7 +19,7 @@ namespace Lister.ViewModels
 
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
-        private double _scalabilityCoefficient;
+        private double _scalabilityCoefficient = 1.25;
         private double _zoomDegree;
         private List <PageViewModel> _allPages;
         
@@ -132,7 +132,6 @@ namespace Lister.ViewModels
             VisiblePage = new PageViewModel (_documentScale);
             _lastPage = VisiblePage;
             _allPages.Add (VisiblePage);
-            _scalabilityCoefficient = 1.25;
             VisiblePageNumber = 1;
             procentSymbol = "%";
             _zoomDegree = 100;
@@ -213,7 +212,7 @@ namespace Lister.ViewModels
                 IncorrectBadgeCount++;
             }
 
-            bool placingStartedAfterEntireListAddition = !_lastPage.Equals (VisiblePage);
+            bool placingStartedAfterEntireListAddition = ! _lastPage.Equals (VisiblePage);
 
             if ( placingStartedAfterEntireListAddition )
             {

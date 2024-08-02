@@ -47,6 +47,7 @@ namespace Lister.Views
             _vm = DataContext as BadgeEditorViewModel;
             left.Focus ();
 
+
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
 
@@ -172,7 +173,7 @@ namespace Lister.Views
             if ( _focused != null )
             {
                 container = _focused.Parent as Border;
-                container.BorderThickness = new Thickness (0, 0, 0, 0);
+                container.BorderBrush = null;
                 _focused.Background = null;
             }
 
@@ -219,11 +220,14 @@ namespace Lister.Views
                 counter++;
             }
 
-
-            //_vm.EnableSplitting(content);
-
             container = label.Parent as Border;
-            container.BorderThickness = new Thickness (1, 1, 1, 1);
+            container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
+
+            //double he = label.Height;
+            //label.Height = 60;
+            //label.Padding = new Thickness (0,0,0,0);
+            //double fs = label.FontSize;
+
             _vm.Focus (content, labelNumber);
             left.Focus ();
             Cursor = new Cursor (StandardCursorType.SizeAll);
@@ -301,7 +305,7 @@ namespace Lister.Views
             if ( _focused != null )
             {
                 Border container = _focused.Parent as Border;
-                container.BorderThickness = new Thickness (0, 0, 0, 0);
+                container.BorderBrush = null;
                 _focused = null;
             }
 
@@ -399,10 +403,9 @@ namespace Lister.Views
 
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
-            Avalonia.Controls.Image image = sender as Avalonia.Controls.Image;
+            Avalonia.Controls.Image image = sender   as   Avalonia.Controls.Image;
             BadgeCorrectnessViewModel context = image.DataContext as BadgeCorrectnessViewModel;
             BadgeViewModel boundBadge = context.BoundBadge;
-
             _vm.ToParticularBadge (boundBadge);
         }
 
