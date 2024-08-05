@@ -96,7 +96,7 @@ namespace Lister.ViewModels
                 Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
                 FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                     , FlowDirection.LeftToRight, face, FontSize, null);
-                UsefullWidth = formatted.Width + FrameSpanOnEnd;
+                UsefullWidth = formatted.Width + +( FrameSpanOnEnd * _scale );
             }
         }
 
@@ -162,7 +162,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.Width + FrameSpanOnEnd;
+            //UsefullWidth = formatted.Width + FrameSpanOnEnd;
 
             double correctHeight = FontSize * _parentToChildCoeff;
 
@@ -182,7 +182,7 @@ namespace Lister.ViewModels
             Content = source.Content;
             IsSplitable = source.IsSplitable;
             Padding = new Thickness (0, -FontSize / _divider);
-            UsefullWidth = source.UsefullWidth;
+            //UsefullWidth = source.UsefullWidth;
             Foreground = source.Foreground;
             Background = source.Background;
 
@@ -212,6 +212,7 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ( double coefficient )
         {
+            base.ZoomOn (coefficient);
             double degree = Math.Log (coefficient, 1.25);
             double coef = coefficient * Math.Pow (1.001, degree);
 
@@ -221,15 +222,21 @@ namespace Lister.ViewModels
             //}
 
             FontSize *= coef;
-            UsefullWidth *= coefficient;
-            base.ZoomOn (coefficient );
 
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + ( FrameSpanOnEnd * _scale );
+
+            //UsefullWidth *= coef;
+           
             Padding = SetPadding ();
         }
 
 
         internal void ZoomOut ( double coefficient )
         {
+            base.ZoomOut (coefficient);
             double degree = Math.Log (coefficient, 1.25);
             double coef = coefficient * Math.Pow (1.001, degree);
 
@@ -239,9 +246,14 @@ namespace Lister.ViewModels
             //}
 
             FontSize /= coef;
-            UsefullWidth /= coefficient;
-            base.ZoomOut (coefficient);
 
+            Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
+            FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, FontSize, null);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + ( FrameSpanOnEnd * _scale );
+
+            //UsefullWidth /= coef;
+            
             Padding = SetPadding ();
         }
 
@@ -260,7 +272,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * _scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
             Padding = SetPadding ();
@@ -281,7 +293,7 @@ namespace Lister.ViewModels
             Typeface face = new Typeface (FontFamily, FontStyle.Normal, Avalonia.Media.FontWeight.Bold);
             FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
-            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * BadgeEditorViewModel._scale);
+            UsefullWidth = formatted.WidthIncludingTrailingWhitespace + (FrameSpanOnEnd * _scale);
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
             Padding = SetPadding ();
@@ -344,7 +356,6 @@ namespace Lister.ViewModels
                                                                 , FlowDirection.LeftToRight, face, FontSize, null);
             Content = content;
             Width = formatted.WidthIncludingTrailingWhitespace;
-            UsefullWidth = formatted.Width + FrameSpanOnEnd;
         }
     }
 

@@ -751,7 +751,7 @@ namespace Lister.ViewModels
                 ZoommerIsEnable = false;
                 MoversAreEnable = false;
                 SplitterIsEnable = false;
-                FocusedBorderThickness = new Thickness (0, 0, 0, 0);
+                //FocusedBorderThickness = new Thickness (0, 0, 0, 0);
             }
         }
 

@@ -113,8 +113,8 @@ public class PageViewModel : ViewModelBase
         Lines = new ObservableCollection<BadgeLine> ();
         _scale = desiredScale;
         _badgeCount = 0;
-        PageWidth = PageSize.Width;
-        PageHeight = PageSize.Height;
+        PageWidth = PageSize. Width;
+        PageHeight = PageSize. Height;
         ContentTopOffset = _contentTopOffset;
         ContentLeftOffset = _contentLeftOffset;
         double usefullHeight = PageHeight - 20;
@@ -130,11 +130,11 @@ public class PageViewModel : ViewModelBase
 
     private PageViewModel ( PageViewModel page )
     {
-        Lines = new ObservableCollection<BadgeLine> ();
+        Lines = new ObservableCollection <BadgeLine> ();
         _scale = 1;
         _badgeCount = page._badgeCount;
-        PageWidth = PageSize.Width;
-        PageHeight = PageSize.Height;
+        PageWidth = PageSize. Width;
+        PageHeight = PageSize. Height;
         ContentTopOffset = _contentTopOffset;
         ContentLeftOffset = _contentLeftOffset;
         BorderHeight = PageHeight + 2;

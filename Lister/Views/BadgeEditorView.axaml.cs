@@ -223,11 +223,6 @@ namespace Lister.Views
             container = label.Parent as Border;
             container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
 
-            //double he = label.Height;
-            //label.Height = 60;
-            //label.Padding = new Thickness (0,0,0,0);
-            //double fs = label.FontSize;
-
             _vm.Focus (content, labelNumber);
             left.Focus ();
             Cursor = new Cursor (StandardCursorType.SizeAll);

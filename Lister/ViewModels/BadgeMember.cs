@@ -1,4 +1,5 @@
 ﻿using Avalonia.Media;
+using AvaloniaEdit.Highlighting;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Lister.ViewModels
     abstract public class BadgeMember : ViewModelBase
     {
         private readonly double _correctionStep = 0.6;
+        protected double _scale = 1;
 
         private double wd;
         public double Width
@@ -72,11 +74,11 @@ namespace Lister.ViewModels
             //    coef = coefficient * 1.02;
             //}
 
-            double degree = Math.Log (coefficient, 1.25);
-            double coef = coefficient * Math.Pow (1.002, degree);
+            //double degree = Math.Log (coefficient, 1.25);
+            //double coef = coefficient * Math.Pow (1.002, degree);
 
 
-
+            _scale *= coefficient;
             Width *= coefficient;
             Height *= coefficient;
             TopOffset *= coefficient;
@@ -87,10 +89,10 @@ namespace Lister.ViewModels
 
         protected void ZoomOut ( double coefficient )
         {
-            double degree = Math.Log (coefficient, 1.25);
-            double coef = coefficient * Math.Pow (1.002, degree);
+            //double degree = Math.Log (coefficient, 1.25);
+            //double coef = coefficient * Math.Pow (1.002, degree);
 
-
+            _scale /= coefficient;
             Width /= coefficient;
             Height /= coefficient;
             TopOffset /= coefficient;

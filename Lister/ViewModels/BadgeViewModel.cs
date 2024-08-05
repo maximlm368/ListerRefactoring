@@ -285,11 +285,11 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth = BadgeWidth + 2;
         BadgeHeight = badge.BadgeHeight;
         BorderHeight = BadgeHeight + 2;
-        TextLines = new ObservableCollection<TextLineViewModel> ();
-        BorderViolentLines = new List<TextLineViewModel> ();
-        OverlayViolentLines = new List<TextLineViewModel> ();
-        InsideImages = new ObservableCollection<ImageViewModel> ();
-        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        TextLines = new ObservableCollection <TextLineViewModel> ();
+        BorderViolentLines = new List <TextLineViewModel> ();
+        OverlayViolentLines = new List <TextLineViewModel> ();
+        InsideImages = new ObservableCollection <ImageViewModel> ();
+        InsideShapes = new ObservableCollection <ImageViewModel> ();
         IsCorrect = badge.IsCorrect;
         Scale = badge.Scale;
         _borderThickness = 1;
@@ -301,6 +301,18 @@ public class BadgeViewModel : ViewModelBase
         {
             TextLineViewModel clone = line.Clone ();
             TextLines.Add (clone);
+
+            if ( line.isBorderViolent ) 
+            {
+                clone.isBorderViolent = true;
+                BorderViolentLines.Add (clone);
+            }
+
+            if ( line.isOverLayViolent )
+            {
+                clone.isOverLayViolent = true;
+                OverlayViolentLines.Add (clone);
+            }
         }
 
         Scale = badge.Scale;
@@ -308,7 +320,7 @@ public class BadgeViewModel : ViewModelBase
 
         //foreach ( TextLineViewModel line in badge.TextLines )
         //{
-        //    //TextLineViewModel original = line.GetDimensionalOriginal ();
+        //    TextLineViewModel original = line.GetDimensionalOriginal ();
         //    TextLines.Add (line);
         //}
 
@@ -331,15 +343,17 @@ public class BadgeViewModel : ViewModelBase
     {
         BadgeViewModel original = new BadgeViewModel (this);
 
-        if ( original.Scale > 1 )
-        {
-            original.ZoomOut (Scale);
-        }
-        else if ( original.Scale < 1 ) 
-        {
-            original.ZoomOn (Scale);
-        }
-        
+        //if ( original.Scale > 1 )
+        //{
+        //    original.ZoomOut (Scale);
+        //}
+        //else if ( original.Scale < 1 ) 
+        //{
+        //    original.ZoomOn (Scale);
+        //}
+
+        original.ZoomOut (Scale);
+
         return original;
     }
 
@@ -861,19 +875,19 @@ public class BadgeViewModel : ViewModelBase
 
     #region FontSizeChange
 
-    internal void IncreaseFontSize ( double increasing )
+    internal void IncreaseFontSize ( double changeSize )
     {
-        ChangeFontSize (increasing, false);
+        ChangeFontSize (changeSize, false);
     }
 
 
-    internal void ReduceFontSize ( double increasing )
+    internal void ReduceFontSize ( double changeSize )
     {
-        ChangeFontSize (increasing, true);
+        ChangeFontSize (changeSize, true);
     }
 
 
-    private void ChangeFontSize ( double increasing, bool toReduce )
+    private void ChangeFontSize ( double changeSize, bool toReduce )
     {
         if ( FocusedLine == null )
         {
@@ -882,11 +896,11 @@ public class BadgeViewModel : ViewModelBase
 
         if ( toReduce )
         {
-            FocusedLine.Reduce (increasing);
+            FocusedLine.Reduce (changeSize);
         }
         else
         {
-            FocusedLine.Increase (increasing);
+            FocusedLine.Increase (changeSize);
         }
 
         IsChanged = true;
