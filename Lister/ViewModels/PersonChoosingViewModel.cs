@@ -54,6 +54,7 @@ namespace Lister.ViewModels
 
         private TemplateChoosingViewModel _templateChoosingVM;
         private PersonSourceViewModel _personSourceVM;
+        private PersonChoosingUserControl _view;
         private bool _allListMustBe = false;
         private double _widthDelta;
         private Timer _timer;
@@ -94,7 +95,7 @@ namespace Lister.ViewModels
         internal string PlaceHolder
         {
             get { return pH; }
-            private set
+            set
             {
                 this.RaiseAndSetIfChanged (ref pH, value, nameof (PlaceHolder));
             }
@@ -327,57 +328,47 @@ namespace Lister.ViewModels
             _focusedEdge = _edge;
         }
 
+
+        internal void PassView ( PersonChoosingUserControl view )
+        {
+            _view = view;
+        }
+
         #region DropDown
 
-        internal string HideDropDownWithChange ( )
+        internal void HideDropDownWithChange ( )
         {
-            string choosingResult;
-
             if ( _focused == null )
             {
                 if ( ! _chosenPersonIsSetInSetter ) 
                 {
                     ChosenPerson = null;
-                    SetEntireListChoosingConsequences ();
                 }
 
-                choosingResult = _placeHolder;
+                PlaceHolder = _placeHolder;
             }
             else 
             {
                 if ( ! _chosenPersonIsSetInSetter )
                 {
                     ChosenPerson = _focused.Person;
-                    SetPersonChoosingConsequences ();
                 }
 
-                choosingResult = ChosenPerson. StringPresentation;
+                PlaceHolder = ChosenPerson.StringPresentation;
             }
 
             _chosenPersonIsSetInSetter = false;
-            string placeholder = HideDropDownWithoutChange ();
-
-            if ( placeholder != null ) 
-            {
-                choosingResult = placeholder;
-            }
-            
+            HideDropDownWithoutChange ();
             TryToEnableBadgeCreation ();
-            
-            return choosingResult;
         }
 
 
-        internal string ? HideDropDownWithoutChange ()
+        internal void HideDropDownWithoutChange ()
         {
-            string placeholder = null;
-
             if ( (InvolvedPeople. Count == 0)   &&   (PeopleStorage. Count > 0) ) 
             {
                 RecoverVisiblePeople ();
-                PlaceHolder = _placeHolder;
                 FontWeight = FontWeight.Bold;
-                placeholder = _placeHolder;
                 PlaceHolder = _placeHolder;
             }
 
@@ -385,8 +376,6 @@ namespace Lister.ViewModels
             VisibleHeight = 0;
             FirstItemHeight = 0;
             FirstIsVisible = false;
-
-            return placeholder;
         }
 
 
@@ -488,6 +477,7 @@ namespace Lister.ViewModels
                     _focused.BorderBrushColor = _focusedBorderColor;
                     _focused.BackgroundBrushColor = _focusedBackgroundColor;
                     _focusedNumber = index;
+                    PlaceHolder = personName;
                     break;
                 }
             }
@@ -503,6 +493,7 @@ namespace Lister.ViewModels
             }
 
             PlaceHolder = _placeHolder;
+            //_view.personTextBox.Text = _placeHolder;
             EntireListColor = _focusedBorderColor;
             _focusedNumber = _focusedEdge - _maxVisibleCount;
         }
@@ -558,12 +549,6 @@ namespace Lister.ViewModels
         }
 
 
-        //internal void SetIntrusionInVisiblePeople ( )
-        //{
-        //    _personSourceVM. peopleSettingOccured = false;
-        //}
-
-
         private void SetPersonList ( ) 
         {
             if ( (InvolvedPeople != null)   &&   (InvolvedPeople. Count > 0) )
@@ -571,6 +556,7 @@ namespace Lister.ViewModels
                 int count = InvolvedPeople. Count;
                 PersonListHeight = _oneHeight * count;
                 bool listIsWhole = ( count == PeopleStorage. Count );
+                _scrollValue = 0;
 
                 if ( listIsWhole )
                 {
@@ -615,7 +601,17 @@ namespace Lister.ViewModels
 
             EntirePersonListIsSelected = true;
             EntireListColor = new SolidColorBrush (MainWindow.black);
+
+            TextboxIsReadOnly = false;
+            TextboxIsFocusable = true;
+
             PlaceHolder = _placeHolder;
+
+            //PlaceHolder = "qwerty";
+            //_view.personTextBox.Text = _placeHolder;
+            //_view.personTextBox.Text = "qwerty";
+
+            FontWeight = FontWeight.Bold;
 
             SetVisiblePeople (0);
         }

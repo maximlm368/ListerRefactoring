@@ -33,6 +33,7 @@
 			Name="templateChoosing"
 			Grid.Column="1"
 			VerticalAlignment="Center"
+			Foreground="{Binding  Path=Color,  Mode=OneWay}"
 			Width="230"
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
@@ -100,6 +101,10 @@
 
 
 <!-- 
+
+
+Foreground="{Binding  Path=Color,  Mode=OneWay}"
+
 
 <ComboBox.ItemsView>
 				<TextBlock

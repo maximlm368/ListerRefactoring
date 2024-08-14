@@ -13,6 +13,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Styling;
 
 
 namespace Lister.Views;
@@ -48,7 +49,6 @@ public partial class MainWindow : Window
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += RestrictPosition;
-
         _mainWindow = this;
     }
 

@@ -344,14 +344,13 @@
 									<DataTemplate>
 
 										<Border
-											Padding="{Binding  Path = Padding,  Mode=OneWay}"
 											Background="{Binding   Path = Background,  Mode=OneWay }"
 											BorderThickness="1"
 											Height="{Binding Path = FontSize,  Mode=OneWay}">
-										
-											<Label
-												VerticalContentAlignment="Center"
-												Height="{Binding  Path = Height,  Mode=OneWay}"
+
+											<TextBlock
+												VerticalAlignment="Center"
+												Height="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
 												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
@@ -363,7 +362,7 @@
 												PointerExited="SetArrowCursor"
 												KeyDown="ToSide"
 												IsEnabled="True"
-												Content="{Binding   Path = Content,  Mode=OneWay }" />
+												Text="{Binding   Path = Content,  Mode=OneWay }" />
 
 										</Border>
 											

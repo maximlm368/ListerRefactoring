@@ -46,9 +46,10 @@ public class TemplateChoosingViewModel : ViewModelBase
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
     private ZoomNavigationViewModel _zoomNavigationVM;
+    private List <TemplateName> _templateNames;
 
-    private List <TemplateViewModel> tF;
-    internal List <TemplateViewModel> Templates
+    private ObservableCollection <TemplateViewModel> tF;
+    internal ObservableCollection <TemplateViewModel> Templates
     {
         get
         {
@@ -156,26 +157,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     public TemplateChoosingViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
     {
-        List <TemplateName> templateNames = docAssembler.GetBadgeModels ();
-        List <TemplateViewModel> templates = new List <TemplateViewModel> ();
-
-        foreach ( TemplateName name   in   templateNames ) 
-        {
-            SolidColorBrush brush;
-
-            if ( name.isFound ) 
-            {
-                brush = new SolidColorBrush (MainWindow.black);
-            }
-            else 
-            {
-                brush = new SolidColorBrush (new Color (100, 0, 0, 0));
-            }
-
-            templates.Add (new TemplateViewModel (name, brush));
-        }
-
-        Templates = templates;
+        _templateNames = docAssembler.GetBadgeModels ();
         _sceneVM = sceneViewModel;
         _converter = new ConverterToPdf ();
     }
@@ -184,6 +166,39 @@ public class TemplateChoosingViewModel : ViewModelBase
     internal void PassView ( TemplateChoosingUserControl view )
     {
         _view = view;
+    }
+
+
+    internal void ChangeAccordingTheme ( string theme )
+    {
+        SolidColorBrush foundColor = new SolidColorBrush (MainWindow.black);
+        SolidColorBrush unfoundColor = new SolidColorBrush (new Color (100, 0, 0, 0));
+
+        if ( theme == "Dark" ) 
+        {
+            foundColor  = new SolidColorBrush (MainWindow.white);
+            unfoundColor = new SolidColorBrush (new Color (100, 255, 255, 255));
+        }
+
+        ObservableCollection <TemplateViewModel> templates = new ();
+
+        foreach ( TemplateName name   in   _templateNames )
+        {
+            SolidColorBrush brush;
+
+            if ( name.isFound )
+            {
+                brush = foundColor;
+            }
+            else
+            {
+                brush = unfoundColor;
+            }
+
+            templates.Add (new TemplateViewModel (name, brush));
+        }
+
+        Templates = templates;
     }
 
 

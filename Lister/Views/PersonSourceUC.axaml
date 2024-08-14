@@ -28,7 +28,7 @@
 			MaxHeight="32"
 			HorizontalContentAlignment="Left"
 			VerticalContentAlignment="Center"
-			BorderBrush="black"
+			BorderBrush="{Binding  Path = BorderBrush,  Mode=OneWay}"
 			CornerRadius = "3"
 			BorderThickness="1"
 			Content="{Binding  Path = SourceFilePath,  Mode=OneWay}"

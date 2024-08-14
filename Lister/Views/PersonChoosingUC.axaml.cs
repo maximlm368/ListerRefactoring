@@ -39,12 +39,17 @@ namespace Lister.Views
         private PersonChoosingViewModel _vm;
         private string _textBoxText = string.Empty;
 
+        private SolidColorBrush _personTBBackground = new SolidColorBrush (MainWindow.black);
+
 
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
             _vm = (PersonChoosingViewModel) DataContext;
+            _vm.PassView (this);
+
+            //personTextBox.Background = _personTBBackground;
 
             //personTextBox.AddHandler 
             //    ( TextBox.PastingFromClipboardEvent, IgnorPastingFromClipboard, RoutingStrategies.Bubble);
@@ -85,7 +90,6 @@ namespace Lister.Views
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
             _vm.SetEntireList ();
-            personTextBox.Text = _vm.PlaceHolder;
 
             if ( _chosen != null )
             {
@@ -97,7 +101,7 @@ namespace Lister.Views
         }
 
 
-        internal void GotFocuse ( object sender, GotFocusEventArgs args )
+        internal void GotFocus ( object sender, GotFocusEventArgs args )
         {
             if ( personTextBox.Text == null )
             {
@@ -109,6 +113,29 @@ namespace Lister.Views
         }
 
 
+        internal void LostFocuse ( object sender, RoutedEventArgs args )
+        {
+            personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
+        }
+
+
+        internal void PointerEntered ( object sender, PointerEventArgs args )
+        {
+            personTextBox.Foreground = new SolidColorBrush (MainWindow.white);
+        }
+
+
+        internal void PointerExited ( object sender, PointerEventArgs args )
+        {
+            if ( personTextBox.IsFocused ) 
+            {
+                return;
+            }
+
+            personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
+        }
+
+
         #region Drop
 
         internal void CloseCustomCombobox ()
@@ -117,13 +144,7 @@ namespace Lister.Views
 
             if ( reasonExists )
             {
-                string placeholder = _vm.HideDropDownWithoutChange ();
-
-                if ( placeholder != null ) 
-                {
-                    personTextBox.Text = placeholder;
-                }
-                
+                _vm.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
             }
 
@@ -168,14 +189,15 @@ namespace Lister.Views
         }
 
 
-        internal void DropOrPickUpPersonsByFocus ( object sender, GotFocusEventArgs args )
-        {
-            if ( _personListIsDropped )
-            {
-                _vm.HideDropDownWithChange ();
-                _personListIsDropped = false;
-            }
-        }
+        //internal void DropOrPickUpPersonsByFocus ( object sender, GotFocusEventArgs args )
+        //{
+        //    if ( _personListIsDropped )
+        //    {
+        //        _vm.HideDropDownWithChange ();
+        //        _personListIsDropped = false;
+        //    }
+        //}
+        
         #endregion Drop
 
         #region PersonListReduction
@@ -265,18 +287,9 @@ namespace Lister.Views
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             Label chosenLabel = ( Label ) sender;
-
-            //chosenLabel.Background = new SolidColorBrush ( new Color ( 255 , 0 , 200 , 200 ) );
-
-            //if ( _chosen != null )
-            //{
-            //    _chosen.Background = new SolidColorBrush (new Color (255, 255, 255, 255));
-            //}
-
             _chosen = chosenLabel;
             string chosenName = ( string ) chosenLabel.Content;
             _vm.SetChosenPerson (chosenName);
-            personTextBox.Text = chosenName;
             DropOrPickUp ();
         }
 
@@ -291,7 +304,7 @@ namespace Lister.Views
 
             if ( _personListIsDropped )
             {
-                personTextBox.Text = _vm.HideDropDownWithChange ();
+                _vm.HideDropDownWithChange ();
                 _personListIsDropped = false;
             }
             else
@@ -309,13 +322,7 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                string placeholder = _vm.HideDropDownWithoutChange ();
-
-                if ( placeholder != null )
-                {
-                    personTextBox.Text = placeholder;
-                }
-
+                _vm.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
             }
         }

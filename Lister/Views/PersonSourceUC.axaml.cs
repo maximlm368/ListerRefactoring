@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +13,8 @@ namespace Lister.Views
     public partial class PersonSourceUserControl : UserControl
     {
         private PersonSourceViewModel _vm;
-       
+        private string _theme;
+
 
         public PersonSourceUserControl ()
         {
@@ -20,12 +23,32 @@ namespace Lister.Views
             _vm = (PersonSourceViewModel) DataContext;
             var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
+            Loaded += OnLoaded;
+            ActualThemeVariantChanged += ThemeChanged;
         }
 
 
         internal void SetPath ( string ? path )
         {
             _vm.SetPath ( this.GetType(), path);
+        }
+
+
+        internal void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            _theme = ActualThemeVariant.Key.ToString ();
+            _vm.ChangeAccordingTheme (_theme);
+        }
+
+
+        internal void ThemeChanged ( object sender, EventArgs args )
+        {
+            if ( ActualThemeVariant == null )
+            {
+                return;
+            }
+
+            OnLoaded (null, null);
         }
     }
 }

@@ -226,18 +226,6 @@ namespace Lister.ViewModels
         }
 
 
-        //internal void ZoomOn ( short step )
-        //{
-        //    SceneVM.ZoomOn (step);
-        //}
-
-
-        //internal void ZoomOut ( short step )
-        //{
-        //    SceneVM.ZoomOut ( step );
-        //}
-
-
         internal void SetEnablePageNavigation ()
         {
             int pageCount = GetPageCount ();

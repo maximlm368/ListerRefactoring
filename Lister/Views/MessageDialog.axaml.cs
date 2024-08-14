@@ -52,10 +52,7 @@ namespace Lister.Views
             _vm = new MessageViewModel ();
             DataContext = _vm;
             CanResize = false;
-            //ok.Focus (NavigationMethod.Tab, KeyModifiers.None);
-
-            //BorderBrush = new SolidColorBrush (MainWindow.black);
-            //BorderThickness = new Avalonia.Thickness (1,1,1,1);
+            _vm.PassView (this);
         }
 
 

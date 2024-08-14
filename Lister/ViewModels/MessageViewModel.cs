@@ -31,6 +31,7 @@ namespace Lister.ViewModels
 
         private readonly int _lineHeight = 16;
         private int _topMargin = 54;
+        private MessageDialog _view;
 
         private SolidColorBrush lB;
         internal SolidColorBrush LineBackground
@@ -99,6 +100,18 @@ namespace Lister.ViewModels
 
             CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
             LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
+        }
+
+
+        internal void PassView ( MessageDialog view )
+        {
+            _view = view;
+        }
+
+
+        internal void Close (  )
+        {
+            _view.Close ();
         }
     }
 }

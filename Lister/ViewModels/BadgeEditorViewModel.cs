@@ -30,7 +30,9 @@ namespace Lister.ViewModels
     {
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
-        internal static readonly double _scale = 2.5;
+        internal static readonly double _scale = 2.44140625;
+        //internal static readonly double _scale = 1;
+        //internal static readonly double _scale = 2.5;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
@@ -284,9 +286,6 @@ namespace Lister.ViewModels
             }
         }
 
-        //public ICommand GoBackCommand { get; }
-        //internal Interaction <DialogViewModel, string> ShowDialog { get; }
-
 
         public BadgeEditorViewModel ( )
         {
@@ -294,7 +293,6 @@ namespace Lister.ViewModels
             _drafts = new Dictionary <BadgeViewModel, BadgeViewModel> ();
             FocusedFontSize = string.Empty;
             SplitterIsEnable = false;
-
             IncorrectBadges = new ObservableCollection <BadgeViewModel> ();
             FixedBadges = new ObservableCollection <BadgeViewModel> ();
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
@@ -309,9 +307,6 @@ namespace Lister.ViewModels
             string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _correctnessIcon;
             string incorrectnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _incorrectnessIcon;
 
-
-
-
             Uri correctUri = new Uri (correctnessIcon);
             CorrectnessIcon = ImageHelper.LoadFromResource (correctUri);
             Uri incorrectUri = new Uri (incorrectnessIcon);
@@ -319,30 +314,6 @@ namespace Lister.ViewModels
 
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
-
-            //ShowDialog = new Interaction <DialogViewModel, string> ();
-            //GoBackCommand = ReactiveCommand.CreateFromTask (async () =>
-            //{
-            //    bool changesExist = ChangesExist ();
-
-            //    if ( changesExist ) 
-            //    {
-            //        DialogViewModel dialogVM = new DialogViewModel ();
-            //        var result = await ShowDialog.Handle (dialogVM);
-                    
-            //        if ( result != null )
-            //        {
-            //            if ( result == "Yes" )
-            //            {
-            //                GoBack ();
-            //            }
-            //        }
-            //    }
-            //    else 
-            //    {
-            //        GoBack ();
-            //    }
-            //});
         }
 
 
@@ -421,7 +392,6 @@ namespace Lister.ViewModels
         }
 
 
-
         internal void GoBackCommand ()
         {
             bool changesExist = ChangesExist ();
@@ -456,15 +426,12 @@ namespace Lister.ViewModels
             {
                 BadgeViewModel badge = badgeScale.Key;
                 double scale = badgeScale.Value;
-                badge.ZoomOut (_scale);
+                badge.ZoomOut (_scale, true);
                 SetOriginalScale (badge, scale);
             }
 
             MainWindow mainWindow = _view.Parent as MainWindow;
             _back.SetProperSize (_view.Width, _view.Height);
-
-            //_back = new ModernMainView ();
-            //_back.ChangeSize (mainWindow.WidthDifference, mainWindow.HeightDifference);
 
             mainWindow.CancelSizeDifference ();
             _back.ResetIncorrects ();
@@ -744,14 +711,13 @@ namespace Lister.ViewModels
         {
             if ( BeingProcessedBadge. FocusedLine != null )
             {
-                BeingProcessedBadge.CheckCorrectness ();
+                BeingProcessedBadge.CheckFocusedLineCorrectness ();
                 BeingProcessedBadge. FocusedLine = null;
                 BeingProcessedBadge. FocusedFontSize = string.Empty;
                 ResetActiveIcon ();
                 ZoommerIsEnable = false;
                 MoversAreEnable = false;
                 SplitterIsEnable = false;
-                //FocusedBorderThickness = new Thickness (0, 0, 0, 0);
             }
         }
 
@@ -853,7 +819,7 @@ namespace Lister.ViewModels
         {
             if ( beingPrecessed.Scale != 1 )
             {
-                beingPrecessed.ZoomOut (beingPrecessed.Scale);
+                beingPrecessed.ZoomOut (beingPrecessed.Scale, true);
             }
         }
 
@@ -862,7 +828,7 @@ namespace Lister.ViewModels
         {
             if ( scale != 1 )
             {
-                beingPrecessed.ZoomOn (scale);
+                beingPrecessed.ZoomOn (scale, false);
             }
         }
 
@@ -872,7 +838,7 @@ namespace Lister.ViewModels
             if ( processable.Scale != _scale )
             {
                 SetStandardScale (processable);
-                processable.ZoomOn (_scale);
+                processable.ZoomOn (_scale, false);
             }
         }
         #endregion

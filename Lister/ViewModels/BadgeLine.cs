@@ -140,12 +140,9 @@ namespace Lister.ViewModels
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
 
-            //double newMarginLeft = Margin.Left * scaleCoefficient;
-            //Margin = new Thickness (newMarginLeft, 0, 0, 0);
-
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
-                Badges [index].ZoomOn (scaleCoefficient);
+                Badges [index].ZoomOn (scaleCoefficient, false);
             }
         }
 
@@ -155,12 +152,9 @@ namespace Lister.ViewModels
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
 
-            //double newMarginLeft = Margin.Left / scaleCoefficient;
-            //Margin = new Thickness (newMarginLeft, 0, 0, 0);
-
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
-                Badges [index].ZoomOut (scaleCoefficient);
+                Badges [index].ZoomOut (scaleCoefficient, false);
             }
         }
 

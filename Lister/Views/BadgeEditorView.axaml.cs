@@ -18,6 +18,7 @@ using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using iText.Layout.Renderer;
 
 namespace Lister.Views
 {
@@ -30,7 +31,7 @@ namespace Lister.Views
         private static bool _heightIsChanged;
 
         private Image _currentIcon;
-        private ContentControl _focused;
+        private TextBlock _focused;
         private bool _capturedExists;
         private bool _focusedExists;
         private bool _pointerIsPressed;
@@ -149,6 +150,12 @@ namespace Lister.Views
         internal void HandleTextEdition ( object sender, TextChangedEventArgs args )
         {
             string edited = editorTextBox.Text;
+
+            if ( edited == string.Empty ) 
+            {
+                return;
+            }
+
             _vm.ResetFocusedText (edited);
         }
 
@@ -167,7 +174,7 @@ namespace Lister.Views
             editorTextBox.IsEnabled = true;
             _focusedExists = true;
 
-            Label label = sender as Label;
+            TextBlock textBlock = sender as TextBlock;
             Border container;
 
             if ( _focused != null )
@@ -177,30 +184,30 @@ namespace Lister.Views
                 _focused.Background = null;
             }
 
-            _focused = label;
+            _focused = textBlock;
             zoomOn.IsEnabled = true;
             zoomOut.IsEnabled = true;
-            string content = ( string ) _focused.Content;
+            string content = ( string ) _focused.Text;
 
-            int labelNumber = 0;
+            int lineNumber = 0;
             int counter = 0;
             bool shouldBreak = false;
 
             var children = textLines.GetLogicalChildren ();
 
-            foreach ( var child in children )
+            foreach ( var child   in   children )
             {
                 var ch = child.GetLogicalChildren ();
 
-                foreach ( var border in ch )
+                foreach ( var border   in   ch )
                 {
-                    var lablels = border.GetLogicalChildren ();
+                    var textBlocks = border.GetLogicalChildren ();
 
-                    foreach ( var lab in lablels )
+                    foreach ( var textBl   in   textBlocks )
                     {
-                        if ( _focused.Equals(lab) ) 
+                        if ( _focused.Equals(textBl) ) 
                         {
-                            labelNumber = counter;
+                            lineNumber = counter;
                             shouldBreak = true;
                             break;
                         }
@@ -220,13 +227,13 @@ namespace Lister.Views
                 counter++;
             }
 
-            container = label.Parent as Border;
+            container = textBlock.Parent as Border;
             container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
 
-            _vm.Focus (content, labelNumber);
+            _vm.Focus (content, lineNumber);
             left.Focus ();
             Cursor = new Cursor (StandardCursorType.SizeAll);
-
+            
             _isReleaseLocked = true;
             _focusTime = Stopwatch.StartNew ();
         }
@@ -234,11 +241,11 @@ namespace Lister.Views
 
         internal void Move ( object sender, PointerEventArgs args )
         {
-            Label label = sender as Label;
+            TextBlock textBlock = sender as TextBlock;
 
             if ( _capturedExists )
             {
-                label.Content = label.Content;
+                textBlock.Text = textBlock.Text;
                 Point newPosition = args.GetPosition (_focused);
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;
@@ -250,14 +257,14 @@ namespace Lister.Views
 
         internal void Capture ( object sender, PointerPressedEventArgs args )
         {
-            Label label = sender as Label;
+            TextBlock textBlock = sender as TextBlock;
 
-            if ( label != _focused )
+            if ( textBlock != _focused )
             {
                 return;
             }
 
-            _pointerPosition = args.GetPosition (label);
+            _pointerPosition = args.GetPosition (textBlock);
             _capturedExists = true;
         }
 
@@ -316,10 +323,9 @@ namespace Lister.Views
 
         internal void SetCrossCursor ( object sender, PointerEventArgs args )
         {
-            //Border border = sender as Border;
-            Label label = sender as Label;
+            TextBlock textBlock = sender as TextBlock;
 
-            if ( label != _focused )
+            if ( textBlock != _focused )
             {
                 return;
             }
@@ -330,10 +336,9 @@ namespace Lister.Views
 
         internal void SetArrowCursor ( object sender, PointerEventArgs args )
         {
-            //Border border = sender as Border;
-            Label label = sender as Label;
+            TextBlock textBlock = sender as TextBlock;
 
-            if ( label != _focused )
+            if ( textBlock != _focused )
             {
                 return;
             }

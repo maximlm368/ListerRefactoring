@@ -4,10 +4,14 @@ using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Globalization;
 using System.Reactive.Subjects;
 
 namespace Lister.Views
@@ -35,10 +39,6 @@ namespace Lister.Views
         private void OnLoaded ( object sender, RoutedEventArgs args )
         {
             _vm.SetEdition ();
-
-
-            Label label = new Label ();
-            label.VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
         }
 
 
@@ -122,6 +122,59 @@ namespace Lister.Views
             //}
 
 
+        }
+
+        internal void Focus ( object sender, TappedEventArgs args )
+        {
+            Label label = sender as Label;
+            Border container;
+
+            //Label lb = new Label ();
+            //lb.Content = "Александровская";
+            //lb.FontSize = 24;
+            //Size ss = new Size ();
+            //lb.Measure (ss);
+            //var wwd = lb.Width;
+            //Size s = lb.DesiredSize;
+            //double wd = s.Width;
+
+
+            string cont = label.Content as string;
+
+            Typeface face = new Typeface (label.FontFamily, FontStyle.Normal, FontWeight.Bold);
+            FormattedText formatted = new FormattedText (cont, CultureInfo.CurrentCulture
+                                                                , FlowDirection.LeftToRight, face, label.FontSize, null);
+
+            double width = formatted.WidthIncludingTrailingWhitespace;
+
+            Avalonia.Size wdth = label.DesiredSize;
+
+            int fdf = 0;
+        }
+
+
+        internal void Handle ( object sender, RoutedEventArgs args )
+        {
+            TextBlock tb = sender as TextBlock;
+
+            //var badgeLines = lines.GetLogicalChildren ();
+
+            //foreach ( var badgeLine in badgeLines )
+            //{
+            //    var badges = badgeLine.GetLogicalChildren ();
+
+            //    foreach ( var badge in badges )
+            //    {
+            //        var badgeBorder = badge.GetLogicalChildren ();
+
+            //        foreach ( var children in badgeBorder )
+            //        {
+            //            var badgeBorder = children.GetLogicalChildren ();
+            //        }
+            //    }
+            //}
+
+            Avalonia.Size wdth = tb.DesiredSize;
         }
 
     }

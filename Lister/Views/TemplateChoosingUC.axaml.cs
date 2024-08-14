@@ -19,9 +19,9 @@ namespace Lister.Views
         private static readonly string _jsonError = 
         "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
         private static TemplateViewModel _chosen;
-        private const double coefficient = 1.1;
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
+        private string _theme;
 
 
         public TemplateChoosingUserControl ()
@@ -29,8 +29,8 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<TemplateChoosingViewModel> ();
             _vm = ( TemplateChoosingViewModel ) DataContext;
-
             Loaded += OnLoaded;
+            ActualThemeVariantChanged += ThemeChanged;
         }
 
 
@@ -44,6 +44,20 @@ namespace Lister.Views
             }
 
             _vm.PassView (this);
+            _theme = ActualThemeVariant.Key.ToString ();
+            _vm.ChangeAccordingTheme (_theme);
+        }
+
+
+        internal void ThemeChanged ( object sender, EventArgs args )
+        {
+            if ( ActualThemeVariant == null ) 
+            {
+                return;
+            }
+
+            _theme = ActualThemeVariant.Key.ToString ();
+            _vm.ChangeAccordingTheme ( _theme );
         }
 
 
@@ -77,6 +91,8 @@ namespace Lister.Views
                 var messegeDialog = new MessageDialog ();
                 messegeDialog.Message = _jsonError;
                 messegeDialog.ShowDialog (MainWindow._mainWindow);
+                messegeDialog.Focusable = true;
+                messegeDialog.Focus ();
             }
             else 
             {

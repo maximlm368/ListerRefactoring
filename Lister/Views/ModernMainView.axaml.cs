@@ -16,6 +16,7 @@ namespace Lister.Views
         private static double _widthDelta;
         private static double _heightDelta;
         private ModernMainViewModel _vm;
+        private bool _isFirstTimeLoading = true;
         internal static readonly string _sourcePathKeeper = "keeper.txt";
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
@@ -41,6 +42,11 @@ namespace Lister.Views
 
         internal void OnLoaded ( object sender, RoutedEventArgs args )
         {
+            if ( !_isFirstTimeLoading )
+            {
+                return;
+            }
+
             string workDirectory = @"./";
             DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
             string directoryPath = containingDirectory.FullName;
@@ -138,6 +144,7 @@ namespace Lister.Views
 
                 editorView.PassIncorrectBadges (incorrectBadges);
                 editorView.PassBackPoint (mainView);
+                _isFirstTimeLoading = false;
                 window.Content = editorView;
             }
         }

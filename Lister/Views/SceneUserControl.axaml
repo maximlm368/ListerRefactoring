@@ -108,18 +108,18 @@
 															<DataTemplate>
 
 																<Border
-																	Padding="{Binding  Path = Padding,  Mode=OneWay}"
 																	BorderThickness="1"
 																	Height="{Binding  Path = FontSize,  Mode=OneWay}">
 
-																	<Label
-																		VerticalContentAlignment="Center"
-																		Height="{Binding  Path = Height,  Mode=OneWay}"
+																	<TextBlock
+																		VerticalAlignment="Center"
+																		Height="{Binding  Path = FontSize,  Mode=OneWay}"
 																		FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																		FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 																		FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 																		Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
-																		Content="{Binding   Path = Content,  Mode=OneWay }" />
+																		Text="{Binding   Path = Content,  Mode=OneWay }" 
+																		/>
 
 																</Border>
 																	
@@ -200,6 +200,14 @@
 
 
 <!--
+
+Padding="{Binding  Path = Padding,  Mode=OneWay}"
+
+
+	Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
+
+Background="Pink"
+
 Height="{Binding Path = Height,  Mode=OneWay}"
 Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"
 

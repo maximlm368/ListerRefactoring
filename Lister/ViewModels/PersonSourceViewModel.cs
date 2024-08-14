@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static QuestPDF.Helpers.Colors;
 using MessageBox.Avalonia.Views;
+using Avalonia.Media;
 
 namespace Lister.ViewModels
 {
@@ -57,6 +58,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private SolidColorBrush bB;
+        internal SolidColorBrush BorderBrush
+        {
+            get { return bB; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref bB, value, nameof (BorderBrush));
+            }
+        }
+
         internal bool peopleSettingOccured;
 
 
@@ -67,6 +78,17 @@ namespace Lister.ViewModels
             _personChoosingVM = personChoosing;
             EditorIsEnable = false;
             peopleSettingOccured = false;
+        }
+
+
+        internal void ChangeAccordingTheme ( string theme )
+        {
+            BorderBrush = new SolidColorBrush (MainWindow.black);
+
+            if ( theme == "Dark" )
+            {
+                BorderBrush = new SolidColorBrush (MainWindow.white);
+            }
         }
 
 
@@ -201,7 +223,7 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    List<Person> persons = _uniformAssembler.GetPersons (path);
+                    List <Person> persons = _uniformAssembler.GetPersons (path);
                     _personChoosingVM.SetPersons (persons);
                     peopleSettingOccured = true;
 

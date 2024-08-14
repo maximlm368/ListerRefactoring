@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Lister.ViewModels;
 using Lister.Views;
 using Splat;
+using Avalonia.Styling;
+using Avalonia.Controls;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Lister;
 

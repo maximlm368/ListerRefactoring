@@ -39,13 +39,12 @@
 				Name="personTextBox"
 				Width="440"
 				FontSize="14"
-				Background="White"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				SelectionForegroundBrush="White"
-				GotFocus="GotFocuse"
+				GotFocus="GotFocus"
 				KeyUp="HandlePersonListReduction"
 				KeyDown="DropOrPickUpPersonsOrScroll"
 				 />
@@ -80,6 +79,7 @@
 							FontSize="13"
 							FontWeight="Bold"
 							Background="LightPink"
+							Foreground="Black"
 							BorderBrush="{Binding   Path = EntireListColor,  Mode=OneWay }"
 							BorderThickness="2"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
@@ -102,6 +102,7 @@
 											FontSize="13"
 											Height="25"
 											Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
+										    Foreground="Black"
 											BorderBrush="{Binding   Path = BorderBrushColor,  Mode=OneWay }"
 											BorderThickness="2"
 											Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
@@ -197,7 +198,17 @@
 </UserControl>
 
 
-<!--    
+<!--   
+
+
+Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
+
+
+
+PointerEntered="PointerEntered"
+				PointerExited="PointerExited"
+				LostFocus="LostFocuse"
+
 
 IsVisible="{Binding   Path = DropDownIsVisible,  Mode=OneWay}"
 Opacity="{Binding  Path=DropDownOpacity, Mode=OneWay}"
