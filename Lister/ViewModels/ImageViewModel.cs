@@ -1,4 +1,5 @@
-﻿using ContentAssembler;
+﻿using Avalonia;
+using ContentAssembler;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,23 @@ namespace Lister.ViewModels
             }
         }
 
-        private Size sz;
-        internal Size Size
+        private double wd;
+        internal double Width
         {
-            get { return sz; }
+            get { return wd; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sz, value, nameof (Size));
+                this.RaiseAndSetIfChanged (ref wd, value, nameof (Width));
+            }
+        }
+
+        private double hg;
+        internal double Height
+        {
+            get { return hg; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref hg, value, nameof (Height));
             }
         }
 
@@ -63,15 +74,15 @@ namespace Lister.ViewModels
 
         public ImageViewModel ( InsideImage image ) 
         {
-            double width = image.Size. Width;
-            double height = image.Size .Height;
+            double width = image.OutlineWidth;
+            double height = image.OutlineHeight;
 
             bool isImageWorthVisibility = image.ImageKind != ImageType.nothing;
 
             if ( isImageWorthVisibility ) 
             {
-                width = image.Size.Width;
-                height = image.Size.Height;
+                width = image.OutlineWidth;
+                height = image.OutlineHeight;
             }
 
             Path = image.Path;
@@ -85,14 +96,16 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ( double coefficient )
         {
-            Size.ZoomOn (coefficient);
+            Width *= coefficient;
+            Height *= coefficient;
             base.ZoomOn (coefficient);
         }
 
 
         internal void ZoomOut ( double coefficient )
         {
-            Size.ZoomOut (coefficient);
+            Width /= coefficient;
+            Height /= coefficient;
             base.ZoomOut (coefficient);
         }
 

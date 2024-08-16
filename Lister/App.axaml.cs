@@ -11,14 +11,15 @@ using Splat;
 using Avalonia.Styling;
 using Avalonia.Controls;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Runtime.InteropServices;
 
 namespace Lister;
 
 
 public partial class App : Application
 {
-    public static string _resourceUriFolderName = "//Resources//";
-    public static string _resourceFolderName = "/Resources/";
+    public static string ResourceUriFolderName { get; private set; }
+    public static string ResourceUriType { get; private set; }
     public static ServiceProvider services;
 
 
@@ -27,6 +28,20 @@ public partial class App : Application
         ServiceCollection collection = new ServiceCollection ();
         collection.AddNeededServices ();
         services = collection.BuildServiceProvider ();
+
+        bool isWindows = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
+        bool isLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
+
+        if ( isWindows )
+        {
+            ResourceUriFolderName = "//Resources//";
+            ResourceUriType = "file:///";
+        }
+        else if ( isLinux ) 
+        {
+            ResourceUriFolderName = "Resources/";
+            ResourceUriType = "file://";
+        }
     }
 
 

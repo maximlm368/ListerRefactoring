@@ -45,6 +45,7 @@ namespace Lister.Views
         public PersonChoosingUserControl ()
         {
             InitializeComponent ();
+
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
             _vm = (PersonChoosingViewModel) DataContext;
             _vm.PassView (this);

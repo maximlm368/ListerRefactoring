@@ -236,10 +236,10 @@ public class BadgeViewModel : ViewModelBase
         RightSpan = layout.RightSpan;
         BottomSpan = layout.BottomSpan;
 
-        BadgeWidth = layout.OutlineSize. Width;
+        BadgeWidth = layout.OutlineWidth;
         BorderWidth = BadgeWidth + 2;
         _widht = BadgeWidth;
-        BadgeHeight = layout.OutlineSize. Height;
+        BadgeHeight = layout.OutlineHeight;
         BorderHeight = BadgeHeight + 2;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
@@ -319,7 +319,6 @@ public class BadgeViewModel : ViewModelBase
         }
 
         Scale = badge.Scale;
-
 
         //foreach ( TextLineViewModel line in badge.TextLines )
         //{

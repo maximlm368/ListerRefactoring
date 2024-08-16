@@ -93,8 +93,11 @@ namespace Lister.ViewModels
 
         public MessageViewModel () 
         {
-            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _warnImageName;
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+
+            string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
 

@@ -53,28 +53,26 @@ namespace Lister.ViewModels
         {
             BoundBadge = boundBadge;
 
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+
             if ( isCorrect )
             {
                 Correctness = true;
-                string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-                string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _correctnessIcon;
+                string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _correctnessIcon;
                 Uri uri = new Uri (correctnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
             else
             {
                 Correctness = false;
-                string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-                string incorrectnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _incorrectnessIcon;
+                string incorrectnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _incorrectnessIcon;
                 Uri uri = new Uri (incorrectnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
 
             BorderColor = new SolidColorBrush (new Color (255, 255, 255, 255));
         }
-
-
-
-
     }
 }

@@ -49,37 +49,15 @@ namespace Lister.ViewModels
         }
 
 
-        //public ReactiveCommand <Unit, string ?> ChooseYes { get; }
-        //public ReactiveCommand <Unit, string ?> ChooseNo { get; }
-
-
-        //public DialogViewModel ()
-        //{
-        //    string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-        //    string correctnessIcon = "file:///" + directoryPath + "//" + _warnImageName;
-        //    Uri correctUri = new Uri (correctnessIcon);
-        //    WarnImage = ImageHelper.LoadFromResource (correctUri);
-
-        //    CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
-        //    LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
-
-        //    ChooseYes = ReactiveCommand.Create (() =>
-        //    {
-        //        return "Yes";
-        //    });
-
-        //    ChooseNo = ReactiveCommand.Create (() =>
-        //    {
-        //        return "No";
-        //    });
-        //}
-
-
         public DialogViewModel ( DialogWindow view )
         {
             _view = view;
-            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _warnImageName;
+
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+
+            string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
 

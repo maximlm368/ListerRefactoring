@@ -152,19 +152,6 @@ namespace Lister.ViewModels
             }
         }
 
-        //private Avalonia.Size dS;
-        //internal Avalonia.Size DesiredSize
-        //{
-        //    get { return dS; }
-        //    set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref dS, value, nameof (DesiredSize));
-
-        //        UsefullWidth = DesiredSize.Width;
-        //        SetAlignment (_alignmentName);
-        //    }
-        //}
-
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
 
@@ -345,7 +332,7 @@ namespace Lister.ViewModels
             {
                 LeftOffset += ( Width - UsefullWidth );
             }
-            if ( alignmentName == "Center" )
+            else if ( alignmentName == "Center" )
             {
                 LeftOffset += ( Width - UsefullWidth ) / 2;
             }

@@ -31,7 +31,7 @@ namespace Lister.ViewModels
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
         internal static readonly double _scale = 2.44140625;
-        //internal static readonly double _scale = 1;
+        //internal static readonly double _scale = 2;
         //internal static readonly double _scale = 2.5;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
         private TextLineViewModel _splittable;
@@ -40,6 +40,11 @@ namespace Lister.ViewModels
         private bool _incorrectsAreSet = false;
         private ModernMainView _back;
         private BadgeEditorView _view;
+        private int _visibleRangeStart = 0;
+        private int _visibleRangeEnd;
+        private int _visibleRange;
+        private double _scrollHeight = 204;
+        private double _itemHeight = 34;
         
         internal double WidthDelta { get; set; }
         internal double HeightDelta { get; set; }
@@ -143,6 +148,16 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref fx, value, nameof (FixedBadges));
+            }
+        }
+
+        private Vector sO;
+        internal Vector SliderOffset
+        {
+            get { return sO; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref sO, value, nameof (SliderOffset));
             }
         }
 
@@ -297,15 +312,12 @@ namespace Lister.ViewModels
             FixedBadges = new ObservableCollection <BadgeViewModel> ();
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
 
-            //string workDirectory = @"./";
-            //DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            //string directoryPath = containingDirectory.FullName;
-            //string correctnessIcon = directoryPath + _correctnessIcon;
-            //string incorrectnessIcon = directoryPath + _incorrectnessIcon;
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
 
-            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            string correctnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _correctnessIcon;
-            string incorrectnessIcon = "file:///" + directoryPath + App._resourceUriFolderName + _incorrectnessIcon;
+            string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _correctnessIcon;
+            string incorrectnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _incorrectnessIcon;
 
             Uri correctUri = new Uri (correctnessIcon);
             CorrectnessIcon = ImageHelper.LoadFromResource (correctUri);
@@ -314,6 +326,17 @@ namespace Lister.ViewModels
 
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
+
+            _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
+            _visibleRangeEnd = _visibleRange - 1;
+        }
+
+
+        internal void ChangeSliderHeight ( double delta )
+        {
+            _scrollHeight -= delta;
+            _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
+            _visibleRangeEnd = _visibleRange - 1;
         }
 
 
@@ -483,6 +506,8 @@ namespace Lister.ViewModels
             ZoommerIsEnable = false;
 
             ReleaseCaptured ();
+
+            SliderOffset = new Vector (0,0);
         }
 
 
@@ -508,6 +533,11 @@ namespace Lister.ViewModels
             ZoommerIsEnable = false;
 
             ReleaseCaptured ();
+
+            if ( BeingProcessedNumber < ( _visibleRangeEnd + 1 ) )
+            {
+                SliderOffset = new Vector (0, SliderOffset. Y - _itemHeight);
+            }
         }
 
 
@@ -540,6 +570,11 @@ namespace Lister.ViewModels
             ZoommerIsEnable = false;
 
             ReleaseCaptured ();
+
+            if ( BeingProcessedNumber > (_visibleRangeEnd + 1) ) 
+            {
+                SliderOffset = new Vector (0, SliderOffset. Y + _itemHeight);
+            }
         }
 
 
@@ -567,6 +602,9 @@ namespace Lister.ViewModels
             ZoommerIsEnable = false;
 
             ReleaseCaptured ();
+
+            double verticalOffset = (_visibleRange - 1) * _itemHeight;
+            SliderOffset = new Vector (0, verticalOffset);
         }
 
 
@@ -632,6 +670,11 @@ namespace Lister.ViewModels
                 _view. scalabilityGrade.IsEnabled = false;
 
                 ReleaseCaptured ();
+
+                //if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) || BeingProcessedNumber < ( _visibleRangeEnd + 1 ) )
+                //{
+                //    SliderOffset = new Vector (0, _itemHeight * _visibleRange / 2);
+                //}
             }
             catch ( Exception ex )
             {

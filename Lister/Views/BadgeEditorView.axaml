@@ -240,12 +240,13 @@
 					Focusable="True"
 					BorderThickness="1"
 					BorderBrush="Brown"
-					Height="223"
-					Margin ="0,20,0,0"
+					Height="206"
+					Margin ="0,37,0,0"
 					KeyDown="ToParticularBadge">
 
 					<ScrollViewer
 						 Name="sliderScroller"
+						 Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
 						 VerticalScrollBarVisibility="Auto"
 						 AllowAutoHide="True">
 
@@ -405,7 +406,6 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToFirst}"
-				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -415,7 +415,6 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToPrevious}"
-				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
@@ -449,7 +448,6 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToNext}"
-				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
 			<Button
@@ -459,7 +457,6 @@
 				HorizontalContentAlignment="Center"
 				Width="48"
 				Command="{Binding   Path = ToLast}"
-				KeyDown="ToParticularBadge"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
 

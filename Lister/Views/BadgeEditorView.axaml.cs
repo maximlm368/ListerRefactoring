@@ -70,6 +70,7 @@ namespace Lister.Views
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
             slider.Height -= heightDifference;
+            _vm.ChangeSliderHeight (heightDifference);
             _vm.WidthDelta = widthDifference;
             _vm.HeightDelta = heightDifference;
         }

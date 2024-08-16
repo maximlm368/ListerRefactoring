@@ -155,7 +155,8 @@ namespace Lister.ViewModels
                        if ( task.Result.Count > 0 )
                        {
                            string result = task.Result [0].Path.ToString ();
-                           result = result.Substring (8, result.Length - 8);
+                           int uriTypeLength = App.ResourceUriType. Length;
+                           result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
                            SourceFilePath = result;
 
                            if ( ( SourceFilePath != null )   &&   (SourceFilePath != string.Empty) )

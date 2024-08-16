@@ -324,7 +324,8 @@ public class TemplateChoosingViewModel : ViewModelBase
                    if ( task.Result != null )
                    {
                        string result = task.Result.Path.ToString ();
-                       result = result.Substring (8, result.Length - 8);
+                       int uriTypeLength = App.ResourceUriType. Length;
+                       result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
                        Task<bool> pdf = GeneratePdf (result);
 
                        pdf.ContinueWith

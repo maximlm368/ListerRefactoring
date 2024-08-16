@@ -22,15 +22,12 @@ namespace ContentAssembler
         public List<Person> GetPersons (string? personsFilePath);
 
         public List <TemplateName> GetBadgeModels ( );
-
-        public void GeneratePdf ( );
     }
 
 
 
     public class UniformDocAssembler : IUniformDocumentAssembler
     {
-        private IResultOfSessionSaver converter;
         private IBadgeAppearenceProvider badgeAppearenceProvider;
         private IPeopleDataSource peopleDataSource;
         private List<Person> people;
@@ -85,17 +82,6 @@ namespace ContentAssembler
             return badge;
         }
 
-        public Badgeee CreateSingleBadgeByModel(string badgeModelName)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void GeneratePdf ()
-        {
-            //converter.ConvertToExtention (null, null);
-        }
-
 
         public List <TemplateName> GetBadgeModels ( )
         {
@@ -108,7 +94,5 @@ namespace ContentAssembler
             people = peopleDataSource.GetPersons(personsFilePath);
             return people;
         }
-
-
     }
 }

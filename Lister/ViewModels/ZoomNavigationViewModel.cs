@@ -138,12 +138,6 @@ namespace Lister.ViewModels
         }
 
 
-        //internal List <BadgeViewModel> GetIncorrectBadges () 
-        //{
-        //    return SceneVM. IncorrectBadges;
-        //}
-
-
         internal void VisualiseNextPage ()
         {
             VisiblePageNumber = SceneVM.VisualiseNextPage ();
@@ -288,22 +282,5 @@ namespace Lister.ViewModels
 }
 
 
-//private void CheckMediator ()
-//{
-//    if ( _mediator == null )
-//    {
-//        throw new MediatorNullException ();
-//    }
-//}
 
-//private string zoomDV;
-//internal string ZoomDegreeInView
-//{
-//    get { return zoomDV; }
-//    set
-//    {
-//        this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
-//    }
-//}
-//private double zoomDegree;
 

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
+//using System.Drawing;
 using SkiaSharp;
-using QuestPDF.Infrastructure;
 
 
 namespace ContentAssembler
@@ -44,7 +43,8 @@ namespace ContentAssembler
     {
         private List<double> _spans;
         public string TemplateName { get; private set; }
-        public Size OutlineSize { get; private set; }
+        public double OutlineWidth { get; private set; }
+        public double OutlineHeight { get; private set; }
         public double LeftSpan { get; private set; }
         public double TopSpan { get; private set; }
         public double RightSpan { get; private set; }
@@ -53,10 +53,11 @@ namespace ContentAssembler
         public List <InsideImage> InsideImages { get; private set; }
 
 
-        public BadgeLayout ( Size outlineSize, string templateName, List<double> ? spans
+        public BadgeLayout ( double outlineWidth, double outlineHeight, string templateName, List<double> ? spans
                            , List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
         {
-            OutlineSize = outlineSize;
+            OutlineWidth = outlineWidth;
+            OutlineHeight = outlineHeight;
             TemplateName = templateName;
             _spans = spans;
 
@@ -89,7 +90,7 @@ namespace ContentAssembler
                 atoms.Add (atom.Clone ());
             }
 
-            BadgeLayout clone = new BadgeLayout (OutlineSize, TemplateName, _spans, atoms, InsideImages);
+            BadgeLayout clone = new BadgeLayout (OutlineWidth, OutlineHeight, TemplateName, _spans, atoms, InsideImages);
             return clone;
         }
 
@@ -123,10 +124,6 @@ namespace ContentAssembler
             TextualFields.RemoveAt (2);
             TextualFields.RemoveAt (4);
             //TextualFields.RemoveAt (4);
-
-           
-
-
 
         }
 
@@ -198,19 +195,21 @@ namespace ContentAssembler
     {
         private readonly List<string> _geometryNames;
         public string Path { get; private set; }
-        public Size Size { get; private set; }
+        public double OutlineWidth { get; private set; }
+        public double OutlineHeight { get; private set; }
         public string Color { get; private set; }
         public string GeometryElementName { get; private set; }
         public double TopOffset { get; private set; }
         public double LeftOffset { get; private set; }
         public ImageType ImageKind { get; private set; }
 
-        public InsideImage ( string path, Size size, string color,
+        public InsideImage ( string path, double outlineWidth, double outlineHeight, string color,
                            string geometryElementName, double topShiftOnBackground, double leftShiftOnBackground )
         {
             _geometryNames = SetGeometryNames ();
             Path = path;
-            Size = size;
+            OutlineWidth = outlineWidth;
+            OutlineHeight = outlineHeight;
             Color = color;
             GeometryElementName = geometryElementName;
             TopOffset = topShiftOnBackground;

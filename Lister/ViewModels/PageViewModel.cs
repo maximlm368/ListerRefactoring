@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ContentAssembler;
+using Avalonia;
 using ReactiveUI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;

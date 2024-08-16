@@ -79,7 +79,6 @@ namespace DataGateway
                       GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateIntoDouble ( );
             double badgeHeight =
                       GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateIntoDouble ( );
-            Size badgeSize = new Size ( badgeWidth, badgeHeight );
 
             List<int> intSpans = GetterFromJson.GetSectionValue (new List<string> { "InsideSpan" }, jsonPath).TranslateIntoIntList ( );
             List<double> spans = new List<double> ();
@@ -93,7 +92,7 @@ namespace DataGateway
             SetUnitingAtoms (atoms, jsonPath);
 
             List <InsideImage> pictures = GetImages ( jsonPath );
-            BadgeLayout result = new BadgeLayout (badgeSize, templateName, spans, atoms, pictures);
+            BadgeLayout result = new BadgeLayout (badgeWidth, badgeHeight, templateName, spans, atoms, pictures);
 
             return result;
         }
@@ -272,7 +271,7 @@ namespace DataGateway
             string geometricElement = GetterFromJson.GetSectionValue ( childSection );
 
             InsideImage image = 
-                       new InsideImage ( path, new Size ( width , height ), color, geometricElement, topOffset, leftOffset );
+                       new InsideImage ( path, width , height, color, geometricElement, topOffset, leftOffset );
             return image;
         }
 
