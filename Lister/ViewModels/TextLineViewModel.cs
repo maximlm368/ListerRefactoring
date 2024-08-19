@@ -26,19 +26,7 @@ namespace Lister.ViewModels
         private static readonly double _minFontSizeLimit = 6;
         private static readonly double _divider = 4;
         private static readonly double _parentToChildCoeff = 2.5;
-        internal static double LableSideSpans { get; private set; }
 
-
-        static TextLineViewModel () 
-        {
-            LableSideSpans = 8;
-        }
-
-
-        //private double _standardUsefullWidth;
-        //private double _standardTopOffset;
-        //private double _standardFontSize;
-        //private Thickness _standardPadding;
 
         private string _alignmentName;
 
