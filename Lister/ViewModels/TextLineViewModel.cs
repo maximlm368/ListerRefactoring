@@ -16,7 +16,6 @@ using Avalonia.Controls.Shapes;
 using static System.Net.Mime.MediaTypeNames;
 using Avalonia;
 using System.Reflection.Emit;
-using iText.Layout.Element;
 using Avalonia.Controls;
 
 namespace Lister.ViewModels
@@ -170,7 +169,7 @@ namespace Lister.ViewModels
             byte green = text.Foreground [1];
             byte blue = text.Foreground [2];
 
-            SolidColorBrush foreground = new SolidColorBrush (new Color (255, red, green, blue));
+            SolidColorBrush foreground = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
             Foreground = foreground;
             double correctHeight = FontSize * _parentToChildCoeff;
 

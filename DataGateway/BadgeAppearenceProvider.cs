@@ -14,20 +14,29 @@ namespace DataGateway
 
     public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider
     {
-        public static string _resourceUriFolderName = "//Resources//";
-        public static string _resourceFolderName = "/Resources/";
+        //private string _resourceUri = "//Resources//";
+        //private string _resourceFolder = "/Resources/";
 
+        private string _resourceUri;
+        private string _resourceFolder;
+
+        private string _templatesFolderPath = @"./Resources";
         private readonly string _defaultColor = "150,150,150";
-        private readonly string _templatesFolderPath = @"./Resources";
+        
+
         private List<string> _textualAtomNames;
         private Dictionary<string, string> _nameAndJson;
         private Dictionary<string, string> _nameAndColor;
 
 
-        public BadgeAppearenceProvider (  )
+        public BadgeAppearenceProvider ( string resourceUri, string resourceFolder )
         {
+            _resourceUri= resourceUri;
+            _resourceFolder = resourceFolder;
+
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            DirectoryInfo containingDirectory = new DirectoryInfo (_templatesFolderPath);
+            //DirectoryInfo containingDirectory = new DirectoryInfo (_templatesFolderPath);
+            DirectoryInfo containingDirectory = new DirectoryInfo (_resourceFolder);
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );
             _nameAndColor = new Dictionary<string , string> ( );
@@ -58,8 +67,7 @@ namespace DataGateway
         {
             string jsonPath = _nameAndJson [ templateName ];
             string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
-            string directoryPath = System.IO.Directory.GetCurrentDirectory ();
-            backgroundPath = "file:///" + directoryPath + _resourceUriFolderName + backgroundPath;
+            backgroundPath = _resourceUri + backgroundPath;
             return backgroundPath;
         }
 
@@ -284,8 +292,9 @@ namespace DataGateway
             {
                 string jsonPath = template.Value;
                 string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
-                string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
-                string imagePath = directoryPath + _resourceFolderName + backgroundPath;
+                //string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
+                //string imagePath = directoryPath + _resourceFolder + backgroundPath;
+                string imagePath = _resourceFolder + backgroundPath;
                 bool isFound = true;
 
                 try
@@ -302,70 +311,5 @@ namespace DataGateway
 
             return templateNames;
         }
-
-
-        //public List<FileInfo> GetBadgeModelsNames ()
-        //{
-        //    string badgeModelsFolderPath = @"./";
-        //    DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
-        //    FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
-        //    List<FileInfo> modelNames = new List<FileInfo> ();
-
-        //    foreach ( FileInfo file in Files )
-        //    {
-        //        modelNames.Add (file);
-        //    }
-
-        //    return modelNames;
-        //}
-
-
-        //public List<FileInfo> GetBadgeModelsNamess ()
-        //{
-        //    string badgeModelsFolderPath = @"./";
-        //    DirectoryInfo modelFileDirectory = new DirectoryInfo (badgeModelsFolderPath);
-        //    FileInfo [] Files = modelFileDirectory.GetFiles ("*.jpg");
-        //    List<FileInfo> modelNames = new List<FileInfo> ();
-
-        //    foreach ( FileInfo file in Files )
-        //    {
-        //        modelNames.Add (file);
-        //    }
-
-        //    return modelNames;
-        //}
-
-
-        //public OrganizationalDataOfBadge GetBadgeData ( string badgeTemplateName )
-        //{
-        //    double badgeWidth = 350;
-        //    double badgeHeight = 214;
-        //    Size badgeSize = new Size ( badgeWidth , badgeHeight );
-
-        //    double personTextAreaWidth = 220;
-        //    double personTextAreaHeight = 147;
-        //    Size personTextAreaSize = new Size ( personTextAreaWidth , personTextAreaHeight );
-
-        //    double personTextBlockTopShiftOnBackground = 60;
-        //    double personTextBlockLeftShiftOnBackground = 130;
-
-        //    double firstLevelFontSize = 30;
-        //    double secondLevelFontSize = 16;
-        //    double thirdLevelFontSize = 11;
-
-        //    double firstLevelTBHeight = 37;
-        //    double secondLevelTBHeight = 20;
-        //    double thirdLevelTBHeight = 14;
-
-        //    BadgeDimensions badgeDimensions = new BadgeDimensions ( badgeSize , personTextAreaSize
-        //                                          , personTextBlockTopShiftOnBackground , personTextBlockLeftShiftOnBackground
-        //                                          , firstLevelFontSize , secondLevelFontSize , thirdLevelFontSize
-        //                                          , firstLevelTBHeight , secondLevelTBHeight , thirdLevelTBHeight );
-
-        //    OrganizationalDataOfBadge badgeDescriprion = new OrganizationalDataOfBadge ( badgeDimensions , null );
-
-        //    return badgeDescriprion;
-        //}
-
     }
 }

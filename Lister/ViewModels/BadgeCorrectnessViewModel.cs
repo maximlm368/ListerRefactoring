@@ -53,21 +53,17 @@ namespace Lister.ViewModels
         {
             BoundBadge = boundBadge;
 
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directoryPath = containingDirectory.FullName;
-
             if ( isCorrect )
             {
                 Correctness = true;
-                string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _correctnessIcon;
+                string correctnessIcon = App.ResourceDirectoryUri + _correctnessIcon;
                 Uri uri = new Uri (correctnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }
             else
             {
                 Correctness = false;
-                string incorrectnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _incorrectnessIcon;
+                string incorrectnessIcon = App.ResourceDirectoryUri + _incorrectnessIcon;
                 Uri uri = new Uri (incorrectnessIcon);
                 CorrectnessIcon = ImageHelper.LoadFromResource (uri);
             }

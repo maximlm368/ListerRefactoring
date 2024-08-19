@@ -1,7 +1,5 @@
-﻿using SkiaSharp;
-using System;
+﻿using System;
 using System.IO;
-using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace ContentAssembler
 {

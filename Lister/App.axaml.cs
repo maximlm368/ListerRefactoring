@@ -20,6 +20,8 @@ public partial class App : Application
 {
     public static string ResourceUriFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
+    public static string WorkDirectoryPath { get; private set; }
+    public static string ResourceDirectoryUri { get; private set; }
     public static ServiceProvider services;
 
 
@@ -28,6 +30,10 @@ public partial class App : Application
         ServiceCollection collection = new ServiceCollection ();
         collection.AddNeededServices ();
         services = collection.BuildServiceProvider ();
+
+        string workDirectory = @"./";
+        DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+        WorkDirectoryPath = containingDirectory.FullName;
 
         bool isWindows = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
         bool isLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
@@ -42,6 +48,8 @@ public partial class App : Application
             ResourceUriFolderName = "Resources/";
             ResourceUriType = "file://";
         }
+
+        ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceUriFolderName;
     }
 
 
@@ -86,21 +94,17 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        //BadgeAppearenceProviderFactory factory = new BadgeAppearenceProviderFactory ();
-
-        //Type serviceType = typeof (DataGateway.BadgeAppearenceProvider);
-
-        //collection.AddSingleton <IBadgeAppearenceProvider> 
-        //                           (( factory ) => (BadgeAppearenceProvider) factory.GetService(serviceType));
-
+        collection.AddSingleton <IServiceProvider, BadgeAppearenceServiceProvider> ();
         collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
-
-        //collection.AddSingleton<IResultOfSessionSaver, Lister.ViewModels.ConverterToPdf> ();
-
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
-        collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
-        collection.AddSingleton <IBadLineColorProvider, BadgeAppearenceProvider> ();
+
+        //collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
+        //collection.AddSingleton <IBadLineColorProvider, BadgeAppearenceProvider> ();
+
+        collection.AddSingleton (typeof (IBadgeAppearenceProvider), BadgeAppearenceFactory);
+        collection.AddSingleton (typeof (IBadLineColorProvider), BadLineFactory);
+
         collection.AddSingleton <ModernMainViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
@@ -113,6 +117,57 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <TextLineViewModel> ();
         collection.AddSingleton <MessageViewModel> ();
     }
+
+
+    private static IBadgeAppearenceProvider BadgeAppearenceFactory ( IServiceProvider serviceProvider )
+    {
+        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
+
+        //IBadgeAppearenceProvider result = service as IBadgeAppearenceProvider;
+
+        IBadgeAppearenceProvider result = 
+            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
+
+        return result;
+    }
+
+
+    private static IBadLineColorProvider BadLineFactory ( IServiceProvider serviceProvider )
+    {
+        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
+
+        //IBadLineColorProvider result = service as IBadLineColorProvider;
+
+        IBadLineColorProvider result =
+            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
+
+        return result;
+    }
 }
 
+
+
+public class BadgeAppearenceServiceProvider : IServiceProvider
+{
+    public object ? GetService ( Type serviceType )
+    {
+        if ( serviceType == null ) 
+        {
+            return null;
+        }
+
+        object result = null;
+
+        bool isAimService = ( serviceType.FullName == "DataGateway.IBadgeAppearenceProvider" ) 
+                            ||
+                            ( serviceType.FullName == "DataGateway.IBadLineColorProvider" );
+
+        if ( isAimService )
+        {
+            result = new BadgeAppearenceProvider (App.ResourceDirectoryUri, (App.WorkDirectoryPath + App.ResourceUriFolderName));
+        }
+
+        return result;
+    }
+}
 

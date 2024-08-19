@@ -212,18 +212,18 @@ class ConverterToPdf
 
     private void RenderInsideShapes ( LayersDescriptor layers, IEnumerable <ImageViewModel> insideImages )
     {
-        foreach ( ImageViewModel image   in   insideImages )
-        {
-            float paddingLeft = ( float ) image.LeftOffset;
-            float paddingTop = ( float ) image.TopOffset;
+        //foreach ( ImageViewModel image   in   insideImages )
+        //{
+        //    float paddingLeft = ( float ) image.LeftOffset;
+        //    float paddingTop = ( float ) image.TopOffset;
             
-            layers
-                .Layer ()
-                .PaddingLeft (paddingLeft)
-                .PaddingTop (paddingTop)
-                .Canvas (DrawGeometryElement);
+        //    layers
+        //        .Layer ()
+        //        .PaddingLeft (paddingLeft)
+        //        .PaddingTop (paddingTop)
+        //        .Canvas (DrawGeometryElement);
                 
-        }
+        //}
     }
 
 

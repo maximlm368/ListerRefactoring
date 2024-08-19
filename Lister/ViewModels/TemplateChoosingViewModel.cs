@@ -28,7 +28,6 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Platform.Storage;
 using System.Reactive.Linq;
-using static SkiaSharp.HarfBuzz.SKShaper;
 using Avalonia.Remote.Protocol.Viewport;
 using MessageBox.Avalonia.Views;
 
@@ -305,7 +304,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void GeneratePdf ()
+    internal void GeneratePdff ()
     {
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add (FilePickerFileTypes.Pdf);
@@ -326,7 +325,8 @@ public class TemplateChoosingViewModel : ViewModelBase
                        string result = task.Result.Path.ToString ();
                        int uriTypeLength = App.ResourceUriType. Length;
                        result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
-                       Task<bool> pdf = GeneratePdf (result);
+
+                       Task<bool> pdf = GeneratePdff (result);
 
                        pdf.ContinueWith
                            (
@@ -355,12 +355,65 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal Task<bool> GeneratePdf ( string fileToSave )
+    internal void GeneratePdf ()
+    {
+        List<FilePickerFileType> fileExtentions = [];
+        fileExtentions.Add (FilePickerFileTypes.Pdf);
+        FilePickerSaveOptions options = new ();
+        options.Title = _saveTitle;
+        options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+        options.SuggestedFileName = _suggestedFileNames;
+        Task <IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
+
+        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+        chosenFile.ContinueWith
+            (
+               task =>
+               {
+                   if ( task.Result != null )
+                   {
+                       string result = task.Result.Path.ToString ();
+                       int uriTypeLength = App.ResourceUriType.Length;
+                       result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
+                      
+                       bool pdf = GeneratePdf (result);
+
+                       if ( pdf == false )
+                       {
+                           var messegeDialog = new MessageDialog ();
+                           messegeDialog.Message = _fileIsOpenMessage;
+                           messegeDialog.ShowDialog (MainWindow._mainWindow);
+                       }
+                       else
+                       {
+                           Process fileExplorer = new Process ();
+                           fileExplorer.StartInfo.FileName = "explorer.exe";
+                           result = result.ExtractPathWithoutFileName ();
+                           result = result.Replace ('/', '\\');
+                           fileExplorer.StartInfo.Arguments = result;
+                           fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                           fileExplorer.Start ();
+                       }
+                   }
+               }, uiScheduler);
+    }
+
+
+    internal Task<bool> GeneratePdff ( string fileToSave )
     {
         List <PageViewModel> pages = GetAllPages ();
         Task<bool> task = new Task<bool> (() => { return _converter.ConvertToExtention (pages, fileToSave); });
         task.Start ();
         return task;
+    }
+
+
+    internal bool GeneratePdf ( string fileToSave )
+    {
+        List <PageViewModel> pages = GetAllPages ();
+        bool result = _converter.ConvertToExtention (pages, fileToSave);
+        return result;
     }
 
 

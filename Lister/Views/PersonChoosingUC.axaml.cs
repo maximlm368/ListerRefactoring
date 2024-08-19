@@ -18,7 +18,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.Views
 {

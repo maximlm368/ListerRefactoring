@@ -53,11 +53,7 @@ namespace Lister.ViewModels
         {
             _view = view;
 
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directoryPath = containingDirectory.FullName;
-
-            string correctnessIcon = App.ResourceUriType + directoryPath + App.ResourceUriFolderName + _warnImageName;
+            string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
 

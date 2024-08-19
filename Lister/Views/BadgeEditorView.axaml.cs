@@ -18,7 +18,6 @@ using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using iText.Layout.Renderer;
 
 namespace Lister.Views
 {

@@ -6,10 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="itext" Version="8.0.4" />
-    <PackageReference Include="QuestPDF" Version="2023.12.6" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.7" />
-  </ItemGroup>
-
 </Project>

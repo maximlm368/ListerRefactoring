@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Configuration;
 using static System.Collections.Specialized.BitVector32;
-using QuestPDF.Infrastructure;
 using ContentAssembler;
 
 namespace DataGateway

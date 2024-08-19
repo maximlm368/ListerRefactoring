@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-//using System.Drawing;
-using SkiaSharp;
 
 
 namespace ContentAssembler

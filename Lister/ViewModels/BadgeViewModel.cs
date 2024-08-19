@@ -18,7 +18,6 @@ using Avalonia.Controls.Shapes;
 using System;
 using DataGateway;
 using Microsoft.Extensions.DependencyInjection;
-using iText.Kernel.Geom;
 using QuestPDF.Fluent;
 
 namespace Lister.ViewModels;
