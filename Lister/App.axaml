@@ -10,6 +10,90 @@
     </Application.Styles>
 
 
+	<Application.Resources>
 
-	
+		<FontFamily x:Key="cg">/Assets/Pushkin.ttf  #  Pushkin</FontFamily>
+
+	</Application.Resources>
+
+
+
 </Application>
+
+
+
+
+<!--
+
+	<ResourceDictionary xmlns="https://github.com/avaloniaui"
+						xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+          <FontFamily x:Key="cg">/Assets/Pushkin.ttf  #  Pushkin</FontFamily>
+
+    </ResourceDictionary>
+
+
+
+	<Application.Resources>
+		<DynamicResource x:Key="cg" ResourceKey="rcg" />
+	</Application.Resources>
+
+
+
+
+
+	<Application.Resources>
+
+		<FontFamily x:Key="cg">/Assets/Pushkin.ttf  #  Pushkin</FontFamily>
+
+	</Application.Resources>
+
+
+
+
+
+<Style x:Key="lblDesign"   TargetType="Label">
+			<Setter Property="FontSize" Value="35"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="DarkGray"/>
+			<Setter Property="FontFamily" Value="/Assets/Iamsb.ttf  #  I am simplified"/>
+		</Style>
+
+
+
+
+
+	<Application.Resources>
+		
+		<FontFamily x:Key="cg">/Assets/centurygothic.ttf  #  Century Gothic</FontFamily>
+		
+	</Application.Resources>
+	
+	
+<Style x:Key="lblDesign" TargetType="Label">
+			<Setter Property="FontFamily" Value="fonts/moon.otf #moon"/>
+		</Style>
+
+
+
+
+<ResourceDictionary>
+		<FontFamily x:Key="cg">/Assets/centurygothic.ttf#cg</FontFamily>
+		
+		
+		<FontFamily x:Key="cg">D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\win-x64\Resources\centurygothic.ttf</FontFamily>
+
+
+		<FontFamily x:Key="diyFont">avares://TerraMours.Chat.Ava/Assets/JustFont.ttf#jf-openhuninn-1.0</FontFamily>
+
+
+		
+	</ResourceDictionary>
+
+
+<Application.Resources>
+		<FontFamily x:Key="cg">/Assets/centurygothic.ttf#cg</FontFamily>
+	</Application.Resources>
+
+
+-->

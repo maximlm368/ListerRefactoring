@@ -350,10 +350,13 @@
 											Height="{Binding Path = FontSize,  Mode=OneWay}">
 
 											<TextBlock
-												VerticalAlignment="Center"
+												VerticalAlignment="Bottom"
+												TextAlignment="Center"
 												Height="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-												FontFamily="{Binding  Path = FontFamily,  Mode=OneWay}"
+												
+												FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+												
 												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 												Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
 												DoubleTapped="Focus"
@@ -365,7 +368,7 @@
 												IsEnabled="True"
 												Text="{Binding   Path = Content,  Mode=OneWay }" />
 
-										</Border>
+									    </Border>
 											
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>

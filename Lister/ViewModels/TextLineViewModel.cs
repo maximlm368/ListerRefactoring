@@ -17,6 +17,11 @@ using static System.Net.Mime.MediaTypeNames;
 using Avalonia;
 using System.Reflection.Emit;
 using Avalonia.Controls;
+using Avalonia.Fonts.Inter;
+using Avalonia.Media.Fonts;
+using Avalonia.Platform;
+using SkiaSharp;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Lister.ViewModels
 {
@@ -27,6 +32,10 @@ namespace Lister.ViewModels
         private static readonly double _divider = 4;
         private static readonly double _parentToChildCoeff = 2.5;
 
+        public string FontFile { get; private set; }
+        public byte Red { get; private set; }
+        public byte Green { get; private set; }
+        public byte Blue { get; private set; }
 
         private string _alignmentName;
 
@@ -148,14 +157,37 @@ namespace Lister.ViewModels
             _alignmentName = text.Alignment;
             DataSource = text;
             FontSize = text.FontSize;
-            FontFamily = new FontFamily (text.FontFamily);
-            FontWeight = Avalonia.Media.FontWeight.Bold;
+            FontFile = text.FontFile;
+
+            string fontUriString = App.ResourceDirectoryUri + text.FontFile;
+
+
+            //fontUriString = "file:///D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Pushkin.ttf";
+            //Uri fontUri = new Uri (fontUriString);
+            //string fontName = text.FontFile.Substring (0, text.FontFile.Length - 4);
+            //fontName = "Pushkin";
+            //var uri = "avares://Assets/Pushkin.ttf";
+            //FontFamily = new FontFamily (fontName);
+
+            //var fm = FontManager.Current;
+            //FontManager.Current.AddFontCollection (new EmbeddedFontCollection (fontUri, fontUri));
+
+            //FontFamily = new FontFamily (fontUri);
+
+
+            FontFamily = App.FF;
+
+            FontWeight = Avalonia.Media.FontWeight.Normal;
+
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
             byte red = text.Foreground [0];
             byte green = text.Foreground [1];
             byte blue = text.Foreground [2];
+            Red = red;
+            Green = green;
+            Blue = blue;
 
             SolidColorBrush foreground = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
             Foreground = foreground;
@@ -174,21 +206,20 @@ namespace Lister.ViewModels
             _alignmentName = source._alignmentName;
             DataSource = source.DataSource;
             FontSize = source.FontSize;
-            FontFamily = new FontFamily (source.DataSource.FontFamily);
+            FontFamily = source.FontFamily;
+            FontFile = source.FontFile;
             FontWeight = source.FontWeight;
             Content = source.Content;
             IsSplitable = source.IsSplitable;
             Padding = new Thickness (0, -FontSize / _divider);
             UsefullWidth = source.UsefullWidth;
             Foreground = source.Foreground;
+            Red = source.Red;
+            Green = source.Green;
+            Blue = source.Blue;
             Background = source.Background;
 
             SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
-
-            //_standardUsefullWidth = source._standardUsefullWidth;
-            //_standardTopOffset = source._standardTopOffset;
-            //_standardFontSize = source._standardFontSize;
-            //_standardPadding = source._standardPadding;
 
             Padding = SetPadding ();
         }
@@ -200,7 +231,11 @@ namespace Lister.ViewModels
             tb.LetterSpacing = 0;
             tb.Text = content;
             tb.FontSize = demensions.FontSize;
-            tb.FontFamily = demensions.FontFamily;
+
+            string fontUriString = App.ResourceDirectoryUri + demensions.FontFile;
+            Uri fontUri = new Uri (fontUriString);
+            string fontName = demensions.FontFile.Substring (0, demensions.FontFile.Length - 4);
+            tb.FontFamily = new FontFamily (fontUri, fontName);
             tb.FontWeight = Avalonia.Media.FontWeight.Bold;
 
             Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
@@ -215,8 +250,7 @@ namespace Lister.ViewModels
         {
             Thickness padding;
             double verticalPadding = ( FontSize - Height ) / 2;
-            double df = Height / FontSize;
-            verticalPadding = ( Height - FontSize ) / 2;
+            
             padding = new Thickness (0, verticalPadding);
 
             return padding;
@@ -369,12 +403,8 @@ namespace Lister.ViewModels
                 content = string.Empty;
             }
 
-            //Typeface face = new Typeface (new FontFamily ("arial"), FontStyle.Normal, FontWeight);
-            //FormattedText formatted = new FormattedText (content, CultureInfo.CurrentCulture
-            //                                                    , FlowDirection.LeftToRight, face, FontSize, null);
             Content = content;
             SetWidth ();
         }
     }
-
 }

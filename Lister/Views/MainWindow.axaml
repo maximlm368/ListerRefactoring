@@ -17,14 +17,22 @@
         MinWidth="800"
 		Height="460"
 		Width="800"
+		
 		>
 
 	<views:ModernMainView
 			Name="view"/>
-
+  
 </Window>
 
 <!--   
+
+        <Window.Resources>
+		    <Window FontFamily="{StaticResource cg}" />
+		</Window.Resources>
+
+
+
 
 <views:ModernMainView
 		Name="view"/>

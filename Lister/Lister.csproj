@@ -98,4 +98,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
+  
+ <ItemGroup>
+   <Content Include="Assets\Iamsb.ttf">
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+   </Content>
+ </ItemGroup>
+  
 </Project>

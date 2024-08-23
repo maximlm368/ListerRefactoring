@@ -93,7 +93,6 @@ class ConverterToPdf
         }
 
         return result;
-
     }
 
 
@@ -176,17 +175,26 @@ class ConverterToPdf
             string text = textLine.Content;
             float paddingLeft = ( float ) textLine.LeftOffset;
             float paddingTop = ( float ) textLine.TopOffset;
-            string fontFamily = textLine.FontFamily. Name;
+            string fontName = textLine.FontFamily. Name;
             float fontSize = ( float ) textLine.FontSize;
             float maxWidth = ( float ) textLine.Width;
+
+            byte red = textLine.Red;
+            byte green = textLine.Green;
+            byte blue = textLine.Blue;
+
+            string fontFilePath = App.WorkDirectoryPath + App.ResourceUriFolderName + textLine.FontFile;
+            QuestPDF.Drawing.FontManager.RegisterFontWithCustomName ( fontName, File.OpenRead (fontFilePath));
 
             layers
                .Layer ()
                .PaddingLeft (paddingLeft, Unit.Point)
                .PaddingTop (paddingTop, Unit.Point)
                .Text (text)
-               .FontFamily (fontFamily)
-               .Bold()
+               .ClampLines(1, ".")
+               .FontFamily (fontName)
+               .FontColor (Pdf.Color.FromARGB(255, red, green, blue))
+               
                .FontSize (fontSize);
         }
     }

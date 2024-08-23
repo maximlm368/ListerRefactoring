@@ -251,7 +251,7 @@ namespace ContentAssembler
         public double LeftOffset { get; private set; }
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
-        public string FontFamily { get; private set; }
+        public string FontFile { get; private set; }
         public List<byte> Foreground { get; private set; }
         public string FontWeight { get; private set; }
         private string _content;
@@ -289,7 +289,7 @@ namespace ContentAssembler
             LeftOffset = leftOffset;
             Alignment = alignment;
             FontSize = fontSize;
-            FontFamily = fontFamily;
+            FontFile = fontFamily;
 
             if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
             {
@@ -315,7 +315,7 @@ namespace ContentAssembler
             LeftOffset = source.LeftOffset;
             Alignment = source.Alignment;
             FontSize = source.FontSize;
-            FontFamily = source.FontFamily;
+            FontFile = source.FontFile;
             Foreground = source.Foreground;
             FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
@@ -326,7 +326,7 @@ namespace ContentAssembler
 
         internal TextualAtom Clone () 
         {
-            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFamily,
+            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile,
                                                  Foreground, FontWeight, IncludedAtoms, IsSplitable);
             return clone;
         }

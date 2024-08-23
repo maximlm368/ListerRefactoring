@@ -582,7 +582,7 @@ public class BadgeViewModel : ViewModelBase
             double topOffset = textAtom.TopOffset;
             string beingProcessedLine = textAtom.Content.Trim();
             string additionalLine = string.Empty;
-            FontFamily family = new FontFamily (textAtom.FontFamily);
+            FontFamily family = new FontFamily (textAtom.FontFile);
 
             while ( true )
             {

@@ -12,16 +12,27 @@ using Avalonia.Styling;
 using Avalonia.Controls;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Runtime.InteropServices;
+using Avalonia.Media;
+using static System.Net.Mime.MediaTypeNames;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Media.Fonts;
+using Avalonia.Platform;
+using SkiaSharp;
+using System.Globalization;
 
 namespace Lister;
 
 
-public partial class App : Application
+public partial class App : Avalonia.Application
 {
     public static string ResourceUriFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
+    public static FontFamily FF { get; private set; }
+
+    public static IResourceDictionary AvailableResources { get; private set; }
+
     public static ServiceProvider services;
 
 
@@ -40,7 +51,8 @@ public partial class App : Application
 
         if ( isWindows )
         {
-            ResourceUriFolderName = "//Resources//";
+            //ResourceUriFolderName = "//Resources//";
+            ResourceUriFolderName = @"Resources\";
             ResourceUriType = "file:///";
         }
         else if ( isLinux ) 
@@ -83,8 +95,42 @@ public partial class App : Application
         {
             singleViewPlatform.MainView = mainView;
         }
-
         base.OnFrameworkInitializationCompleted();
+
+
+
+        string fileName = "Iamsb.ttf";
+        string fontUriString = App.ResourceDirectoryUri + fileName;
+        Uri fontUri = new Uri (fontUriString);
+
+        FontFamily fm = new FontFamily (fontUri, "I am simplified");
+        var kk = fm.Key;
+
+        
+
+        IGlyphTypeface glyphTypeface;
+
+        //bool fd = FontManager.Current.TryGetGlyphTypeface (typeface, out glyphTypeface);
+
+        
+        FF = fm;
+
+        string ffs = fm.ToString ();
+
+
+
+        //FF = new FontFamily ("Segoe UI");
+        FF = new FontFamily ("Kramola");
+
+        string key = "cg";
+        bool res = this.Resources.ContainsKey (key);
+        res = Resources.TryGetValue (key, out object val);
+        var pushkin = Resources [key];
+        //Resources [key] = fm;
+
+
+
+        int df = 0;
     }
 }
 
