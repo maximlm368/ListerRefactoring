@@ -12,6 +12,18 @@
     }
 
 
+    public interface IBadLineColorProvider
+    {
+        public string GetBadLineColor ( string templateName );
+    }
+
+
+    public interface IFontFileProvider
+    {
+        public Dictionary<string, string> GetTemplateFonts ( );
+    }
+
+
     public interface IPeopleDataSource 
     {
         public List<Person> GetPersons(string? personsFilePath);

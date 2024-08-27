@@ -5,14 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataGateway
 {
-    public interface IBadLineColorProvider
-    {
-        public string GetBadLineColor ( string templateName );
-    }
-
-
-
-    public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider
+    public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider, IFontFileProvider
     {
         //private string _resourceUri = "//Resources//";
         //private string _resourceFolder = "/Resources/";
@@ -20,7 +13,7 @@ namespace DataGateway
         private string _resourceUri;
         private string _resourceFolder;
 
-        private string _templatesFolderPath = @"./Resources";
+        //private string _templatesFolderPath = @"./Resources";
         private readonly string _defaultColor = "150,150,150";
         
 
@@ -69,6 +62,22 @@ namespace DataGateway
             string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
             backgroundPath = _resourceUri + backgroundPath;
             return backgroundPath;
+        }
+
+
+        public Dictionary<string, string> GetTemplateFonts ( )
+        {
+            Dictionary<string, string> result = new ( );
+
+            foreach ( KeyValuePair<string, string> item   in  _nameAndJson ) 
+            {
+                string templateName = item.Key;
+                string jsonPath = item.Value;
+                string fontFile = GetterFromJson.GetSectionValue (new List<string> { "CommonDefaultFontFamily" }, jsonPath);
+                result.Add ( templateName, fontFile );
+            }
+
+            return result;
         }
 
 

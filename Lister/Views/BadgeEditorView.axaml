@@ -45,6 +45,7 @@
 			<Button
 				Name="Back"
 				Content="Назад"
+				ToolTip.Tip="Вернуться в окно построения "
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
@@ -54,6 +55,7 @@
 			<Button
 				Name="cancel"
 				Content="Отмена"
+				ToolTip.Tip="Отменить изменения на данном бэйдже"
 				Width="98"
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
@@ -64,6 +66,7 @@
 			<Button
 				Name="zoomOut"
 				Content="-"
+				ToolTip.Tip="Уменьшить размер шрифта на выделенной строке"
 				Grid.Column="3"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -93,6 +96,7 @@
 			<Button
 				Name="zoomOn"
 				Content="+"
+				ToolTip.Tip="Увеличить размер шрифта на выделенной строке"
 				Grid.Column="5"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -103,6 +107,7 @@
 			<Button
 				Name="left"
 				Content="L"
+				ToolTip.Tip="Переместить выделенную строку влево"
 				Grid.Column="7"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -113,6 +118,7 @@
 			<Button
 				Name="right"
 				Content="R"
+				ToolTip.Tip="Переместить выделенную строку вправо"
 				Grid.Column="8"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -123,6 +129,7 @@
 			<Button
 				Name="up"
 				Content="U"
+				ToolTip.Tip="Переместить выделенную строку вверх"
 				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -133,6 +140,7 @@
 			<Button
 				Name="down"
 				Content="D"
+				ToolTip.Tip="Переместить выделенную строку вниз"
 				Grid.Column="10"
 				HorizontalAlignment="Center"
 				Width="28"
@@ -143,6 +151,7 @@
 			<Button
 				Name="spliter"
 				Content="Разделить"
+				ToolTip.Tip="Разделить выделенную строку на слова"
 				Grid.Column="12"
 				HorizontalContentAlignment="Center"
 				Width="100"
@@ -209,6 +218,7 @@
 						Name="chooseCorrects"
 						Width="48"
 						Height="30"
+						ToolTip.Tip="Показывать корректные бэйджи"
 						Command="{Binding  Path = FilterCorrects}"
 						KeyDown="ToParticularBadge">
 						
@@ -223,6 +233,7 @@
 						Name="chooseIncorrects"
 						Width="50"
 						Height="30"
+						ToolTip.Tip="Показывать бэйджи с ошибками"
 						Command="{Binding  Path = FilterIncorrects}"
 						KeyDown="ToParticularBadge">
 						
@@ -354,9 +365,7 @@
 												TextAlignment="Center"
 												Height="{Binding  Path = FontSize,  Mode=OneWay}"
 												FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-												
 												FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
-												
 												FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 												Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
 												DoubleTapped="Focus"
@@ -405,6 +414,7 @@
 			<Button
 				Name="firstBadge"
 				Content="first"
+				ToolTip.Tip="На первый бэйдж"
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
 				Width="48"
@@ -414,6 +424,7 @@
 			<Button
 				Name="previousBadge"
 				Content="prev"
+				ToolTip.Tip="На предыдущий бэйдж"
 				Grid.Column="2"
 				HorizontalContentAlignment="Center"
 				Width="48"
@@ -447,6 +458,7 @@
 			<Button
 				Name="nextBadge"
 				Content="next"
+				ToolTip.Tip="На следующий бэйдж"
 				Grid.Column="6"
 				HorizontalContentAlignment="Center"
 				Width="48"
@@ -456,6 +468,7 @@
 			<Button
 				Name="lastBadge"
 				Content="last"
+				ToolTip.Tip="На последний бэйдж"
 				Grid.Column="7"
 				HorizontalContentAlignment="Center"
 				Width="48"

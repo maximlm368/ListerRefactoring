@@ -116,10 +116,7 @@
 																		Height="{Binding  Path = FontSize,  Mode=OneWay}"
 																		FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																		TextAlignment="Center"
-																		
-																		
-																		FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"	
-																			
+																		FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 																		FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 																		Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
 																		Text="{Binding   Path = Content,  Mode=OneWay }" 
@@ -208,6 +205,10 @@
 FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 FontFamily="{StaticResource Nunito}"
 FontFamily="{StaticResource cg}"
+
+
+FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+
 
 Padding="{Binding  Path = Padding,  Mode=OneWay}"
 

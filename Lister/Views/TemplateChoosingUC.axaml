@@ -62,6 +62,7 @@
 			Width="96"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
 			Command="{Binding  Path=BuildBadges}"
+			ToolTip.Tip="Построить выбранные бэйджи"
 			Content="Построить"/>
 		
 		<Button
@@ -72,6 +73,7 @@
 			Width="86"
 			IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path=ClearBadges}"
+			ToolTip.Tip="Удалить все построения"
 			Content="Очистить" />
 
 		<Button
@@ -82,6 +84,7 @@
 			Width="91"
 			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path = GeneratePdf}"
+			ToolTip.Tip="Сохранить в файле"
 			Content="Сохранить" />
 		
 		<Button
@@ -92,6 +95,7 @@
 			Width="71"
 			IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path=Print}"
+			ToolTip.Tip="Печатать на принтере по умолчанию"
 			Content="Печать"/>
 	</Grid>
   

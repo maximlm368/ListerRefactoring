@@ -297,6 +297,12 @@ namespace Lister.Views
 
         private void DropOrPickUp ()
         {
+            Button bt = new Button ();
+            
+
+
+
+
             if ( personTextBox.Text == null ) 
             {
                 return;

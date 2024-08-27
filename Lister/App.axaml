@@ -12,11 +12,9 @@
 
 	<Application.Resources>
 
-		<FontFamily x:Key="cg">/Assets/Pushkin.ttf  #  Pushkin</FontFamily>
+		<FontFamily x:Key="cg" > avares://Assets/Kramola.ttf # Kramola </FontFamily>
 
 	</Application.Resources>
-
-
 
 </Application>
 
@@ -29,7 +27,8 @@
 						xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
           <FontFamily x:Key="cg">/Assets/Pushkin.ttf  #  Pushkin</FontFamily>
-
+          <FontWeight x:Key="cgw"> Avalonia.Media.FontWeight.Bold </FontWeight>
+		  
     </ResourceDictionary>
 
 

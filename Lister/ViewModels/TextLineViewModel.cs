@@ -159,25 +159,20 @@ namespace Lister.ViewModels
             FontSize = text.FontSize;
             FontFile = text.FontFile;
 
-            string fontUriString = App.ResourceDirectoryUri + text.FontFile;
-
-
+            // string fontUriString = App.ResourceDirectoryUri + text.FontFile + "#Kramola";
             //fontUriString = "file:///D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Pushkin.ttf";
             //Uri fontUri = new Uri (fontUriString);
             //string fontName = text.FontFile.Substring (0, text.FontFile.Length - 4);
             //fontName = "Pushkin";
             //var uri = "avares://Assets/Pushkin.ttf";
             //FontFamily = new FontFamily (fontName);
-
             //var fm = FontManager.Current;
             //FontManager.Current.AddFontCollection (new EmbeddedFontCollection (fontUri, fontUri));
 
-            //FontFamily = new FontFamily (fontUri);
 
-
-            FontFamily = App.FF;
-
-            FontWeight = Avalonia.Media.FontWeight.Normal;
+            FontWeight = GetFontWeight (text.FontWeight);
+            string fontName = text.FontFile.Substring (0, text.FontFile.Length - 4);
+            FontFamily = new FontFamily (fontName);
 
             Content = text.Content;
             IsSplitable = text.IsSplitable;
@@ -232,11 +227,15 @@ namespace Lister.ViewModels
             tb.Text = content;
             tb.FontSize = demensions.FontSize;
 
-            string fontUriString = App.ResourceDirectoryUri + demensions.FontFile;
-            Uri fontUri = new Uri (fontUriString);
-            string fontName = demensions.FontFile.Substring (0, demensions.FontFile.Length - 4);
-            tb.FontFamily = new FontFamily (fontUri, fontName);
-            tb.FontWeight = Avalonia.Media.FontWeight.Bold;
+            //string fontUriString = App.ResourceDirectoryUri + demensions.FontFile;
+            //Uri fontUri = new Uri (fontUriString);
+            //string fontName = demensions.FontFile.Substring (0, demensions.FontFile.Length - 4);
+            //tb.FontFamily = 
+            //tb.FontWeight = Avalonia.Media.FontWeight.Bold;
+
+            tb.FontWeight = GetFontWeight (demensions.FontWeight);
+            string fontName = demensions.FontFile.Substring (0, demensions.FontFile. Length - 4);
+            tb.FontFamily = new FontFamily (fontName);
 
             Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
             tb.Measure (size);
@@ -254,6 +253,31 @@ namespace Lister.ViewModels
             padding = new Thickness (0, verticalPadding);
 
             return padding;
+        }
+
+
+        private static Avalonia.Media.FontWeight GetFontWeight ( string weightName )
+        {
+            Avalonia.Media.FontWeight weight = Avalonia.Media.FontWeight.Normal;
+
+            if ( weightName == "Bold" )
+            {
+                weight = Avalonia.Media.FontWeight.Bold;
+            }
+            else if ( weightName == "Thin" )
+            {
+                weight = Avalonia.Media.FontWeight.Thin;
+            }
+
+            return weight;
+        }
+
+
+        private static Avalonia.Media.FontFamily GetFontFamily ( string fontName )
+        {
+            Avalonia.Media.FontFamily font = new FontFamily(fontName);
+
+            return font;
         }
 
 

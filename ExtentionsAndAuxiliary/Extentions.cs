@@ -226,26 +226,6 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static string ExtractPathWithoutFileName ( this string wholePath )
-        {
-            var builder = new StringBuilder ();
-            string goalPath = string.Empty;
-
-            for ( var index = wholePath.Length - 1;   index >= 0;   index-- )
-            {
-                bool fileNameIsAchieved = (wholePath [index] == '/')   ||   (wholePath [index] == '\\');
-
-                if ( fileNameIsAchieved )
-                {
-                    goalPath = wholePath.Substring (0, index);
-                    break;
-                }
-            }
-
-            return goalPath;
-        }
-
-
         public static string TrimLastSpaceOrQuoting ( this string beingProcessed )
         {
             bool isNotEmpty = ! string.IsNullOrEmpty (beingProcessed);

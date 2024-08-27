@@ -10,14 +10,14 @@ using ContentAssembler;
 
 namespace DataGateway
 {
-    internal static class GetterFromJson
+    public static class GetterFromJson
     {
         //private static IConfigurationRoot configRoot;
         private static string configFilePath;
         private static string attributeSection;
 
 
-        internal static string GetSectionValue ( List<string> keyPathInJson, string jsonPath )
+        public static string GetSectionValue ( List<string> keyPathInJson, string jsonPath )
         {
             IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
             string sectionName = keyPathInJson [0];
@@ -37,14 +37,14 @@ namespace DataGateway
         }
 
 
-        internal static string GetSectionValue ( IConfigurationSection section )
+        public static string GetSectionValue ( IConfigurationSection section )
         {
             string templateName = section.Value;
             return templateName;
         }
 
 
-        internal static IEnumerable<IConfigurationSection> GetIncludedItemsOfSection
+        public static IEnumerable<IConfigurationSection> GetIncludedItemsOfSection
                                                                           ( List<string> keyPathInJson, string jsonPath )
         {
             IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
@@ -81,7 +81,7 @@ namespace DataGateway
         }
 
 
-        internal static IEnumerable<IConfigurationSection> GetChildrenOfSection ( IConfigurationSection parent )
+        public static IEnumerable<IConfigurationSection> GetChildrenOfSection ( IConfigurationSection parent )
         {
             IEnumerable<IConfigurationSection> targetChildren = parent.GetChildren ();
 

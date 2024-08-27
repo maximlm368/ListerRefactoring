@@ -176,6 +176,7 @@ class ConverterToPdf
             float paddingLeft = ( float ) textLine.LeftOffset;
             float paddingTop = ( float ) textLine.TopOffset;
             string fontName = textLine.FontFamily. Name;
+            Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
             float maxWidth = ( float ) textLine.Width;
 
@@ -186,7 +187,7 @@ class ConverterToPdf
             string fontFilePath = App.WorkDirectoryPath + App.ResourceUriFolderName + textLine.FontFile;
             QuestPDF.Drawing.FontManager.RegisterFontWithCustomName ( fontName, File.OpenRead (fontFilePath));
 
-            layers
+            TextBlockDescriptor textBlock = layers
                .Layer ()
                .PaddingLeft (paddingLeft, Unit.Point)
                .PaddingTop (paddingTop, Unit.Point)
@@ -194,8 +195,16 @@ class ConverterToPdf
                .ClampLines(1, ".")
                .FontFamily (fontName)
                .FontColor (Pdf.Color.FromARGB(255, red, green, blue))
-               
                .FontSize (fontSize);
+
+            if ( fontWeight == Avalonia.Media.FontWeight.Thin )
+            {
+                textBlock.Thin ();
+            }
+            else if ( fontWeight == Avalonia.Media.FontWeight.Bold ) 
+            {
+                textBlock.Bold ();
+            }
         }
     }
 

@@ -586,7 +586,7 @@ public class BadgeViewModel : ViewModelBase
 
             while ( true )
             {
-                double usefulTextBlockWidth = TextLineViewModel.CalculateWidth ( beingProcessedLine, textAtom);
+                double usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 

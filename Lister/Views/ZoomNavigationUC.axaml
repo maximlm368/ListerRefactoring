@@ -39,6 +39,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseFirstPage}"
+			ToolTip.Tip="На первую страницу"
 			Content="f" />
 		
 		<Button
@@ -48,6 +49,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualisePreviousPage}"
+			ToolTip.Tip="На предыдущую страницу"
 			Content="p" />
 
 		<TextBox
@@ -85,6 +87,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseNextPage}"
+			ToolTip.Tip="На следующую страницу"
 			Content="n" />
 		
 		<Button
@@ -94,6 +97,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseLastPage}"
+			ToolTip.Tip="На последнюю страницу"
 			Content="l" />
 
 		<Button
@@ -103,6 +107,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = ZoomOut}"
+			ToolTip.Tip="Уменьшить страницу"
 			Content="-" />
 		
 		<Label
@@ -128,6 +133,7 @@
 			Width="28"
 			IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = ZoomOn}"
+			ToolTip.Tip="Увеличить страницу"
 			Content="+" />
 
 		<Button
@@ -138,6 +144,7 @@
 			IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
 			Command="{Binding   Path = EditIncorrectBadges}"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
+			ToolTip.Tip="Перейти в окно редактирования некорректных бэйджей"
 			Content="Редактировать"/>
 		
 	</Grid>

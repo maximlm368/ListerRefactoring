@@ -11,18 +11,104 @@ using Avalonia.Skia;
 using Avalonia.Media.Fonts;
 using System.Reactive.Concurrency;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using DataGateway;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 
 namespace Lister.Desktop;
 
 class Program
 {
+    public static void InstallFonts ( )
+    {
+        bool isWindows = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
+        bool isLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
+
+        string ResourceUriFolderName = string.Empty;
+        string ResourceUriType = string.Empty;
+
+        string workDirectory = @"./";
+
+        if ( isWindows )
+        {
+            //ResourceUriFolderName = "//Resources//";
+            ResourceUriFolderName = @"Resources\";
+
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory + ResourceUriFolderName);
+            //string WorkDirectoryPath = containingDirectory.FullName;
+            string resourcePath = containingDirectory.FullName;
+
+            List<string> fontFileNames = new ();
+            FileInfo [] fileInfos = containingDirectory.GetFiles ("*.json");
+
+            foreach ( FileInfo fileInfo in fileInfos )
+            {
+                string jsonPath = fileInfo.FullName;
+                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontFamily" }, jsonPath));
+                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontFamily" }, jsonPath));
+                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontFamily" }, jsonPath));
+                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontFamily" }, jsonPath));
+                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontFamily" }, jsonPath));
+
+                IEnumerable<IConfigurationSection> unitings =
+                          GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
+
+                foreach ( IConfigurationSection unit in unitings )
+                {
+                    IConfigurationSection unitedSection = unit.GetSection ("FontFamily");
+                    fontFileNames.Add (unitedSection.Value);
+                }
+            }
+
+            string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+            string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
+
+            foreach ( string fontFileName in fontFileNames )
+            {
+                //string FontPath = Path.Combine (windowsFontsPath, $"{FontName}.ttf");
+                string FontPath = Path.Combine (windowsFontsPath, $"{fontFileName}");
+
+                //string source = "D:\\MML\\Lister\\Lister\\Assets\\Kramola.ttf";
+                string source = resourcePath + fontFileName;
+                string fontName = fontFileName.Substring (0, fontFileName.Length - 4);
+
+                if ( !File.Exists (FontPath) )
+                {
+                    File.Copy (source, FontPath);
+                }
+
+                Microsoft.Win32.RegistryKey fontKey =
+                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
+                fontKey.SetValue ($"{fontName} (TrueType)", FontPath);
+                fontKey.Close ();
+            }
+        }
+        else if ( isLinux )
+        {
+            ResourceUriFolderName = "Resources/";
+
+            Process fileExplorer = new Process ();
+            fileExplorer.StartInfo.FileName = "Nautilus";
+            fileExplorer.StartInfo.Arguments = @"./";
+            fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+            fileExplorer.Start ();
+        }
+
+    }
+
+
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
     public static void Main ( string [] args )
     {
+        InstallFonts ();
+        Thread.Sleep (1000);
+
         bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
 
         try 

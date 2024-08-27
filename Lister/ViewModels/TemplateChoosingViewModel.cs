@@ -340,13 +340,25 @@ public class TemplateChoosingViewModel : ViewModelBase
                                }
                                else
                                {
-                                   Process fileExplorer = new Process ();
-                                   fileExplorer.StartInfo.FileName = "explorer.exe";
-                                   result = result.ExtractPathWithoutFileName ();
-                                   result = result.Replace ('/', '\\');
-                                   fileExplorer.StartInfo.Arguments = result;
-                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                                   fileExplorer.Start ();
+                                   if ( App.OsName == "Windows" )
+                                   {
+                                       Process fileExplorer = new Process ();
+                                       fileExplorer.StartInfo.FileName = "explorer.exe";
+                                       result = ExtractPathWithoutFileName ( result );
+                                       result = result.Replace ('/', '\\');
+                                       fileExplorer.StartInfo.Arguments = result;
+                                       fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                                       fileExplorer.Start ();
+                                   }
+                                   else if ( App.OsName == "Linux" ) 
+                                   {
+                                       Process fileExplorer = new Process ();
+                                       fileExplorer.StartInfo.FileName = "Nautilus.bin";
+                                       result = ExtractPathWithoutFileName ( result );
+                                       fileExplorer.StartInfo.Arguments = result;
+                                       fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                                       fileExplorer.Start ();
+                                   }
                                }
                            }, uiScheduler);
                    }
@@ -387,13 +399,25 @@ public class TemplateChoosingViewModel : ViewModelBase
                        }
                        else
                        {
-                           Process fileExplorer = new Process ();
-                           fileExplorer.StartInfo.FileName = "explorer.exe";
-                           result = result.ExtractPathWithoutFileName ();
-                           result = result.Replace ('/', '\\');
-                           fileExplorer.StartInfo.Arguments = result;
-                           fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                           fileExplorer.Start ();
+                           if ( App.OsName == "Windows" )
+                           {
+                               Process fileExplorer = new Process ();
+                               fileExplorer.StartInfo.FileName = "explorer.exe";
+                               result = ExtractPathWithoutFileName (result);
+                               result = result.Replace ('/', '\\');
+                               fileExplorer.StartInfo.Arguments = result;
+                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                               fileExplorer.Start ();
+                           }
+                           else if ( App.OsName == "Linux" )
+                           {
+                               Process fileExplorer = new Process ();
+                               fileExplorer.StartInfo.FileName = "Nautilus.bin";
+                               result = ExtractPathWithoutFileName (result);
+                               fileExplorer.StartInfo.Arguments = result;
+                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                               fileExplorer.Start ();
+                           }
                        }
                    }
                }, uiScheduler);
@@ -444,6 +468,26 @@ public class TemplateChoosingViewModel : ViewModelBase
                       bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
                   }
                );
+    }
+
+
+    private string ExtractPathWithoutFileName ( string wholePath )
+    {
+        var builder = new StringBuilder ();
+        string goalPath = string.Empty;
+
+        for ( var index = wholePath.Length - 1; index >= 0; index-- )
+        {
+            bool fileNameIsAchieved = ( wholePath [index] == '/' ) || ( wholePath [index] == '\\' );
+
+            if ( fileNameIsAchieved )
+            {
+                goalPath = wholePath.Substring (0, index);
+                break;
+            }
+        }
+
+        return goalPath;
     }
 
 

@@ -19,6 +19,9 @@ using Avalonia.Media.Fonts;
 using Avalonia.Platform;
 using SkiaSharp;
 using System.Globalization;
+using System.Diagnostics;
+using WiLBiT;
+using Microsoft.Win32;
 
 namespace Lister;
 
@@ -29,7 +32,7 @@ public partial class App : Avalonia.Application
     public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
-    public static FontFamily FF { get; private set; }
+    public static string OsName { get; private set; }
 
     public static IResourceDictionary AvailableResources { get; private set; }
 
@@ -54,11 +57,13 @@ public partial class App : Avalonia.Application
             //ResourceUriFolderName = "//Resources//";
             ResourceUriFolderName = @"Resources\";
             ResourceUriType = "file:///";
+            OsName = "Windows";
         }
         else if ( isLinux ) 
         {
             ResourceUriFolderName = "Resources/";
             ResourceUriType = "file://";
+            OsName = "Linux";
         }
 
         ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceUriFolderName;
@@ -99,38 +104,48 @@ public partial class App : Avalonia.Application
 
 
 
-        string fileName = "Iamsb.ttf";
-        string fontUriString = App.ResourceDirectoryUri + fileName;
-        Uri fontUri = new Uri (fontUriString);
-
-        FontFamily fm = new FontFamily (fontUri, "I am simplified");
-        var kk = fm.Key;
-
-        
-
-        IGlyphTypeface glyphTypeface;
-
+        //string fileName = "Iamsb.ttf";
+        //string fontUriString = App.ResourceDirectoryUri + fileName;
+        //Uri fontUri = new Uri (fontUriString);
+        //FontFamily fm = new FontFamily (fontUri, "I am simplified");
+        //var kk = fm.Key;
+        //IGlyphTypeface glyphTypeface;
         //bool fd = FontManager.Current.TryGetGlyphTypeface (typeface, out glyphTypeface);
-
-        
-        FF = fm;
-
-        string ffs = fm.ToString ();
-
-
-
         //FF = new FontFamily ("Segoe UI");
-        FF = new FontFamily ("Kramola");
-
-        string key = "cg";
-        bool res = this.Resources.ContainsKey (key);
-        res = Resources.TryGetValue (key, out object val);
-        var pushkin = Resources [key];
+        //FF = new FontFamily ("Kramola");
+        //string key = "cg";
+        //bool res = this.Resources.ContainsKey (key);
+        //res = Resources.TryGetValue (key, out object val);
+        //var pushkin = Resources [key];
+        //Resources [key] = fm;
         //Resources [key] = fm;
 
+        //string fileSource = "D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Kramola.ttf";
+        //string fileDestination = "C:\\Users\\Mymrin_ML\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Kramola_0.ttf";
+        //fileDestination = "C:\\Windows\\Fonts\\Kramola.ttf";
+        //Resources.TryGetValue ("cg", out object val);
+        //FF = val as Avalonia.Media.FontFamily;
+        //FW = FontWeight.Bold;
+    }
 
 
-        int df = 0;
+
+    public static void InstallFont ( string FontName, string FullFontName )
+    {
+        string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+        string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
+        string FontPath = Path.Combine (windowsFontsPath, $"{FontName}.ttf");
+
+        string source = "D:\\MML\\Lister\\Lister\\Assets\\Kramola.ttf";
+
+        if ( ! File.Exists(FontPath) ) 
+        {
+            File.Copy (source, FontPath);
+        }
+
+        RegistryKey fontKey = Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
+        fontKey.SetValue ($"{FullFontName} (TrueType)", FontPath);
+        fontKey.Close ();
     }
 }
 
@@ -150,6 +165,7 @@ public static class ServiceCollectionExtensions
 
         collection.AddSingleton (typeof (IBadgeAppearenceProvider), BadgeAppearenceFactory);
         collection.AddSingleton (typeof (IBadLineColorProvider), BadLineFactory);
+        collection.AddSingleton (typeof (IFontFileProvider), BadgeFontFactory);
 
         collection.AddSingleton <ModernMainViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
@@ -189,6 +205,19 @@ public static class ServiceCollectionExtensions
 
         return result;
     }
+
+
+    private static IFontFileProvider BadgeFontFactory ( IServiceProvider serviceProvider )
+    {
+        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
+
+        //IBadLineColorProvider result = service as IBadLineColorProvider;
+
+        IFontFileProvider result =
+            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
+
+        return result;
+    }
 }
 
 
@@ -204,9 +233,11 @@ public class BadgeAppearenceServiceProvider : IServiceProvider
 
         object result = null;
 
-        bool isAimService = ( serviceType.FullName == "DataGateway.IBadgeAppearenceProvider" ) 
+        bool isAimService = ( serviceType.FullName == "ContentAssembler .IBadgeAppearenceProvider" )
                             ||
-                            ( serviceType.FullName == "DataGateway.IBadLineColorProvider" );
+                            ( serviceType.FullName == "ContentAssembler.IBadLineColorProvider" )
+                            ||
+                            ( serviceType.FullName == "ContentAssembler.IFontFileProvider" );
 
         if ( isAimService )
         {
@@ -214,6 +245,52 @@ public class BadgeAppearenceServiceProvider : IServiceProvider
         }
 
         return result;
+    }
+}
+
+
+
+public class FontOperate
+{
+    [DllImport ("kernel32.dll", SetLastError = true)]
+    static extern int WriteProfileString ( string lpszSection, string lpszKeyName, string lpszString );
+
+    [DllImport ("user32.dll")]
+    public static extern int SendMessage ( int hWnd,
+    uint Msg,
+    int wParam,
+    int lParam
+    );
+    [DllImport ("gdi32")]
+    public static extern int AddFontResource ( string lpFileName );
+
+
+    public static bool InstallFont ( string sFontFileName, string sFontName )
+    {
+        string target = string.Format (@"{0}\Fonts\{1}", System.Environment.GetEnvironmentVariable ("WINDIR"), sFontFileName);//System FONT directory
+        /*string source = string.Format (@"{0}\Font\{1}", System.Windows.Forms.Application.StartupPath, sFontFileName);*/
+        //FONT directory to be installed
+
+        
+        string source = "D:\\MML\\Lister\\Lister\\Assets\\Kramola.ttf";
+        
+        try
+        {
+            if ( ! File.Exists (target)   &&   File.Exists (source) )
+            {
+                int _nRet;
+                File.Copy (source, target);
+                _nRet = AddFontResource (target);
+                _nRet = WriteProfileString ("fonts", sFontName + "(TrueType)", sFontFileName);
+            }
+        }
+        catch (Exception ex)
+        {
+
+
+            return false;
+        }
+        return true;
     }
 }
 
