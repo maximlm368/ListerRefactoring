@@ -160,8 +160,8 @@ namespace Lister.ViewModels
             FontFile = text.FontFile;
 
             // string fontUriString = App.ResourceDirectoryUri + text.FontFile + "#Kramola";
-            //fontUriString = "file:///D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Pushkin.ttf";
-            //Uri fontUri = new Uri (fontUriString);
+            string fontUriString = "file:///D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Pushkin.ttf";
+            Uri fontUri = new Uri (fontUriString);
             //string fontName = text.FontFile.Substring (0, text.FontFile.Length - 4);
             //fontName = "Pushkin";
             //var uri = "avares://Assets/Pushkin.ttf";
@@ -171,8 +171,9 @@ namespace Lister.ViewModels
 
 
             FontWeight = GetFontWeight (text.FontWeight);
-            string fontName = text.FontFile.Substring (0, text.FontFile.Length - 4);
+            string fontName = text.FontName;
             FontFamily = new FontFamily (fontName);
+            //FontFamily = new FontFamily (fontUri, fontName);
 
             Content = text.Content;
             IsSplitable = text.IsSplitable;
@@ -234,7 +235,7 @@ namespace Lister.ViewModels
             //tb.FontWeight = Avalonia.Media.FontWeight.Bold;
 
             tb.FontWeight = GetFontWeight (demensions.FontWeight);
-            string fontName = demensions.FontFile.Substring (0, demensions.FontFile. Length - 4);
+            string fontName = demensions.FontName;
             tb.FontFamily = new FontFamily (fontName);
 
             Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);

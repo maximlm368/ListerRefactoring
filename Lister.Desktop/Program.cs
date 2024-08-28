@@ -37,65 +37,135 @@ class Program
             ResourceUriFolderName = @"Resources\";
 
             DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory + ResourceUriFolderName);
-            //string WorkDirectoryPath = containingDirectory.FullName;
             string resourcePath = containingDirectory.FullName;
 
-            List<string> fontFileNames = new ();
-            FileInfo [] fileInfos = containingDirectory.GetFiles ("*.json");
+            List<string> fontFiles = new ();
+            List<string> fontNames = new ();
+            FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
 
-            foreach ( FileInfo fileInfo in fileInfos )
-            {
-                string jsonPath = fileInfo.FullName;
-                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontFamily" }, jsonPath));
-                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontFamily" }, jsonPath));
-                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontFamily" }, jsonPath));
-                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontFamily" }, jsonPath));
-                fontFileNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontFamily" }, jsonPath));
-
-                IEnumerable<IConfigurationSection> unitings =
-                          GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
-
-                foreach ( IConfigurationSection unit in unitings )
-                {
-                    IConfigurationSection unitedSection = unit.GetSection ("FontFamily");
-                    fontFileNames.Add (unitedSection.Value);
-                }
-            }
-
-            string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
-            string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
-
-            foreach ( string fontFileName in fontFileNames )
-            {
-                //string FontPath = Path.Combine (windowsFontsPath, $"{FontName}.ttf");
-                string FontPath = Path.Combine (windowsFontsPath, $"{fontFileName}");
-
-                //string source = "D:\\MML\\Lister\\Lister\\Assets\\Kramola.ttf";
-                string source = resourcePath + fontFileName;
-                string fontName = fontFileName.Substring (0, fontFileName.Length - 4);
-
-                if ( !File.Exists (FontPath) )
-                {
-                    File.Copy (source, FontPath);
-                }
-
-                Microsoft.Win32.RegistryKey fontKey =
-                    Microsoft.Win32.Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
-                fontKey.SetValue ($"{fontName} (TrueType)", FontPath);
-                fontKey.Close ();
-            }
+            GetFontFilesAndNames (containingFiles, out fontFiles, out fontNames);
+            SetFontsOnWindow (fontFiles, fontNames, resourcePath);
         }
         else if ( isLinux )
         {
             ResourceUriFolderName = "Resources/";
 
-            Process fileExplorer = new Process ();
-            fileExplorer.StartInfo.FileName = "Nautilus";
-            fileExplorer.StartInfo.Arguments = @"./";
-            fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-            fileExplorer.Start ();
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory + ResourceUriFolderName);
+            string resourcePath = containingDirectory.FullName;
+
+            List<string> fontFiles = new ();
+            List<string> fontNames = new ();
+            FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
+
+            GetFontFilesAndNames (containingFiles, out fontFiles, out fontNames);
+            SetFontsOnLinux (fontFiles, fontNames, resourcePath);
         }
 
+    }
+
+
+    private static void GetFontFilesAndNames ( FileInfo [] fromFiles, out List<string> fontFiles, out List<string> fontNames ) 
+    {
+        fontFiles = new ();
+        fontNames = new ();
+
+        foreach ( FileInfo fileInfo   in   fromFiles )
+        {
+            string jsonPath = fileInfo.FullName;
+            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontName" }, jsonPath));
+
+            IEnumerable<IConfigurationSection> unitings =
+                      GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
+
+            foreach ( IConfigurationSection unit in unitings )
+            {
+                IConfigurationSection fontFileSection = unit.GetSection ("FontFile");
+                IConfigurationSection fontNameSection = unit.GetSection ("FontName");
+                fontFiles.Add (fontFileSection.Value);
+                fontNames.Add (fontNameSection.Value);
+            }
+        }
+    }
+
+
+    private static void SetFontsOnWindow ( List<string> fontFiles, List<string> fontNames, string resourcePath )
+    {
+        string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
+        string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
+
+        for ( int index = 0;   index < fontFiles.Count;   index++ )
+        {
+            string fontFile = fontFiles [index];
+            string fontName = fontNames [index];
+
+            string FontPath = Path.Combine (windowsFontsPath, $"{fontFile}");
+            string source = resourcePath + fontFile;
+
+            if ( ! File.Exists (FontPath) )
+            {
+                File.Copy (source, FontPath);
+            }
+
+            Microsoft.Win32.RegistryKey fontKey =
+                Microsoft.Win32.Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
+
+            fontKey.SetValue ($"{fontName} (TrueType)", FontPath);
+            fontKey.Close ();
+        }
+    }
+
+
+    private static void SetFontsOnLinux ( List<string> fontFiles, List<string> fontNames, string resourcePath )
+    {
+        string linuxFontsPath = "~/.local/share/fonts/";
+
+        for ( int index = 0;   index < fontFiles.Count;   index++ )
+        {
+            string fontFile = fontFiles [index];
+            string fontName = fontNames [index];
+
+            string fontPath = Path.Combine (linuxFontsPath, $"{fontFile}");
+            string source = resourcePath + fontFile;
+
+            if ( ! File.Exists (fontPath) )
+            {
+                File.Copy (source, fontPath);
+            }
+
+            string fontInstallingCommand = "fc-cache -f -v";
+            ExecuteCommand ( fontInstallingCommand );
+        }
+    }
+
+
+    private static void ExecuteCommand ( string command )
+    {
+        using ( Process process = new Process () )
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start ();
+
+            //string result = process.StandardOutput.ReadToEnd ();
+
+            process.WaitForExit ();
+        }
     }
 
 
@@ -130,6 +200,16 @@ class Program
             .LogToTrace()
             .UseReactiveUI();
 }
+
+
+//Process fileExplorer = new Process ();
+//fileExplorer.StartInfo.FileName = "Nautilus";
+//fileExplorer.StartInfo.Arguments = @"./";
+//fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+//fileExplorer.Start ();
+
+
+
 
 
 //public static class AppBuilderExtension

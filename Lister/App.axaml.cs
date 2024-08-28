@@ -20,7 +20,6 @@ using Avalonia.Platform;
 using SkiaSharp;
 using System.Globalization;
 using System.Diagnostics;
-using WiLBiT;
 using Microsoft.Win32;
 
 namespace Lister;
@@ -51,6 +50,7 @@ public partial class App : Avalonia.Application
 
         bool isWindows = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
         bool isLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
+        string osDescription = RuntimeInformation.OSDescription;
 
         if ( isWindows )
         {

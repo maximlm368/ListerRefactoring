@@ -412,7 +412,7 @@ public class TemplateChoosingViewModel : ViewModelBase
                            else if ( App.OsName == "Linux" )
                            {
                                Process fileExplorer = new Process ();
-                               fileExplorer.StartInfo.FileName = "Nautilus.bin";
+                               fileExplorer.StartInfo.FileName = "nautilus";
                                result = ExtractPathWithoutFileName (result);
                                fileExplorer.StartInfo.Arguments = result;
                                fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;

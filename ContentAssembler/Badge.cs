@@ -252,6 +252,7 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFile { get; private set; }
+        public string FontName { get; private set; }
         public List<byte> Foreground { get; private set; }
         public string FontWeight { get; private set; }
         private string _content;
@@ -277,8 +278,8 @@ namespace ContentAssembler
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFamily, List<byte> foreground, string fontWeight
-                           , List<string>? includedAtoms, bool isSplitable )
+                           , double fontSize, string fontFile, string fontName, List<byte> foreground
+                           , string fontWeight, List<string>? includedAtoms, bool isSplitable )
         {
             _content = "";
             ContentIsSet = false;
@@ -289,7 +290,8 @@ namespace ContentAssembler
             LeftOffset = leftOffset;
             Alignment = alignment;
             FontSize = fontSize;
-            FontFile = fontFamily;
+            FontFile = fontFile;
+            FontName = fontName;
 
             if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
             {
@@ -316,6 +318,7 @@ namespace ContentAssembler
             Alignment = source.Alignment;
             FontSize = source.FontSize;
             FontFile = source.FontFile;
+            FontName = source.FontName;
             Foreground = source.Foreground;
             FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
@@ -327,7 +330,7 @@ namespace ContentAssembler
         internal TextualAtom Clone () 
         {
             TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile,
-                                                 Foreground, FontWeight, IncludedAtoms, IsSplitable);
+                                                 FontName, Foreground, FontWeight, IncludedAtoms, IsSplitable);
             return clone;
         }
 

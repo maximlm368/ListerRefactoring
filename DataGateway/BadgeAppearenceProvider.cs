@@ -181,7 +181,8 @@ namespace DataGateway
             string alignment = GetterFromJson.GetSectionValue (new List<string> { atomName, "Alignment" }, jsonPath);
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
             .TranslateIntoDouble ();
-            string fontFamily = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFamily" }, jsonPath);
+            string fontFile = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFile" }, jsonPath);
+            string fontName = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontName" }, jsonPath);
 
             List<int> intForeground = GetterFromJson.GetSectionValue (new List<string> { atomName, "Foreground" }, jsonPath)
             .TranslateIntoIntList();
@@ -205,7 +206,7 @@ namespace DataGateway
             catch (Exception ex) {}
 
             TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
-                           , alignment, fontSize, fontFamily, foreground, fontWeight, null, isShiftable);
+                           , alignment, fontSize, fontFile, fontName, foreground, fontWeight, null, isShiftable);
 
             return atom;
         }
@@ -227,8 +228,10 @@ namespace DataGateway
             string alignment = GetterFromJson.GetSectionValue (childSection);
             childSection = section.GetSection ("FontSize");
             double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
-            childSection = section.GetSection ("FontFamily");
-            string fontFamily = GetterFromJson.GetSectionValue (childSection);
+            childSection = section.GetSection ("FontFile");
+            string fontFile = GetterFromJson.GetSectionValue (childSection);
+            childSection = section.GetSection ("FontName");
+            string fontName = GetterFromJson.GetSectionValue (childSection);
 
             childSection = section.GetSection ("Foreground");
             List<int> intForeground = GetterFromJson.GetSectionValue (childSection).TranslateIntoIntList ();
@@ -255,8 +258,8 @@ namespace DataGateway
             catch ( Exception ex ) { }
 
 
-            TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset 
-                                               , alignment, fontSize, fontFamily, foreground, fontWeight, united, isShiftable );
+            TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset , alignment, fontSize
+                                               , fontFile, fontName, foreground, fontWeight, united, isShiftable );
             return atom;
         }
 
