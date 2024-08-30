@@ -142,12 +142,12 @@ class Program
             }
 
             string fontInstallingCommand = "fc-cache -f -v";
-            ExecuteCommand ( fontInstallingCommand );
+            ExecuteBashCommand ( fontInstallingCommand );
         }
     }
 
 
-    private static void ExecuteCommand ( string command )
+    private static void ExecuteBashCommand ( string command )
     {
         using ( Process process = new Process () )
         {

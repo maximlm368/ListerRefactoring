@@ -15,6 +15,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using System.Diagnostics;
 
 
 namespace Lister.Views;
@@ -25,6 +26,8 @@ public partial class MainWindow : Window
     public static readonly Color black = new Color (255, 0, 0, 0);
 
     public static IStorageProvider CommonStorageProvider { get; private set; }
+    public static Stopwatch EventTimer { get; private set; }
+    public static bool CursorIsWait { get; private set; }
     internal static MainWindow _mainWindow;
 
     private PixelSize _screenSize;
@@ -51,6 +54,7 @@ public partial class MainWindow : Window
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += RestrictPosition;
         _mainWindow = this;
+        Cursor = new Cursor (StandardCursorType.Arrow);
     }
 
 
@@ -125,6 +129,14 @@ public partial class MainWindow : Window
         {
             ModernMainView mainView = ( ModernMainView ) Content;
             mainView.CloseCustomCombobox ();
+            EventTimer = Stopwatch.StartNew ();
+
+            CursorIsWait = ( "Wait" == Cursor.ToString () );
+
+            if ( CursorIsWait )
+            {
+                int fdfd = 0;
+            }
         }
         catch( InvalidCastException ex) 
         {

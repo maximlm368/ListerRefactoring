@@ -20,6 +20,11 @@ namespace DataGateway
         public List <Person> GetPersons (string ? filePath)
         {
             List<Person> result = [];
+
+            if ( string.IsNullOrWhiteSpace(filePath) ) 
+            {
+                return result;
+            }
             
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding (1251);

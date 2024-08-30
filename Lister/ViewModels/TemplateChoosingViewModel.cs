@@ -67,10 +67,6 @@ public class TemplateChoosingViewModel : ViewModelBase
         {
             bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
 
-            //if ( valueIsSuitable )
-            //{
-                
-            //}
             this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
             TryToEnableBadgeCreationButton ();
         }
@@ -209,11 +205,6 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         Build ();
-        _zoomNavigationVM.EnableZoom ();
-        _zoomNavigationVM.SetEnablePageNavigation ();
-        ClearIsEnable = true;
-        SaveIsEnable = true;
-        PrintIsEnable = true;
     }
 
 
@@ -232,7 +223,6 @@ public class TemplateChoosingViewModel : ViewModelBase
         if ( _personChoosingVM.EntirePersonListIsSelected ) 
         {
             _view.SetCursorWait ();
-            DisableButtons ();
             BuildAllBadges ();
         }
         else if( _personChoosingVM.SinglePersonIsSelected )
@@ -242,6 +232,8 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         _view.SetCursorArrow ();
         EnableButtons ();
+        _zoomNavigationVM.EnableZoom ();
+        _zoomNavigationVM.SetEnablePageNavigation ();
     }
 
 
@@ -269,15 +261,18 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     internal void ClearBadges ( )
     {
+        if ( ! PreventCommandExecution() )
+        {
+            return;
+        }
+
         if ( _sceneVM == null )
         {
             _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
         }
 
         _sceneVM.ClearAllPages ();
-        ClearIsEnable = false;
-        SaveIsEnable = false;
-        PrintIsEnable = false;
+        DisableButtons();
 
         if ( _zoomNavigationVM == null )
         {
@@ -292,7 +287,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     {
         ClearIsEnable = false;
         SaveIsEnable = false;
-        PrintIsEnable= false;
+        PrintIsEnable = false;
     }
 
 
@@ -374,7 +369,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         FilePickerSaveOptions options = new ();
         options.Title = _saveTitle;
         options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-        options.SuggestedFileName = _suggestedFileNames;
+        options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
         Task <IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
 
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
@@ -424,6 +419,15 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
+    private string GenerateNowDateString ( )
+    {
+        DateTime now = DateTime.Now;
+        string result = " " + now.Day.ToString () + " " + now.Month.ToString () + " " + now.Year.ToString () + "_" 
+                      + now.Hour.ToString () + " " + now.Minute.ToString ();
+        return result;
+    }
+
+
     internal Task<bool> GeneratePdff ( string fileToSave )
     {
         List <PageViewModel> pages = GetAllPages ();
@@ -451,23 +455,73 @@ public class TemplateChoosingViewModel : ViewModelBase
                (
                   savingTask =>
                   {
-                      int length = _converter.intermidiateFiles.Count;
-
-                      IStorageItem sItem = null;
-                    
-                      ProcessStartInfo info = new ()
+                      if ( App.OsName == "Windows" )
                       {
-                          FileName = fileToSave,
-                          Verb = "Print",
-                          UseShellExecute = true,
-                          ErrorDialog = false,
-                          CreateNoWindow = true,
-                          WindowStyle = ProcessWindowStyle.Minimized
-                      };
+                          int length = _converter.intermidiateFiles.Count;
+                          IStorageItem sItem = null;
 
-                      bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
+                          ProcessStartInfo info = new ()
+                          {
+                              FileName = fileToSave,
+                              Verb = "Print",
+                              UseShellExecute = true,
+                              ErrorDialog = false,
+                              CreateNoWindow = true,
+                              WindowStyle = ProcessWindowStyle.Minimized
+                          };
+
+                          bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
+                      }
+                      else if ( App.OsName == "Linux" ) 
+                      {
+                          string printCommand = "lp " + fileToSave;
+                          ExecuteBashCommand (printCommand);
+                      }
                   }
                );
+    }
+
+
+    private bool PreventCommandExecution ()
+    {
+        bool result = true;
+
+        if ( MainWindow.EventTimer == null )
+        {
+            return false;
+        }
+
+        MainWindow.EventTimer.Stop ();
+        TimeSpan expandTime = MainWindow.EventTimer.Elapsed;
+
+        if ( expandTime.Milliseconds < 50 )
+        {
+            return false;
+        }
+
+        return result;
+    }
+
+
+    private static void ExecuteBashCommand ( string command )
+    {
+        using ( Process process = new Process () )
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start ();
+
+            //string result = process.StandardOutput.ReadToEnd ();
+
+            process.WaitForExit ();
+        }
     }
 
 

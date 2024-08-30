@@ -18,7 +18,9 @@ namespace Lister.Views
     {
         private static readonly string _jsonError = 
         "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
+
         private static TemplateViewModel _chosen;
+
         private ModernMainView _parent;
         private TemplateChoosingViewModel _vm;
         private string _theme;
@@ -104,13 +106,15 @@ namespace Lister.Views
 
         internal void SetCursorWait ( )
         {
-            Cursor = new Cursor (StandardCursorType.Wait);
+            //Cursor = new Cursor (StandardCursorType.Wait);
+            MainWindow._mainWindow.Cursor = new Cursor (StandardCursorType.Wait);
         }
 
 
         internal void SetCursorArrow ()
         {
-            Cursor = new Cursor (StandardCursorType.Arrow);
+            //Cursor = new Cursor (StandardCursorType.Arrow);
+            MainWindow._mainWindow.Cursor = new Cursor (StandardCursorType.Arrow);
         }
     }
 }

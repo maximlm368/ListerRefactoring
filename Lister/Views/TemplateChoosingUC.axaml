@@ -72,6 +72,7 @@
 			HorizontalContentAlignment="Center"
 			Width="86"
 			IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
+			Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path=ClearBadges}"
 			ToolTip.Tip="Удалить все построения"
 			Content="Очистить" />
@@ -83,6 +84,7 @@
 			HorizontalContentAlignment="Center"
 			Width="91"
 			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+			Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path = GeneratePdf}"
 			ToolTip.Tip="Сохранить в файле"
 			Content="Сохранить" />
@@ -94,6 +96,7 @@
 			HorizontalContentAlignment="Center"
 			Width="71"
 			IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
+			Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 			Command="{Binding  Path=Print}"
 			ToolTip.Tip="Печатать на принтере по умолчанию"
 			Content="Печать"/>
@@ -105,6 +108,10 @@
 
 
 <!-- 
+
+IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
+IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 
 
 Foreground="{Binding  Path=Color,  Mode=OneWay}"

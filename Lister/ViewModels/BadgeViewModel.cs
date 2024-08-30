@@ -262,8 +262,6 @@ public class BadgeViewModel : ViewModelBase
 
         List<TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
-
-        //PreSetUpTextLines (atoms);
        
         SetUpTextLines (atoms);
         GatherIncorrectLines ();
@@ -582,7 +580,6 @@ public class BadgeViewModel : ViewModelBase
             double topOffset = textAtom.TopOffset;
             string beingProcessedLine = textAtom.Content.Trim();
             string additionalLine = string.Empty;
-            FontFamily family = new FontFamily (textAtom.FontFile);
 
             while ( true )
             {
@@ -635,7 +632,6 @@ public class BadgeViewModel : ViewModelBase
                     atom.Content = beingProcessedLine;
                     TextLineViewModel textLine = new TextLineViewModel (atom);
                     TextLines.Add (textLine);
-                    IsCorrect = false;
                     textLine.isBorderViolent = true;
                     break;
                 }

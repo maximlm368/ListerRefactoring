@@ -45,7 +45,7 @@
 			<Button
 				Name="Back"
 				Content="Назад"
-				ToolTip.Tip="Вернуться в окно построения "
+				ToolTip.Tip="Вернуться в окно построения с сохранением изменений"
 				Width="98"
 				Grid.Column="0"
 				HorizontalContentAlignment="Center"
@@ -259,7 +259,8 @@
 						 Name="sliderScroller"
 						 Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
 						 VerticalScrollBarVisibility="Auto"
-						 AllowAutoHide="True">
+						 AllowAutoHide="True"
+						 >
 
 						<ItemsControl
 							Name="badgeStates"
@@ -272,6 +273,7 @@
 									<Border
 										HorizontalAlignment="Left"
 										Width="48"
+										Height="34"
 										BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
 										BorderThickness="1">
 										
@@ -512,6 +514,11 @@
 
 
 <!-- 
+
+ScrollChanged="HandleScrollChange"
+
+
+
 //container.BorderThickness = new Thickness (0, 0, 0, 0);
 
 

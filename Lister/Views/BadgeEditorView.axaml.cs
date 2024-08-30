@@ -39,6 +39,8 @@ namespace Lister.Views
         private bool _isReleaseLocked;
         private Stopwatch _focusTime;
 
+        public bool IconIsTapped { get; private set; }
+
 
         public BadgeEditorView ()
         {
@@ -46,7 +48,6 @@ namespace Lister.Views
             this.DataContext = new BadgeEditorViewModel ();
             _vm = DataContext as BadgeEditorViewModel;
             left.Focus ();
-
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
@@ -157,6 +158,8 @@ namespace Lister.Views
             }
 
             _vm.ResetFocusedText (edited);
+
+            
         }
 
 
@@ -422,6 +425,23 @@ namespace Lister.Views
             {
                 _vm.ToNext ();
             }
+        }
+
+
+        internal void HandleScrollChange ( object sender, ScrollChangedEventArgs args )
+        {
+            double arg = args.OffsetDelta.Y;
+
+            //double scroll = _vm.SliderOffset.Y;
+
+            //int ddf = 0;
+
+            //if ( _vm.ScrollChangedByNavigation ) 
+            //{
+            //    return;
+            //}
+
+            //_vm.SetOldOffset ();
         }
 
         #endregion

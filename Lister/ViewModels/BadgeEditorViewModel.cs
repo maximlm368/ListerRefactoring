@@ -45,9 +45,12 @@ namespace Lister.ViewModels
         private int _visibleRange;
         private double _scrollHeight = 204;
         private double _itemHeight = 34;
+        private Vector _offset;
+        private double _doubleRest;
         
         internal double WidthDelta { get; set; }
         internal double HeightDelta { get; set; }
+        //internal bool ScrollChangedByNavigation { get; private set; }
 
         private double cO;
         internal double CorrectnessOpacity
@@ -325,14 +328,23 @@ namespace Lister.ViewModels
 
             _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
             _visibleRangeEnd = _visibleRange - 1;
+
+            SliderOffset = new Vector (0, 0);
+            _offset = new Vector (0, 0);
         }
 
 
         internal void ChangeSliderHeight ( double delta )
         {
+            double oldHeight = _scrollHeight;
             _scrollHeight -= delta;
+
+            int oldRange = _visibleRange;
             _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
-            _visibleRangeEnd = _visibleRange - 1;
+
+            _visibleRangeEnd += _visibleRange - oldRange;
+
+            SaveProcessableIconVisibleCh ();
         }
 
 
@@ -504,6 +516,10 @@ namespace Lister.ViewModels
             ReleaseCaptured ();
 
             SliderOffset = new Vector (0,0);
+
+            //Crutch instead SliderOffset
+            _view. sliderScroller.ScrollToHome ();
+            _visibleRangeEnd = _visibleRange - 1;
         }
 
 
@@ -530,10 +546,15 @@ namespace Lister.ViewModels
 
             ReleaseCaptured ();
 
-            if ( BeingProcessedNumber < ( _visibleRangeEnd + 1 ) )
+            //Crutch instead SliderOffset
+            //_view. sliderScroller.Offset = new Vector (0, SliderOffset.Y);
+
+            if ( BeingProcessedNumber < ( _visibleRangeEnd - _visibleRange + 2 ) )
             {
-                SliderOffset = new Vector (0, SliderOffset. Y - _itemHeight);
+                SliderOffset = new Vector (0, SliderOffset.Y - _itemHeight);
+                _visibleRangeEnd--;
             }
+
         }
 
 
@@ -567,10 +588,15 @@ namespace Lister.ViewModels
 
             ReleaseCaptured ();
 
-            if ( BeingProcessedNumber > (_visibleRangeEnd + 1) ) 
+            //Crutch instead SliderOffset
+            _view. sliderScroller.Offset = new Vector (0, SliderOffset.Y);
+
+            if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) )
             {
-                SliderOffset = new Vector (0, SliderOffset. Y + _itemHeight);
+                SliderOffset = new Vector (0, SliderOffset.Y + _itemHeight - _doubleRest);
+                _visibleRangeEnd++;
             }
+
         }
 
 
@@ -599,8 +625,12 @@ namespace Lister.ViewModels
 
             ReleaseCaptured ();
 
-            double verticalOffset = (_visibleRange - 1) * _itemHeight;
+            double verticalOffset = (VisibleBadges. Count - _visibleRange) * _itemHeight;
             SliderOffset = new Vector (0, verticalOffset);
+
+            //Crutch instead SliderOffset
+            _view. sliderScroller.ScrollToEnd ();
+            _visibleRangeEnd = VisibleBadges. Count - 1;
         }
 
 
@@ -667,14 +697,49 @@ namespace Lister.ViewModels
 
                 ReleaseCaptured ();
 
-                //if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) || BeingProcessedNumber < ( _visibleRangeEnd + 1 ) )
-                //{
-                //    SliderOffset = new Vector (0, _itemHeight * _visibleRange / 2);
-                //}
+                SaveProcessableIconVisible ();
             }
             catch ( Exception ex )
             {
                 BeingProcessedNumber = BeingProcessedNumber;
+            }
+        }
+
+
+        private void SaveProcessableIconVisible ( )
+        {
+            bool numberIsOutOfRange = BeingProcessedNumber > ( _visibleRangeEnd + 1 )
+                                      ||
+                                      BeingProcessedNumber < ( _visibleRangeEnd + 1 - _visibleRange );
+
+            if ( numberIsOutOfRange )
+            {
+                double itemsCount = _view.sliderScroller.Offset.Y / _itemHeight;
+                int padding = (int) itemsCount;
+                _doubleRest = _view.sliderScroller.Offset.Y - (itemsCount * _itemHeight);
+
+                int diff = _visibleRange - ( BeingProcessedNumber - padding );
+                _visibleRangeEnd = BeingProcessedNumber + diff;
+                //SliderOffset = _view.sliderScroller.Offset;
+                //SliderOffset = new Vector (0, _view.sliderScroller.Offset.Y - doubleRest);
+
+
+                //_visibleRangeEnd = BeingProcessedNumber + _visibleRange / 2;
+                //SliderOffset = new Vector (0, _itemHeight * ( BeingProcessedNumber - _visibleRange / 2 ));
+            }
+        }
+
+
+        private void SaveProcessableIconVisibleCh ()
+        {
+            bool numberIsOutOfRange = BeingProcessedNumber > ( _visibleRangeEnd + 1 )
+                                      ||
+                                      BeingProcessedNumber < ( _visibleRangeEnd + 1 - _visibleRange );
+
+            if ( numberIsOutOfRange )
+            {
+                _visibleRangeEnd = BeingProcessedNumber + _visibleRange / 2;
+                SliderOffset = new Vector (0, _itemHeight * ( BeingProcessedNumber - _visibleRange / 2 ));
             }
         }
 
