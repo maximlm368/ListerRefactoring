@@ -440,7 +440,8 @@
 				Grid.Column="3"
 				MaxHeight="30"
 				Margin="0,3"
-				TextChanged="ToParticularBadge"
+				Focusable="False"
+				IsReadOnly="True"
 				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
 			
 			<Label
@@ -501,7 +502,7 @@
 				Grid.Column="1"/>
 
 			<Label
-				Content="{Binding  Path = IncorrectBadges.Count,  Mode=OneWay}"
+				Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
 				FontSize="14"

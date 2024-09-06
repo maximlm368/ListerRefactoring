@@ -61,8 +61,7 @@
 			HorizontalContentAlignment="Center"
 			Width="96"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-			Command="{Binding  Path=BuildBadges}"
-			ToolTip.Tip="Построить выбранные бэйджи"
+			Command="{Binding  BuildBadges}"
 			Content="Построить"/>
 		
 		<Button
@@ -85,7 +84,7 @@
 			Width="91"
 			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 			Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
-			Command="{Binding  Path = GeneratePdf}"
+			Command="{Binding  GeneratePdf}"
 			ToolTip.Tip="Сохранить в файле"
 			Content="Сохранить" />
 		
@@ -108,6 +107,16 @@
 
 
 <!-- 
+
+ToolTip.Tip="Построить выбранные бэйджи"
+
+
+
+IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+
+Command="{Binding  Path=BuildBadges}"
+PointerReleased="Released"
+
 
 IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"

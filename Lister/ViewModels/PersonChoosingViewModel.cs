@@ -379,6 +379,22 @@ namespace Lister.ViewModels
         }
 
 
+        //internal void HideDropDownWith ()
+        //{
+        //    if ( InvolvedPeople.Count == 0 )
+        //    {
+        //        RecoverVisiblePeople ();
+        //        FontWeight = FontWeight.Bold;
+        //        PlaceHolder = _placeHolder;
+        //    }
+
+        //    DropDownOpacity = 0;
+        //    VisibleHeight = 0;
+        //    FirstItemHeight = 0;
+        //    FirstIsVisible = false;
+        //}
+
+
         internal void ShowDropDown ()
         {
             DropDownOpacity = 1;

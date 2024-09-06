@@ -23,6 +23,8 @@ using System.Windows.Input;
 using Avalonia.Platform.Storage;
 using System.Reactive.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Avalonia.Threading;
+using System.Reflection;
 
 namespace Lister.ViewModels
 {
@@ -34,6 +36,7 @@ namespace Lister.ViewModels
         //internal static readonly double _scale = 2;
         //internal static readonly double _scale = 2.5;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
+        private List <BadgeViewModel> _badgeStorage;
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
         private FilterChoosing _filterState = FilterChoosing.AllIsChosen;
@@ -47,6 +50,10 @@ namespace Lister.ViewModels
         private double _itemHeight = 34;
         private Vector _offset;
         private double _doubleRest;
+        private readonly int _loadingBadgeCount = 20;
+        private List<int []> _loadedStartEndPairs;
+        private int [] _containingPair;
+        private bool _containingPairExists;
         
         internal double WidthDelta { get; set; }
         internal double HeightDelta { get; set; }
@@ -110,6 +117,8 @@ namespace Lister.ViewModels
 
                 if ( ! _incorrectsAreSet ) 
                 {
+                    int counter = 0;
+
                     foreach ( BadgeViewModel badge   in   value )
                     {
                         if ( badge == null )
@@ -118,19 +127,40 @@ namespace Lister.ViewModels
                         }
 
                         AddToStorage (badge);
-                        BadgeViewModel clone = badge.Clone ();
+                        _badgeStorage.Add (badge);
 
-                        _drafts.Add (badge, clone);
-                        IncorrectBadges.Add (clone);
-                        VisibleBadges.Add (clone);
+                        if ( counter < _loadingBadgeCount )
+                        {
+                            Dispatcher.UIThread.InvokeAsync
+                            (
+                                () =>
+                                {
+                                    BadgeViewModel clone = badge.Clone ();
+                                    _drafts.Add (badge, clone);
+                                    IncorrectBadges.Add (clone);
+                                    VisibleBadges.Add (clone);
+                                }
+                            );
+                        }
+                        counter++;
                     }
 
+                    _loadedStartEndPairs.Add (new int [2] {0, (_loadingBadgeCount - 1)});
+                    _containingPairExists = true;
                     _incorrectsAreSet = true;
                 }
 
-                SetBeingProcessed (VisibleBadges [0]);
-                SetIcons ();
-                ProcessableCount = VisibleBadges.Count;
+                Dispatcher.UIThread.InvokeAsync
+                (
+                    () =>
+                    {
+                        SetBeingProcessed (VisibleBadges [0]);
+                        SetIcons ();
+                    }
+                );
+
+                ProcessableCount = _scaleStorage.Count;
+                IncorrectBadgesCount = _scaleStorage.Count;
             }
         }
 
@@ -141,6 +171,16 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref inc, value, nameof (IncorrectBadges));
+            }
+        }
+
+        private int incBC;
+        internal int IncorrectBadgesCount
+        {
+            get { return incBC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref incBC, value, nameof (IncorrectBadgesCount));
             }
         }
 
@@ -307,8 +347,10 @@ namespace Lister.ViewModels
 
         public BadgeEditorViewModel ( )
         {
-            _scaleStorage = new Dictionary <BadgeViewModel, double> ();
-            _drafts = new Dictionary <BadgeViewModel, BadgeViewModel> ();
+            _scaleStorage = new ();
+            _badgeStorage = new ();
+            _drafts = new ();
+            _loadedStartEndPairs = new ();
             FocusedFontSize = string.Empty;
             SplitterIsEnable = false;
             IncorrectBadges = new ObservableCollection <BadgeViewModel> ();
@@ -326,11 +368,18 @@ namespace Lister.ViewModels
             CorrectnessOpacity = 1;
             IncorrectnessOpacity = 1;
 
-            _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
-            _visibleRangeEnd = _visibleRange - 1;
+            ChangeScrollHeight (0);
 
             SliderOffset = new Vector (0, 0);
             _offset = new Vector (0, 0);
+        }
+
+
+        internal void ChangeScrollHeight ( double delta )
+        {
+            _scrollHeight -= delta;
+            _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
+            _visibleRangeEnd = _visibleRange - 1;
         }
 
 
@@ -344,12 +393,17 @@ namespace Lister.ViewModels
 
             _visibleRangeEnd += _visibleRange - oldRange;
 
-            SaveProcessableIconVisibleCh ();
+            SaveProcessableIconVisible ();
         }
 
 
         internal void CancelChanges ()
         {
+            if ( BeingProcessedBadge == null ) 
+            {
+                return;
+            }
+
             BeingProcessedBadge.Hide ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
@@ -549,9 +603,12 @@ namespace Lister.ViewModels
             //Crutch instead SliderOffset
             //_view. sliderScroller.Offset = new Vector (0, SliderOffset.Y);
 
+            SaveProcessableIconVisible ();
+
             if ( BeingProcessedNumber < ( _visibleRangeEnd - _visibleRange + 2 ) )
             {
-                SliderOffset = new Vector (0, SliderOffset.Y - _itemHeight);
+                SliderOffset = new Vector (0, SliderOffset.Y - _itemHeight - _doubleRest);
+                _doubleRest = 0;
                 _visibleRangeEnd--;
             }
 
@@ -574,14 +631,8 @@ namespace Lister.ViewModels
                 number--;
             }
 
-            BeingProcessedBadge = VisibleBadges [number - 1];
-            ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.white);
-            ActiveIcon = VisibleIcons [number - 1];
-            ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
-            BeingProcessedBadge.Show ();
             BeingProcessedNumber = number;
-            SetToCorrectScale (BeingProcessedBadge);
-            SetEnableBadgeNavigation ();
+
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
@@ -589,20 +640,128 @@ namespace Lister.ViewModels
             ReleaseCaptured ();
 
             //Crutch instead SliderOffset
-            _view. sliderScroller.Offset = new Vector (0, SliderOffset.Y);
+            //_view. sliderScroller.Offset = new Vector (0, SliderOffset.Y);
+
+            //SaveProcessableIconVisible ();
 
             if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) )
             {
-                SliderOffset = new Vector (0, SliderOffset.Y + _itemHeight - _doubleRest);
+                _containingPair = null;
+
+                foreach ( int [] pair   in   _loadedStartEndPairs )
+                {
+                    if ( ( ( BeingProcessedNumber - 2 ) >= pair [0] )   &&   ( ( BeingProcessedNumber - 2 ) <= pair [1] ) )
+                    {
+                        _containingPair = pair;
+                        break;
+                    }
+                }
+
+                if ( _containingPair == null ) 
+                {
+                    _containingPair = new int [2] {(BeingProcessedNumber - 1), ( BeingProcessedNumber - 1 ) };
+                    _loadedStartEndPairs.Add ( _containingPair );
+                }
+
+                bool goneOutOfPair = ( _containingPair [1] < ( BeingProcessedNumber - 1 ) )
+                                     ||
+                                     ( _containingPair [0] == _containingPair [1] );
+
+                if ( goneOutOfPair ) 
+                {
+                    BadgeViewModel badge = _badgeStorage [BeingProcessedNumber - 1];
+
+                    if ( ! _drafts.ContainsKey(badge) ) 
+                    {
+                        BadgeViewModel clone = badge.Clone ();
+                        _drafts.Add (badge, clone);
+                        IncorrectBadges.Add (clone);
+                        VisibleBadges.Add (clone);
+
+                        BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, clone);
+                        VisibleIcons.Add (icon);
+
+                        _containingPair [1]++;
+                    }
+                }
+
+                ScrollViewer scroller = _view. sliderScroller;
+
+                SliderOffset = new Vector (0, scroller.Offset.Y + _itemHeight - _doubleRest);
+                _doubleRest = 0;
                 _visibleRangeEnd++;
             }
 
+            BeingProcessedBadge = VisibleBadges [number - 1];
+            BeingProcessedBadge.Show ();
+
+            SetToCorrectScale (BeingProcessedBadge);
+            SetEnableBadgeNavigation ();
+
+            ActiveIcon.BorderColor = new SolidColorBrush (MainWindow.white);
+            ActiveIcon = VisibleIcons [number - 1];
+            ActiveIcon.BorderColor = new SolidColorBrush (MainWindow.black);
         }
 
 
         internal void ToLast ( )
         {
             BeingProcessedBadge.Hide ();
+
+
+
+            _containingPair = null;
+            int maxLoadedNumber = 0;
+
+            foreach ( int [] pair   in   _loadedStartEndPairs )
+            {
+                if ( pair [1] > maxLoadedNumber ) 
+                {
+                    maxLoadedNumber = pair [1];
+                }
+
+                if ( ( (_badgeStorage.Count - 1) >= pair [0] )   &&   ( (_badgeStorage.Count - 1) <= pair [1] ) )
+                {
+                    _containingPair = pair;
+                }
+            }
+
+            if ( _containingPair == null )
+            {
+                int diff = Math.Min (_loadingBadgeCount, ( _badgeStorage.Count - maxLoadedNumber - 1 ));
+                int newPairStart = _badgeStorage.Count - diff - 1;
+                _containingPair = new int [2] { newPairStart, (_badgeStorage.Count - 1) };
+                _loadedStartEndPairs.Add (_containingPair);
+            }
+
+            bool goneOutOfPair = ( _containingPair [1] < ( BeingProcessedNumber - 1 ) )
+                                 ||
+                                 ( _containingPair [0] == _containingPair [1] );
+
+
+
+
+            if ( VisibleBadges. Count  <  _badgeStorage.Count )
+            {
+                int diff = Math.Min (_loadingBadgeCount, (_badgeStorage.Count - maxLoadedNumber - 1));
+
+                for ( int index = (_badgeStorage.Count - diff);   index < _badgeStorage.Count;   index++ ) 
+                {
+                    BadgeViewModel badge = _badgeStorage [index];
+
+                    if ( !_drafts.ContainsKey (badge) )
+                    {
+                        BadgeViewModel clone = badge.Clone ();
+                        _drafts.Add (badge, clone);
+                        IncorrectBadges.Add (clone);
+                        VisibleBadges.Add (clone);
+                        
+                        BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, clone);
+                        VisibleIcons.Add (icon);
+                    }
+                }
+            }
+
             int number = VisibleBadges. Count;
             bool filterOccured = FilterProcessableBadge (BeingProcessedNumber);
 
@@ -616,7 +775,7 @@ namespace Lister.ViewModels
             ActiveIcon = VisibleIcons [number - 1];
             ActiveIcon. BorderColor = new SolidColorBrush (MainWindow.black);
             BeingProcessedBadge.Show ();
-            BeingProcessedNumber = VisibleBadges. Count;
+            BeingProcessedNumber = _badgeStorage.Count;
             SetToCorrectScale (BeingProcessedBadge);
             SetEnableBadgeNavigation ();
             MoversAreEnable = false;
@@ -656,7 +815,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ToParticularBadge ( string numberAsText )
+        private void ToParticularBadge ( string numberAsText )
         {
             try
             {
@@ -697,7 +856,7 @@ namespace Lister.ViewModels
 
                 ReleaseCaptured ();
 
-                SaveProcessableIconVisible ();
+                //SaveProcessableIconVisible ();
             }
             catch ( Exception ex )
             {
@@ -714,18 +873,13 @@ namespace Lister.ViewModels
 
             if ( numberIsOutOfRange )
             {
-                double itemsCount = _view.sliderScroller.Offset.Y / _itemHeight;
-                int padding = (int) itemsCount;
-                _doubleRest = _view.sliderScroller.Offset.Y - (itemsCount * _itemHeight);
+                ScrollViewer scroller = _view.sliderScroller;
 
-                int diff = _visibleRange - ( BeingProcessedNumber - padding );
-                _visibleRangeEnd = BeingProcessedNumber + diff;
-                //SliderOffset = _view.sliderScroller.Offset;
-                //SliderOffset = new Vector (0, _view.sliderScroller.Offset.Y - doubleRest);
+                int offsetedItemsCount = (int) (scroller.Offset.Y / _itemHeight);
+                _doubleRest =  (scroller.Offset.Y - (offsetedItemsCount * _itemHeight));
 
-
-                //_visibleRangeEnd = BeingProcessedNumber + _visibleRange / 2;
-                //SliderOffset = new Vector (0, _itemHeight * ( BeingProcessedNumber - _visibleRange / 2 ));
+                int diff = _visibleRange - ( BeingProcessedNumber - offsetedItemsCount );
+                _visibleRangeEnd = BeingProcessedNumber + diff - 1;
             }
         }
 
@@ -949,7 +1103,7 @@ namespace Lister.ViewModels
 
         private void SetEnableBadgeNavigation ()
         {
-            int badgeCount = VisibleBadges.Count;
+            int badgeCount = _badgeStorage.Count;
 
             if ( ( BeingProcessedNumber > 1 ) && ( BeingProcessedNumber == badgeCount ) )
             {

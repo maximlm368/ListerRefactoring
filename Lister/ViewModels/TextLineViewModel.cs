@@ -175,6 +175,7 @@ namespace Lister.ViewModels
 
             SolidColorBrush foreground = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
             Foreground = foreground;
+
             double correctHeight = FontSize * _parentToChildCoeff;
 
             SetWidth ();
@@ -211,7 +212,7 @@ namespace Lister.ViewModels
 
         public static double CalculateWidth ( string content, TextualAtom demensions )
         {
-            TextBlock tb = new ();
+            TextBlock tb = new TextBlock ();
             tb.LetterSpacing = 0;
             tb.Text = content;
             tb.FontSize = demensions.FontSize;
@@ -266,17 +267,17 @@ namespace Lister.ViewModels
 
         private void SetWidth ()
         {
-            TextBlock tb = new ();
+            TextBlock tb = new TextBlock ();
             tb.LetterSpacing = 0;
             tb.Text = Content;
             tb.FontSize = FontSize;
             tb.FontFamily = FontFamily;
             tb.FontWeight = FontWeight;
-            
+
             Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
             tb.Measure (size);
             tb.Arrange (new Rect ());
-            UsefullWidth = tb.DesiredSize. Width;
+            UsefullWidth = tb.DesiredSize.Width;
         }
 
 

@@ -202,6 +202,10 @@
 
 <!--
 
+Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+
+
+
 FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 FontFamily="{StaticResource Nunito}"
 FontFamily="{StaticResource cg}"

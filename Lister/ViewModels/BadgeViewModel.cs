@@ -19,6 +19,8 @@ using System;
 using DataGateway;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Fluent;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 
 namespace Lister.ViewModels;
 
@@ -565,7 +567,7 @@ public class BadgeViewModel : ViewModelBase
     //}
 
 
-    private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
+    private async void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
 
@@ -583,7 +585,20 @@ public class BadgeViewModel : ViewModelBase
 
             while ( true )
             {
-                double usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
+                double usefulTextBlockWidth;
+
+                if ( ModernMainViewModel.MainViewIsWaiting )
+                {
+                    var result =
+                    Dispatcher.UIThread.InvokeAsync<double>
+                    (() => { return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom); });
+                    usefulTextBlockWidth = result.Result;
+                }
+                else 
+                {
+                    usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
+                }
+
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
 
                 if ( ! lineIsOverflow ) 
@@ -602,7 +617,21 @@ public class BadgeViewModel : ViewModelBase
                     TextualAtom atom = new TextualAtom (textAtom, topOffset, beingProcessedLine);
                     atom.TopOffset = topOffset;
                     atom.Content = beingProcessedLine;
-                    TextLineViewModel textLine = new TextLineViewModel (atom);
+
+                    TextLineViewModel textLine;
+
+                    if ( ModernMainViewModel.MainViewIsWaiting )
+                    {
+                        var result2 =
+                        Dispatcher.UIThread.InvokeAsync<TextLineViewModel>
+                        (() => { return new TextLineViewModel (atom); });
+                        textLine = result2.Result;
+                    }
+                    else 
+                    {
+                        textLine = new TextLineViewModel (atom);
+                    }
+                    
                     TextLines.Add (textLine);
 
                     if ( additionalLine != string.Empty ) 
@@ -630,7 +659,22 @@ public class BadgeViewModel : ViewModelBase
                     TextualAtom atom = new TextualAtom (textAtom, topOffset, beingProcessedLine);
                     atom.TopOffset = topOffset;
                     atom.Content = beingProcessedLine;
-                    TextLineViewModel textLine = new TextLineViewModel (atom);
+
+                    TextLineViewModel textLine;
+
+                    if ( ModernMainViewModel.MainViewIsWaiting )
+                    {
+                        var result2 =
+                        Dispatcher.UIThread.InvokeAsync<TextLineViewModel>
+                        (() => { return new TextLineViewModel (atom); });
+                        textLine = result2.Result;
+                    }
+                    else 
+                    {
+                        textLine = new TextLineViewModel (atom);
+                    }
+
+                    
                     TextLines.Add (textLine);
                     textLine.isBorderViolent = true;
                     break;
@@ -776,6 +820,37 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
+    //private void GatherIncorrectLinesqq ()
+    //{
+    //    foreach ( TextLineViewModel line in TextLines )
+    //    {
+    //        bool isViolent = CheckInsideSpansViolation (line);
+
+    //        if ( isViolent )
+    //        {
+    //            BorderViolentLines.Add (line);
+    //            line.isBorderViolent = true;
+
+    //            Task task = new Task
+    //                (
+    //                   () =>
+    //                   {
+    //                       SetBadColor (line);
+    //                   }
+
+    //                );
+
+    //            task.Start (TemplateChoosingViewModel.TaskScheduler);
+    //            task.Wait ();
+
+    //            IsCorrect = false;
+    //        }
+    //    }
+
+    //    CheckOverlayViolation ();
+    //}
+
+
     private void SetBadColor ( TextLineViewModel setable )
     {
         if ( _badLineColor == null )
@@ -792,7 +867,20 @@ public class BadgeViewModel : ViewModelBase
                 byte g = ( byte ) rgb [1];
                 byte b = ( byte ) rgb [2];
 
-                IBrush brush = new SolidColorBrush (new Color (255, r, g, b));
+                IBrush brush;
+
+                if ( ModernMainViewModel.MainViewIsWaiting )
+                {
+                    var result =
+                    Dispatcher.UIThread.InvokeAsync<IBrush>
+                    (() => { return new SolidColorBrush (new Color (255, r, g, b)); });
+                    brush = result.Result;
+                }
+                else 
+                {
+                    brush = new SolidColorBrush (new Color (255, r, g, b));
+                }
+
                 setable.Background = brush;
             }
             else 

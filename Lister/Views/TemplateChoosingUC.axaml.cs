@@ -33,6 +33,9 @@ namespace Lister.Views
             _vm = ( TemplateChoosingViewModel ) DataContext;
             Loaded += OnLoaded;
             ActualThemeVariantChanged += ThemeChanged;
+
+            //templateChoosing.IsEnabled = false;
+
         }
 
 
@@ -104,17 +107,55 @@ namespace Lister.Views
         }
 
 
-        internal void SetCursorWait ( )
-        {
-            //Cursor = new Cursor (StandardCursorType.Wait);
-            MainWindow._mainWindow.Cursor = new Cursor (StandardCursorType.Wait);
-        }
+        //internal void Tapped ( object sender, TappedEventArgs args )
+        //{
+        //    var templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+
+        //    templateChoosingVM.GeneratePdf ();
+        //}
 
 
-        internal void SetCursorArrow ()
-        {
-            //Cursor = new Cursor (StandardCursorType.Arrow);
-            MainWindow._mainWindow.Cursor = new Cursor (StandardCursorType.Arrow);
-        }
+        //internal void SetWaiting ( )
+        //{
+        //    _parent = this.Parent.Parent as ModernMainView;
+        //    _parent.Show ();
+        //}
+
+
+        //internal void CancelWaiting ()
+        //{
+        //    _parent = this.Parent.Parent as ModernMainView;
+        //    _parent.Hide ();
+        //}
+
+
+        //internal void BuildAll ( string templateName )
+        //{
+        //    SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel> ();
+        //    sceneVM.BuildBadges ( templateName );
+
+
+        //}
+
+
+        //internal void BuildSingle ()
+        //{
+        //    _vm.BuildSingleBadge ();
+        //}
+
+
+        //internal void Pressed ( object sender, PointerPressedEventArgs args )
+        //{
+        //    SetWaiting ();
+
+        //    Stopwatch sw = Stopwatch.StartNew ();
+
+        //}
+
+
+        //internal void Released ( object sender, PointerReleasedEventArgs args )
+        //{
+        //    _vm.Build ();
+        //}
     }
 }

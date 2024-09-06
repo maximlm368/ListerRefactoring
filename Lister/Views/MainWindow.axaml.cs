@@ -16,6 +16,7 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace Lister.Views;
@@ -26,10 +27,9 @@ public partial class MainWindow : Window
     public static readonly Color black = new Color (255, 0, 0, 0);
 
     public static IStorageProvider CommonStorageProvider { get; private set; }
-    public static Stopwatch EventTimer { get; private set; }
-    public static bool CursorIsWait { get; private set; }
     internal static MainWindow _mainWindow;
 
+    private ModernMainView _mainView;
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
@@ -45,16 +45,20 @@ public partial class MainWindow : Window
         CommonStorageProvider = StorageProvider;
 
         this.Opened += OnOpened;
-        ModernMainView mainView = ( ModernMainView ) Content;
+        _mainView = ( ModernMainView ) Content;
 
         this.SizeChanged += OnSizeChanged;
         _currentWidth = Width;
         _currentHeight = Height;
+
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += RestrictPosition;
+
         _mainWindow = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
+
+        //Icon = new WindowIcon ("D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\listerIcon.svg");
     }
 
 
@@ -92,7 +96,7 @@ public partial class MainWindow : Window
             HeightDifference += newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
-            mainView.ChangeSize (newWidthDifference, newHeightDifference);
+            mainView.ChangeSize (newWidthDifference, newHeightDifference); 
         }
         catch ( System.InvalidCastException ex )
         {
@@ -120,25 +124,19 @@ public partial class MainWindow : Window
     {
         WidthDifference = 0;
         HeightDifference = 0;
+
+        _mainView.waiting.Recover ();
     }
 
 
     internal void HandleTapping ( object sender, TappedEventArgs args )
     {
-        try 
+        try
         {
             ModernMainView mainView = ( ModernMainView ) Content;
             mainView.CloseCustomCombobox ();
-            EventTimer = Stopwatch.StartNew ();
-
-            CursorIsWait = ( "Wait" == Cursor.ToString () );
-
-            if ( CursorIsWait )
-            {
-                int fdfd = 0;
-            }
         }
-        catch( InvalidCastException ex) 
+        catch ( InvalidCastException ex )
         {
             //BadgeEditorView mainView = ( BadgeEditorView ) Content;
             //mainView.ReleaseCaptured ();

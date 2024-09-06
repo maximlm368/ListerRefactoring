@@ -140,12 +140,25 @@ namespace Lister.Views
 
         internal void CloseCustomCombobox ()
         {
-            bool reasonExists = _personListIsDropped   &&   ! _cursorIsOverPersonList   &&   ! _buttonIsPressed;
+            CloseCombobox ();
+        }
+
+
+        internal void LostFocus ( object sender, RoutedEventArgs args )
+        {
+            CloseCombobox ();
+        }
+
+
+        private void CloseCombobox ( )
+        {
+            bool reasonExists = _personListIsDropped && !_cursorIsOverPersonList && !_buttonIsPressed;
 
             if ( reasonExists )
             {
                 _vm.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
+                SetTextBoxStartState ();
             }
 
             _buttonIsPressed = false;
@@ -189,15 +202,16 @@ namespace Lister.Views
         }
 
 
-        //internal void DropOrPickUpPersonsByFocus ( object sender, GotFocusEventArgs args )
-        //{
-        //    if ( _personListIsDropped )
-        //    {
-        //        _vm.HideDropDownWithChange ();
-        //        _personListIsDropped = false;
-        //    }
-        //}
-        
+        internal void SetTextBoxStartState ( )
+        {
+            if ( _vm.FontWeight == FontWeight.Bold )
+            {
+                personTextBox.Text = _vm.PlaceHolder;
+                personTextBox.SelectionStart = personTextBox.Text.Length;
+                personTextBox.SelectionEnd = personTextBox.Text.Length;
+            }
+        }
+
         #endregion Drop
 
         #region PersonListReduction
@@ -297,12 +311,6 @@ namespace Lister.Views
 
         private void DropOrPickUp ()
         {
-            Button bt = new Button ();
-            
-
-
-
-
             if ( personTextBox.Text == null ) 
             {
                 return;
@@ -330,6 +338,7 @@ namespace Lister.Views
             {
                 _vm.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
+                SetTextBoxStartState ();
             }
         }
 

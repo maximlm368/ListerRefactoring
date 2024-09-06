@@ -1,8 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using Avalonia.Threading;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -11,7 +13,8 @@ using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class ModernMainView : ReactiveUserControl <ModernMainViewModel>
+    public partial class ModernMainView : UserControl
+        //ReactiveUserControl <ModernMainViewModel>
     {
         private static double _widthDelta;
         private static double _heightDelta;
@@ -20,10 +23,14 @@ namespace Lister.Views
         internal static readonly string _sourcePathKeeper = "keeper.txt";
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
+        internal static int TappedButton { get; private set; }
 
         internal static double ProperWidth { get; private set; }
         internal static double ProperHeight { get; private set; }
-        
+
+        internal BadgeEditorView EditorView { get; private set; }
+        private List<BadgeViewModel> _incorrectBadges;
+
 
         public ModernMainView ()
         {
@@ -34,9 +41,31 @@ namespace Lister.Views
             ProperHeight = Height;
 
             Loaded += OnLoaded;
+            //LayoutUpdated += AfterWaiting;
 
             DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
             _vm = ( ModernMainViewModel ) DataContext;
+            _vm.PassView (this);
+
+            waiting.Margin = new Avalonia.Thickness ( 0, -460 );
+            waiting.IsVisible = false;
+
+            LayoutUpdated += LayoutUpdatedHandler;
+
+
+            this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
+        }
+
+
+        internal void LayoutUpdatedHandler ( object sender, EventArgs args )
+        {
+            _vm.LayoutUpdated ();
+        }
+
+
+        private void PreventPasting ( object sender, TappedEventArgs args )
+        {
+            args.Handled = true;
         }
 
 
@@ -98,6 +127,11 @@ namespace Lister.Views
             _widthDelta -= widthDifference;
             scene.workArea.Height -= heightDifference;
             _heightDelta -= heightDifference;
+
+            waiting.ChangeSize ( heightDifference, widthDifference );
+
+            //waiting.Padding = new Avalonia.Thickness (0, heightDifference);
+
             personChoosing.AdjustComboboxWidth (widthDifference);
             personChoosing.CloseCustomCombobox ();
         }
@@ -130,24 +164,97 @@ namespace Lister.Views
         }
 
 
+        //internal void EditIncorrectBadgess ( List<BadgeViewModel> incorrectBadges )
+        //{
+        //    ModernMainView mainView = this;
+        //    MainWindow window = MainWindow.GetMainWindow ();
+
+        //    if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
+        //    {
+        //        BadgeEditorView editorView = new BadgeEditorView ();
+
+        //        editorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
+        //        window.CancelSizeDifference ();
+
+        //        editorView.PassIncorrectBadges (incorrectBadges);
+        //        editorView.PassBackPoint (mainView);
+        //        _isFirstTimeLoading = false;
+        //        window.Content = editorView;
+        //    }
+        //}
+
+
         internal void EditIncorrectBadges ( List<BadgeViewModel> incorrectBadges )
+        {
+            _incorrectBadges = incorrectBadges;
+            ModernMainView mainView = this;
+            MainWindow window = MainWindow.GetMainWindow ();
+
+            if ( ( window != null ) && ( incorrectBadges.Count > 0 ) )
+            {
+                EditorView = new BadgeEditorView ();
+                EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
+                window.CancelSizeDifference ();
+                TappedButton = 1;
+                _vm.SetWaiting ();
+            }
+        }
+
+
+        internal void BuildEditor ( )
         {
             ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
-            if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
-            {
-                BadgeEditorView editorView = new BadgeEditorView ();
+            //Task task = new Task
+            //(
+            //    () =>
+            //    {
+            //        EditorView.PassIncorrectBadges (_incorrectBadges);
+            //        //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
 
-                editorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
-                window.CancelSizeDifference ();
+            //        EditorView.PassBackPoint (mainView);
+            //        _isFirstTimeLoading = false;
 
-                editorView.PassIncorrectBadges (incorrectBadges);
-                editorView.PassBackPoint (mainView);
-                _isFirstTimeLoading = false;
-                window.Content = editorView;
-            }
+            //        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+            //        modernMV.EndWaiting ();
+
+            //        Dispatcher.UIThread.InvokeAsync(() => { window.Content = EditorView; });
+
+            //        TappedButton = 0;
+            //    }
+            //);
+
+            //task.Start ();
+
+
+            Thread thread = new Thread 
+                (
+                    () => 
+                    {
+                        EditorView.PassIncorrectBadges (_incorrectBadges);
+                        //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
+
+                        EditorView.PassBackPoint (mainView);
+                        _isFirstTimeLoading = false;
+
+                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                        modernMV.EndWaiting ();
+
+                        Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
+
+                        TappedButton = 0;
+                    }
+                );
+
+            thread.Start ();
         }
+
+
+        //internal void Hide ()
+        //{
+        //    waiting.IsVisible = false;
+        //}
     }
 }
 

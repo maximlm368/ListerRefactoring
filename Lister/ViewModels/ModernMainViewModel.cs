@@ -1,4 +1,8 @@
-﻿using ContentAssembler;
+﻿using Avalonia;
+using Avalonia.Media;
+using Avalonia.VisualTree;
+using ContentAssembler;
+using Lister.Views;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -11,11 +15,24 @@ namespace Lister.ViewModels
 {
     public class ModernMainViewModel : ViewModelBase
     {
+        public static bool MainViewIsWaiting { get; set; }
+
         private PersonSourceViewModel _personSourceVM;
         private PersonChoosingViewModel _personChoosingVM;
         private TemplateChoosingViewModel _templateChoosingVM;
         private ZoomNavigationViewModel _zoomNavigationVM;
         private SceneViewModel _sceneVM;
+        private ModernMainView _view;
+
+        private bool wV;
+        public bool WaitingIsVisible
+        {
+            get { return wV; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref wV, value, nameof (WaitingIsVisible));
+            }
+        }
 
 
         public ModernMainViewModel ( PersonSourceViewModel personSourceVM, PersonChoosingViewModel personChoosingVM,
@@ -35,6 +52,40 @@ namespace Lister.ViewModels
             _sceneVM.ResetIncorrects ();
         }
 
+
+        internal void PassView ( ModernMainView view )
+        {
+            _view = view;
+
+            WaitingView wv = _view. waiting;
+        }
+
+
+        internal void SetWaiting ( )
+        {
+            WaitingIsVisible = true;
+            MainViewIsWaiting = true;
+        }
+
+
+        internal void EndWaiting ()
+        {
+            WaitingIsVisible = false;
+        }
+
+
+        internal void LayoutUpdated ( )
+        {
+            if ( TemplateChoosingViewModel.TappedButton == 1 ) 
+            {
+                _templateChoosingVM.AfterWaitingHandler ();
+                return;
+            }
+            else if ( ModernMainView.TappedButton == 1 ) 
+            {
+                _view.BuildEditor ();
+            }
+        }
     }
 
 

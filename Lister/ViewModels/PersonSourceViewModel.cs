@@ -24,6 +24,7 @@ namespace Lister.ViewModels
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
         private static readonly string _fileIsAbsentMessage = "Файл не найден.";
         private static readonly string _viewTypeName = "PersonSourceUserControl";
+        private static readonly string _filePickerTitle = "Выбор файла";
         
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
@@ -130,7 +131,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ChooseFile ( )
+        internal void ChooseFile ()
         {
             FilePickerFileType csvFileType = new FilePickerFileType ("Csv")
             {
@@ -143,7 +144,7 @@ namespace Lister.ViewModels
             fileExtentions.Add (csvFileType);
             FilePickerOpenOptions options = new FilePickerOpenOptions ();
             options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-            options.Title = "Open Text File";
+            options.Title = _filePickerTitle;
             options.AllowMultiple = false;
             Task <IReadOnlyList <IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();

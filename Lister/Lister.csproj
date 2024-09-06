@@ -60,7 +60,9 @@
 
 	
   <ItemGroup>
+    <PackageReference Include="AnimatedImage.Avalonia" Version="1.0.7" />
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.19" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
@@ -71,7 +73,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="QuestPDF" Version="2024.7.2" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.8" />
-    <PackageReference Include="WiLBiT" Version="1.1.4" />
   </ItemGroup>
 
 	

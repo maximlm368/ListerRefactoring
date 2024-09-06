@@ -32,6 +32,7 @@ public partial class App : Avalonia.Application
     public static string WorkDirectoryPath { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
     public static string OsName { get; private set; }
+    
 
     public static IResourceDictionary AvailableResources { get; private set; }
 
@@ -70,6 +71,12 @@ public partial class App : Avalonia.Application
     }
 
 
+    public App () 
+    {
+        
+    }
+
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -101,31 +108,6 @@ public partial class App : Avalonia.Application
             singleViewPlatform.MainView = mainView;
         }
         base.OnFrameworkInitializationCompleted();
-
-
-
-        //string fileName = "Iamsb.ttf";
-        //string fontUriString = App.ResourceDirectoryUri + fileName;
-        //Uri fontUri = new Uri (fontUriString);
-        //FontFamily fm = new FontFamily (fontUri, "I am simplified");
-        //var kk = fm.Key;
-        //IGlyphTypeface glyphTypeface;
-        //bool fd = FontManager.Current.TryGetGlyphTypeface (typeface, out glyphTypeface);
-        //FF = new FontFamily ("Segoe UI");
-        //FF = new FontFamily ("Kramola");
-        //string key = "cg";
-        //bool res = this.Resources.ContainsKey (key);
-        //res = Resources.TryGetValue (key, out object val);
-        //var pushkin = Resources [key];
-        //Resources [key] = fm;
-        //Resources [key] = fm;
-
-        //string fileSource = "D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Kramola.ttf";
-        //string fileDestination = "C:\\Users\\Mymrin_ML\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Kramola_0.ttf";
-        //fileDestination = "C:\\Windows\\Fonts\\Kramola.ttf";
-        //Resources.TryGetValue ("cg", out object val);
-        //FF = val as Avalonia.Media.FontFamily;
-        //FW = FontWeight.Bold;
     }
 
 
@@ -177,6 +159,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <TemplateChoosingViewModel> ();
         collection.AddSingleton <ZoomNavigationViewModel> ();
         collection.AddSingleton <TextLineViewModel> ();
+        collection.AddSingleton <WaitingViewModel> ();
         collection.AddSingleton <MessageViewModel> ();
     }
 

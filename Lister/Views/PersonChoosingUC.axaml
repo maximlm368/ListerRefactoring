@@ -45,6 +45,7 @@
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				SelectionForegroundBrush="White"
 				GotFocus="GotFocus"
+				LostFocus="LostFocus"
 				KeyUp="HandlePersonListReduction"
 				KeyDown="DropOrPickUpPersonsOrScroll"
 				 />

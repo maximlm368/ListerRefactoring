@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using ContentAssembler;
 using Lister.Views;
+using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
 using ReactiveUI;
 
@@ -121,6 +122,7 @@ namespace Lister.ViewModels
         }
 
         private PersonChoosingViewModel _personChoosingVM;
+        private TemplateChoosingViewModel _templateChoosingVM;
 
 
         public SceneViewModel ( IUniformDocumentAssembler docAssembler, PersonChoosingViewModel personChoosingVM ) 
@@ -138,7 +140,20 @@ namespace Lister.ViewModels
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
             IncorrectBadges = new List<BadgeViewModel> ();
             EditionMustEnable = false;
-            PageCount = 1;
+            PageCount = 1; 
+        }
+
+
+        internal void PassTemplateChoosing ( TemplateChoosingViewModel templateChoosingViewModel )
+        {
+            _templateChoosingVM = templateChoosingViewModel;
+            //_templateChoosingVM.WaitingIsSet += Handle;
+        }
+
+
+        internal void Handle ( )
+        {
+            BuildBadges (_templateChoosingVM.ChosenTemplate.Name);
         }
 
 
@@ -185,13 +200,14 @@ namespace Lister.ViewModels
                 {
                     VisiblePageNumber = _allPages.Count;
 
-                    // page number 0 corresponds last page of previous building,  VMPage.PlaceIntoPages() method
+                    // page number 0 corresponds last page of previous building,  PageViewModel.PlaceIntoPages() method
                     // added badges on it
                     newPages.RemoveAt (0);
                 }
 
                 _allPages.AddRange (newPages);
                 _lastPage = _allPages.Last ();
+
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 PageCount = _allPages.Count;
                 VisiblePage.Show ();

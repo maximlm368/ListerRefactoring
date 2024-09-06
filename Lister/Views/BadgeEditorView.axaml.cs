@@ -110,14 +110,16 @@ namespace Lister.Views
             {
                 workArea.Height -= heightDifference;
                 slider.Height -= heightDifference;
+                _vm.ChangeScrollHeight (heightDifference);
             }
         }
 
 
         internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects ) 
         {
-            BadgeEditorViewModel viewModel = (BadgeEditorViewModel) DataContext;
-            viewModel.VisibleBadges = incorrects;
+            //BadgeEditorViewModel viewModel = (BadgeEditorViewModel) DataContext;
+
+            _vm.VisibleBadges = incorrects;
         }
 
 
@@ -367,43 +369,6 @@ namespace Lister.Views
 
         #region Navigation
 
-        internal void ToParticularBadge ( object sender, TextChangedEventArgs args )
-        {
-            TextBox textBox = sender as TextBox;
-            string text = textBox.Text;
-
-            try
-            {
-                int badgeNumber = ( int ) UInt32.Parse (textBox.Text);
-
-                if ( ( badgeNumber < 1 )   ||   ( badgeNumber > _vm.VisibleBadges. Count ) )
-                {
-                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-                    return;
-                }
-
-                if ( ( text.Length > 1 )   &&   ( text [0] == '0' ) )
-                {
-                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-                    return;
-                }
-
-                _vm.ToParticularBadge (text);
-            }
-            catch ( System.FormatException e )
-            {
-                if ( ! string.IsNullOrWhiteSpace(text) ) 
-                {
-                    visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-                }
-            }
-            catch ( System.OverflowException e )
-            {
-                visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-            }
-        }
-
-
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
             Avalonia.Controls.Image image = sender   as   Avalonia.Controls.Image;
@@ -448,3 +413,40 @@ namespace Lister.Views
 
     }
 }
+
+
+//internal void ToParticularBadge ( object sender, TextChangedEventArgs args )
+//{
+//    TextBox textBox = sender as TextBox;
+//    string text = textBox.Text;
+
+//    try
+//    {
+//        int badgeNumber = ( int ) UInt32.Parse (textBox.Text);
+
+//        if ( ( badgeNumber < 1 )   ||   ( badgeNumber > _vm.VisibleBadges. Count ) )
+//        {
+//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+//            return;
+//        }
+
+//        if ( ( text.Length > 1 )   &&   ( text [0] == '0' ) )
+//        {
+//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+//            return;
+//        }
+
+//        _vm.ToParticularBadge (text);
+//    }
+//    catch ( System.FormatException e )
+//    {
+//        if ( ! string.IsNullOrWhiteSpace(text) ) 
+//        {
+//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+//        }
+//    }
+//    catch ( System.OverflowException e )
+//    {
+//        visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
+//    }
+//}

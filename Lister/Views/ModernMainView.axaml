@@ -33,6 +33,12 @@
 			Name="scene"
 			Margin="0,0"/>
 
+		<uc:WaitingView
+			Name="waiting"
+			ZIndex = "5"
+			IsVisible="{Binding   Path = WaitingIsVisible,  Mode=OneWay}"
+			/>
+		
 	</StackPanel>
 
 

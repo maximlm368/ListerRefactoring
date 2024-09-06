@@ -181,12 +181,15 @@ class Program
 
         bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
 
-        try 
+        try
         {
             BuildAvaloniaApp ()
             .StartWithClassicDesktopLifetime (args);
         }
-        catch( StackOverflowException ex ) 
+        catch ( StackOverflowException ex )
+        {
+        }
+        catch ( System.Threading.Tasks.TaskCanceledException ex ) 
         {
         }
     }
