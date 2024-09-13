@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using ContentAssembler;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,20 +17,19 @@ using ReactiveUI;
 
 namespace Lister.ViewModels
 {
-    public class SceneViewModel : ViewModelBase
+    public partial class SceneViewModel : ViewModelBase
     {
-        private static int crutch = 0;
-
+        public readonly double _scalabilityCoefficient = 1.25;
+        private ConverterToPdf _converter;
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
-        private double _scalabilityCoefficient = 1.25;
-        private double _zoomDegree;
+        private double _zoomDegree = 100;
         private List <PageViewModel> _allPages;
         
         private PageViewModel _lastPage;
         private SceneUserControl _view;
         private Person _chosenPerson;
-        private string procentSymbol;
+        private string procentSymbol = "%";
 
         private PageViewModel vPage;
         internal PageViewModel VisiblePage
@@ -121,12 +123,55 @@ namespace Lister.ViewModels
             }
         }
 
+
+
+        private bool cE;
+        internal bool ClearIsEnable
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cE, value, nameof (ClearIsEnable));
+            }
+            get
+            {
+                return cE;
+            }
+        }
+
+        private bool sE;
+        internal bool SaveIsEnable
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref sE, value, nameof (SaveIsEnable));
+            }
+            get
+            {
+                return sE;
+            }
+        }
+
+        private bool pE;
+        internal bool PrintIsEnable
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pE, value, nameof (PrintIsEnable));
+            }
+            get
+            {
+                return pE;
+            }
+        }
+
         private PersonChoosingViewModel _personChoosingVM;
         private TemplateChoosingViewModel _templateChoosingVM;
 
 
         public SceneViewModel ( IUniformDocumentAssembler docAssembler, PersonChoosingViewModel personChoosingVM ) 
         {
+            SetButtonBlock ();
+            _converter = new ConverterToPdf ();
             _docAssembler = docAssembler;
             _personChoosingVM = personChoosingVM;
             _documentScale = 1;
@@ -135,8 +180,6 @@ namespace Lister.ViewModels
             _lastPage = VisiblePage;
             _allPages.Add (VisiblePage);
             VisiblePageNumber = 1;
-            procentSymbol = "%";
-            _zoomDegree = 100;
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
             IncorrectBadges = new List<BadgeViewModel> ();
             EditionMustEnable = false;
@@ -153,7 +196,7 @@ namespace Lister.ViewModels
 
         internal void Handle ( )
         {
-            BuildBadges (_templateChoosingVM.ChosenTemplate.Name);
+            BuildBadges (_personChoosingVM.ChosenTemplate.Name);
         }
 
 
@@ -186,7 +229,7 @@ namespace Lister.ViewModels
                     if ( ! beingProcessedBadgeVM.IsCorrect )
                     {
                         IncorrectBadges.Add (beingProcessedBadgeVM);
-                        EditionMustEnable = true;
+                        //EditionMustEnable = true;
                         IncorrectBadgeCount++;
                     }
 
@@ -224,7 +267,7 @@ namespace Lister.ViewModels
             if ( ! goalVMBadge.IsCorrect )
             {
                 IncorrectBadges.Add (goalVMBadge);
-                EditionMustEnable = true;
+                //EditionMustEnable = true;
                 IncorrectBadgeCount++;
             }
 
@@ -273,7 +316,7 @@ namespace Lister.ViewModels
             IncorrectBadgeCount = 0;
 
             EditionMustEnable = false;
-            IncorrectBadges = new List<BadgeViewModel> ();
+            IncorrectBadges = new List <BadgeViewModel> ();
 
             if ( _documentScale > 1 )
             {
@@ -449,17 +492,47 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetEdition ()
+        //internal void SetEdition ()
+        //{
+        //    if ( IncorrectBadges.Count > 0 )
+        //    {
+        //        EditionMustEnable = true;
+        //    }
+        //    else
+        //    {
+        //        EditionMustEnable = false;
+        //    }
+        //}
+
+
+        internal void ClearBadges ()
         {
-            if ( IncorrectBadges.Count > 0 )
-            {
-                EditionMustEnable = true;
-            }
-            else 
-            {
-                EditionMustEnable = false;
-            }
+            ClearAllPages ();
+            DisableButtons ();
+
+            PageNavigationZoomerViewModel zoomNavigationVM = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
+
+            zoomNavigationVM.DisableButtons ();
         }
+
+
+        private void DisableButtons ()
+        {
+            EditionMustEnable = false;
+            ClearIsEnable = false;
+            SaveIsEnable = false;
+            PrintIsEnable = false;
+        }
+
+
+        internal void EnableButtons ()
+        {
+            EditionMustEnable = true;
+            ClearIsEnable = true;
+            SaveIsEnable = true;
+            PrintIsEnable = true;
+        }
+
 
 
         //internal void EditIncorrectBadges ()
@@ -467,7 +540,7 @@ namespace Lister.ViewModels
         //    ModernMainView mainView = ModernMainView.Instance;
         //    MainWindow window = MainWindow.GetMainWindow ();
 
-        //    if ( ( window != null )   &&   ( IncorrectBadges.Count > 0 ) )
+        //    if ( ( window != null ) && ( IncorrectBadges.Count > 0 ) )
         //    {
         //        BadgeEditorView editorView = new BadgeEditorView ();
 

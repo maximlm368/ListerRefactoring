@@ -10,20 +10,21 @@
 
 
 	<Grid Name="personChoosingBlock"
+		  Background="LightGray"
 		  Height="35"
 		  ZIndex="0">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition  Width="100" ></ColumnDefinition>
+			<ColumnDefinition  Width="60" ></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
 			<ColumnDefinition  Width="30" ></ColumnDefinition>
-			<ColumnDefinition  Width="100" ></ColumnDefinition>
-			<ColumnDefinition  Width="130" ></ColumnDefinition>
+			<ColumnDefinition  Width="80" ></ColumnDefinition>
+			<ColumnDefinition  Width="190" ></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 
 		<Label
 			Grid.Column="0"
 			Padding="10"
-			Content="По ФИО:"/>
+			Content="ФИО:"/>
 
 		<Canvas
 			Name="customCombobox"
@@ -33,12 +34,13 @@
 				Name="comboboxFrame"
 				Focusable="False"
 				IsReadOnly="True"
-				Width="471" />
+				Width="451" />
 
 			<TextBox
 				Name="personTextBox"
-				Width="440"
+				Width="420"
 				FontSize="14"
+				Background="White"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
@@ -61,7 +63,7 @@
 
 					<uc:CustomViewbox
 						Name="visiblePersons"
-						Width="469"
+						Width="449"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						PointerEntered="CursorIsOverPersonList"
 						PointerExited="CursorIsOutOfPersonList"
@@ -71,7 +73,7 @@
 					
 					<Canvas
 						Name="listFrame"
-						Width="469"
+						Width="449"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
@@ -176,13 +178,13 @@
 				</uc:CustomViewbox>
 			</Border>
 
-		</Canvas>	
-
+		</Canvas>
+		
 		<Button
 			Name="openListButton"
 			Grid.Column="2"
 			VerticalAlignment="Top"
-			Margin="0,1"
+			Margin="-20,1"
 			Width="30"
 			Height="30"
 			FontSize="14"
@@ -192,6 +194,41 @@
 			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 			Tapped="DropOrPickUpPersons"
 			Content="v"/>
+
+
+		<Label
+			Name="template"
+			Grid.Column="3"
+			Content="Шаблон:"
+			Margin="-10, 0"
+			Padding="0, 10"/>
+
+		<ComboBox
+			Name="templateChoosing"
+			Grid.Column="4"
+			VerticalAlignment="Center"
+			Foreground="{Binding  Path=Color,  Mode=OneWay}"
+			Background="White"
+			Width="204"
+			Margin="-25,0, 0,5"
+			MaxDropDownHeight="100"
+			SelectedIndex="1"
+			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
+			GotFocus="CloseCustomCombobox"
+			DropDownClosed="HandleClosing"
+		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
+
+			<ComboBox.ItemTemplate >
+				<DataTemplate >
+					<Label
+						Padding="0,0,0,0"
+						FontSize="14"
+						Foreground="{Binding  Path=Color,  Mode=OneWay}"
+						Content="{Binding  Path=Name,  Mode=OneWay}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+
+		</ComboBox>
 
 	</Grid>
 	

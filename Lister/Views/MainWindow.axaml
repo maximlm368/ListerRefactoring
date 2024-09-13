@@ -25,6 +25,13 @@
 </Window>
 
 <!--   
+		<uc:ZoomNavigationUserControl
+			Name="zoomNavigation"
+			Margin="0,1"/>
+
+
+
+
 
         <Window.Resources>
 		    <Window FontFamily="{StaticResource cg}" />

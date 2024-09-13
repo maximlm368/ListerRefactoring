@@ -1,0 +1,997 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
+			 xmlns:vm="clr-namespace:Lister.ViewModels"
+			 xmlns:uc="clr-namespace:Lister.Views"
+			 x:Class="Lister.Views.BadgeEditorView"
+			 x:DataType="vm:BadgeEditorViewModel"
+			 Height="460"
+			 Width="800"
+			 >
+
+	<StackPanel
+		Name="editionPanel"
+		ZIndex="1"
+		Focusable="True"
+		KeyDown="ToSide">
+		
+		<StackPanel.Styles>
+			<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+				<Setter Property="Background" Value="LightGreen"/>
+			</Style>
+
+			<Style Selector="Button:focus /template/ ContentPresenter#PART_ContentPresenter">
+				<Setter Property="Background" Value="LightPink"/>
+			</Style>
+		</StackPanel.Styles>
+
+
+		<Grid
+			Name="backBlock"
+			Height="34"
+			Background="LightGray"
+			Margin="0,0"
+			>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="240" ></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="17" ></RowDefinition>
+				<RowDefinition Height="17" ></RowDefinition>
+			</Grid.RowDefinitions>
+
+
+			<Button
+				Name="Back"
+				Content="Вернуться к макету"
+				ToolTip.Tip="Вернуться в окно построения с сохранением изменений"
+				Width="200"
+				Margin="0,3"
+				Grid.Column="1"
+				Grid.Row="0"
+				Grid.RowSpan="2"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Top"
+				FontSize="14"
+				Padding="0,2,0,2"
+				HorizontalAlignment="Center"
+				Background="White"
+				ZIndex="2"
+                KeyUp=""
+				Command="{Binding  Path = GoBackCommand}"
+				KeyDown=""/>
+			
+			<Border
+				Grid.Column="0"
+				Grid.Row="1"
+				Height="17"
+				CornerRadius="0,5,0,0"
+				Background="White"
+				/>
+
+			<Border
+				Grid.Column="2"
+				Grid.Row="1"
+				Height="17"
+				CornerRadius="5,0,0,0"
+				Background="White"
+				/>
+
+			<Border
+				Grid.Column="1"
+				Grid.Row="1"
+				Height="17"
+				CornerRadius="0,0,0,0"
+				Background="White"
+				/>
+
+			<Border
+				Grid.Column="1"
+				Grid.Row="1"
+				Height="17"
+				CornerRadius="0,0,5,5"
+				Background="LightGray"
+				/>
+			
+		</Grid>
+		
+		
+		<Grid
+		   Name="badgeArea"
+		   Margin="0,2"
+		   ZIndex="1"
+		   >
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="250" ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			
+			<StackPanel
+				Name="itemEditionBlock"
+				Grid.Column="0"
+				Orientation="Horizontal"
+				>
+
+				<Border
+					Name="editionButtonsBlock"
+					Width="120"
+					Height="256"
+					Margin="0,20"
+					CornerRadius="0,5,5,0"
+					Background="LightGray"
+					ZIndex="2"
+					>
+					
+					<StackPanel>
+
+						<StackPanel
+							Name="amounts"
+							Orientation="Horizontal">
+
+							<Label
+								Name="entireCount"
+								HorizontalAlignment="Left"
+								HorizontalContentAlignment="Center"
+								Width="60"
+								Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"/>
+
+							<Label
+								Name="incorrectsCount"
+								HorizontalAlignment="Left"
+								HorizontalContentAlignment="Center"
+								Width="60"
+								Foreground="Red"
+								Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"/>
+						</StackPanel>
+
+						<StackPanel
+							Name="textSize"
+							Orientation="Horizontal">
+
+							<Button
+								Name="zoomOut"
+								Content="-"
+								ToolTip.Tip="Уменьшить размер шрифта на выделенной строке"
+								HorizontalContentAlignment="Center"
+								Width="28"
+								Margin="5,0"
+								KeyDown="ToSide"
+								Command="{Binding  Path = ReduceFontSize}"
+								IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
+
+							<Label
+								Name="scalabilityGrade"
+								Width="50"
+								FontSize="14"
+								Margin="-2,0"
+								GotFocus="HandleGettingFocus"
+								KeyDown="ToParticularBadge"
+								Content="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								BorderBrush="black"
+								CornerRadius = "3"
+								BorderThickness="1"
+								IsTabStop="False"
+								Focusable="False"
+								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
+
+							<Button
+								Name="zoomOn"
+								Content="+"
+								ToolTip.Tip="Увеличить размер шрифта на выделенной строке"
+								HorizontalContentAlignment="Center"
+								Width="28"
+								Margin="4,0"
+								KeyDown="ToSide"
+								Command="{Binding  Path = IncreaseFontSize}"
+								IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
+						</StackPanel>
+
+						<TextBox
+							Name="editorTextBox"
+							Width="110"
+							Height="120"
+							FontSize="14"
+							Margin="0,3"
+							HorizontalAlignment="Center"
+							TextWrapping="Wrap"
+							IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
+							Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
+							KeyDown="ToParticularBadge"
+							GotFocus="HandleGettingFocus"
+							TextChanged="HandleTextEdition"/>
+
+						<Button
+							Name="spliter"
+							Content="Разделить"
+							ToolTip.Tip="Разделить выделенную строку на слова"
+							HorizontalAlignment="Center"
+							HorizontalContentAlignment="Center"
+							Width="110"
+							Margin="0,3"
+							Command="{Binding   Path = Split}"
+							KeyDown="ToParticularBadge"
+							IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}"/>
+
+						<Button
+							Name="cancel"
+							Content="Отмена"
+							ToolTip.Tip="Отменить изменения на данном бэйдже"
+							Width="110"
+							HorizontalAlignment="Center"
+							HorizontalContentAlignment="Center"
+							Margin="0,3"
+							IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
+							Command="{Binding  Path = CancelChanges}"
+							KeyDown="ToParticularBadge"/>
+					
+					</StackPanel>
+				</Border>
+				
+				<Border
+					Name="workArea"
+					HorizontalAlignment="Left"
+					Width="{Binding  Path=WorkAreaWidth,  Mode=OneWay}"
+					Height="385"
+					Margin="-121, 0"
+					BorderBrush="Brown"
+					Background="AliceBlue"
+					BorderThickness="1">
+
+					<ScrollViewer
+						Name="scroller"
+						VerticalScrollBarVisibility="Auto"
+						HorizontalScrollBarVisibility="Auto"
+						AllowAutoHide="True">
+
+						<Border
+							Name="badge"
+							BorderThickness="1"
+							BorderBrush="Gray"
+							Width="{Binding  Path = BeingProcessedBadge.BorderWidth,  Mode=OneWay }"
+							Height="{Binding  Path = BeingProcessedBadge.BorderHeight,  Mode=OneWay }"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Center">
+
+							<Canvas
+								Name="incorrectBadge"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
+								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }">
+
+								<Image
+									Name="backgroundImage"
+									Canvas.Top="0"
+									Canvas.Left="0"
+									Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
+									Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+									VerticalAlignment="Top"
+									KeyDown="ToSide"
+									Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
+
+								<ItemsControl
+									Name="textLines"
+									ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
+
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<Canvas
+												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.Styles>
+										<Style Selector="ItemsControl ContentPresenter">
+											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffset,  Mode=TwoWay}" />
+											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffset,  Mode=TwoWay}" />
+										</Style>
+									</ItemsControl.Styles>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+
+											<Border
+												Background="{Binding   Path = Background,  Mode=OneWay }"
+												BorderThickness="1"
+												Height="{Binding Path = FontSize,  Mode=OneWay}">
+
+												<TextBlock
+													VerticalAlignment="Bottom"
+													TextAlignment="Center"
+													Height="{Binding  Path = FontSize,  Mode=OneWay}"
+													FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+													FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+													FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+													Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+													DoubleTapped="Focus"
+													PointerPressed="Capture"
+													PointerMoved="Move"
+													PointerEntered="SetCrossCursor"
+													PointerExited="SetArrowCursor"
+													KeyDown="ToSide"
+													IsEnabled="True"
+													Text="{Binding   Path = Content,  Mode=OneWay }" />
+
+											</Border>
+
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+
+							</Canvas>
+						</Border>
+
+					</ScrollViewer>
+				</Border>
+
+			</StackPanel>
+
+			
+			<Border
+				Name="collectionManagement"
+				Grid.Column="1"
+				Width="250"
+				Margin="{Binding  Path=CollectionFilterMargin,  Mode=OneWay}"
+				Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}"
+				CornerRadius="5,0,0,5"
+				Background="LightGray"
+				>
+						
+				<StackPanel
+					Name="sliderPanel"
+					Width="250"
+					Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}">
+
+					<Button
+						Name="extender"
+						Margin="0, 0"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Left"
+						VerticalContentAlignment="Center"
+						Width="20"
+						Height="20"
+						Padding="4,5"
+						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
+						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
+						Content="V" />
+					
+					<Border
+						Name="filterSwitcher"
+						Focusable="True"
+						Height="24"
+						Margin="7,0"
+						KeyDown="ToParticularBadge">
+
+						<StackPanel
+							Orientation="Horizontal">
+
+							<Button
+								Name="switcher"
+								Width="36"
+								Height="22"
+								ToolTip.Tip="Переключить фильтр"
+								Command="{Binding  Path = Filter}"
+								KeyDown="ToParticularBadge">
+
+								<Button.Background>
+									<ImageBrush
+										Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
+										Opacity="{Binding  Path = CorrectnessOpacity,  Mode=OneWay }"/>
+								</Button.Background>
+							</Button>
+
+
+						</StackPanel>
+					</Border>
+
+					<Button
+						Name="up"
+						Content="u"
+						Width="20"
+						Height="20"
+						Padding="0,0"
+						Margin ="15,5"
+						Command="{Binding   Path = ToPrevious}"
+						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
+					
+					<Border
+						Name="slider"
+						Focusable="True"
+						Width="240"
+						Height="{Binding  Path=ScrollHeight,  Mode=OneWay}"
+						Margin ="7,0"
+						CornerRadius="0,0,0,5"
+						KeyDown="ToParticularBadge">
+						
+						<ScrollViewer
+							Name="sliderScroller"
+							Width="240"
+							Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
+							VerticalScrollBarVisibility="Auto"
+							AllowAutoHide="True">
+
+							<ItemsControl
+								Name="badgeStates"
+								Width="220"
+								HorizontalAlignment="Left"
+								ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
+
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										
+										<Grid Width="220"
+											  Margin="0,2">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition  Width="38"></ColumnDefinition>
+												<ColumnDefinition></ColumnDefinition>
+											</Grid.ColumnDefinitions>
+										
+											<Border
+												Grid.Column="0"
+												HorizontalAlignment="Left"
+												Width="36"
+												Height="24"
+												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
+												BorderThickness="1">
+
+												<Image
+													Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
+													Width="36"
+													Height="22"
+													HorizontalAlignment="Left"
+													Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"
+													Tapped="ToParticularBadge"/>
+
+											</Border>
+
+											<Label 
+												Grid.Column="1"
+												Padding="5,3"
+												FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
+												Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"
+												/>
+											
+											
+										</Grid>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Border>
+				
+				    <Button
+						Name="down"
+						Content="d"
+						Width="20"
+						Height="20"
+						Padding="0,0"
+						Margin ="15,5"
+						Command="{Binding   Path = ToNext}"
+						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"/>
+				
+				</StackPanel>
+				
+			</Border>
+		
+		</Grid>
+
+
+		<Grid
+			Name="navigation"
+			Height="40"
+			Background="LightGray"
+			Margin="0,0">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="64"></ColumnDefinition>
+				
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+
+
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="64"></ColumnDefinition>
+				<ColumnDefinition Width="30"></ColumnDefinition>
+				
+			</Grid.ColumnDefinitions>
+
+
+			<Button
+				Name="firstBadge"
+				Content="first"
+				ToolTip.Tip="На первый бэйдж"
+				Grid.Column="1"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToFirst}"
+				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="previousBadge"
+				Content="prev"
+				ToolTip.Tip="На предыдущий бэйдж"
+				Grid.Column="2"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToPrevious}"
+				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
+
+			<TextBox
+				Name="visibleBadgeNumber"
+				Width="60"
+				FontSize="14"
+				Grid.Column="3"
+				MaxHeight="30"
+				Margin="0,3"
+				Focusable="False"
+				IsReadOnly="True"
+				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
+			
+			<Label
+				Content="Из"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>
+
+			<Button
+				Name="nextBadge"
+				Content="next"
+				ToolTip.Tip="На следующий бэйдж"
+				Grid.Column="6"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToNext}"
+				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
+
+			<Button
+				Name="lastBadge"
+				Content="last"
+				ToolTip.Tip="На последний бэйдж"
+				Grid.Column="7"
+				HorizontalContentAlignment="Center"
+				Width="48"
+				Command="{Binding   Path = ToLast}"
+				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
+
+			<Button
+				Name="zoomOutBadge"
+				Grid.Column="9"
+				HorizontalAlignment="Center"
+				Width="28"
+				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
+				Command="{Binding   Path = ZoomOut}"
+				ToolTip.Tip="Уменьшить страницу"
+				Content="-" />
+
+			<Label
+				Name="badgeScalabilityGrade"
+				FontSize="14"
+				Grid.Column="10"
+				Width="60"
+				MaxHeight="32"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				BorderBrush="black"
+				CornerRadius = "3"
+				BorderThickness="1"
+				Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"
+				/>
+
+			<Button
+				Name="zoomOnBadge"
+				Grid.Column="11"
+				Margin="0,3"
+				HorizontalAlignment="Center"
+				Width="28"
+				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
+				Command="{Binding   Path = ZoomOn}"
+				ToolTip.Tip="Увеличить страницу"
+				Content="+" />
+
+
+		</Grid>
+
+	</StackPanel>
+</UserControl>
+
+
+<!-- 
+
+
+					<Border
+						Name="filterSwitcher"
+						Focusable="True"
+						Height="24"
+						Margin="7,0"
+						KeyDown="ToParticularBadge">
+
+						<StackPanel
+							Orientation="Horizontal">
+
+							<Button
+								Name="chooseCorrects"
+								Width="36"
+								Height="22"
+								Opacity="0.5"
+								ToolTip.Tip="Показывать корректные бэйджи"
+								Command="{Binding  Path = FilterCorrects}"
+								KeyDown="ToParticularBadge">
+
+								<Button.Background>
+									<ImageBrush
+										Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
+										Opacity="{Binding  Path = CorrectnessOpacity,  Mode=OneWay }"/>
+								</Button.Background>
+							</Button>
+
+							<Button
+								Name="chooseIncorrects"
+								Width="36"
+								Height="22"
+								ToolTip.Tip="Показывать бэйджи с ошибками"
+								Command="{Binding  Path = FilterIncorrects}"
+								KeyDown="ToParticularBadge">
+
+								<Button.Background>
+									<ImageBrush
+										Source = "{Binding  Path = IncorrectnessIcon,  Mode=OneWay }"
+										Opacity="{Binding  Path = IncorrectnessOpacity,  Mode=OneWay }"/>
+								</Button.Background>
+							</Button>
+						</StackPanel>
+					</Border>
+
+
+
+
+					<StackPanel
+						Name="namesFilter"
+						Background="LightGray"
+						Width="200"
+						Height="385"
+						>
+
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="100" ></ColumnDefinition>
+								<ColumnDefinition Width="100" ></ColumnDefinition>
+							</Grid.ColumnDefinitions>
+
+							<Label
+								Name="filterLabel"
+								Grid.Column="0"
+								HorizontalAlignment="Center"
+								HorizontalContentAlignment="Center"
+								Width="100"
+								Content="Фильтры"/>
+
+							<TextBox
+								Grid.Column="1"
+								FontSize="14"
+								Width="100"
+								Background="White"
+								/>
+
+						</Grid>
+
+						<ScrollViewer
+							Name="namesScroller"
+							Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
+							VerticalScrollBarVisibility="Auto"
+							AllowAutoHide="False">
+
+							<ItemsControl
+								Name="badgeStatess"
+								Width="40"
+								HorizontalAlignment="Center"
+								ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
+
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border
+											HorizontalAlignment="Left"
+											Width="48"
+											Height="24"
+											BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
+											BorderThickness="1">
+											
+											
+											
+											
+							            </Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+								
+						</ScrollViewer>
+						
+					</StackPanel>
+
+
+
+
+
+Width="{Binding  Path=CollectionFilterWidth,  Mode=OneWay}"
+Width="{Binding  Path=NamesFilterWidth,  Mode=OneWay}"
+
+		<Grid
+			Name="textEdition"
+			Height="40"
+			Margin="10,0">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="605"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+
+			<TextBox
+				Name="editorTextBox2"
+				Width="603"
+				FontSize="14"
+				Grid.Column="0"
+				MaxHeight="30"
+				Margin="0,3"
+				HorizontalAlignment="Center"
+				IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
+				Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
+				KeyDown="ToParticularBadge"
+				GotFocus="HandleGettingFocus"
+				TextChanged="HandleTextEdition"/>
+
+		</Grid>
+
+
+
+
+			<Button
+				Name="left"
+				Content="L"
+				ToolTip.Tip="Переместить выделенную строку влево"
+				Grid.Column="7"
+				HorizontalAlignment="Center"
+				Width="28"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Left}"
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
+
+			<Button
+				Name="right"
+				Content="R"
+				ToolTip.Tip="Переместить выделенную строку вправо"
+				Grid.Column="8"
+				HorizontalAlignment="Center"
+				Width="28"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Right}"
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
+
+			<Button
+				Name="up"
+				Content="U"
+				ToolTip.Tip="Переместить выделенную строку вверх"
+				Grid.Column="9"
+				HorizontalAlignment="Center"
+				Width="28"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Up}"
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
+
+			<Button
+				Name="down"
+				Content="D"
+				ToolTip.Tip="Переместить выделенную строку вниз"
+				Grid.Column="10"
+				HorizontalAlignment="Center"
+				Width="28"
+				KeyDown="ToSide"
+				Command="{Binding   Path = Down}"
+				IsEnabled="{Binding   Path = MoversAreEnable,  Mode=OneWay}"/>
+
+
+
+
+		<Grid
+			Name="counts"
+			Height="40"
+			Margin="10,-7">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition ></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+
+			<Label
+				Content="С ошибками :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="1"/>
+
+			<Label
+				Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="2"/>
+
+		</Grid>
+
+
+Command="{Binding  Path = GoBackCommand}"
+ScrollChanged="HandleScrollChange"
+
+
+
+//container.BorderThickness = new Thickness (0, 0, 0, 0);
+
+
+
+
+<Border
+											BorderBrush="Blue"
+											Background="{Binding   Path = Background,  Mode=OneWay }"
+											BorderThickness="{Binding Path = FocusedBorderThickness,  Mode=OneWay}"
+											Height="{Binding Path = Height,  Mode=OneWay}">
+
+
+
+
+
+<Grid
+					Name="filter">
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+						<ColumnDefinition Width="50" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+
+
+Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+MinHeight="{Binding Path = Height,  Mode=OneWay}"
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+<Label
+								FontSize="20"
+								Width="100"
+								Content="{Binding  Path=Correctness,  Mode=OneWay}"
+								Tapped="Splitttt"/>
+
+
+
+
+
+						<Button.Triggers>
+							<EventTrigger RoutedEvent="FrameworkElement.Tapped">
+								
+							</EventTrigger>
+						</Button.Triggers>
+						
+						
+						
+						<Border
+						Name="badge"
+						BorderThickness="1"
+						BorderBrush="Gray"
+						Width="982"
+						Height="601"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center">
+
+						<Canvas
+							Name="incorrectBadge"
+							VerticalAlignment="Top"
+							Width="980"
+							Height="599">
+
+							<Image
+								Name="backgroundImage"
+								Width="980"
+								VerticalAlignment="Top"
+								KeyDown="ToSide"
+								Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
+								
+								
+								
+								
+								
+			<Label
+				Content="Без ошибок :"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="4"/>
+
+			<Label
+				Content="{Binding  Path = FixedBadges.Count,  Mode=OneWay}"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				FontSize="14"
+				Grid.Column="5"/>	
+				
+				
+				
+				<ColumnDefinition Width="20"></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+				<ColumnDefinition Width="50"></ColumnDefinition>	
+				
+				
+				
+						<TextBox
+			
+			Grid.Column="10"
+			Width="60"
+			MaxHeight="30"
+			FontSize="14"
+			IsReadOnly="True"
+			Focusable="False"
+			KeyUp="SetNewScale"
+			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
+			Text="{Binding   Path = ZoomDegreeInView,   Mode=OneWay}"/>
+			
+			
+			
+			
+				<StackPanel>
+
+		<Canvas>
+
+			<TextBlock
+				Name="message"
+				Margin="50,0,50,0"
+				Canvas.Top="100"
+				Width="500"
+				FontSize="16"
+				TextWrapping="WrapWithOverflow"
+				MaxLines="3"
+				
+				/>
+
+			<Button
+				Name="ok"
+				Width="100"
+				Height="40"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Canvas.Top="200"
+				Canvas.Left="200"
+				Content="Ok"
+				Tapped="HandleTapped"
+				/>
+
+		</Canvas>
+	</StackPanel>
+			
+
+
+-->

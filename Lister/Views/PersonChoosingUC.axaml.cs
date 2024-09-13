@@ -23,7 +23,12 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
+        private static TemplateViewModel _chosenTemplate;
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
+        private static readonly string _jsonError =
+        "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
+
+        private ModernMainView _parent;
         private readonly int _inputLimit = 100;
         private string _previousText;
         private bool _buttonIsPressed = false;
@@ -37,6 +42,7 @@ namespace Lister.Views
         private double _shiftScratch = 0;
         private PersonChoosingViewModel _vm;
         private string _textBoxText = string.Empty;
+        private string _theme;
 
         private SolidColorBrush _personTBBackground = new SolidColorBrush (MainWindow.black);
 
@@ -48,6 +54,9 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
             _vm = (PersonChoosingViewModel) DataContext;
             _vm.PassView (this);
+
+            Loaded += OnLoaded;
+            ActualThemeVariantChanged += ThemeChanged;
 
             //personTextBox.Background = _personTBBackground;
 
@@ -435,6 +444,76 @@ namespace Lister.Views
 
         #endregion Scrolling
 
+
+
+
+        internal void CloseCustomCombobox ( object sender, GotFocusEventArgs args )
+        {
+            _parent = this.Parent.Parent as ModernMainView;
+            PersonChoosingUserControl personChoosing = _parent.personChoosing;
+
+            if ( personChoosing != null )
+            {
+                personChoosing.CloseCustomCombobox ();
+            }
+        }
+
+
+        internal void HandleClosing ( object sender, EventArgs args )
+        {
+
+            TemplateViewModel chosen = templateChoosing.SelectedItem as TemplateViewModel;
+
+            if ( chosen == null )
+            {
+                return;
+            }
+
+            bool templateIsIncorrect = ( chosen.Color.Color.A == 100 );
+
+            if ( templateIsIncorrect )
+            {
+                _vm.ChosenTemplate = null;
+                _chosenTemplate = null;
+                var messegeDialog = new MessageDialog ();
+                messegeDialog.Message = _jsonError;
+                messegeDialog.ShowDialog (MainWindow._mainWindow);
+                messegeDialog.Focusable = true;
+                messegeDialog.Focus ();
+            }
+            else
+            {
+                _vm.ChosenTemplate = chosen;
+                _chosenTemplate = chosen;
+            }
+        }
+
+
+        internal void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            _vm.ChosenTemplate = _chosenTemplate;
+
+            if ( _chosenTemplate != null )
+            {
+                templateChoosing.PlaceholderText = _vm.ChosenTemplate.Name;
+            }
+
+            _vm.PassView (this);
+            _theme = ActualThemeVariant.Key.ToString ();
+            _vm.ChangeAccordingTheme (_theme);
+        }
+
+
+        internal void ThemeChanged ( object sender, EventArgs args )
+        {
+            if ( ActualThemeVariant == null )
+            {
+                return;
+            }
+
+            _theme = ActualThemeVariant.Key.ToString ();
+            _vm.ChangeAccordingTheme (_theme);
+        }
     }
 }
 

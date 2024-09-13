@@ -96,7 +96,9 @@ public partial class MainWindow : Window
             HeightDifference += newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
-            mainView.ChangeSize (newWidthDifference, newHeightDifference); 
+            mainView.ChangeSize (newWidthDifference, newHeightDifference);
+            //BadgeEditorViewModel editorVM = App.services.GetRequiredService<BadgeEditorViewModel> ();
+            //editorVM.ChangeSize (newWidthDifference, newHeightDifference);
         }
         catch ( System.InvalidCastException ex )
         {

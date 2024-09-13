@@ -18,6 +18,9 @@ using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using Avalonia.Animation.Easings;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 
 namespace Lister.Views
 {
@@ -35,6 +38,7 @@ namespace Lister.Views
         private bool _focusedExists;
         private bool _pointerIsPressed;
         private Point _pointerPosition;
+        private ModernMainView _back;
         private BadgeEditorViewModel _vm;
         private bool _isReleaseLocked;
         private Stopwatch _focusTime;
@@ -42,25 +46,51 @@ namespace Lister.Views
         public bool IconIsTapped { get; private set; }
 
 
-        public BadgeEditorView ()
+        //public BadgeEditorView ()
+        //{
+        //    InitializeComponent ();
+        //    //this.DataContext = new BadgeEditorViewModel ();
+            
+        //    this.DataContext = App.services.GetRequiredService <BadgeEditorViewModel> ();
+        //    _vm = DataContext as BadgeEditorViewModel;
+
+        //    Back.FocusAdorner = null;
+        //    editionPanel.FocusAdorner = null;
+
+        //    //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
+        //}
+
+
+        public BadgeEditorView ( bool newEditorIsNeeded )
         {
             InitializeComponent ();
-            this.DataContext = new BadgeEditorViewModel ();
-            _vm = DataContext as BadgeEditorViewModel;
-            left.Focus ();
+
+            if ( newEditorIsNeeded   ||   _vm == null )
+            {
+                this.DataContext = new BadgeEditorViewModel ();
+                _vm = DataContext   as   BadgeEditorViewModel;
+            }
+            else
+            {
+                this.DataContext = _vm;
+            }
+
+            Back.FocusAdorner = null;
+            editionPanel.FocusAdorner = null;
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
 
 
-        //private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
-        //{
-        //    var dialog = new DialogWindow ();
-        //    dialog.DataContext = interaction.Input;
+        internal void ComplateBacking ( )
+        {
+            MainWindow mainWindow = Parent as MainWindow;
+            _back.SetProperSize (Width, Height);
 
-        //    var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
-        //    interaction.SetOutput (result);
-        //}
+            mainWindow.CancelSizeDifference ();
+            _back.ResetIncorrects ();
+            mainWindow.Content = _back;
+        }
 
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
@@ -69,8 +99,11 @@ namespace Lister.Views
             Height -= heightDifference;
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
+
+            collectionManagement.Height -= heightDifference;
+            sliderPanel.Height -= heightDifference;
             slider.Height -= heightDifference;
-            _vm.ChangeSliderHeight (heightDifference);
+            _vm.ChangeSize ( widthDifference, heightDifference);
             _vm.WidthDelta = widthDifference;
             _vm.HeightDelta = heightDifference;
         }
@@ -101,31 +134,23 @@ namespace Lister.Views
             Width = properWidth;
             Height = properHeight;
 
-            if ( _widthIsChanged ) 
+            if ( _widthIsChanged   ||   _heightIsChanged ) 
             {
-                workArea.Width -= widthDifference;
-            }
-
-            if ( _heightIsChanged ) 
-            {
-                workArea.Height -= heightDifference;
-                slider.Height -= heightDifference;
-                _vm.ChangeScrollHeight (heightDifference);
+                _vm.ChangeSize (widthDifference, heightDifference);
             }
         }
 
 
         internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects ) 
         {
-            //BadgeEditorViewModel viewModel = (BadgeEditorViewModel) DataContext;
-
             _vm.VisibleBadges = incorrects;
         }
 
 
         internal void PassBackPoint ( ModernMainView back )
         {
-            _vm.PassViews (this, back);
+            _back = back;
+            _vm.PassView (this);
         }
 
 
@@ -186,7 +211,7 @@ namespace Lister.Views
             {
                 container = _focused.Parent as Border;
                 container.BorderBrush = null;
-                _focused.Background = null;
+                //_focused.Background = null;
             }
 
             _focused = textBlock;
@@ -236,7 +261,6 @@ namespace Lister.Views
             container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
 
             _vm.Focus (content, lineNumber);
-            left.Focus ();
             Cursor = new Cursor (StandardCursorType.SizeAll);
             
             _isReleaseLocked = true;
@@ -413,6 +437,31 @@ namespace Lister.Views
 
     }
 }
+
+
+//internal void Entered ( object sender, PointerEventArgs args)
+//{
+//    Back.Background = new SolidColorBrush (Colors.White);
+//    Back.Foreground = new SolidColorBrush (Colors.Red);
+//}
+
+
+//internal void Exited ( object sender, PointerEventArgs args )
+//{
+//    Back.Background = new SolidColorBrush (Colors.White);
+//    Back.Foreground = new SolidColorBrush (Colors.Black);
+//}
+
+
+
+//private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
+//{
+//    var dialog = new DialogWindow ();
+//    dialog.DataContext = interaction.Input;
+
+//    var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
+//    interaction.SetOutput (result);
+//}
 
 
 //internal void ToParticularBadge ( object sender, TextChangedEventArgs args )

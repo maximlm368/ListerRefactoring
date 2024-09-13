@@ -25,13 +25,14 @@
 			Name="templateChoosing"
 			Margin="0,-3"/>
 
-		<uc:ZoomNavigationUserControl
-			Name="zoomNavigation"
-			Margin="0,1"/>
-
 		<uc:SceneUserControl
 			Name="scene"
-			Margin="0,0"/>
+			Margin="0,3"/>
+
+		<uc:PageNavigationZoomer
+			Name="navigatorZoomer"
+			Background="LightGray"
+			Margin="0,-3"/>
 
 		<uc:WaitingView
 			Name="waiting"
@@ -43,3 +44,12 @@
 
 
 </UserControl>
+
+
+<!--
+
+<uc:ButtonPanel
+	Name="buttonPanel"
+	Margin="0,-300"/>
+
+-->

@@ -10,19 +10,84 @@
 	
 	<Grid
 		Name="badgeTemplateChoice"
-	    Margin="0,1">
+		Height="34"
+		ZIndex="1"
+	    Margin="0,1"
+		Background="LightGray">
+		
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition  Width="100"></ColumnDefinition>
-			<ColumnDefinition  Width="233"></ColumnDefinition>
-			<ColumnDefinition  Width="100"></ColumnDefinition>
-			<ColumnDefinition Width="90"></ColumnDefinition>
-			<ColumnDefinition Width="95"></ColumnDefinition>
-			<ColumnDefinition Width="75"></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition  Width="240"></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
 		</Grid.ColumnDefinitions>
+
 		<Grid.RowDefinitions>
-			<RowDefinition ></RowDefinition>
+			<RowDefinition Height="17" ></RowDefinition>
+			<RowDefinition Height="17" ></RowDefinition>
 		</Grid.RowDefinitions>
+
+		
+		<Button
+			Name="buildBadges"
+			Grid.Column="1"
+			Grid.Row="0"
+			Grid.RowSpan="2"
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Top"
+			Width="200"
+			FontSize="14"
+			Padding="0,2,0,2"
+			Margin="0,3"
+			HorizontalAlignment="Center"
+			Background="White"
+			ZIndex="2"
+			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+			Command="{Binding  BuildBadges}"
+			Content="Построить макет"/>
+
+		<Border
+			Grid.Column="0"
+			Grid.Row="1"
+			Height="17"
+			CornerRadius="0,5,0,0"
+			Background="White"
+						/>
+
+		<Border
+			Grid.Column="2"
+			Grid.Row="1"
+			Height="17"
+			CornerRadius="5,0,0,0"
+			Background="White"
+				/>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="1"
+			Height="17"
+			CornerRadius="0,0,0,0"
+			Background="White"
+				/>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="1"
+			Height="17"
+			CornerRadius="0,0,5,5"
+			Background="LightGray"
+				/>
+
+	</Grid>
+  
+</UserControl>
+
+
+
+
+<!-- 
+
+IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+
 
 		<Label
 			Grid.Column="0"
@@ -54,16 +119,19 @@
 			
 		</ComboBox>
 
-		<Button
-			Name="buildBadges"
-			Grid.Column="2"
-			HorizontalAlignment="Center"
-			HorizontalContentAlignment="Center"
-			Width="96"
-			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-			Command="{Binding  BuildBadges}"
-			Content="Построить"/>
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
 		<Button
 			Name="clearBadges"
 			Grid.Column="3"
@@ -99,14 +167,19 @@
 			Command="{Binding  Path=Print}"
 			ToolTip.Tip="Печатать на принтере по умолчанию"
 			Content="Печать"/>
-	</Grid>
-  
-</UserControl>
 
 
 
 
-<!-- 
+
+
+
+
+
+
+
+
+
 
 ToolTip.Tip="Построить выбранные бэйджи"
 

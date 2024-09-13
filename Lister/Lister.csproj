@@ -108,4 +108,11 @@
    </Content>
  </ItemGroup>
   
+  
+ <ItemGroup>
+   <Compile Update="Views\EditionView.axaml.cs">
+     <DependentUpon>EditionView.axaml</DependentUpon>
+   </Compile>
+ </ItemGroup>
+  
 </Project>

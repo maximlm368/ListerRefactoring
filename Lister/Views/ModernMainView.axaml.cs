@@ -50,6 +50,8 @@ namespace Lister.Views
             waiting.Margin = new Avalonia.Thickness ( 0, -460 );
             waiting.IsVisible = false;
 
+            //buttonPanel.Margin = new Avalonia.Thickness (0, -260);
+
             LayoutUpdated += LayoutUpdatedHandler;
 
 
@@ -184,15 +186,15 @@ namespace Lister.Views
         //}
 
 
-        internal void EditIncorrectBadges ( List<BadgeViewModel> incorrectBadges )
+        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges )
         {
             _incorrectBadges = incorrectBadges;
             ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
-            if ( ( window != null ) && ( incorrectBadges.Count > 0 ) )
+            if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
             {
-                EditorView = new BadgeEditorView ();
+                EditorView = new BadgeEditorView ( TemplateChoosingViewModel.BuildingOccured );
                 EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
                 window.CancelSizeDifference ();
                 TappedButton = 1;
@@ -206,48 +208,47 @@ namespace Lister.Views
             ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
-            //Task task = new Task
-            //(
-            //    () =>
-            //    {
-            //        EditorView.PassIncorrectBadges (_incorrectBadges);
-            //        //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
+            Task task = new Task
+            (
+                () =>
+                {
+                    EditorView.PassIncorrectBadges (_incorrectBadges);
 
-            //        EditorView.PassBackPoint (mainView);
-            //        _isFirstTimeLoading = false;
+                    EditorView.PassBackPoint (mainView);
+                    _isFirstTimeLoading = false;
 
-            //        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-            //        modernMV.EndWaiting ();
+                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                    modernMV.EndWaiting ();
 
-            //        Dispatcher.UIThread.InvokeAsync(() => { window.Content = EditorView; });
+                    Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
+                    ModernMainViewModel.MainViewIsWaiting = false;
+                    TappedButton = 0;
+                }
+            );
 
-            //        TappedButton = 0;
-            //    }
-            //);
-
-            //task.Start ();
+            task.Start ();
 
 
-            Thread thread = new Thread 
-                (
-                    () => 
-                    {
-                        EditorView.PassIncorrectBadges (_incorrectBadges);
-                        //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
+            //Thread thread = new Thread 
+            //    (
+            //        () => 
+            //        {
+            //            EditorView.PassIncorrectBadges (_incorrectBadges);
+            //            //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
 
-                        EditorView.PassBackPoint (mainView);
-                        _isFirstTimeLoading = false;
+            //            EditorView.PassBackPoint (mainView);
+            //            _isFirstTimeLoading = false;
 
-                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                        modernMV.EndWaiting ();
+            //            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+            //            modernMV.EndWaiting ();
 
-                        Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
+            //            Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
 
-                        TappedButton = 0;
-                    }
-                );
+            //            TappedButton = 0;
+            //        }
+            //    );
 
-            thread.Start ();
+            //thread.Start ();
         }
 
 

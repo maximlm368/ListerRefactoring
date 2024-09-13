@@ -8,7 +8,10 @@
 			 x:DataType="vm:ZoomNavigationViewModel">
 
 
-	<Grid Name="zoomAndNavigation" Margin="0,-1">
+	<Grid 
+		Name="zoomAndNavigation" 
+		Margin="0,-1">
+		
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="100"></ColumnDefinition>
 			<ColumnDefinition Width="30"></ColumnDefinition>

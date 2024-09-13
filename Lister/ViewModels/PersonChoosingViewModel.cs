@@ -36,8 +36,8 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private static double _withScroll = 454;
-        private static double _withoutScroll = 469;
+        private static double _withScroll = 434;
+        private static double _withoutScroll = 449;
         private static readonly double _minRunnerHeight = 10;
         private static readonly double _upperHeight = 15;
         private static readonly double _scrollingScratch = 25;
@@ -51,7 +51,7 @@ namespace Lister.ViewModels
         private static SolidColorBrush _focusedBorderColor = new SolidColorBrush (MainWindow.black);
         private static SolidColorBrush _focusedBackgroundColor = 
                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 200));
-
+        private List<TemplateName> _templateNames;
         private TemplateChoosingViewModel _templateChoosingVM;
         private PersonSourceViewModel _personSourceVM;
         private PersonChoosingUserControl _view;
@@ -69,6 +69,51 @@ namespace Lister.ViewModels
         internal bool EntirePersonListIsSelected { get; private set; }
         internal bool BuildingIsPossible { get; private set; }
         internal List <VisiblePerson> PeopleStorage { get; set; }
+
+        private ObservableCollection<TemplateViewModel> tF;
+        internal ObservableCollection<TemplateViewModel> Templates
+        {
+            get
+            {
+                return tF;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref tF, value, nameof (Templates));
+            }
+        }
+
+        private bool isO;
+        internal bool IsOpen
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref isO, value, nameof (isO));
+            }
+            get
+            {
+                return isO;
+            }
+        }
+
+        private TemplateViewModel cT;
+        internal TemplateViewModel ChosenTemplate
+        {
+            set
+            {
+                bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
+
+                this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
+                TryToEnableBadgeCreationButton ();
+            }
+            get
+            {
+                return cT;
+            }
+        }
+
+
+
 
         private List <VisiblePerson> iP;
         internal List <VisiblePerson> InvolvedPeople 
@@ -316,7 +361,7 @@ namespace Lister.ViewModels
         }
 
 
-        public PersonChoosingViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler )
+        public PersonChoosingViewModel ( IUniformDocumentAssembler docAssembler )
         {
             VisiblePeople = new ObservableCollection <VisiblePerson> ();
             ScrollerCanvasLeft = _withScroll;
@@ -326,6 +371,8 @@ namespace Lister.ViewModels
             FontWeight = FontWeight.Bold;
             EntireListColor = _entireListColor;
             _focusedEdge = _edge;
+
+            _templateNames = docAssembler.GetBadgeModels ();
         }
 
 
@@ -720,7 +767,7 @@ namespace Lister.ViewModels
 
                 BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected );
 
-                if ( BuildingIsPossible   &&   ( _templateChoosingVM.ChosenTemplate != null ) )
+                if ( BuildingIsPossible   &&   ( ChosenTemplate != null ) )
                 {
                     _templateChoosingVM.BuildingIsPossible = true;
                 }
@@ -736,6 +783,26 @@ namespace Lister.ViewModels
             }
 
             _templateChoosingVM.BuildingIsPossible = false;
+        }
+
+
+        private void TryToEnableBadgeCreationButton ()
+        {
+            if ( _templateChoosingVM == null )
+            {
+                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+            }
+
+            bool buildingIsPossible = ( ChosenTemplate != null )   &&   BuildingIsPossible;
+
+            if ( buildingIsPossible )
+            {
+                _templateChoosingVM.BuildingIsPossible = true;
+            }
+            else
+            {
+                _templateChoosingVM.BuildingIsPossible = false;
+            }
         }
 
 
@@ -778,6 +845,59 @@ namespace Lister.ViewModels
                 _tapped = null;
             }
         }
+
+
+        internal void ChangeAccordingTheme ( string theme )
+        {
+            SolidColorBrush foundColor = new SolidColorBrush (MainWindow.black);
+            SolidColorBrush unfoundColor = new SolidColorBrush (new Avalonia.Media.Color (100, 0, 0, 0));
+
+            if ( theme == "Dark" )
+            {
+                foundColor = new SolidColorBrush (MainWindow.white);
+                unfoundColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
+            }
+
+            ObservableCollection<TemplateViewModel> templates = new ();
+
+            foreach ( TemplateName name   in   _templateNames )
+            {
+                SolidColorBrush brush;
+
+                if ( name.isFound )
+                {
+                    brush = foundColor;
+                }
+                else
+                {
+                    brush = unfoundColor;
+                }
+
+                templates.Add (new TemplateViewModel (name, brush));
+            }
+
+            Templates = templates;
+        }
+
+
+        //private void TryToEnableBadgeCreationButton ()
+        //{
+        //    if ( _personChoosingVM == null )
+        //    {
+        //        _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+        //    }
+
+        //    bool buildingIsPossible = ( ChosenTemplate != null ) && _personChoosingVM.BuildingIsPossible;
+
+        //    if ( buildingIsPossible )
+        //    {
+        //        BuildingIsPossible = true;
+        //    }
+        //    else
+        //    {
+        //        BuildingIsPossible = false;
+        //    }
+        //}
     }
 }
 

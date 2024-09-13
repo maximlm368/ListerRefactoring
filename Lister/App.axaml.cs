@@ -10,7 +10,7 @@ using Lister.Views;
 using Splat;
 using Avalonia.Styling;
 using Avalonia.Controls;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Runtime.InteropServices;
 using Avalonia.Media;
 using static System.Net.Mime.MediaTypeNames;
@@ -150,6 +150,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton (typeof (IFontFileProvider), BadgeFontFactory);
 
         collection.AddSingleton <ModernMainViewModel> ();
+        //collection.AddSingleton <BadgeEditorViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
         collection.AddSingleton <PageViewModel> ();
@@ -157,6 +158,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <PersonSourceViewModel> ();
         collection.AddSingleton <SceneViewModel> ();
         collection.AddSingleton <TemplateChoosingViewModel> ();
+        collection.AddSingleton <PageNavigationZoomerViewModel> ();
         collection.AddSingleton <ZoomNavigationViewModel> ();
         collection.AddSingleton <TextLineViewModel> ();
         collection.AddSingleton <WaitingViewModel> ();

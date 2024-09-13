@@ -41,16 +41,16 @@ namespace Lister.Views
 
         internal void OnLoaded ( object sender, RoutedEventArgs args )
         {
-            _vm.ChosenTemplate = _chosen;
+            //_vm.ChosenTemplate = _chosen;
 
-            if ( _chosen != null ) 
-            {
-                templateChoosing.PlaceholderText = _vm.ChosenTemplate. Name;
-            }
+            //if ( _chosen != null ) 
+            //{
+            //    templateChoosing.PlaceholderText = _vm.ChosenTemplate. Name;
+            //}
 
-            _vm.PassView (this);
-            _theme = ActualThemeVariant.Key.ToString ();
-            _vm.ChangeAccordingTheme (_theme);
+            //_vm.PassView (this);
+            //_theme = ActualThemeVariant.Key.ToString ();
+            //_vm.ChangeAccordingTheme (_theme);
         }
 
 
@@ -80,30 +80,30 @@ namespace Lister.Views
 
         internal void HandleClosing ( object sender, EventArgs args )
         {
-            TemplateViewModel chosen = templateChoosing.SelectedItem as TemplateViewModel;
+            //TemplateViewModel chosen = templateChoosing.SelectedItem as TemplateViewModel;
 
-            if ( chosen == null )
-            {
-                return;
-            }
+            //if ( chosen == null )
+            //{
+            //    return;
+            //}
 
-            bool templateIsIncorrect = (chosen.Color.Color.A == 100);
+            //bool templateIsIncorrect = (chosen.Color.Color.A == 100);
 
-            if ( templateIsIncorrect )
-            {
-                _vm.ChosenTemplate = null;
-                _chosen = null;
-                var messegeDialog = new MessageDialog ();
-                messegeDialog.Message = _jsonError;
-                messegeDialog.ShowDialog (MainWindow._mainWindow);
-                messegeDialog.Focusable = true;
-                messegeDialog.Focus ();
-            }
-            else 
-            {
-                _vm.ChosenTemplate = chosen;
-                _chosen = chosen;
-            }
+            //if ( templateIsIncorrect )
+            //{
+            //    _vm.ChosenTemplate = null;
+            //    _chosen = null;
+            //    var messegeDialog = new MessageDialog ();
+            //    messegeDialog.Message = _jsonError;
+            //    messegeDialog.ShowDialog (MainWindow._mainWindow);
+            //    messegeDialog.Focusable = true;
+            //    messegeDialog.Focus ();
+            //}
+            //else 
+            //{
+            //    _vm.ChosenTemplate = chosen;
+            //    _chosen = chosen;
+            //}
         }
 
 

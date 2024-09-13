@@ -1,36 +1,19 @@
-﻿using Avalonia;
-using ContentAssembler;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Controls;
-using Avalonia.Media;
-using System.Windows.Input;
-using System.Text;
-using System.Net.WebSockets;
-using System.ComponentModel;
-using Lister.Views;
-using Lister.Extentions;
-using System.Collections.ObjectModel;
-using static QuestPDF.Helpers.Colors;
-using Avalonia.Controls.Shapes;
-using DynamicData;
+﻿using ContentAssembler;
+using Lister.ViewModels;
 using ReactiveUI;
-using Avalonia.Input;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Buffers.Binary;
-using System.Reflection;
-using Microsoft.Win32;
-using ExtentionsAndAuxiliary;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class ZoomNavigationViewModel : ViewModelBase
+    internal class PageNavigationZoomerViewModel : ViewModelBase
     {
         private short _scalabilityDepth = 0;
-        private readonly short _maxDepth = 5;
-        private readonly short _minDepth = -5;
+        private short _maxDepth = 5;
+        private short _minDepth = -5;
         //private readonly short _scalabilityStep = 25;
 
         private SceneViewModel sc;
@@ -132,7 +115,7 @@ namespace Lister.ViewModels
         }
 
 
-        public ZoomNavigationViewModel (IUniformDocumentAssembler singleTypeDocumentAssembler, SceneViewModel sceneViewModel ) 
+        public PageNavigationZoomerViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
         {
             SceneVM = sceneViewModel;
         }
@@ -173,13 +156,13 @@ namespace Lister.ViewModels
         }
 
 
-        internal int GetPageCount () 
+        internal int GetPageCount ()
         {
             return SceneVM.GetPageCount ();
         }
 
 
-        internal void ZoomOn ( )
+        internal void ZoomOn ()
         {
             if ( _scalabilityDepth < _maxDepth )
             {
@@ -193,14 +176,14 @@ namespace Lister.ViewModels
                 ZoomOnIsEnable = false;
             }
 
-            if ( ! ZoomOutIsEnable )
+            if ( !ZoomOutIsEnable )
             {
                 ZoomOutIsEnable = true;
             }
         }
 
 
-        internal void ZoomOut ( )
+        internal void ZoomOut ()
         {
             if ( _scalabilityDepth > _minDepth )
             {
@@ -213,7 +196,7 @@ namespace Lister.ViewModels
                 ZoomOutIsEnable = false;
             }
 
-            if ( ! ZoomOnIsEnable )
+            if ( !ZoomOnIsEnable )
             {
                 ZoomOnIsEnable = true;
             }
@@ -226,28 +209,28 @@ namespace Lister.ViewModels
 
             if ( pageCount > 1 )
             {
-                if ( ( VisiblePageNumber > 1 )   &&   ( VisiblePageNumber == pageCount ) )
+                if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber == pageCount ) )
                 {
                     FirstIsEnable = true;
                     PreviousIsEnable = true;
                     NextIsEnable = false;
                     LastIsEnable = false;
                 }
-                else if ( ( VisiblePageNumber > 1 )   &&   ( VisiblePageNumber < pageCount ) )
+                else if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber < pageCount ) )
                 {
                     FirstIsEnable = true;
                     PreviousIsEnable = true;
                     NextIsEnable = true;
                     LastIsEnable = true;
                 }
-                else if ( ( VisiblePageNumber == 1 )   &&   ( pageCount == 1 ) )
+                else if ( ( VisiblePageNumber == 1 ) && ( pageCount == 1 ) )
                 {
                     FirstIsEnable = false;
                     PreviousIsEnable = false;
                     NextIsEnable = false;
                     LastIsEnable = false;
                 }
-                else if ( ( VisiblePageNumber == 1)   &&   ( pageCount > 1 ) )
+                else if ( ( VisiblePageNumber == 1 ) && ( pageCount > 1 ) )
                 {
                     FirstIsEnable = false;
                     PreviousIsEnable = false;
@@ -258,29 +241,22 @@ namespace Lister.ViewModels
         }
 
 
-        //internal void DisableButtons ()
-        //{
-        //    ZoomOnIsEnable = false;
-        //    ZoomOutIsEnable = false;
-        //    FirstIsEnable = false;
-        //    PreviousIsEnable = false;
-        //    NextIsEnable = false;
-        //    LastIsEnable = false;
-        //}
+        internal void DisableButtons ()
+        {
+            ZoomOnIsEnable = false;
+            ZoomOutIsEnable = false;
+            FirstIsEnable = false;
+            PreviousIsEnable = false;
+            NextIsEnable = false;
+            LastIsEnable = false;
+        }
 
 
-        //internal void EnableZoom ()
-        //{
-        //    ZoomOnIsEnable = true;
-        //    ZoomOutIsEnable = true;
-        //}
+        internal void EnableZoom ()
+        {
+            ZoomOnIsEnable = true;
+            ZoomOutIsEnable = true;
+        }
+
     }
-
-
-
-    public class MediatorNullException : Exception { }
 }
-
-
-
-

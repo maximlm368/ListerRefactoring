@@ -38,7 +38,9 @@ namespace Lister.Views
 
         private void OnLoaded ( object sender, RoutedEventArgs args )
         {
-            _vm.SetEdition ();
+            //_vm.SetEdition ();
+            //save.IsEnabled = true;
+            //save.Focusable = true;
         }
 
 

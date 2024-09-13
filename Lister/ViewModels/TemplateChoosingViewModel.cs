@@ -43,12 +43,13 @@ public class TemplateChoosingViewModel : ViewModelBase
     private static readonly string _saveTitle = "Сохранение документа";
     private static readonly string _suggestedFileNames = "Badge";
     public static int TappedButton { get; private set; }
+    public static bool BuildingOccured { get; private set; }
 
     private TemplateChoosingUserControl _view;
     private ConverterToPdf _converter;
     private SceneViewModel _sceneVM;
     private PersonChoosingViewModel _personChoosingVM;
-    private ZoomNavigationViewModel _zoomNavigationVM;
+    private PageNavigationZoomerViewModel _zoomNavigationVM;
     private WaitingViewModel _waitingVM;
     private List <TemplateName> _templateNames;
     private Stopwatch _stopWatch;
@@ -67,21 +68,21 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
     }
 
-    private TemplateViewModel cT;
-    internal TemplateViewModel ChosenTemplate
-    {
-        set
-        {
-            bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
+    //private TemplateViewModel cT;
+    //internal TemplateViewModel ChosenTemplate
+    //{
+    //    set
+    //    {
+    //        bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
 
-            this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
-            TryToEnableBadgeCreationButton ();
-        }
-        get
-        {
-            return cT;
-        }
-    }
+    //        this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
+    //        TryToEnableBadgeCreationButton ();
+    //    }
+    //    get
+    //    {
+    //        return cT;
+    //    }
+    //}
 
     private bool isO;
     internal bool IsOpen
@@ -103,7 +104,12 @@ public class TemplateChoosingViewModel : ViewModelBase
         {
             if ( value ) 
             {
-                if (ChosenTemplate == null) 
+                if ( _personChoosingVM == null )
+                {
+                    _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+                }
+
+                if ( _personChoosingVM.ChosenTemplate == null) 
                 {
                     value = false;
                 }
@@ -208,23 +214,30 @@ public class TemplateChoosingViewModel : ViewModelBase
     {
         if ( _zoomNavigationVM == null )
         {
-            _zoomNavigationVM = App.services.GetRequiredService<ZoomNavigationViewModel> ();
+            _zoomNavigationVM = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
         }
 
+        BuildingOccured = true;
+
+        BadgeEditorViewModel.BackingToMainViewEvent += ()=>
+        { 
+            BuildingOccured = false; 
+        };
+        
         Build ();
     }
 
 
     internal void Build ()
     {
-        if ( ChosenTemplate == null )
-        {
-            return;
-        }
-
         if ( _personChoosingVM == null )
         {
             _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+        }
+
+        if ( _personChoosingVM.ChosenTemplate == null )
+        {
+            return;
         }
 
         if ( _personChoosingVM.EntirePersonListIsSelected )
@@ -236,7 +249,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         else if ( _personChoosingVM.SinglePersonIsSelected )
         {
             BuildSingleBadge ();
-            EnableButtons ();
+            _sceneVM.EnableButtons ();
             _zoomNavigationVM.EnableZoom ();
             _zoomNavigationVM.SetEnablePageNavigation ();
         }
@@ -245,7 +258,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     internal void BuildAllBadges ()
     {
-        if ( ChosenTemplate == null )
+        if ( _personChoosingVM.ChosenTemplate == null )
         {
             return;
         }
@@ -256,12 +269,12 @@ public class TemplateChoosingViewModel : ViewModelBase
             (
                 () =>
                 {
-                    _sceneVM.BuildBadges (ChosenTemplate.Name);
+                    _sceneVM.BuildBadges (_personChoosingVM.ChosenTemplate.Name);
 
                     ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
                     modernMV.EndWaiting ();
 
-                    EnableButtons ();
+                    _sceneVM.EnableButtons ();
                     _zoomNavigationVM.EnableZoom ();
                     _zoomNavigationVM.SetEnablePageNavigation ();
 
@@ -277,48 +290,52 @@ public class TemplateChoosingViewModel : ViewModelBase
 
     internal void BuildSingleBadge ()
     {
-        if ( ChosenTemplate == null )
+        if ( _personChoosingVM == null )
+        {
+            _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
+        }
+
+        if ( _personChoosingVM.ChosenTemplate == null )
         {
             return;
         }
 
-        _sceneVM.BuildSingleBadge (ChosenTemplate. Name);
+        _sceneVM.BuildSingleBadge (_personChoosingVM.ChosenTemplate. Name);
     }
 
 
-    internal void ClearBadges ( )
-    {
-        if ( _sceneVM == null )
-        {
-            _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
-        }
+    //internal void ClearBadges ()
+    //{
+    //    if ( _sceneVM == null )
+    //    {
+    //        _sceneVM = App.services.GetRequiredService<SceneViewModel> ();
+    //    }
 
-        _sceneVM.ClearAllPages ();
-        DisableButtons();
+    //    _sceneVM.ClearBadges ();
 
-        if ( _zoomNavigationVM == null )
-        {
-            _zoomNavigationVM = App.services.GetRequiredService<ZoomNavigationViewModel> ();
-        }
+    //    if ( _zoomNavigationVM == null )
+    //    {
+    //        _zoomNavigationVM = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
+    //    }
 
-        _zoomNavigationVM.DisableButtons ();
-    }
-
-
-    internal void DisableButtons ()
-    {
-        ClearIsEnable = false;
-        SaveIsEnable = false;
-        PrintIsEnable = false;
-    }
+    //    _zoomNavigationVM.DisableButtons ();
+    //}
 
 
-    internal void EnableButtons ()
-    {
-        ClearIsEnable = true;
-        SaveIsEnable = true;
-        PrintIsEnable = true;
-    }
+    //internal void DisableButtons ()
+    //{
+    //    ClearIsEnable = false;
+    //    SaveIsEnable = false;
+    //    PrintIsEnable = false;
+    //}
+
+
+    //internal void EnableButtons ()
+    //{
+    //    ClearIsEnable = true;
+    //    SaveIsEnable = true;
+    //    PrintIsEnable = true;
+    //}
 
 
     //internal void GeneratePdff ()
@@ -384,98 +401,98 @@ public class TemplateChoosingViewModel : ViewModelBase
     //}
 
 
-    internal void GeneratePdf ()
-    {
-        List<FilePickerFileType> fileExtentions = [];
-        fileExtentions.Add (FilePickerFileTypes.Pdf);
-        FilePickerSaveOptions options = new ();
-        options.Title = _saveTitle;
-        options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-        options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
-        Task <IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
+    //internal void GeneratePdf ()
+    //{
+    //    List<FilePickerFileType> fileExtentions = [];
+    //    fileExtentions.Add (FilePickerFileTypes.Pdf);
+    //    FilePickerSaveOptions options = new ();
+    //    options.Title = _saveTitle;
+    //    options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+    //    options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
+    //    Task <IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
 
-        TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+    //    TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
-        chosenFile.ContinueWith
-            (
-               task =>
-               {
-                   if ( task.Result != null )
-                   {
-                       string result = task.Result.Path.ToString ();
-                       int uriTypeLength = App.ResourceUriType.Length;
-                       result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
+    //    chosenFile.ContinueWith
+    //        (
+    //           task =>
+    //           {
+    //               if ( task.Result != null )
+    //               {
+    //                   string result = task.Result.Path.ToString ();
+    //                   int uriTypeLength = App.ResourceUriType.Length;
+    //                   result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
                       
-                       bool pdf = GeneratePdf (result);
+    //                   bool pdf = GeneratePdf (result);
 
-                       if ( pdf == false )
-                       {
-                           var messegeDialog = new MessageDialog ();
-                           messegeDialog.Message = _fileIsOpenMessage;
-                           messegeDialog.ShowDialog (MainWindow._mainWindow);
-                       }
-                       else
-                       {
-                           if ( App.OsName == "Windows" )
-                           {
-                               Process fileExplorer = new Process ();
-                               fileExplorer.StartInfo.FileName = "explorer.exe";
-                               result = ExtractPathWithoutFileName (result);
-                               result = result.Replace ('/', '\\');
-                               fileExplorer.StartInfo.Arguments = result;
-                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                               fileExplorer.Start ();
-                           }
-                           else if ( App.OsName == "Linux" )
-                           {
-                               Process fileExplorer = new Process ();
-                               fileExplorer.StartInfo.FileName = "nautilus";
-                               result = ExtractPathWithoutFileName (result);
-                               fileExplorer.StartInfo.Arguments = result;
-                               fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                               fileExplorer.Start ();
-                           }
-                       }
-                   }
-               }, uiScheduler);
-    }
+    //                   if ( pdf == false )
+    //                   {
+    //                       var messegeDialog = new MessageDialog ();
+    //                       messegeDialog.Message = _fileIsOpenMessage;
+    //                       messegeDialog.ShowDialog (MainWindow._mainWindow);
+    //                   }
+    //                   else
+    //                   {
+    //                       if ( App.OsName == "Windows" )
+    //                       {
+    //                           Process fileExplorer = new Process ();
+    //                           fileExplorer.StartInfo.FileName = "explorer.exe";
+    //                           result = ExtractPathWithoutFileName (result);
+    //                           result = result.Replace ('/', '\\');
+    //                           fileExplorer.StartInfo.Arguments = result;
+    //                           fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+    //                           fileExplorer.Start ();
+    //                       }
+    //                       else if ( App.OsName == "Linux" )
+    //                       {
+    //                           Process fileExplorer = new Process ();
+    //                           fileExplorer.StartInfo.FileName = "nautilus";
+    //                           result = ExtractPathWithoutFileName (result);
+    //                           fileExplorer.StartInfo.Arguments = result;
+    //                           fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+    //                           fileExplorer.Start ();
+    //                       }
+    //                   }
+    //               }
+    //           }, uiScheduler);
+    //}
 
 
-    private string GenerateNowDateString ( )
-    {
-        DateTime now = DateTime.Now;
+    //private string GenerateNowDateString ( )
+    //{
+    //    DateTime now = DateTime.Now;
 
-        string day = now.Day.ToString ();
+    //    string day = now.Day.ToString ();
 
-        if ( Int32.Parse(day) < 10 ) 
-        {
-            day = "0" + day;
-        }
+    //    if ( Int32.Parse(day) < 10 ) 
+    //    {
+    //        day = "0" + day;
+    //    }
 
-        string month = now.Month.ToString ();
+    //    string month = now.Month.ToString ();
 
-        if ( Int32.Parse (month) < 10 )
-        {
-            month = "0" + month;
-        }
+    //    if ( Int32.Parse (month) < 10 )
+    //    {
+    //        month = "0" + month;
+    //    }
 
-        string hour = now.Hour.ToString ();
+    //    string hour = now.Hour.ToString ();
 
-        if ( Int32.Parse (hour) < 10 )
-        {
-            hour = "0" + hour;
-        }
+    //    if ( Int32.Parse (hour) < 10 )
+    //    {
+    //        hour = "0" + hour;
+    //    }
 
-        string minute = now.Minute.ToString ();
+    //    string minute = now.Minute.ToString ();
 
-        if ( Int32.Parse (minute) < 10 )
-        {
-            minute = "0" + minute;
-        }
+    //    if ( Int32.Parse (minute) < 10 )
+    //    {
+    //        minute = "0" + minute;
+    //    }
 
-        string result = "_" + day + month + now.Year.ToString () + "_" + hour + minute;
-        return result;
-    }
+    //    string result = "_" + day + month + now.Year.ToString () + "_" + hour + minute;
+    //    return result;
+    //}
 
 
     //internal Task<bool> GeneratePdff ( string fileToSave )
@@ -487,126 +504,126 @@ public class TemplateChoosingViewModel : ViewModelBase
     //}
 
 
-    internal bool GeneratePdf ( string fileToSave )
-    {
-        List <PageViewModel> pages = GetAllPages ();
-        bool result = _converter.ConvertToExtention (pages, fileToSave);
-        return result;
-    }
-
-
-    public void Print ()
-    {
-        List <PageViewModel> pages = GetAllPages ();
-        string fileToSave = @"intermidiate.pdf";
-        Task pdf = new Task (() => { _converter.ConvertToExtention (pages, fileToSave); });
-        pdf.Start ();
-        Task printTask = pdf.ContinueWith
-               (
-                  savingTask =>
-                  {
-                      if ( App.OsName == "Windows" )
-                      {
-                          int length = _converter.intermidiateFiles.Count;
-                          IStorageItem sItem = null;
-
-                          ProcessStartInfo info = new ()
-                          {
-                              FileName = fileToSave,
-                              Verb = "Print",
-                              UseShellExecute = true,
-                              ErrorDialog = false,
-                              CreateNoWindow = true,
-                              WindowStyle = ProcessWindowStyle.Minimized
-                          };
-
-                          bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
-                      }
-                      else if ( App.OsName == "Linux" ) 
-                      {
-                          string printCommand = "lp " + fileToSave;
-                          ExecuteBashCommand (printCommand);
-                      }
-                  }
-               );
-    }
-
-
-    //private bool PreventCommandExecution ()
+    //internal bool GeneratePdf ( string fileToSave )
     //{
-    //    bool result = true;
-
-    //    if ( MainWindow.EventTimer == null )
-    //    {
-    //        return false;
-    //    }
-
-    //    MainWindow.EventTimer.Stop ();
-    //    TimeSpan expandTime = MainWindow.EventTimer.Elapsed;
-
-    //    if ( expandTime.Milliseconds < 50 )
-    //    {
-    //        return false;
-    //    }
-
+    //    List <PageViewModel> pages = GetAllPages ();
+    //    bool result = _converter.ConvertToExtention (pages, fileToSave);
     //    return result;
     //}
 
 
-    private static void ExecuteBashCommand ( string command )
-    {
-        using ( Process process = new Process () )
-        {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+    //public void Print ()
+    //{
+    //    List <PageViewModel> pages = GetAllPages ();
+    //    string fileToSave = @"intermidiate.pdf";
+    //    Task pdf = new Task (() => { _converter.ConvertToExtention (pages, fileToSave); });
+    //    pdf.Start ();
+    //    Task printTask = pdf.ContinueWith
+    //           (
+    //              savingTask =>
+    //              {
+    //                  if ( App.OsName == "Windows" )
+    //                  {
+    //                      int length = _converter.intermidiateFiles.Count;
+    //                      IStorageItem sItem = null;
 
-            process.Start ();
+    //                      ProcessStartInfo info = new ()
+    //                      {
+    //                          FileName = fileToSave,
+    //                          Verb = "Print",
+    //                          UseShellExecute = true,
+    //                          ErrorDialog = false,
+    //                          CreateNoWindow = true,
+    //                          WindowStyle = ProcessWindowStyle.Minimized
+    //                      };
 
-            //string result = process.StandardOutput.ReadToEnd ();
-
-            process.WaitForExit ();
-        }
-    }
-
-
-    private string ExtractPathWithoutFileName ( string wholePath )
-    {
-        var builder = new StringBuilder ();
-        string goalPath = string.Empty;
-
-        for ( var index = wholePath.Length - 1; index >= 0; index-- )
-        {
-            bool fileNameIsAchieved = ( wholePath [index] == '/' ) || ( wholePath [index] == '\\' );
-
-            if ( fileNameIsAchieved )
-            {
-                goalPath = wholePath.Substring (0, index);
-                break;
-            }
-        }
-
-        return goalPath;
-    }
+    //                      bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
+    //                  }
+    //                  else if ( App.OsName == "Linux" ) 
+    //                  {
+    //                      string printCommand = "lp " + fileToSave;
+    //                      ExecuteBashCommand (printCommand);
+    //                  }
+    //              }
+    //           );
+    //}
 
 
-    private List <PageViewModel> GetAllPages ()
-    {
-        List<PageViewModel> pages = _sceneVM.GetAllPages ();
-        List<PageViewModel> dimensionallyOriginals = new List<PageViewModel> ();
+    ////private bool PreventCommandExecution ()
+    ////{
+    ////    bool result = true;
 
-        foreach ( PageViewModel page in pages )
-        {
-            dimensionallyOriginals.Add (page.GetDimendionalOriginal ());
-        }
+    ////    if ( MainWindow.EventTimer == null )
+    ////    {
+    ////        return false;
+    ////    }
 
-        return dimensionallyOriginals;
-    }
+    ////    MainWindow.EventTimer.Stop ();
+    ////    TimeSpan expandTime = MainWindow.EventTimer.Elapsed;
+
+    ////    if ( expandTime.Milliseconds < 50 )
+    ////    {
+    ////        return false;
+    ////    }
+
+    ////    return result;
+    ////}
+
+
+    //private static void ExecuteBashCommand ( string command )
+    //{
+    //    using ( Process process = new Process () )
+    //    {
+    //        process.StartInfo = new ProcessStartInfo
+    //        {
+    //            FileName = "/bin/bash",
+    //            Arguments = $"-c \"{command}\"",
+    //            RedirectStandardOutput = true,
+    //            UseShellExecute = false,
+    //            CreateNoWindow = true
+    //        };
+
+    //        process.Start ();
+
+    //        //string result = process.StandardOutput.ReadToEnd ();
+
+    //        process.WaitForExit ();
+    //    }
+    //}
+
+
+    //private string ExtractPathWithoutFileName ( string wholePath )
+    //{
+    //    var builder = new StringBuilder ();
+    //    string goalPath = string.Empty;
+
+    //    for ( var index = wholePath.Length - 1; index >= 0; index-- )
+    //    {
+    //        bool fileNameIsAchieved = ( wholePath [index] == '/' ) || ( wholePath [index] == '\\' );
+
+    //        if ( fileNameIsAchieved )
+    //        {
+    //            goalPath = wholePath.Substring (0, index);
+    //            break;
+    //        }
+    //    }
+
+    //    return goalPath;
+    //}
+
+
+    //private List <PageViewModel> GetAllPages ()
+    //{
+    //    List<PageViewModel> pages = _sceneVM.GetAllPages ();
+    //    List<PageViewModel> dimensionallyOriginals = new List<PageViewModel> ();
+
+    //    foreach ( PageViewModel page in pages )
+    //    {
+    //        dimensionallyOriginals.Add (page.GetDimendionalOriginal ());
+    //    }
+
+    //    return dimensionallyOriginals;
+    //}
 
 
     private void TryToEnableBadgeCreationButton ()
@@ -616,7 +633,7 @@ public class TemplateChoosingViewModel : ViewModelBase
             _personChoosingVM = App.services.GetRequiredService <PersonChoosingViewModel> ();
         }
 
-        bool buildingIsPossible = ( ChosenTemplate != null )   &&   _personChoosingVM.BuildingIsPossible;
+        bool buildingIsPossible = ( _personChoosingVM.ChosenTemplate != null )   &&   _personChoosingVM.BuildingIsPossible;
 
         if ( buildingIsPossible )
         {

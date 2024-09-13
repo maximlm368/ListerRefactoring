@@ -71,6 +71,7 @@ namespace Lister.ViewModels
         internal void EndWaiting ()
         {
             WaitingIsVisible = false;
+
         }
 
 
