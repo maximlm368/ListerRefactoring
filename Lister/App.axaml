@@ -9,11 +9,8 @@
         <FluentTheme />
     </Application.Styles>
 
-
 	<Application.Resources>
-
-		<FontFamily x:Key="cg" > avares://Assets/Kramola.ttf # Kramola </FontFamily>
-
+		<FontFamily x:Key="fa"> avares://Assets/fontawesome-webfont.ttf # FontAwesome</FontFamily>
 	</Application.Resources>
 
 </Application>
@@ -22,6 +19,20 @@
 
 
 <!--
+
+	<Application.Resources>
+		<FontFamily x:Key="fa">avares://Assets/fontawesome-webfont.ttf # FontAwesome</FontFamily>
+		<FontFamily x:Key="fa"> avares://Assets/fontawesome-webfont.ttf # FontAwesome</FontFamily>
+		<FontFamily x:Key="cg" > avares://Assets/Kramola.ttf # Kramola </FontFamily>
+	</Application.Resources>
+
+
+	<Application.Resources>
+
+		<FontFamily x:Key="cg" > avares://Assets/Kramola.ttf # Kramola </FontFamily>
+
+	</Application.Resources>
+
 
 	<ResourceDictionary xmlns="https://github.com/avaloniaui"
 						xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">

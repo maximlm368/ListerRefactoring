@@ -223,7 +223,7 @@ namespace Lister.ViewModels
                         continue;
                     }
 
-                    BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index]);
+                    BadgeViewModel beingProcessedBadgeVM = new BadgeViewModel (requiredBadges [index], BadgeCount);
                     allBadges.Add (beingProcessedBadgeVM);
 
                     if ( ! beingProcessedBadgeVM.IsCorrect )
@@ -262,7 +262,7 @@ namespace Lister.ViewModels
         {
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
-            BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge);
+            BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
 
             if ( ! goalVMBadge.IsCorrect )
             {

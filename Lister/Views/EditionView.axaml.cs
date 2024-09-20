@@ -42,6 +42,7 @@ namespace Lister.Views
         private BadgeEditorViewModel _vm;
         private bool _isReleaseLocked;
         private Stopwatch _focusTime;
+        private double _dastinationPointer = 0;
 
         public bool IconIsTapped { get; private set; }
 
@@ -61,14 +62,15 @@ namespace Lister.Views
         //}
 
 
-        public BadgeEditorView ( bool newEditorIsNeeded )
+        public BadgeEditorView ( bool newEditorIsNeeded, int incorrectBadgesAmmount )
         {
             InitializeComponent ();
 
             if ( newEditorIsNeeded   ||   _vm == null )
             {
-                this.DataContext = new BadgeEditorViewModel ();
-                _vm = DataContext   as   BadgeEditorViewModel;
+                BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount);
+                this.DataContext = viewModel;
+                _vm = viewModel;
             }
             else
             {
@@ -77,6 +79,7 @@ namespace Lister.Views
 
             Back.FocusAdorner = null;
             editionPanel.FocusAdorner = null;
+            
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
@@ -143,7 +146,7 @@ namespace Lister.Views
 
         internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects ) 
         {
-            _vm.VisibleBadges = incorrects;
+            _vm.PassIncorrects (incorrects);
         }
 
 
@@ -158,7 +161,7 @@ namespace Lister.Views
         {
             var dialog = new DialogWindow ();
             dialog.Message = _question;
-            Task result = dialog.ShowDialog (MainWindow._mainWindow);
+            Task result = dialog.ShowDialog (MainWindow.Window);
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
             result.ContinueWith 
@@ -179,14 +182,14 @@ namespace Lister.Views
         {
             string edited = editorTextBox.Text;
 
-            if ( edited == string.Empty ) 
+            bool actionWasJustNavigation = ((edited == null)   ||   (_focused == null));
+
+            if ( actionWasJustNavigation )
             {
                 return;
             }
 
             _vm.ResetFocusedText (edited);
-
-            
         }
 
 
@@ -262,7 +265,7 @@ namespace Lister.Views
 
             _vm.Focus (content, lineNumber);
             Cursor = new Cursor (StandardCursorType.SizeAll);
-            
+
             _isReleaseLocked = true;
             _focusTime = Stopwatch.StartNew ();
         }
@@ -395,10 +398,24 @@ namespace Lister.Views
 
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
-            Avalonia.Controls.Image image = sender   as   Avalonia.Controls.Image;
+            Avalonia.Controls.Grid image = sender   as   Avalonia.Controls.Grid;
             BadgeCorrectnessViewModel context = image.DataContext as BadgeCorrectnessViewModel;
-            BadgeViewModel boundBadge = context.BoundBadge;
-            _vm.ToParticularBadge (boundBadge);
+            _vm.ToParticularBadge (context);
+        }
+
+
+        internal void ShiftRunner ( object sender, TappedEventArgs args )
+        {
+            Canvas activator = sender as Canvas;
+            _dastinationPointer = args.GetPosition (activator).Y;
+            _vm.ShiftRunner (_dastinationPointer);
+        }
+
+
+        internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
+        {
+            bool isDirectionUp = args.Delta.Y > 0;
+            _vm.ScrollByWheel (isDirectionUp);
         }
 
 

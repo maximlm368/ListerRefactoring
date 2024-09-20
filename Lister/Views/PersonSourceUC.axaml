@@ -47,7 +47,7 @@
 			HorizontalAlignment="Center"
             Command="{Binding Path=ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
-			Content="Выбрать файл" />
+			Content="Выберите файл" />
 
 	</Grid>
 
@@ -59,9 +59,9 @@
 <!--
 
 
+FontFamily="{StaticResource fa}"
 
-
-
+Content="&#xF049;"
 
 		<Button
 			Name="editSourceFile"

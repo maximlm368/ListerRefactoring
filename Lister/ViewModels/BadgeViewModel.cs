@@ -34,6 +34,7 @@ public class BadgeViewModel : ViewModelBase
     private string _badLineColor;
     private IBadLineColorProvider _badLineColorProvider;
 
+    internal int Id { get; private set; }
     internal double Scale { get; private set; }
     internal double LeftSpan { get; private set; }
     internal double TopSpan { get; private set; }
@@ -227,8 +228,10 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    public BadgeViewModel ( Badge badgeModel )
+    public BadgeViewModel ( Badge badgeModel, int id )
     {
+        Id = id;
+
         BadgeModel = badgeModel;
         BadgeLayout layout = badgeModel.BadgeLayout;
 
@@ -275,6 +278,8 @@ public class BadgeViewModel : ViewModelBase
 
     private BadgeViewModel ( BadgeViewModel badge )
     {
+        Id = badge.Id;
+
         BadgeModel = badge.BadgeModel;
         BadgeLayout layout = BadgeModel. BadgeLayout;
 
@@ -567,7 +572,7 @@ public class BadgeViewModel : ViewModelBase
     //}
 
 
-    private async void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
+    private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
 

@@ -10,11 +10,12 @@
 
 	<Grid 
 		Name="zoomAndNavigation" 
+		Height="32"
 		Margin="0,-1">
 		
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="100"></ColumnDefinition>
-			<ColumnDefinition Width="30"></ColumnDefinition>
+			<ColumnDefinition Width="32"></ColumnDefinition>
 			<ColumnDefinition Width="30"></ColumnDefinition>
 			<ColumnDefinition Width="64"></ColumnDefinition>
 
@@ -39,11 +40,14 @@
 			Name="firstPage"
 			Grid.Column="1"
 			HorizontalAlignment="Center"
-			Width="28"
+			Width="3"
+			Height="32"
 			IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseFirstPage}"
 			ToolTip.Tip="На первую страницу"
-			Content="f" />
+			FontFamily="FontAwesome"
+			Content="&#xF049;"
+			/>
 		
 		<Button
 			Name="previousPage"
@@ -53,7 +57,7 @@
 			IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualisePreviousPage}"
 			ToolTip.Tip="На предыдущую страницу"
-			Content="p" />
+			Content="G" />
 
 		<TextBox
 			Name="visiblePageNumber"

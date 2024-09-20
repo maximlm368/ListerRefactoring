@@ -10,7 +10,7 @@
 			 Height="460"
 			 Width="800"
 			 >
-
+	
 	<StackPanel
 		Name="editionPanel"
 		ZIndex="1"
@@ -344,8 +344,8 @@
 				Margin="{Binding  Path=CollectionFilterMargin,  Mode=OneWay}"
 				Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}"
 				CornerRadius="5,0,0,5"
-				Background="LightGray"
-				>
+				PointerWheelChanged="ScrollByWheel"
+				Background="LightGray">
 						
 				<StackPanel
 					Name="sliderPanel"
@@ -413,60 +413,118 @@
 						CornerRadius="0,0,0,5"
 						KeyDown="ToParticularBadge">
 						
-						<ScrollViewer
-							Name="sliderScroller"
-							Width="240"
-							Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
-							VerticalScrollBarVisibility="Auto"
-							AllowAutoHide="True">
+					<StackPanel
+						Orientation="Horizontal"
+						>
 
-							<ItemsControl
-								Name="badgeStates"
-								Width="220"
-								HorizontalAlignment="Left"
-								ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
+						<ItemsControl
+							Name="badgeStates"
+							Width="220"
+							HorizontalAlignment="Left"
+							ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
 
-								<ItemsControl.ItemTemplate>
-									<DataTemplate>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
 										
-										<Grid Width="220"
-											  Margin="0,2">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition  Width="38"></ColumnDefinition>
-												<ColumnDefinition></ColumnDefinition>
-											</Grid.ColumnDefinitions>
+									<Grid Width="220"
+										  Margin="0,2"
+										  Tapped="ToParticularBadge">
 										
-											<Border
-												Grid.Column="0"
-												HorizontalAlignment="Left"
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition  Width="38"></ColumnDefinition>
+											<ColumnDefinition></ColumnDefinition>
+										</Grid.ColumnDefinitions>
+										
+										<Border
+											Grid.Column="0"
+											HorizontalAlignment="Left"
+											Width="36"
+											Height="24"
+											BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
+											BorderThickness="1">
+
+											<Image
+												Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
 												Width="36"
-												Height="24"
-												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
-												BorderThickness="1">
-
-												<Image
-													Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
-													Width="36"
-													Height="22"
-													HorizontalAlignment="Left"
-													Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"
-													Tapped="ToParticularBadge"/>
-
-											</Border>
-
-											<Label 
-												Grid.Column="1"
-												Padding="5,3"
-												FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
-												Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"
+												Height="22"
+												HorizontalAlignment="Left"
+												Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"
 												/>
+
+										</Border>
+
+										<Label 
+											Grid.Column="1"
+											Padding="5,3"
+											FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
+											Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"
+											/>
 											
 											
-										</Grid>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
-						</ScrollViewer>
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+						<Grid
+							Name="scroll"
+							Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+							Height="{Binding   Path = ScrollHeight,  Mode=OneWay}"
+							Background="White">
+							
+							<Grid.RowDefinitions>
+								<RowDefinition Height="15"></RowDefinition>
+								<RowDefinition Height="{Binding   Path = RunnerBruttoWalkSpace,  Mode=OneWay}"></RowDefinition>
+								<RowDefinition Height="15"></RowDefinition>
+							</Grid.RowDefinitions>
+							
+
+							<Button
+								Name="upper"
+								Grid.Row="0"
+								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+								Height="15"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								Content="u"
+								FontSize="12"
+								Command="{Binding Path=ScrollUp}"
+								PointerPressed=""/>
+
+							<Canvas
+								Name="runnerWay"
+								Grid.Row="1"
+								Background="White"
+								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+								Height="{Binding   Path = RunnerBruttoWalkSpace,  Mode=OneWay}"
+								VerticalAlignment="Center"
+								Tapped="ShiftRunner">
+							
+								<Canvas
+									Name="runner"
+									Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+									Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+									Canvas.Left="0"
+									Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
+									Background="Red"/>
+								
+								</Canvas>
+
+							<Button
+								Name="downer"
+								Grid.Row="2"
+								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+								Height="15"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								Content="d"
+								FontSize="12"
+								Command="{Binding Path=ScrollDown}"/>
+
+						</Grid>
+						
+					</StackPanel>	
+						
 					</Border>
 				
 				    <Button
@@ -490,36 +548,40 @@
 			Name="navigation"
 			Height="40"
 			Background="LightGray"
-			Margin="0,0">
+			Margin="0,-2">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
 				<ColumnDefinition Width="64"></ColumnDefinition>
 				
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
 
 
-				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
 				<ColumnDefinition Width="64"></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="34"></ColumnDefinition>
+				<ColumnDefinition Width="2"></ColumnDefinition>
 				
 			</Grid.ColumnDefinitions>
 
 
 			<Button
 				Name="firstBadge"
-				Content="first"
+				FontFamily="FontAwesome"
+				Content="&#xF049;"
 				ToolTip.Tip="На первый бэйдж"
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
-				Width="48"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				Command="{Binding   Path = ToFirst}"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
@@ -529,16 +591,18 @@
 				ToolTip.Tip="На предыдущий бэйдж"
 				Grid.Column="2"
 				HorizontalContentAlignment="Center"
-				Width="48"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				Command="{Binding   Path = ToPrevious}"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
 				Name="visibleBadgeNumber"
 				Width="60"
-				FontSize="14"
 				Grid.Column="3"
-				MaxHeight="30"
+				Height="32"
+				FontSize="16"
 				Margin="0,3"
 				Focusable="False"
 				IsReadOnly="True"
@@ -548,14 +612,16 @@
 				Content="Из"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				FontSize="14"
+				FontSize="16"
+				Height="32"
 				Grid.Column="4"/>
 
 			<Label
 				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				FontSize="14"
+				FontSize="16"
+				Height="32"
 				Grid.Column="5"/>
 
 			<Button
@@ -564,7 +630,9 @@
 				ToolTip.Tip="На следующий бэйдж"
 				Grid.Column="6"
 				HorizontalContentAlignment="Center"
-				Width="48"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				Command="{Binding   Path = ToNext}"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
@@ -574,7 +642,9 @@
 				ToolTip.Tip="На последний бэйдж"
 				Grid.Column="7"
 				HorizontalContentAlignment="Center"
-				Width="48"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				Command="{Binding   Path = ToLast}"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
@@ -582,7 +652,9 @@
 				Name="zoomOutBadge"
 				Grid.Column="9"
 				HorizontalAlignment="Center"
-				Width="28"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOut}"
 				ToolTip.Tip="Уменьшить страницу"
@@ -590,10 +662,10 @@
 
 			<Label
 				Name="badgeScalabilityGrade"
-				FontSize="14"
 				Grid.Column="10"
 				Width="60"
-				MaxHeight="32"
+				Height="32"
+				FontSize="16"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
 				BorderBrush="black"
@@ -607,7 +679,9 @@
 				Grid.Column="11"
 				Margin="0,3"
 				HorizontalAlignment="Center"
-				Width="28"
+				Width="32"
+				Height="32"
+				FontSize="16"
 				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOn}"
 				ToolTip.Tip="Увеличить страницу"
@@ -621,6 +695,91 @@
 
 
 <!-- 
+
+Content="&#xF3A5;"
+
+
+
+Margin="{Binding   Path = ScrollOffset,  Mode=OneWay}"
+
+
+
+						<Canvas
+							Name="scroll"
+							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
+							Width="15"
+							Height="{Binding   Path = ScrollHeight,  Mode=OneWay}"
+							ZIndex="2"
+							Background="White">
+
+							<Canvas
+								Name="upper"
+								Canvas.Left="0"
+								Canvas.Top="0"
+								Width="15"
+								Height="15"
+								Background="Gray"
+								PointerPressed=""/>
+
+							<Canvas
+								Name="topSpan"
+								Canvas.Left="0"
+								Canvas.Top="15"
+								Width="15"
+								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
+								Background="White"
+								PointerPressed=""/>
+
+							<Canvas
+								Name="runner"
+								Canvas.Left="0"
+								Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
+								Width="15"
+								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+								
+								Background="Red"
+								PointerPressed=""
+								PointerMoved=""/>
+
+							<Canvas
+								Name="bottomSpan"
+								Canvas.Left="0"
+								Canvas.Bottom="15"
+								Width="15"
+								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
+								Background="LightGreen"
+								PointerPressed=""/>
+
+							<Canvas
+								Name="downer"
+								Canvas.Left="0"
+								Canvas.Bottom="0"
+								Width="15"
+								Height="15"
+								Background="Gray"
+								PointerPressed=""/>
+
+						</Canvas>
+
+
+
+
+
+
+Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
+
+
+
+
+						<ScrollViewer
+							Name="sliderScroller"
+							Width="240"
+							Offset="{Binding  Path=SliderOffset,  Mode=OneWay}"
+							VerticalScrollBarVisibility="Auto"
+							AllowAutoHide="True">
+
+
+
 
 
 					<Border

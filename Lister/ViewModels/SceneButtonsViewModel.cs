@@ -145,7 +145,7 @@ namespace Lister.ViewModels
                            {
                                var messegeDialog = new MessageDialog ();
                                messegeDialog.Message = _fileIsOpenMessage;
-                               messegeDialog.ShowDialog (MainWindow._mainWindow);
+                               messegeDialog.ShowDialog (MainWindow.Window);
                            }
                            else
                            {

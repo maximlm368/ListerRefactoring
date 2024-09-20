@@ -194,7 +194,7 @@ namespace Lister.Views
 
             if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
             {
-                EditorView = new BadgeEditorView ( TemplateChoosingViewModel.BuildingOccured );
+                EditorView = new BadgeEditorView ( TemplateChoosingViewModel.BuildingOccured, incorrectBadges.Count );
                 EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
                 window.CancelSizeDifference ();
                 TappedButton = 1;
@@ -213,7 +213,6 @@ namespace Lister.Views
                 () =>
                 {
                     EditorView.PassIncorrectBadges (_incorrectBadges);
-
                     EditorView.PassBackPoint (mainView);
                     _isFirstTimeLoading = false;
 

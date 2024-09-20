@@ -27,7 +27,8 @@ public partial class MainWindow : Window
     public static readonly Color black = new Color (255, 0, 0, 0);
 
     public static IStorageProvider CommonStorageProvider { get; private set; }
-    internal static MainWindow _mainWindow;
+    internal static MainWindow Window { get; private set; }
+    internal static double HeightfDifference { get; private set; }
 
     private ModernMainView _mainView;
     private PixelSize _screenSize;
@@ -55,7 +56,7 @@ public partial class MainWindow : Window
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += RestrictPosition;
 
-        _mainWindow = this;
+        Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
 
         //Icon = new WindowIcon ("D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\listerIcon.svg");
@@ -64,7 +65,7 @@ public partial class MainWindow : Window
 
     internal static MainWindow ? GetMainWindow ( )
     {
-        return _mainWindow;
+        return Window;
     }
 
 
@@ -93,7 +94,7 @@ public partial class MainWindow : Window
             double newWidthDifference = _currentWidth - newWidth;
             double newHeightDifference = _currentHeight - newHeight;
             WidthDifference += newWidthDifference;
-            HeightDifference += newHeightDifference;
+            HeightDifference = newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             mainView.ChangeSize (newWidthDifference, newHeightDifference);
@@ -110,7 +111,7 @@ public partial class MainWindow : Window
                 double widthDifference = _currentWidth - newWidth;
                 double heightDifference = _currentHeight - newHeight;
                 WidthDifference += widthDifference;
-                HeightDifference += heightDifference;
+                HeightDifference = heightDifference;
                 _currentWidth = newWidth;
                 _currentHeight = newHeight;
                 mainView.ChangeSize (widthDifference, heightDifference);
@@ -125,9 +126,9 @@ public partial class MainWindow : Window
     internal void CancelSizeDifference ( )
     {
         WidthDifference = 0;
-        HeightDifference = 0;
+        //HeightDifference = 0;
 
-        _mainView.waiting.Recover ();
+        _mainView. waiting.Recover ();
     }
 
 

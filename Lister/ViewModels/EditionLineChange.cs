@@ -44,32 +44,32 @@ namespace Lister.ViewModels
         }
 
 
-        internal void Left ()
-        {
-            BeingProcessedBadge.Left (_scale);
-            ResetActiveIcon ();
-        }
+        //internal void Left ()
+        //{
+        //    BeingProcessedBadge.Left (_scale);
+        //    ResetActiveIcon ();
+        //}
 
 
-        internal void Right ()
-        {
-            BeingProcessedBadge.Right (_scale);
-            ResetActiveIcon ();
-        }
+        //internal void Right ()
+        //{
+        //    BeingProcessedBadge.Right (_scale);
+        //    ResetActiveIcon ();
+        //}
 
 
-        internal void Up ()
-        {
-            BeingProcessedBadge.Up (_scale);
-            ResetActiveIcon ();
-        }
+        //internal void Up ()
+        //{
+        //    BeingProcessedBadge.Up (_scale);
+        //    ResetActiveIcon ();
+        //}
 
 
-        internal void Down ()
-        {
-            BeingProcessedBadge.Down (_scale);
-            ResetActiveIcon ();
-        }
+        //internal void Down ()
+        //{
+        //    BeingProcessedBadge.Down (_scale);
+        //    ResetActiveIcon ();
+        //}
         #endregion
 
         internal void Focus ( string focusedContent, int elementNumber )

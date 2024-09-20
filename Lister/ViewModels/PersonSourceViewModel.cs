@@ -238,7 +238,7 @@ namespace Lister.ViewModels
                     if ( !_pathIsFromKeeper )
                     {
                         messegeDialog.Message = _fileIsOpenMessage;
-                        messegeDialog.ShowDialog (MainWindow._mainWindow);
+                        messegeDialog.ShowDialog (MainWindow.Window);
                     }
 
                     return string.Empty;

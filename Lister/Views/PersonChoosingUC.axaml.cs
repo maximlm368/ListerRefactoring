@@ -477,7 +477,7 @@ namespace Lister.Views
                 _chosenTemplate = null;
                 var messegeDialog = new MessageDialog ();
                 messegeDialog.Message = _jsonError;
-                messegeDialog.ShowDialog (MainWindow._mainWindow);
+                messegeDialog.ShowDialog (MainWindow.Window);
                 messegeDialog.Focusable = true;
                 messegeDialog.Focus ();
             }
