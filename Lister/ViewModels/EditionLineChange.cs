@@ -74,13 +74,17 @@ namespace Lister.ViewModels
 
         internal void Focus ( string focusedContent, int elementNumber )
         {
+            if ( ! BeingProcessedBadge. IsChanged    &&   ( BackupNumbered [BeingProcessedBadge.Id] == null ) ) 
+            {
+                BackupNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge.Clone ();
+            }
+
             BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
 
-            if ( BeingProcessedBadge.FocusedLine != null )
+            if ( BeingProcessedBadge. FocusedLine != null )
             {
                 MoversAreEnable = true;
                 ZoommerIsEnable = true;
-
                 EnableSplitting (focusedContent, elementNumber);
             }
         }

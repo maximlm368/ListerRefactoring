@@ -2,14 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="42"
              x:Class="Lister.Views.PageNavigationZoomer"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:PageNavigationZoomerViewModel">
 
 	<StackPanel>
 
-		<Grid>
+		<Grid
+			Height="42"
+			>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
 				<ColumnDefinition  Width="135"></ColumnDefinition>
@@ -19,44 +21,51 @@
 				Grid.Column="0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition ></ColumnDefinition>
-					<ColumnDefinition Width="30"></ColumnDefinition>
-					<ColumnDefinition Width="30"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
 					<ColumnDefinition Width="64"></ColumnDefinition>
 					<ColumnDefinition Width="40"></ColumnDefinition>
 					<ColumnDefinition Width="60"></ColumnDefinition>
-					<ColumnDefinition Width="30"></ColumnDefinition>
-					<ColumnDefinition Width="30"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
 					<ColumnDefinition ></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Button
-					
 					Name="firstPage"
 					Grid.Column="1"
-					HorizontalAlignment="Center"
-					Width="28"
+					Classes="transparent"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="7,7"
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseFirstPage}"
 					ToolTip.Tip="На первую страницу"
-					Content="f" />
+					FontFamily="FontAwesome"
+					Content="&#xF049;"/>
 
 				<Button
 					Name="previousPage"
 					Grid.Column="2"
-					HorizontalAlignment="Center"
-					Width="28"
+				    Classes="transparent"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="5,7"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualisePreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
-					Content="p" />
+					FontFamily="FontAwesome"
+					Content="&#xF04A;" />
 
 				<TextBox
 					Name="visiblePageNumber"
 					Grid.Column="3"
-					Margin="0,3"
+					Margin="2,3"
 					Width="60"
-					MaxHeight="30"
-					FontSize="14"
+					Height="32"
+					FontSize="16"
 					TextChanged="StepOnPage"
 					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 					Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"/>
@@ -64,14 +73,14 @@
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					FontSize="14"
+					FontSize="16"
 					Grid.Column="4"
 					Content="из"/>
 
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					FontSize="14"
+					FontSize="16"
 					Grid.Column="5"
 					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 					Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
@@ -79,50 +88,63 @@
 				<Button
 					Name="nextPage"
 					Grid.Column="6"
-					HorizontalAlignment="Center"
-					Width="28"
+					Classes="transparent"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="8,7"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseNextPage}"
 					ToolTip.Tip="На следующую страницу"
-					Content="n" />
+					FontFamily="FontAwesome"
+					Content="&#xF04E;" />
 
 				<Button
 					Name="lastPage"
 					Grid.Column="7"
-					HorizontalAlignment="Center"
-					Width="28"
+					Classes="transparent"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="6,7"
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseLastPage}"
 					ToolTip.Tip="На последнюю страницу"
-					Content="l" />
+					FontFamily="FontAwesome"
+					Content="&#xF050;" />
 
 			</Grid>
 
 			<Grid
 				Grid.Column="1" >
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="30"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
 					<ColumnDefinition Width="64"></ColumnDefinition>
-					<ColumnDefinition Width="30"></ColumnDefinition>
+					<ColumnDefinition Width="34"></ColumnDefinition>
 					<ColumnDefinition Width="11"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Button
 					Name="zoomOut"
 					Grid.Column="0"
+					Classes="transparent"
 					HorizontalAlignment="Center"
-					Width="28"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="8,7"
 					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOut}"
 					ToolTip.Tip="Уменьшить страницу"
-					Content="-" />
+					FontFamily="FontAwesome"
+					Content="&#xF068;" />
 
 				<Label
 					Name="scalabilityGrade"
-					FontSize="14"
 					Grid.Column="1"
 					Width="60"
-					MaxHeight="32"
+					Height="32"
+					FontSize="16"
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
 					BorderBrush="black"
@@ -135,12 +157,17 @@
 					Name="zoomOn"
 					Grid.Column="2"
 					Margin="0,3"
+					Classes="transparent"
 					HorizontalAlignment="Center"
-					Width="28"
+					Width="32"
+					Height="32"
+					FontSize="16"
+					Padding="9,7"
 					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOn}"
 					ToolTip.Tip="Увеличить страницу"
-					Content="+" />
+					FontFamily="FontAwesome"
+					Content="&#xF067;"/>
 				
 			</Grid>
 

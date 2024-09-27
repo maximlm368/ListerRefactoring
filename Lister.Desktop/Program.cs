@@ -99,6 +99,9 @@ class Program
 
     private static void SetFontsOnWindow ( List<string> fontFiles, List<string> fontNames, string resourcePath )
     {
+        fontFiles.Add ("fontawesome-webfont.ttf");
+        fontNames.Add ("FontAwesome");
+
         string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
         string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
 
@@ -107,25 +110,30 @@ class Program
             string fontFile = fontFiles [index];
             string fontName = fontNames [index];
 
-            string FontPath = Path.Combine (windowsFontsPath, $"{fontFile}");
+            string fontPath = Path.Combine (windowsFontsPath, $"{fontFile}");
             string source = resourcePath + fontFile;
 
-            if ( ! File.Exists (FontPath) )
+            if ( ! File.Exists (fontPath) )
             {
-                File.Copy (source, FontPath);
+                File.Copy (source, fontPath);
             }
 
             Microsoft.Win32.RegistryKey fontKey =
                 Microsoft.Win32.Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
 
-            fontKey.SetValue ($"{fontName} (TrueType)", FontPath);
+            fontKey.SetValue ($"{fontName} (TrueType)", fontPath);
             fontKey.Close ();
+
+            QuestPDF.Drawing.FontManager.RegisterFontWithCustomName (fontName, File.OpenRead (fontPath));
         }
     }
 
 
     private static void SetFontsOnLinux ( List<string> fontFiles, List<string> fontNames, string resourcePath )
     {
+        fontFiles.Add ("fontawesome-webfont.ttf");
+        fontNames.Add ("FontAwesome");
+
         string linuxFontsPath = "~/.local/share/fonts/";
 
         for ( int index = 0;   index < fontFiles.Count;   index++ )

@@ -170,7 +170,10 @@ namespace Lister.ViewModels
         {
             if ( processable.Scale != _scale )
             {
-                SetStandardScale (processable);
+                if ( processable.Scale != 1 )
+                {
+                    processable.ZoomOut (processable.Scale, true);
+                }
                 processable.ZoomOn (_scale, false);
             }
         }

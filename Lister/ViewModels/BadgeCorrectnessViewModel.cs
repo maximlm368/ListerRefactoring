@@ -116,5 +116,20 @@ namespace Lister.ViewModels
             
             BorderColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
         }
+
+
+        internal void SwitchCorrectness ( )
+        {
+            if ( Correctness )
+            {
+                Correctness = false;
+                CorrectnessIcon = _incorrectIcon;
+            }
+            else
+            {
+                Correctness = true;
+                CorrectnessIcon = _correctIcon;
+            }
+        }
     }
 }

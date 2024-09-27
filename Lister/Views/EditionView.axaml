@@ -16,24 +16,12 @@
 		ZIndex="1"
 		Focusable="True"
 		KeyDown="ToSide">
-		
-		<StackPanel.Styles>
-			<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-				<Setter Property="Background" Value="LightGreen"/>
-			</Style>
-
-			<Style Selector="Button:focus /template/ ContentPresenter#PART_ContentPresenter">
-				<Setter Property="Background" Value="LightPink"/>
-			</Style>
-		</StackPanel.Styles>
-
 
 		<Grid
 			Name="backBlock"
-			Height="34"
+			Height="40"
 			Background="LightGray"
-			Margin="0,0"
-			>
+			Margin="0,0">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -42,35 +30,45 @@
 			</Grid.ColumnDefinitions>
 
 			<Grid.RowDefinitions>
-				<RowDefinition Height="17" ></RowDefinition>
-				<RowDefinition Height="17" ></RowDefinition>
+				<RowDefinition Height="20" ></RowDefinition>
+				<RowDefinition Height="20" ></RowDefinition>
 			</Grid.RowDefinitions>
-
 
 			<Button
 				Name="Back"
-				Content="Вернуться к макету"
+				Classes="mainButton"
 				ToolTip.Tip="Вернуться в окно построения с сохранением изменений"
-				Width="200"
-				Margin="0,3"
 				Grid.Column="1"
 				Grid.Row="0"
 				Grid.RowSpan="2"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Top"
-				FontSize="14"
-				Padding="0,2,0,2"
-				HorizontalAlignment="Center"
-				Background="White"
+				Width="200"
+				Height="32"
+				Margin="20,-2"
 				ZIndex="2"
-                KeyUp=""
-				Command="{Binding  Path = GoBackCommand}"
-				KeyDown=""/>
+				Command="{Binding  Path = GoBackCommand}">
+
+				<StackPanel Orientation="Horizontal">
+					<Label
+						FontFamily="FontAwesome"
+						Content="&#xF040;"
+						Width="25"
+						Height="32"
+						FontSize="16"
+						Padding="3,8"/>
+					<Label
+						Content="Вернуться к макету"
+						Height="32"
+						Width="175"
+						FontSize="16"
+						Padding="0,6"/>
+				</StackPanel>
+				
+				</Button>
 			
 			<Border
 				Grid.Column="0"
 				Grid.Row="1"
-				Height="17"
+				Height="20"
 				CornerRadius="0,5,0,0"
 				Background="White"
 				/>
@@ -78,7 +76,7 @@
 			<Border
 				Grid.Column="2"
 				Grid.Row="1"
-				Height="17"
+				Height="20"
 				CornerRadius="5,0,0,0"
 				Background="White"
 				/>
@@ -86,7 +84,7 @@
 			<Border
 				Grid.Column="1"
 				Grid.Row="1"
-				Height="17"
+				Height="20"
 				CornerRadius="0,0,0,0"
 				Background="White"
 				/>
@@ -94,7 +92,7 @@
 			<Border
 				Grid.Column="1"
 				Grid.Row="1"
-				Height="17"
+				Height="20"
 				CornerRadius="0,0,5,5"
 				Background="LightGray"
 				/>
@@ -104,9 +102,8 @@
 		
 		<Grid
 		   Name="badgeArea"
-		   Margin="0,2"
-		   ZIndex="1"
-		   >
+		   Margin="0,0"
+		   ZIndex="1">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -116,37 +113,37 @@
 			<StackPanel
 				Name="itemEditionBlock"
 				Grid.Column="0"
-				Orientation="Horizontal"
-				>
+				Orientation="Horizontal">
 
 				<Border
 					Name="editionButtonsBlock"
-					Width="120"
-					Height="256"
+					Width="130"
+					Height="270"
 					Margin="0,20"
 					CornerRadius="0,5,5,0"
 					Background="LightGray"
-					ZIndex="2"
-					>
+					ZIndex="2">
 					
 					<StackPanel>
 
 						<StackPanel
-							Name="amounts"
+							Name="ammounts"
 							Orientation="Horizontal">
 
 							<Label
 								Name="entireCount"
 								HorizontalAlignment="Left"
 								HorizontalContentAlignment="Center"
-								Width="60"
+								Width="65"
+								FontSize="16"
 								Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"/>
 
 							<Label
 								Name="incorrectsCount"
 								HorizontalAlignment="Left"
 								HorizontalContentAlignment="Center"
-								Width="60"
+								Width="65"
+								FontSize="16"
 								Foreground="Red"
 								Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"/>
 						</StackPanel>
@@ -157,10 +154,14 @@
 
 							<Button
 								Name="zoomOut"
-								Content="-"
+								Content="&#xF068;"
 								ToolTip.Tip="Уменьшить размер шрифта на выделенной строке"
 								HorizontalContentAlignment="Center"
-								Width="28"
+								VerticalContentAlignment="Center"
+								Width="32"
+								Height="32"
+								FontSize="16"
+								FontFamily="FontAwesome"
 								Margin="5,0"
 								KeyDown="ToSide"
 								Command="{Binding  Path = ReduceFontSize}"
@@ -169,7 +170,8 @@
 							<Label
 								Name="scalabilityGrade"
 								Width="50"
-								FontSize="14"
+								Height="32"
+								FontSize="16"
 								Margin="-2,0"
 								GotFocus="HandleGettingFocus"
 								KeyDown="ToParticularBadge"
@@ -185,11 +187,15 @@
 
 							<Button
 								Name="zoomOn"
-								Content="+"
+								Content="&#xF067;"
 								ToolTip.Tip="Увеличить размер шрифта на выделенной строке"
 								HorizontalContentAlignment="Center"
-								Width="28"
-								Margin="4,0"
+								VerticalContentAlignment="Center"
+								Width="32"
+								Height="32"
+								FontSize="16"
+								FontFamily="FontAwesome"
+								Margin="5,0"
 								KeyDown="ToSide"
 								Command="{Binding  Path = IncreaseFontSize}"
 								IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
@@ -197,10 +203,10 @@
 
 						<TextBox
 							Name="editorTextBox"
-							Width="110"
+							Width="120"
 							Height="120"
-							FontSize="14"
-							Margin="0,3"
+							FontSize="16"
+							Margin="0,7"
 							HorizontalAlignment="Center"
 							TextWrapping="Wrap"
 							IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
@@ -211,27 +217,65 @@
 
 						<Button
 							Name="spliter"
-							Content="Разделить"
 							ToolTip.Tip="Разделить выделенную строку на слова"
 							HorizontalAlignment="Center"
-							HorizontalContentAlignment="Center"
-							Width="110"
-							Margin="0,3"
+							Width="120"
+							Height="32"
+							FontSize="16"
+							Margin="0,1"
 							Command="{Binding   Path = Split}"
 							KeyDown="ToParticularBadge"
-							IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}"/>
+							IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}">
+
+							<StackPanel Orientation="Horizontal">
+								<Label
+									FontFamily="FontAwesome"
+									Content="&#xF040;"
+									Width="20"
+									Height="32"
+									FontSize="16"
+									Padding="0,6"/>
+
+								<Label
+									Content="Разделить"
+									Height="32"
+									Width="100"
+									FontSize="16"
+									Padding="0,6"/>
+							</StackPanel>
+							
+						</Button>
 
 						<Button
 							Name="cancel"
-							Content="Отмена"
 							ToolTip.Tip="Отменить изменения на данном бэйдже"
-							Width="110"
+							Width="120"
+							Height="32"
+							FontSize="16"
 							HorizontalAlignment="Center"
-							HorizontalContentAlignment="Center"
-							Margin="0,3"
+							Margin="0,5"
 							IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
 							Command="{Binding  Path = CancelChanges}"
-							KeyDown="ToParticularBadge"/>
+							KeyDown="ToParticularBadge">
+
+							<StackPanel Orientation="Horizontal">
+								<Label
+									FontFamily="FontAwesome"
+									Content="&#xF0E2;"
+									Width="20"
+									Height="32"
+									FontSize="16"
+									Padding="0,6"/>
+
+								<Label
+									Content="Отмена"
+									Height="32"
+									Width="100"
+									FontSize="16"
+									Padding="10,6"/>
+							</StackPanel>
+							
+						</Button>
 					
 					</StackPanel>
 				</Border>
@@ -240,11 +284,10 @@
 					Name="workArea"
 					HorizontalAlignment="Left"
 					Width="{Binding  Path=WorkAreaWidth,  Mode=OneWay}"
-					Height="385"
-					Margin="-121, 0"
-					BorderBrush="Brown"
+					Height="380"
+					Margin="-130, 0"
 					Background="AliceBlue"
-					BorderThickness="1">
+					BorderThickness="0">
 
 					<ScrollViewer
 						Name="scroller"
@@ -385,8 +428,7 @@
 
 								<Button.Background>
 									<ImageBrush
-										Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
-										Opacity="{Binding  Path = CorrectnessOpacity,  Mode=OneWay }"/>
+										Source = "{Binding  Path = FilterState,  Mode=OneWay }"/>
 								</Button.Background>
 							</Button>
 
@@ -414,8 +456,7 @@
 						KeyDown="ToParticularBadge">
 						
 					<StackPanel
-						Orientation="Horizontal"
-						>
+						Orientation="Horizontal">
 
 						<ItemsControl
 							Name="badgeStates"
@@ -548,7 +589,7 @@
 			Name="navigation"
 			Height="40"
 			Background="LightGray"
-			Margin="0,-2">
+			Margin="0,0">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -574,31 +615,37 @@
 
 			<Button
 				Name="firstBadge"
-				FontFamily="FontAwesome"
-				Content="&#xF049;"
+				Classes="transparent"
 				ToolTip.Tip="На первый бэйдж"
 				Grid.Column="1"
 				HorizontalContentAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="7,7"
 				Command="{Binding   Path = ToFirst}"
+				FontFamily="FontAwesome"
+				Content="&#xF049;"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
 			<Button
 				Name="previousBadge"
-				Content="prev"
+				Classes="transparent"
 				ToolTip.Tip="На предыдущий бэйдж"
 				Grid.Column="2"
 				HorizontalContentAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="5,7"
 				Command="{Binding   Path = ToPrevious}"
+				FontFamily="FontAwesome"
+				Content="&#xF04A;"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
 			<TextBox
 				Name="visibleBadgeNumber"
+				Classes="transparent"
 				Width="60"
 				Grid.Column="3"
 				Height="32"
@@ -626,39 +673,48 @@
 
 			<Button
 				Name="nextBadge"
-				Content="next"
+				Classes="transparent"
 				ToolTip.Tip="На следующий бэйдж"
 				Grid.Column="6"
 				HorizontalContentAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="8,7"
 				Command="{Binding   Path = ToNext}"
+				FontFamily="FontAwesome"
+				Content="&#xF04E;"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
 			<Button
 				Name="lastBadge"
-				Content="last"
+				Classes="transparent"
 				ToolTip.Tip="На последний бэйдж"
 				Grid.Column="7"
 				HorizontalContentAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="6,7"
 				Command="{Binding   Path = ToLast}"
+				FontFamily="FontAwesome"
+				Content="&#xF050;"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
 			<Button
 				Name="zoomOutBadge"
+				Classes="transparent"
 				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="8,7"
 				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOut}"
 				ToolTip.Tip="Уменьшить страницу"
-				Content="-" />
+				FontFamily="FontAwesome"
+				Content="&#xF068;"/>
 
 			<Label
 				Name="badgeScalabilityGrade"
@@ -676,16 +732,19 @@
 
 			<Button
 				Name="zoomOnBadge"
+				Classes="transparent"
 				Grid.Column="11"
 				Margin="0,3"
 				HorizontalAlignment="Center"
 				Width="32"
 				Height="32"
 				FontSize="16"
+				Padding="9,7"
 				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOn}"
 				ToolTip.Tip="Увеличить страницу"
-				Content="+" />
+				FontFamily="FontAwesome"
+				Content="&#xF067;" />
 
 
 		</Grid>
@@ -698,6 +757,16 @@
 
 Content="&#xF3A5;"
 
+
+		<StackPanel.Styles>
+			<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+				<Setter Property="Background" Value="LightSlateGray"/>
+			</Style>
+
+			<Style Selector="Button:focus /template/ ContentPresenter#PART_ContentPresenter">
+				<Setter Property="Background" Value="LightBlue"/>
+			</Style>
+		</StackPanel.Styles>
 
 
 Margin="{Binding   Path = ScrollOffset,  Mode=OneWay}"

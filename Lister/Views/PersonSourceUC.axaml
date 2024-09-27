@@ -8,16 +8,17 @@
 			 x:DataType="vm:PersonSourceViewModel">
 
 
-	<Grid Name="source"  Height="30" Margin="0,0"  Background="LightGray">
+	<Grid Name="source"  Height="40" Margin="0,0"  Background="LightGray">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="60" ></ColumnDefinition>
+			<ColumnDefinition Width="70" ></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
-			<ColumnDefinition Width="130" ></ColumnDefinition>
+			<ColumnDefinition Width="62" ></ColumnDefinition>
 			<ColumnDefinition Width="5" ></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 
 		<Label 
 			Grid.Column="0"
+			FontSize="16"
 			Padding="10,2"
 			VerticalContentAlignment="Center"
 			Content="Файл:"/>
@@ -27,8 +28,8 @@
 			Grid.Column="1"
 			HorizontalContentAlignment="Left"
 			VerticalContentAlignment="Center"
-			FontSize="14"
-			Height="24"
+			FontSize="16"
+			Height="32"
 			Padding="10,2"
 			BorderBrush="{Binding  Path = BorderBrush,  Mode=OneWay}"
 			Background="White"
@@ -40,14 +41,16 @@
 		<Button 
 			Name="chooseFile"
 			Grid.Column="2"
-			Width="118"
-			Height="24"
-			Padding="0,2"
+			Width="50"
+			Height="32"
+			FontSize="16"
+			Padding="0,8"
 			HorizontalContentAlignment="Center"
 			HorizontalAlignment="Center"
             Command="{Binding Path=ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
-			Content="Выберите файл" />
+			FontFamily="FontAwesome"
+			Content="&#xF141;" />
 
 	</Grid>
 

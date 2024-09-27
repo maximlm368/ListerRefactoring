@@ -24,6 +24,9 @@ using ExtentionsAndAuxiliary;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Avalonia.Threading;
+using ExCSS;
+using static QuestPDF.Helpers.Colors;
 
 
 namespace Lister.ViewModels;
@@ -62,7 +65,7 @@ class ConverterToPdf
                     page.Size (width, height, Unit.Point);
                     page.MarginLeft (0, Unit.Point);
                     page.MarginTop (0, Unit.Point);
-                    page.PageColor (Colors.White);
+                    page.PageColor ( QuestPDF.Helpers.Colors.White);
                     page.DefaultTextStyle (x => x.FontSize (10));
 
                     ObservableCollection <BadgeLine> lines = currentPage.Lines;
@@ -156,7 +159,7 @@ class ConverterToPdf
                            {
                                layers.PrimaryLayer ()
                                .Border (0.5f, Unit.Point)
-                               .BorderColor (Colors.Grey.Medium)
+                               .BorderColor (QuestPDF.Helpers.Colors.Grey.Medium)
                                .Image (image)
                                .FitArea ();
 
@@ -175,7 +178,7 @@ class ConverterToPdf
             string text = textLine.Content;
             float paddingLeft = ( float ) textLine.LeftOffset;
             float paddingTop = ( float ) textLine.TopOffset;
-            string fontName = textLine.FontFamily. Name;
+            string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
             float maxWidth = ( float ) textLine.Width;
@@ -185,23 +188,22 @@ class ConverterToPdf
             byte blue = textLine.Blue;
 
             string fontFilePath = App.WorkDirectoryPath + App.ResourceUriFolderName + textLine.FontFile;
-            QuestPDF.Drawing.FontManager.RegisterFontWithCustomName ( fontName, File.OpenRead (fontFilePath));
 
             TextBlockDescriptor textBlock = layers
-               .Layer ()
-               .PaddingLeft (paddingLeft, Unit.Point)
-               .PaddingTop (paddingTop, Unit.Point)
-               .Text (text)
-               .ClampLines(1, ".")
-               .FontFamily (fontName)
-               .FontColor (Pdf.Color.FromARGB(255, red, green, blue))
-               .FontSize (fontSize);
+            .Layer ()
+            .PaddingLeft (paddingLeft, Unit.Point)
+            .PaddingTop (paddingTop, Unit.Point)
+            .Text (text)
+            .ClampLines (1, ".")
+            .FontFamily (fontName)
+            .FontColor (Pdf.Color.FromARGB (255, red, green, blue))
+            .FontSize (fontSize);
 
             if ( fontWeight == Avalonia.Media.FontWeight.Thin )
             {
                 textBlock.Thin ();
             }
-            else if ( fontWeight == Avalonia.Media.FontWeight.Bold ) 
+            else if ( fontWeight == Avalonia.Media.FontWeight.Bold )
             {
                 textBlock.Bold ();
             }
@@ -209,7 +211,7 @@ class ConverterToPdf
     }
 
 
-    private void RenderInsideImages ( LayersDescriptor layers, IEnumerable<ImageViewModel> insideImages )
+    private void RenderInsideImages ( LayersDescriptor layers, IEnumerable <ImageViewModel> insideImages )
     {
         foreach ( ImageViewModel image   in   insideImages )
         {

@@ -9,29 +9,37 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ContentAssembler;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
 using ReactiveUI;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
+using System.Management;
 
 namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        private static readonly double _buttonWidth = 30;
-        private static readonly double _countLabelWidth = 60;
-        private static readonly double _extention = 110;
-        private static readonly double _buttonBlockWidth = 60;
+        private static readonly double _buttonWidth = 32;
+        private static readonly double _countLabelWidth = 50;
+        private static readonly double _extention = 130;
+        private static readonly double _buttonBlockWidth = 50;
         private static readonly double _workAreaLeftMargin = -61;
         private static readonly string _extentionToolTip = "Развернуть";
         private static readonly string _shrinkingToolTip = "Свернуть";
         private static readonly string _saveTitle = "Сохранение документа";
         private static readonly string _suggestedFileNames = "Badge";
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+        public static int TappedPdfGenerationButton { get; set; }
+        public static int TappedPrintButton { get; set; }
 
         private bool _blockIsExtended = false;
-
+        private string _pdfFileName;
+        private bool _isPdfGenerated;
 
         private double cW;
         internal double CountWidth
@@ -83,6 +91,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private string eC;
+        internal string ExtenderContent
+        {
+            get { return eC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref eC, value, nameof (ExtenderContent));
+            }
+        }
+
 
         private void SetButtonBlock ( )
         {
@@ -91,6 +109,7 @@ namespace Lister.ViewModels
             ButtonBlockWidth = _buttonBlockWidth;
             WorkAreaMargin = new Thickness (_workAreaLeftMargin, 0);
             ExtentionTip = _extentionToolTip;
+            ExtenderContent = "\uF054";
         }
 
 
@@ -103,6 +122,7 @@ namespace Lister.ViewModels
                 ButtonBlockWidth -= _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left + _extention ), 0);
                 ExtentionTip = _extentionToolTip;
+                ExtenderContent = "\uF054";
                 _blockIsExtended = false;
             }
             else 
@@ -112,6 +132,7 @@ namespace Lister.ViewModels
                 ButtonBlockWidth += _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left - _extention ), 0);
                 ExtentionTip = _shrinkingToolTip;
+                ExtenderContent = "\uF053";
                 _blockIsExtended = true;
             }
         }
@@ -119,13 +140,13 @@ namespace Lister.ViewModels
 
         internal void GeneratePdf ()
         {
-            List<FilePickerFileType> fileExtentions = [];
+            List <FilePickerFileType> fileExtentions = [];
             fileExtentions.Add (FilePickerFileTypes.Pdf);
             FilePickerSaveOptions options = new ();
             options.Title = _saveTitle;
-            options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+            options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
             options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
-            Task<IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
+            Task <IStorageFile> chosenFile = MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
 
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
@@ -135,42 +156,17 @@ namespace Lister.ViewModels
                    {
                        if ( task.Result != null )
                        {
-                           string result = task.Result.Path.ToString ();
-                           int uriTypeLength = App.ResourceUriType.Length;
-                           result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
+                           _pdfFileName = task.Result.Path.ToString ();
+                           int uriTypeLength = App.ResourceUriType. Length;
+                           _pdfFileName = _pdfFileName.Substring (uriTypeLength, _pdfFileName.Length - uriTypeLength);
+                           ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
 
-                           bool pdf = GeneratePdf (result);
+                           TappedPdfGenerationButton = 1;
 
-                           if ( pdf == false )
-                           {
-                               var messegeDialog = new MessageDialog ();
-                               messegeDialog.Message = _fileIsOpenMessage;
-                               messegeDialog.ShowDialog (MainWindow.Window);
-                           }
-                           else
-                           {
-                               if ( App.OsName == "Windows" )
-                               {
-                                   Process fileExplorer = new Process ();
-                                   fileExplorer.StartInfo.FileName = "explorer.exe";
-                                   result = ExtractPathWithoutFileName (result);
-                                   result = result.Replace ('/', '\\');
-                                   fileExplorer.StartInfo.Arguments = result;
-                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                                   fileExplorer.Start ();
-                               }
-                               else if ( App.OsName == "Linux" )
-                               {
-                                   Process fileExplorer = new Process ();
-                                   fileExplorer.StartInfo.FileName = "nautilus";
-                                   result = ExtractPathWithoutFileName (result);
-                                   fileExplorer.StartInfo.Arguments = result;
-                                   fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                                   fileExplorer.Start ();
-                               }
-                           }
+                           mainViewModel.SetWaitingPdfOrPrint ();
                        }
-                   }, uiScheduler);
+                   }, uiScheduler
+                );
         }
 
 
@@ -239,40 +235,158 @@ namespace Lister.ViewModels
         }
 
 
+        internal void GeneratePdfDuringWaiting ( )
+        {
+            TappedPdfGenerationButton = 0;
+
+            Task generationTask = new Task 
+            (
+                () => 
+                {
+                    _isPdfGenerated = GeneratePdf (_pdfFileName);
+                }
+            );
+
+            generationTask.ContinueWith
+                (
+                ( tsk ) =>
+                {
+                    if ( _isPdfGenerated == false )
+                    {
+                        Dispatcher.UIThread.InvokeAsync
+                        (() =>
+                        {
+                            var messegeDialog = new MessageDialog ();
+                            messegeDialog.Message = _fileIsOpenMessage;
+                            messegeDialog.ShowDialog (MainWindow.Window);
+                        });
+                    }
+                    else
+                    {
+                        Dispatcher.UIThread.InvokeAsync
+                        (() => 
+                        {
+                            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                            modernMV.EndWaitingPdfOrPrint ();
+                        });
+                        
+                        if ( App.OsName == "Windows" )
+                        {
+                            Process fileExplorer = new Process ();
+                            fileExplorer.StartInfo.FileName = "explorer.exe";
+                            _pdfFileName = ExtractPathWithoutFileName (_pdfFileName);
+                            _pdfFileName = _pdfFileName.Replace ('/', '\\');
+                            fileExplorer.StartInfo.Arguments = _pdfFileName;
+                            fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                            fileExplorer.Start ();
+                        }
+                        else if ( App.OsName == "Linux" )
+                        {
+                            Process fileExplorer = new Process ();
+                            fileExplorer.StartInfo.FileName = "nautilus";
+                            _pdfFileName = ExtractPathWithoutFileName (_pdfFileName);
+                            fileExplorer.StartInfo.Arguments = _pdfFileName;
+                            fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                            fileExplorer.Start ();
+                        }
+                    }
+                }
+                );
+
+            generationTask.Start ();
+        }
+
+
         public void Print ()
         {
-            List<PageViewModel> pages = GetAllPages ();
+            ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+
+            TappedPrintButton = 1;
+
+            mainViewModel.SetWaitingPdfOrPrint ();
+        }
+
+
+        public void PrintDuringWaiting ()
+        {
+            TappedPrintButton = 0;
+
+            List <PageViewModel> pages = GetAllPages ();
             string fileToSave = @"intermidiate.pdf";
-            Task pdf = new Task (() => { _converter.ConvertToExtention (pages, fileToSave); });
+
+            Task pdf = new Task
+            (
+                () =>
+                {
+                    _converter.ConvertToExtention (pages, fileToSave);
+                }
+            );
+
             pdf.Start ();
+
             Task printTask = pdf.ContinueWith
-                   (
-                      savingTask =>
-                      {
-                          if ( App.OsName == "Windows" )
-                          {
-                              int length = _converter.intermidiateFiles.Count;
-                              IStorageItem sItem = null;
+            (
+                savingTask =>
+                {
+                    Dispatcher.UIThread.InvokeAsync
+                    (() =>
+                    {
+                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                        modernMV.EndWaitingPdfOrPrint ();
+                    });
 
-                              ProcessStartInfo info = new ()
-                              {
-                                  FileName = fileToSave,
-                                  Verb = "Print",
-                                  UseShellExecute = true,
-                                  ErrorDialog = false,
-                                  CreateNoWindow = true,
-                                  WindowStyle = ProcessWindowStyle.Minimized
-                              };
+                    if ( App.OsName == "Windows" )
+                    {
+                        var printerQuery = new ManagementObjectSearcher ("SELECT * from Win32_Printer");
 
-                              bool? procIsExited = Process.Start (info)?.WaitForExit (20_000);
-                          }
-                          else if ( App.OsName == "Linux" )
-                          {
-                              string printCommand = "lp " + fileToSave;
-                              ExecuteBashCommand (printCommand);
-                          }
-                      }
-                   );
+                        foreach ( var printer in printerQuery.Get () )
+                        {
+                            var name = printer.GetPropertyValue ("Name");
+                            var status = printer.GetPropertyValue ("Status");
+                            var isDefault = printer.GetPropertyValue ("Default");
+                            var isNetworkPrinter = printer.GetPropertyValue ("Network");
+
+                            //Console.WriteLine ("{0} (Status: {1}, Default: {2}, Network: {3}",
+                            //            name, status, isDefault, isNetworkPrinter);
+
+                            int dfd = 0;
+                        }
+
+                        PrintDocument pD = new PrintDocument ();
+                        pD.PrinterSettings.PrinterName = "";
+
+                        
+
+
+
+
+
+                        int length = _converter.intermidiateFiles.Count;
+                        IStorageItem sItem = null;
+                        //string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
+                        //string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
+                        string printerName = "Samsung ML-2160 Seriesqqqqq";
+
+                        ProcessStartInfo info = new ()
+                        {
+                            FileName = fileToSave,
+                            Verb = "Print",
+                            UseShellExecute = true,
+                            ErrorDialog = false,
+                            CreateNoWindow = true,
+                           // Arguments = "\"" + printerName + "\"",
+                            WindowStyle = ProcessWindowStyle.Minimized
+                        };
+
+                        bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
+                    }
+                    else if ( App.OsName == "Linux" )
+                    {
+                        string printCommand = "lp " + fileToSave;
+                        ExecuteBashCommand (printCommand);
+                    }
+                }
+            );
         }
 
 

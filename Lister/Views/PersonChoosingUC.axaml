@@ -11,19 +11,20 @@
 
 	<Grid Name="personChoosingBlock"
 		  Background="LightGray"
-		  Height="35"
+		  Height="40"
 		  ZIndex="0">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition  Width="60" ></ColumnDefinition>
+			<ColumnDefinition  Width="70" ></ColumnDefinition>
 			<ColumnDefinition ></ColumnDefinition>
 			<ColumnDefinition  Width="30" ></ColumnDefinition>
-			<ColumnDefinition  Width="80" ></ColumnDefinition>
-			<ColumnDefinition  Width="190" ></ColumnDefinition>
+			<ColumnDefinition  Width="90" ></ColumnDefinition>
+			<ColumnDefinition  Width="180" ></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 
 		<Label
 			Grid.Column="0"
-			Padding="10"
+			FontSize="16"
+			Padding="10,8"
 			Content="ФИО:"/>
 
 		<Canvas
@@ -34,12 +35,17 @@
 				Name="comboboxFrame"
 				Focusable="False"
 				IsReadOnly="True"
-				Width="451" />
+				Margin="0,2"
+				Height="32"
+				Width="447" />
 
 			<TextBox
 				Name="personTextBox"
-				Width="420"
-				FontSize="14"
+				Width="416"
+				Height="32"
+				FontSize="16"
+				Padding="10,4"
+				Margin="0,2"
 				Background="White"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
@@ -54,7 +60,8 @@
 
 			<Border
 				Name="listBorder"
-				Canvas.Top="34"
+				Canvas.Top="36"
+				ZIndex="2"
 				Margin="0,-2"
 				CornerRadius="0"
 				BorderThickness="1"
@@ -63,7 +70,7 @@
 
 					<uc:CustomViewbox
 						Name="visiblePersons"
-						Width="449"
+						Width="445"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						PointerEntered="CursorIsOverPersonList"
 						PointerExited="CursorIsOutOfPersonList"
@@ -73,13 +80,14 @@
 					
 					<Canvas
 						Name="listFrame"
-						Width="449"
+						Width="447"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
 						<Label
 							Name="allPersonsSign"
-							FontSize="13"
+							FontSize="16"
+							Padding="8,4"
 							FontWeight="Bold"
 							Background="LightPink"
 							Foreground="Black"
@@ -88,7 +96,7 @@
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
 							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
-							ZIndex="2"
+							
 							Tapped="AcceptEntirePersonList"
 							Content="Весь список"/>
 						
@@ -102,8 +110,9 @@
 								<DataTemplate>
 
 										<Label
-											FontSize="13"
-											Height="25"
+											FontSize="16"
+											Padding="8,4"
+											Height="32"
 											Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
 										    Foreground="Black"
 											BorderBrush="{Binding   Path = BorderBrushColor,  Mode=OneWay }"
@@ -184,10 +193,10 @@
 			Name="openListButton"
 			Grid.Column="2"
 			VerticalAlignment="Top"
-			Margin="-20,1"
-			Width="30"
-			Height="30"
-			FontSize="14"
+			Margin="-15,2"
+			Width="32"
+			Height="32"
+			FontSize="16"
 			VerticalContentAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Focusable="False"
@@ -200,17 +209,20 @@
 			Name="template"
 			Grid.Column="3"
 			Content="Шаблон:"
+			FontSize="16"
 			Margin="-10, 0"
-			Padding="0, 10"/>
+			Padding="10, 10"/>
 
 		<ComboBox
 			Name="templateChoosing"
 			Grid.Column="4"
-			VerticalAlignment="Center"
 			Foreground="{Binding  Path=Color,  Mode=OneWay}"
 			Background="White"
-			Width="204"
-			Margin="-25,0, 0,5"
+			FontSize="16"
+			Height="32"
+			Width="180"
+			Margin="-10,2"
+			Padding="6, 0"
 			MaxDropDownHeight="100"
 			SelectedIndex="1"
 			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
@@ -221,8 +233,7 @@
 			<ComboBox.ItemTemplate >
 				<DataTemplate >
 					<Label
-						Padding="0,0,0,0"
-						FontSize="14"
+						FontSize="16"
 						Foreground="{Binding  Path=Color,  Mode=OneWay}"
 						Content="{Binding  Path=Name,  Mode=OneWay}"/>
 				</DataTemplate>

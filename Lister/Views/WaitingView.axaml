@@ -24,9 +24,7 @@
 			anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
 			Opacity="2"
 			Width="300"
-			Height="300"
-			
-			/>
+			Height="300"/>
 		  
 	  </Canvas>
  
@@ -38,6 +36,10 @@
 
 
 <!-- 
+
+anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
+
+anim:ImageBehavior.AnimatedSource="{Binding Path=GifSource, Mode=OneWay}"
 
 "D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\win-x64\Resources/Loading.gif"
 anim:ImageBehavior.AnimatedSource="{Binding  Path=Image,  Mode=OneWay}"

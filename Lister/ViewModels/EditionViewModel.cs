@@ -35,14 +35,16 @@ namespace Lister.ViewModels
         public static event BackingToMainViewHandler BackingToMainViewEvent;
 
         //internal static readonly double _scale = 2.44140625;
+        internal static readonly double _startScale = 1.5624;
         internal static double _scale = 1.5624;
         //internal static readonly double _scale = 2.5;
 
+        private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
-
         private List <BadgeViewModel> _allReadonlyBadges;
-        private List <BadgeViewModel> _incorrectBadges;
-        private List <BadgeViewModel> _fixedBadges;
+
+        //private List <BadgeViewModel> _incorrectBadges;
+        //private List <BadgeViewModel> _correctBadges;
 
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
@@ -67,16 +69,14 @@ namespace Lister.ViewModels
             }
         }
 
-        private Dictionary <BadgeViewModel, BadgeViewModel> _drafts;
+        //private Dictionary <BadgeViewModel, BadgeViewModel> _sourceToDrafts;
 
-        internal Dictionary <int, BadgeViewModel> AllBadges { get; private set; }
+        internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
+        internal Dictionary<int, BadgeViewModel> IncorrectNumbered { get; private set; }
+        internal Dictionary<int, BadgeViewModel> CorrectNumbered { get; private set; }
+        internal Dictionary<int, BadgeViewModel> BackupNumbered { get; private set; }
 
         internal BadgeViewModel FirstIncorrect { get; private set; }
-        //private Dictionary <BadgeViewModel, BadgeViewModel> inc;
-        internal Dictionary <int, int> IncorrectBadges { get; private set; }
-
-        //private Dictionary <BadgeViewModel, BadgeViewModel> fx;
-        internal Dictionary <int, int> FixedBadges { get; private set; }
 
         //{
         //    get { return inc; }
@@ -190,9 +190,9 @@ namespace Lister.ViewModels
         {
             _scaleStorage = new ();
             _allReadonlyBadges = new ();
-            _incorrectBadges = new ();
-            _fixedBadges = new ();
-            _drafts = new ();
+            //_incorrectBadges = new ();
+            //_correctBadges = new ();
+            //_sourceToDrafts = new ();
 
             WorkAreaWidth = _workAreaWidth + _namesFilterWidth;
             SetUpSliderBlock ( incorrectBadgesAmmount );
@@ -202,8 +202,8 @@ namespace Lister.ViewModels
             SetUpZoommer ();
 
             SplitterIsEnable = false;
-            IncorrectBadges = new ();
-            FixedBadges = new ();
+            IncorrectNumbered = new ();
+            CorrectNumbered = new ();
         }
 
 
@@ -248,43 +248,25 @@ namespace Lister.ViewModels
             _view.zoomOn.IsEnabled = false;
             _view.zoomOut.IsEnabled = false;
 
-            BadgeViewModel draftSource = null;
-            int counter = 0;
+            AllNumbered [BeingProcessedBadge.Id].CopyFrom (BackupNumbered [BeingProcessedBadge.Id]);
+            BeingProcessedBadge = AllNumbered [BeingProcessedBadge. Id];
 
-            foreach ( var keyValue   in   _drafts )
+            if ( CorrectNumbered.ContainsKey (BeingProcessedBadge.Id) )
             {
-                if ( keyValue.Value.Equals (BeingProcessedBadge) )
-                {
-                    draftSource = keyValue.Key;
-                    break;
-                }
-
-                counter++;
+                CorrectNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge;
+            }
+            else if ( IncorrectNumbered.ContainsKey (BeingProcessedBadge.Id) )
+            {
+                IncorrectNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge;
             }
 
-            if ( FixedBadges.ContainsValue(counter) )
-            {
-                FixedBadges.Remove (counter);
-            }
-
-            if ( IncorrectBadges.ContainsValue (counter) )
-            {
-                IncorrectBadges.Remove (counter);
-            }
-
-            BeingProcessedBadge = draftSource.Clone ();
-            _drafts [draftSource] = BeingProcessedBadge;
-            AllBadges [counter] = BeingProcessedBadge;
-            IncorrectBadges.Add (counter, counter);
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedBadge.Show ();
-            BeingProcessedBadge.CheckCorrectnessAfterCancelation ();
-            
             ResetActiveIcon ();
         }
 
 
-        internal void PassIncorrects ( List <BadgeViewModel> incorrects )
+        internal void PassIncorrects ( List <BadgeViewModel> incorrects, PageViewModel firstPage )
         {
             bool isNullOrEmpty = ( incorrects == null )   ||   ( incorrects.Count == 0 );
 
@@ -293,10 +275,13 @@ namespace Lister.ViewModels
                 return;
             }
 
-            AllBadges = new ();
-            IncorrectBadges = new ();
-            FixedBadges = new ();
-            _scaleStorage = new Dictionary<BadgeViewModel, double> ();
+            _firstPage = firstPage;
+            AllNumbered = new ();
+            IncorrectNumbered = new ();
+            CorrectNumbered = new ();
+            BackupNumbered = new ();
+            _scaleStorage = new ();
+
             _incorrectsAmmount = incorrects.Count;
             _currentAmmount = incorrects.Count;
 
@@ -304,50 +289,28 @@ namespace Lister.ViewModels
 
             foreach ( BadgeViewModel badge   in   incorrects )
             {
-                if ( badge == null )
-                {
-                    continue;
-                }
-
-                AddToScalesStorage (badge);
-                IncorrectBadges.Add (counter, counter);
+                _scaleStorage.Add (badge, badge.Scale);
                 _allReadonlyBadges.Add (badge);
-                _incorrectBadges.Add (badge);
-                _fixedBadges.Add (null);
 
-                if ( counter < 1 )
-                {
-                    Dispatcher.UIThread.InvokeAsync
-                    (
-                        () =>
-                        {
-                            BadgeViewModel clone = badge.Clone ();
-                            _drafts.Add (badge, clone);
-                            AllBadges.Add (0, clone);
-                            FirstIncorrect = clone;
-                        }
-                    );
-                }
+                AllNumbered.Add (badge.Id, badge);
+                IncorrectNumbered.Add (badge.Id, badge);
+                BackupNumbered.Add (badge.Id, null);
+
                 counter++;
             }
-
-            //_loadedStartEndPairs.Add (new int [2] { 0, ( _visibleRange - 1 ) });
-            //_containingPairExists = true;
-            //_incorrectsAreSet = true;
 
             Dispatcher.UIThread.InvokeAsync
             (
                 () =>
                 {
-                    SetBeingProcessed (AllBadges [0]);
+                    SetBeingProcessed (AllNumbered [0]);
                     EnableNavigation ();
                     SetVisibleIcons ();
                     ScrollOffset = 0;
+                    ProcessableCount = _scaleStorage.Count;
+                    IncorrectBadgesCount = _scaleStorage.Count;
                 }
             );
-
-            ProcessableCount = _scaleStorage.Count;
-            IncorrectBadgesCount = _scaleStorage.Count;
         }
 
 
@@ -361,18 +324,18 @@ namespace Lister.ViewModels
         {
             bool exist = false;
 
-            foreach ( KeyValuePair <int, int> badgeNumber   in   FixedBadges ) 
-            {
-                if ( AllBadges [badgeNumber.Value].IsChanged ) 
-                {
-                    exist = true;
-                    return exist;
-                }
-            }
+            //foreach ( KeyValuePair <int, int> fixedBadgeNumber   in   FixedBadges ) 
+            //{
+            //    if ( AllBadges [fixedBadgeNumber.Value].IsChanged ) 
+            //    {
+            //        exist = true;
+            //        return exist;
+            //    }
+            //}
 
-            foreach ( KeyValuePair <int, int> badgeNumber   in   IncorrectBadges )
+            foreach ( KeyValuePair <int, BadgeViewModel> badgeNumber   in   AllNumbered )
             {
-                if ( AllBadges [badgeNumber.Value].IsChanged )
+                if ( badgeNumber.Value. IsChanged )
                 {
                     exist = true;
                     return exist;
@@ -410,18 +373,22 @@ namespace Lister.ViewModels
 
         private void GoBack ()
         {
-            SetDraftResultsInSource ( );
-
-            foreach ( KeyValuePair <BadgeViewModel, double> badgeScale   in   _scaleStorage )
+            foreach ( KeyValuePair <BadgeViewModel, double> badgeToScale   in   _scaleStorage )
             {
-                BadgeViewModel badge = badgeScale.Key;
-                double scale = badgeScale.Value;
-                badge.ZoomOut (_scale, true);
-                SetOriginalScale (badge, scale);
+                BadgeViewModel badge = badgeToScale.Key;
+                double scale = badgeToScale.Value;
+
+                if ( scale != badge.Scale ) 
+                {
+                    badge.ZoomOut (badge.Scale, true);
+                    SetOriginalScale (badge, scale);
+                }
             }
 
             OnBackingToMainView ();
+            _scale = _startScale;
             _view.ComplateBacking ();
+            _firstPage.Show ();
         }
 
 
@@ -450,36 +417,42 @@ namespace Lister.ViewModels
         //}
 
 
-        private void SetDraftResultsInSource ( )
-        {
-            foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllBadges )
-            {
-                BadgeViewModel draftSource = null;
+        //private void SetDraftResultsInSource ( )
+        //{
+        //    foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllNumbered )
+        //    {
+        //        BadgeViewModel draftSource = null;
 
-                foreach ( var keyValue   in   _drafts )
-                {
-                    if ( keyValue.Value.Equals (badge.Value) )
-                    {
-                        draftSource = keyValue.Key;
-                        break;
-                    }
-                }
+        //        //foreach ( KeyValuePair <BadgeViewModel, BadgeViewModel> sourceToDraft   in   _sourceToDrafts )
+        //        //{
+        //        //    if ( sourceToDraft.Value.Equals (badge.Value) )
+        //        //    {
+        //        //        draftSource = sourceToDraft.Key;
+        //        //        break;
+        //        //    }
+        //        //}
 
-                SetToCorrectScale (draftSource);
+        //        //SetToCorrectScale (draftSource);
 
-                if ( badge.Value.IsChanged )
-                {
-                    badge.Value.ResetPrototype (draftSource);
-                }
-            }
-        }
+        //        double sourceScale = draftSource.Scale;
+        //        SetStandardScale (draftSource);
+        //        SetStandardScale (badge.Value);
+
+        //        if ( badge.Value.IsChanged )
+        //        {
+        //            badge.Value.ResetPrototype (draftSource);
+        //        }
+
+        //        SetOriginalScale (draftSource, sourceScale);
+        //    }
+        //}
 
 
         private void AddToScalesStorage ( BadgeViewModel addable )
         {
             if ( ! _scaleStorage.ContainsKey (addable) )
             {
-                _scaleStorage.Add (addable, addable. Scale);
+                _scaleStorage.Add (addable, addable.Scale);
             }
         }
 
@@ -503,3 +476,18 @@ namespace Lister.ViewModels
     }
 
 }
+
+
+//if ( counter < 1 )
+//{
+//    Dispatcher.UIThread.InvokeAsync
+//    (
+//        () =>
+//        {
+//            BadgeViewModel clone = badge.Clone ();
+//            _sourceToDrafts.Add (badge, clone);
+//            AllNumberedDrafts.Add (0, clone);
+//            // FirstIncorrect = clone;
+//        }
+//    );
+//}

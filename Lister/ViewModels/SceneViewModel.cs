@@ -488,7 +488,7 @@ namespace Lister.ViewModels
 
         internal void EditIncorrectBadges ()
         {
-            _view.EditIncorrectBadges (IncorrectBadges);
+            _view.EditIncorrectBadges (IncorrectBadges, _allPages [0]);
         }
 
 

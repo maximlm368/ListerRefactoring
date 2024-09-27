@@ -68,21 +68,43 @@ namespace Lister.ViewModels
         }
 
 
+        internal void SetWaitingPdfOrPrint ()
+        {
+            WaitingIsVisible = true;
+        }
+
+
         internal void EndWaiting ()
         {
             WaitingIsVisible = false;
+            _templateChoosingVM.BuildingIsPossible = true;
+        }
 
+
+        internal void EndWaitingPdfOrPrint ()
+        {
+            WaitingIsVisible = false;
         }
 
 
         internal void LayoutUpdated ( )
         {
-            if ( TemplateChoosingViewModel.TappedButton == 1 ) 
+            if ( TemplateChoosingViewModel.TappedBadgesBuildingButton == 1 )
             {
-                _templateChoosingVM.AfterWaitingHandler ();
+                _templateChoosingVM.BuildDuringWaiting ();
                 return;
             }
-            else if ( ModernMainView.TappedButton == 1 ) 
+            else if ( SceneViewModel.TappedPdfGenerationButton == 1 )
+            {
+                _sceneVM.GeneratePdfDuringWaiting ();
+                return;
+            }
+            else if ( SceneViewModel.TappedPrintButton == 1 )
+            {
+                _sceneVM.PrintDuringWaiting ();
+                return;
+            }
+            else if ( ModernMainView.TappedEditorBuildingButton == 1 )
             {
                 _view.BuildEditor ();
             }

@@ -23,6 +23,13 @@ public partial class PageNavigationZoomer : UserControl
         InitializeComponent();
         DataContext = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
         _vm = ( PageNavigationZoomerViewModel ) DataContext;
+
+        firstPage.FocusAdorner = null;
+        previousPage.FocusAdorner = null;
+        nextPage.FocusAdorner = null;
+        lastPage.FocusAdorner = null;
+        zoomOn.FocusAdorner = null;
+        zoomOut.FocusAdorner = null;
     }
 
 

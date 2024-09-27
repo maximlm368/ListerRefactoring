@@ -281,7 +281,7 @@ public class BadgeViewModel : ViewModelBase
         Id = badge.Id;
 
         BadgeModel = badge.BadgeModel;
-        BadgeLayout layout = BadgeModel. BadgeLayout;
+        BadgeLayout layout = BadgeModel.BadgeLayout;
 
         LeftSpan = badge.LeftSpan;
         TopSpan = badge.TopSpan;
@@ -292,24 +292,25 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth = BadgeWidth + 2;
         BadgeHeight = badge.BadgeHeight;
         BorderHeight = BadgeHeight + 2;
-        TextLines = new ObservableCollection <TextLineViewModel> ();
-        BorderViolentLines = new List <TextLineViewModel> ();
-        OverlayViolentLines = new List <TextLineViewModel> ();
-        InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideShapes = new ObservableCollection <ImageViewModel> ();
+        TextLines = new ObservableCollection<TextLineViewModel> ();
+        BorderViolentLines = new List<TextLineViewModel> ();
+        OverlayViolentLines = new List<TextLineViewModel> ();
+        InsideImages = new ObservableCollection<ImageViewModel> ();
+        InsideShapes = new ObservableCollection<ImageViewModel> ();
         IsCorrect = badge.IsCorrect;
+        IsChanged = badge.IsChanged;
         Scale = badge.Scale;
         _borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
         _badLineColor = badge._badLineColor;
 
-        foreach ( TextLineViewModel line   in   badge.TextLines )
+        foreach ( TextLineViewModel line in badge.TextLines )
         {
             TextLineViewModel clone = line.Clone ();
             TextLines.Add (clone);
 
-            if ( line.isBorderViolent ) 
+            if ( line.isBorderViolent )
             {
                 clone.isBorderViolent = true;
                 BorderViolentLines.Add (clone);
@@ -371,6 +372,76 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
+    internal void CopyFrom ( BadgeViewModel badge )
+    {
+        Id = badge.Id;
+
+        BadgeModel = badge.BadgeModel;
+        BadgeLayout layout = BadgeModel.BadgeLayout;
+
+        LeftSpan = badge.LeftSpan;
+        TopSpan = badge.TopSpan;
+        RightSpan = badge.RightSpan;
+        BottomSpan = badge.BottomSpan;
+
+        BadgeWidth = badge.BadgeWidth;
+        BorderWidth = BadgeWidth + 2;
+        BadgeHeight = badge.BadgeHeight;
+        BorderHeight = BadgeHeight + 2;
+        TextLines = new ObservableCollection<TextLineViewModel> ();
+        BorderViolentLines = new List<TextLineViewModel> ();
+        OverlayViolentLines = new List<TextLineViewModel> ();
+        InsideImages = new ObservableCollection<ImageViewModel> ();
+        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        IsCorrect = badge.IsCorrect;
+        IsChanged = badge.IsChanged;
+        Scale = badge.Scale;
+        _borderThickness = 1;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
+        FocusedFontSize = string.Empty;
+        _badLineColor = badge._badLineColor;
+
+        foreach ( TextLineViewModel line in badge.TextLines )
+        {
+            TextLineViewModel clone = line.Clone ();
+            TextLines.Add (clone);
+
+            if ( line.isBorderViolent )
+            {
+                clone.isBorderViolent = true;
+                BorderViolentLines.Add (clone);
+            }
+
+            if ( line.isOverLayViolent )
+            {
+                clone.isOverLayViolent = true;
+                OverlayViolentLines.Add (clone);
+            }
+        }
+
+        Scale = badge.Scale;
+
+        //foreach ( TextLineViewModel line in badge.TextLines )
+        //{
+        //    TextLineViewModel original = line.GetDimensionalOriginal ();
+        //    TextLines.Add (line);
+        //}
+
+
+        //foreach ( ImageViewModel image in badge.InsideImages )
+        //{
+        //    TextLineViewModel original = image.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
+
+        //foreach ( ImageViewModel shape in badge.InsideShapes )
+        //{
+        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
+    }
+
+
     internal void ResetPrototype ( BadgeViewModel prototype )
     {
         prototype.IsCorrect = IsCorrect;
@@ -380,7 +451,7 @@ public class BadgeViewModel : ViewModelBase
 
     internal TextLineViewModel ? GetCoincidence ( string focusedContent, int elementNumber )
     {
-        ObservableCollection<TextLineViewModel> lines = TextLines;
+        ObservableCollection <TextLineViewModel> lines = TextLines;
         string lineContent = string.Empty;
         TextLineViewModel goalLine = null;
         int counter = 0;
@@ -408,7 +479,7 @@ public class BadgeViewModel : ViewModelBase
 
         if ( FocusedLine != null )
         {
-            int visibleFontSize = ( int ) Math.Round (FocusedLine. FontSize / Scale);
+            int visibleFontSize = ( int ) Math.Round (FocusedLine.FontSize / Scale);
             FocusedFontSize = visibleFontSize.ToString ();
         }
     }
@@ -599,9 +670,10 @@ public class BadgeViewModel : ViewModelBase
                     (() => { return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom); });
                     usefulTextBlockWidth = result.Result;
                 }
-                else 
+                else
                 {
-                    usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
+                    //usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
+                    usefulTextBlockWidth = 0;
                 }
 
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
@@ -750,11 +822,11 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void CheckCorrectnessAfterCancelation ()
-    {
-        IsCorrect = false;
-        IsChanged = false;
-    }
+    //internal void CheckCorrectnessAfterCancelation ()
+    //{
+    //    IsCorrect = false;
+    //    IsChanged = false;
+    //}
 
 
     private void CheckLineCorrectness ( TextLineViewModel checkable )

@@ -19,6 +19,7 @@ using System.Reflection;
 using ExCSS;
 using System;
 using AvaloniaEdit.Utils;
+using System.Collections.Immutable;
 
 namespace Lister.ViewModels
 {
@@ -29,7 +30,7 @@ namespace Lister.ViewModels
         private FilterChoosing _filterState = FilterChoosing.All;
 
 
-        internal bool FilterProcessableBadge ( int filterableNumber )
+        internal bool IsProcessableChangedInSpecificFilter ( int filterableNumber )
         {
             bool filterOccured = false;
 
@@ -69,14 +70,53 @@ namespace Lister.ViewModels
             if ( _filterState == FilterChoosing.All )
             {
                 _filterState = FilterChoosing.Corrects;
+
+                if ( BeingProcessedBadge. IsCorrect )
+                {
+                    try
+                    {
+                        CorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
+                        IncorrectNumbered.Remove (BeingProcessedBadge. Id);
+                    }
+                    catch ( Exception ex ) { }
+                }
+                else if ( ! BeingProcessedBadge. IsCorrect )
+                {
+                    try
+                    {
+                        IncorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
+                        CorrectNumbered.Remove (BeingProcessedBadge. Id);
+                    }
+                    catch ( Exception ex ) { }
+                }
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
                 _filterState = FilterChoosing.Incorrects;
+
+                if ( (BeingProcessedBadge != null)   &&   ! BeingProcessedBadge. IsCorrect )
+                {                    
+                    try
+                    {
+                        IncorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
+                        CorrectNumbered.Remove (BeingProcessedBadge.Id);
+                    }
+                    catch ( Exception ex ) { }
+                }
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
                 _filterState = FilterChoosing.All;
+
+                if ( BeingProcessedBadge. IsCorrect )
+                {
+                    try
+                    {
+                        CorrectNumbered.Add (BeingProcessedBadge.Id, BeingProcessedBadge);
+                        IncorrectNumbered.Remove (BeingProcessedBadge.Id);
+                    }
+                    catch ( Exception ex ) { }
+                }
             }
 
             SwitchFilter ();
@@ -126,81 +166,141 @@ namespace Lister.ViewModels
 
         private void SwitchFilter ()
         {
-            //VisibleIcons.Clear ();
-            //AllBadges.Clear ();
+            BeingProcessedBadge = null;
+            _numberAmongLoadedIcons = 1;
+            _visibleRangeEnd = _visibleRange - 1;
+            _scrollStepNumber = 0;
+            VisibleIcons = new ();
 
             if ( _filterState == FilterChoosing.All )
             {
+                _currentAmmount = _allReadonlyBadges. Count;
+                ProcessableCount = _allReadonlyBadges.Count;
 
+                int counter = 0;
 
+                foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllNumbered )
+                {
+                    if ( counter == _visibleRange )
+                    {
+                        break;
+                    }
 
-                //AllBadges.AddRange (FixedBadges);
-                //AllBadges.AddRange (IncorrectBadges);
-                //CorrectnessOpacity = 1;
-                //IncorrectnessOpacity = 1;
+                    if ( CorrectNumbered.ContainsKey(badge.Value. Id) )
+                    {
+                        VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value));
+                    }
+                    else if( IncorrectNumbered.ContainsKey (badge.Value. Id) ) 
+                    {
+                        VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value));
+                    }
+
+                    counter++;
+                }
+
+                BeingProcessedBadge = AllNumbered [0];
+                VisibleIcons [0].IconOpacity = 1;
+                VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+                ActiveIcon = VisibleIcons [0];
+                FilterState = null;
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
-                _currentAmmount = FixedBadges. Count;
+                _currentAmmount = CorrectNumbered. Count;
 
+                var imm = CorrectNumbered.ToImmutableSortedDictionary ();
+                CorrectNumbered = imm.ToDictionary ();
 
-                //AllBadges.AddRange (FixedBadges);
-                CorrectnessOpacity = 1;
-                IncorrectnessOpacity = 0.3;
+                int existingCounter = 0;
+                int firstExistingCommonNumber = -1;
+
+                foreach ( KeyValuePair <int, BadgeViewModel> badge   in   CorrectNumbered ) 
+                {
+                    if ( existingCounter == _visibleRange )
+                    {
+                        break;
+                    }
+
+                    VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value));
+
+                    if ( existingCounter == 0 )
+                    {
+                        VisibleIcons [existingCounter].IconOpacity = 1;
+                        VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+                        firstExistingCommonNumber = badge.Key;
+                    }
+
+                    existingCounter++;
+                }
+
+                if ( firstExistingCommonNumber > -1 ) 
+                {
+                    string correctnessIcon = App.ResourceDirectoryUri + _correctnessIcon;
+                    Uri correctUri = new Uri (correctnessIcon);
+                    FilterState = ImageHelper.LoadFromResource (correctUri);
+                    ActiveIcon = VisibleIcons [0];
+                    BeingProcessedBadge = CorrectNumbered.ElementAt (0).Value;
+                    ProcessableCount = CorrectNumbered. Count;
+                }
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
-                _currentAmmount = IncorrectBadges. Count;
+                _currentAmmount = IncorrectNumbered. Count;
 
-                VisibleIcons = new ObservableCollection<BadgeCorrectnessViewModel> ();
+                var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
+                IncorrectNumbered = imm.ToDictionary ();
 
-                
+                int existingCounter = 0;
+                int firstExistingCommonNumber = -1;
 
-                for ( int index = 0;   index < _visibleRange;   index++ )
+                foreach ( KeyValuePair <int, BadgeViewModel> badge   in   IncorrectNumbered )
                 {
-                    BadgeViewModel badge = _allReadonlyBadges [IncorrectBadges.ElementAt (index).Key];
+                    if ( existingCounter == _visibleRange )
+                    {
+                        break;
+                    }
 
-                    BadgeCorrectnessViewModel correctnessIcon = new BadgeCorrectnessViewModel (false, badge);
+                    VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value));
 
-                    VisibleIcons.Add (correctnessIcon);
+                    if ( existingCounter == 0 )
+                    {
+                        VisibleIcons [existingCounter].IconOpacity = 1;
+                        VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+                        firstExistingCommonNumber = badge.Key;
+                    }
+
+                    existingCounter++;
                 }
 
-                BeingProcessedBadge = AllBadges [0];
-
-                ProcessableCount = IncorrectBadges. Count;
-
-                //AllBadges.AddRange (IncorrectBadges);
-                //CorrectnessOpacity = 0.3;
-                //IncorrectnessOpacity = 1;
+                if ( firstExistingCommonNumber > -1 )
+                {
+                    string correctnessIcon = App.ResourceDirectoryUri + _incorrectnessIcon;
+                    Uri correctUri = new Uri (correctnessIcon);
+                    FilterState = ImageHelper.LoadFromResource (correctUri);
+                    ActiveIcon = VisibleIcons [0];
+                    BeingProcessedBadge = IncorrectNumbered.ElementAt (0).Value;
+                    ProcessableCount = IncorrectNumbered.Count;
+                }
             }
 
-            
-
-            if ( ProcessableCount == 0 )
+            if ( BeingProcessedBadge != null )
             {
-                BeingProcessedNumber = 0;
+                ScrollWidth = _upDownButtonHeightWigth;
+                _runnerHasWalked = 0;
+                ScrollOffset = 0;
+                _numberAmongLoadedIcons = 1;
+                BeingProcessedNumber = 1;
+                BeingProcessedBadge.Show ();
+                ZeroSliderStation (VisibleIcons);
             }
             else
             {
-                BeingProcessedNumber = 1;
+                ScrollWidth = 0;
             }
 
-            if ( ( AllBadges != null )   &&   ( AllBadges. Count > 0 ) )
+            if ( VisibleIcons.Count < _visibleRange ) 
             {
-                //for ( int index = 0;   index < AllBadges. Count;   index++ )
-                //{
-                //    //BadgeViewModel badge = AllBadges [_allReadonlyBadges [index - 1]];
-                //    //BadgeCorrectnessViewModel icon = 
-                //    //    new BadgeCorrectnessViewModel (badge.IsCorrect, AllBadges [_allReadonlyBadges [index - 1]]);
-                //    //VisibleIcons.Add (icon);
-                //    //FadeIcon (icon);
-                //}
-
-                ActiveIcon = VisibleIcons [0];
-                HighLightChosenIcon (ActiveIcon);
-                //BeingProcessedBadge = AllBadges [_allReadonlyBadges [0]];
-                SetToCorrectScale (BeingProcessedBadge);
-                BeingProcessedBadge.Show ();
+                ScrollWidth = 0;
             }
         }
     }

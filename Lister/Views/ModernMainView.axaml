@@ -18,21 +18,21 @@
 		<uc:PersonChoosingUserControl
 			Name="personChoosing"
 			ZIndex="3"
-			Margin="0,-132"
-			Height="300"/>
+			Margin="0,-155"
+			Height="350"/>
 
 		<uc:TemplateChoosingUserControl
 			Name="templateChoosing"
-			Margin="0,-3"/>
+			Margin="0,-4"/>
 
 		<uc:SceneUserControl
 			Name="scene"
-			Margin="0,3"/>
+			Margin="0,4"/>
 
 		<uc:PageNavigationZoomer
 			Name="navigatorZoomer"
 			Background="LightGray"
-			Margin="0,-3"/>
+			Margin="0,-4"/>
 
 		<uc:WaitingView
 			Name="waiting"

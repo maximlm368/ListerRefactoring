@@ -42,7 +42,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     private static readonly string _title = "Ошибка";
     private static readonly string _saveTitle = "Сохранение документа";
     private static readonly string _suggestedFileNames = "Badge";
-    public static int TappedButton { get; private set; }
+    public static int TappedBadgesBuildingButton { get; private set; }
     public static bool BuildingOccured { get; private set; }
 
     private TemplateChoosingUserControl _view;
@@ -242,9 +242,13 @@ public class TemplateChoosingViewModel : ViewModelBase
 
         if ( _personChoosingVM.EntirePersonListIsSelected )
         {
-            TappedButton = 1;
+            TappedBadgesBuildingButton = 1;
             ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+
             mainViewModel.SetWaiting ();
+            waitingVM.Show ();
         }
         else if ( _personChoosingVM.SinglePersonIsSelected )
         {
@@ -264,6 +268,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         _buildingIsLocked = true;
+        BuildingIsPossible = false;
 
         Task task = new Task
             (
@@ -280,7 +285,7 @@ public class TemplateChoosingViewModel : ViewModelBase
 
                     ModernMainViewModel.MainViewIsWaiting = false;
                     _buildingIsLocked = false;
-                    TappedButton = 0;
+                    TappedBadgesBuildingButton = 0;
                 }
             );
 
@@ -646,7 +651,7 @@ public class TemplateChoosingViewModel : ViewModelBase
     }
 
 
-    internal void AfterWaitingHandler ( )
+    internal void BuildDuringWaiting ( )
     {
         if ( ModernMainViewModel.MainViewIsWaiting    &&   ! _buildingIsLocked )
         {

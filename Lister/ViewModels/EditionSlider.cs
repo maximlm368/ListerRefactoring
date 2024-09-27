@@ -54,7 +54,7 @@ namespace Lister.ViewModels
         private readonly double _collectionFilterWidth = 250;
         private readonly double _sliderWidth = 50;
         private readonly double _namesFilterWidth = 200;
-        private double _entireBlockHeight = 385;
+        private double _entireBlockHeight = 380;
         private double _scrollHeight = 280;
         private readonly double _workAreaWidth = 550;
         private readonly double _normalOpacity = 0.4;
@@ -120,12 +120,12 @@ namespace Lister.ViewModels
         }
 
         private Bitmap cR;
-        internal Bitmap CorrectnessIcon
+        internal Bitmap FilterState
         {
             get { return cR; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cR, value, nameof (CorrectnessIcon));
+                this.RaiseAndSetIfChanged (ref cR, value, nameof (FilterState));
             }
         }
 
@@ -180,6 +180,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private double sW;
+        internal double ScrollWidth
+        {
+            get { return sW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollWidth));
+            }
+        }
+
         private double rBWS;
         internal double RunnerBruttoWalkSpace
         {
@@ -209,17 +219,6 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref rH, value, nameof (RunnerHeight));
-            }
-        }
-
-
-        private double sW;
-        internal double ScrollWidth
-        {
-            get { return sW; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollWidth));
             }
         }
 
@@ -288,16 +287,19 @@ namespace Lister.ViewModels
 
         private void SetUpIcons ()
         {
-            string correctnessIcon = App.ResourceDirectoryUri + _correctnessIcon;
-            string incorrectnessIcon = App.ResourceDirectoryUri + _incorrectnessIcon;
+            //string correctnessIcon = App.ResourceDirectoryUri + _correctnessIcon;
+            //string incorrectnessIcon = App.ResourceDirectoryUri + _incorrectnessIcon;
 
-            Uri correctUri = new Uri (correctnessIcon);
-            CorrectnessIcon = ImageHelper.LoadFromResource (correctUri);
-            Uri incorrectUri = new Uri (incorrectnessIcon);
-            IncorrectnessIcon = ImageHelper.LoadFromResource (incorrectUri);
+            //Uri correctUri = new Uri (correctnessIcon);
+            //CorrectnessIcon = ImageHelper.LoadFromResource (correctUri);
+            //Uri incorrectUri = new Uri (incorrectnessIcon);
+            //IncorrectnessIcon = ImageHelper.LoadFromResource (incorrectUri);
 
-            CorrectnessOpacity = 1;
-            IncorrectnessOpacity = 1;
+
+            FilterState = null;
+
+            //CorrectnessOpacity = 1;
+            //IncorrectnessOpacity = 1;
         }
 
 
@@ -411,6 +413,36 @@ namespace Lister.ViewModels
         }
 
 
+        private void ShrinkVisibleIconsByNumber ( int removableNumber, int numberAmongVisibleIcons )
+        {
+            int indexInEntireList = removableNumber;
+            int indexInVisibleRange = numberAmongVisibleIcons;
+
+            for ( ; indexInVisibleRange < _visibleRange;   indexInVisibleRange++, indexInEntireList++ )
+            {
+                VisibleIcons [indexInVisibleRange] = GetCorrespondingIcon (indexInEntireList + 1);
+            }
+
+            BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (indexInEntireList + 1);
+
+            VisibleIcons.Add (lastIcon);
+
+            if ( _filterState == FilterChoosing.Corrects )
+            {
+                IncorrectNumbered.Add (removableNumber, CorrectNumbered [removableNumber]);
+                CorrectNumbered.Remove (removableNumber);
+            }
+            else if ( _filterState == FilterChoosing.Incorrects ) 
+            {
+                CorrectNumbered.Add (removableNumber, IncorrectNumbered [removableNumber]);
+                IncorrectNumbered.Remove (removableNumber);
+            }
+
+            //_runnerHasWalked += _runnerStep;
+            //ScrollOffset = _runnerHasWalked;
+        }
+
+
         private BadgeCorrectnessViewModel GetCorrespondingIcon ( int badgeNumber )
         {
             BadgeCorrectnessViewModel result = null;
@@ -419,40 +451,18 @@ namespace Lister.ViewModels
 
             if ( _filterState == FilterChoosing.Incorrects )
             {
-                try 
-                {
-                    // to try find badge in corresponding list if it has opposite state
-
-                    goalBadge = AllBadges [IncorrectBadges.ElementAt(badgeNumber).Key];
-                    isCorrect = goalBadge.IsCorrect;
-                }
-                catch ( Exception ex ) 
-                {
-                    goalBadge = _allReadonlyBadges [IncorrectBadges.ElementAt (badgeNumber).Key];
-                    isCorrect = false;
-                }
+                goalBadge = IncorrectNumbered.ElementAt (badgeNumber).Value;
+                isCorrect = goalBadge.IsCorrect;
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
-                try
-                {
-                    goalBadge = AllBadges [FixedBadges.ElementAt (badgeNumber).Key];
-                    isCorrect = goalBadge.IsCorrect;
-                }
-                catch ( Exception ex ) { }
+                goalBadge = CorrectNumbered.ElementAt (badgeNumber).Value;
+                isCorrect = goalBadge.IsCorrect;
             }
-            else 
+            else if ( _filterState == FilterChoosing.All )
             {
-                try
-                {
-                    goalBadge = AllBadges [badgeNumber];
-                    isCorrect = goalBadge.IsCorrect;
-                }
-                catch ( Exception ex ) 
-                {
-                    goalBadge = _allReadonlyBadges [badgeNumber];
-                    isCorrect = false;
-                }
+                goalBadge = AllNumbered [badgeNumber];
+                isCorrect = goalBadge.IsCorrect;
             }
 
             result = new BadgeCorrectnessViewModel (isCorrect, goalBadge);
@@ -495,6 +505,11 @@ namespace Lister.ViewModels
 
         internal void ScrollByWheel ( bool isDirectionUp )
         {
+            if ( ScrollWidth == 0 ) 
+            {
+                return;
+            }
+
             if ( isDirectionUp )
             {
                 ScrollUp ();
@@ -543,6 +558,15 @@ namespace Lister.ViewModels
         }
 
 
+        private void ZeroSliderStation ( ObservableCollection <BadgeCorrectnessViewModel> icons )
+        {
+            _scrollStepNumberStorage = 0;
+            _runnerHasWalkedStorage = 0;
+            _scrollOffsetStorage = 0;
+            _visibleIconsStorage = icons;
+        }
+
+
         private void HighLightChosenIcon ( BadgeCorrectnessViewModel icon )
         {
             //icon.BorderColor = new SolidColorBrush (MainWindow.black);
@@ -578,120 +602,40 @@ namespace Lister.ViewModels
 
         private void ResetActiveIcon ()
         {
-            //BadgeViewModel draftSource = null;
-
-            //foreach ( var keyValue   in   _drafts )
-            //{
-            //    if ( keyValue.Value.Equals (BeingProcessedBadge) )
-            //    {
-            //        draftSource = keyValue.Key;
-            //        break;
-            //    }
-            //}
-
             if ( BeingProcessedBadge. IsCorrect )
             {
-                if ( ! ActiveIcon. Correctness ) 
+                if ( ! ActiveIcon. Correctness )
                 {
-                    ActiveIcon = new BadgeCorrectnessViewModel (true, BeingProcessedBadge);
-                }
+                    ActiveIcon.SwitchCorrectness ();
 
-                //VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (true, BeingProcessedBadge);
-
-                //if ( ! FixedBadges.ContainsValue (BeingProcessedBadge) )
-                //{
-                //    FixedBadges.Add ((FixedBadges. Count), BeingProcessedBadge);
-
-                //    List<int> ints = new List<int> ();
-                //    ints.Sort ();
-                //}
-
-                //if ( IncorrectBadges.ContainsValue (BeingProcessedBadge) )
-                //{
-                //    IncorrectBadges.Remove (draftSource);
-                //}
-
-                bool firstIncorrectIsRewrote = FirstIncorrect.Equals (BeingProcessedBadge);
-
-                bool shouldSetFirstIncorrect = ( BeingProcessedBadge.Id != ( _allReadonlyBadges.Count - 1 ) )
-                                               && ( ( _filterState == FilterChoosing.All )
-                                                     || ( _filterState == FilterChoosing.Incorrects )
-                                                  );
-
-                if ( firstIncorrectIsRewrote   &&   shouldSetFirstIncorrect )
-                {
-                    _incorrectsAmmount--;
-
-                    for ( int index = BeingProcessedBadge.Id + 1;   index < AllBadges.Count - 1;   index++ )
+                    if ( _filterState == FilterChoosing.All )
                     {
-                        if ( AllBadges.ContainsKey (index) )
+                        try
                         {
-                            if ( ! AllBadges [index].IsCorrect )
-                            {
-                                FirstIncorrect = AllBadges [index];
-                                break;
-                            }
-                            else { continue; }
+                            CorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
+                            IncorrectNumbered.Remove (BeingProcessedBadge. Id);
                         }
-                        else
-                        {
-                            FirstIncorrect = _allReadonlyBadges [index].Clone ();
-                            break;
-                        }
+                        catch ( Exception ex ) { }
                     }
                 }
-
-                try
-                {
-                    _fixedBadges [BeingProcessedBadge. Id] = _allReadonlyBadges [BeingProcessedBadge. Id];
-                    _incorrectBadges [BeingProcessedBadge. Id] = null;
-                    FixedBadges.Add (BeingProcessedBadge. Id, BeingProcessedBadge. Id);
-                    IncorrectBadges.Remove (BeingProcessedBadge. Id);
-                }
-                catch ( Exception ex ) { }
             }
             else
             {
                 if ( ActiveIcon. Correctness )
                 {
-                    ActiveIcon = new BadgeCorrectnessViewModel (false, BeingProcessedBadge);
+                    ActiveIcon.SwitchCorrectness ();
+
+                    if ( _filterState == FilterChoosing.All )
+                    {
+                        try
+                        {
+                            IncorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
+                            CorrectNumbered.Remove (BeingProcessedBadge. Id);
+                        }
+                        catch ( Exception ex ) { }
+                    }
                 }
-
-                //    if ( VisibleIcons [BeingProcessedNumber - 1].Correctness )
-                //    {
-                //        VisibleIcons [BeingProcessedNumber - 1] = new BadgeCorrectnessViewModel (false, BeingProcessedBadge);
-                //    }
-
-                //    if ( ! IncorrectBadges.ContainsValue (BeingProcessedBadge) )
-                //    {
-                //        IncorrectBadges.Add (draftSource, BeingProcessedBadge);
-                //    }
-
-                //    if ( FixedBadges.ContainsValue (BeingProcessedBadge) )
-                //    {
-                //        FixedBadges.Remove (draftSource);
-                //    }
-
-                _incorrectsAmmount++;
-
-                try
-                {
-                    _incorrectBadges [BeingProcessedBadge. Id] = _allReadonlyBadges [BeingProcessedBadge. Id];
-                    _fixedBadges [BeingProcessedBadge. Id] = null;
-                    IncorrectBadges.Add (BeingProcessedBadge. Id, BeingProcessedBadge. Id);
-                    FixedBadges.Remove(BeingProcessedBadge. Id );
-                }
-                catch ( Exception ex ) { }
             }
-
-            try
-            {
-                AllBadges.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
-            }
-            catch ( Exception ex ) { }
-
-            //ActiveIcon = VisibleIcons [BeingProcessedNumber - 1];
-            //HighLightChosenIcon (ActiveIcon);
         }
 
 

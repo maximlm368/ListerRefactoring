@@ -77,9 +77,16 @@ namespace Lister.Views
                 this.DataContext = _vm;
             }
 
-            Back.FocusAdorner = null;
+            firstBadge.FocusAdorner = null;
+            previousBadge.FocusAdorner = null;
+            nextBadge.FocusAdorner = null;
+            lastBadge.FocusAdorner = null;
+            zoomOnBadge.FocusAdorner = null;
+            zoomOutBadge.FocusAdorner = null;
             editionPanel.FocusAdorner = null;
-            
+
+            //Back.FocusAdorner = null;
+            //editionPanel.FocusAdorner = null;
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
@@ -144,9 +151,9 @@ namespace Lister.Views
         }
 
 
-        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects ) 
+        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects, PageViewModel firstPage ) 
         {
-            _vm.PassIncorrects (incorrects);
+            _vm.PassIncorrects (incorrects, firstPage);
         }
 
 

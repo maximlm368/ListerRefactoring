@@ -23,13 +23,14 @@ namespace Lister.Views
         internal static readonly string _sourcePathKeeper = "keeper.txt";
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
-        internal static int TappedButton { get; private set; }
+        internal static int TappedEditorBuildingButton { get; private set; }
 
         internal static double ProperWidth { get; private set; }
         internal static double ProperHeight { get; private set; }
 
         internal BadgeEditorView EditorView { get; private set; }
         private List<BadgeViewModel> _incorrectBadges;
+        private PageViewModel _firstPage;
 
 
         public ModernMainView ()
@@ -186,9 +187,10 @@ namespace Lister.Views
         //}
 
 
-        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges )
+        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges, PageViewModel firstPage )
         {
             _incorrectBadges = incorrectBadges;
+            _firstPage = firstPage;
             ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
@@ -197,7 +199,8 @@ namespace Lister.Views
                 EditorView = new BadgeEditorView ( TemplateChoosingViewModel.BuildingOccured, incorrectBadges.Count );
                 EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
                 window.CancelSizeDifference ();
-                TappedButton = 1;
+                TappedEditorBuildingButton = 1;
+
                 _vm.SetWaiting ();
             }
         }
@@ -212,16 +215,22 @@ namespace Lister.Views
             (
                 () =>
                 {
-                    EditorView.PassIncorrectBadges (_incorrectBadges);
+                    EditorView.PassIncorrectBadges (_incorrectBadges, _firstPage);
                     EditorView.PassBackPoint (mainView);
                     _isFirstTimeLoading = false;
 
-                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                    modernMV.EndWaiting ();
+                    Dispatcher.UIThread.InvokeAsync 
+                    (
+                        () =>
+                        {
+                            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                            modernMV.EndWaiting ();
+                            window.Content = EditorView; 
+                        }
+                    );
 
-                    Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
                     ModernMainViewModel.MainViewIsWaiting = false;
-                    TappedButton = 0;
+                    TappedEditorBuildingButton = 0;
                 }
             );
 

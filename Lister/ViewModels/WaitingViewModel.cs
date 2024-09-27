@@ -17,6 +17,13 @@ namespace Lister.ViewModels
         private double _canvasHeight = 467;
         private double _imageHeight = 300;
 
+        private AnimatedImageSource _gifSource;
+        public AnimatedImageSource GifSource
+        {
+            get => _gifSource;
+            set => this.RaiseAndSetIfChanged (ref _gifSource, value);
+        }
+
         private double cT;
         public double CanvasTop
         {
@@ -67,36 +74,31 @@ namespace Lister.ViewModels
             }
         }
 
-        private string im;
-        public string Image
-        {
-            get { return im; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref im, value, nameof (Image));
-            }
-        }
-
 
         public WaitingViewModel () 
         {
             CanvasHeight = 467;
             ImageHeight = 0;
-            ImageIsVisible = false;
+            ImageIsVisible = true;
             CanvasLeft = _canvasLeft;
             CanvasTop = _canvasTop;
-            Image = "D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\Loading.gif";
 
+            // GifSource = new AnimatedImageSourceUri (new Uri ("avares://Lister/Assets/Loading.gif"));
 
-            //ImageBehavior.SetAnimatedSource(_view, )
+            string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
+            GifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
 
+            int dfdf = 0;
         }
-
 
         public void Show ()
         {
-            CanvasHeight = _canvasHeight;
-            ImageHeight = _imageHeight;
+            //CanvasHeight = _canvasHeight;
+            //ImageHeight = _imageHeight;
+            //string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
+            //GifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
+
+            GifSource = new AnimatedImageSourceUri (new Uri ("avares://Lister/Assets/Loading.gif"));
         }
 
 
@@ -107,13 +109,9 @@ namespace Lister.ViewModels
         }
 
 
-        public void PassView ( WaitingView view )
-        {
-            _view = view;
-
-            //var fd = new AnimatedImageSource ();
-
-            //ImageBehavior.SetAnimatedSource (view, )
-        }
+        //public void PassView ( WaitingView view )
+        //{
+        //    _view = view;
+        //}
     }
 }

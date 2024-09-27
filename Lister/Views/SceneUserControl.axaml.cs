@@ -31,6 +31,7 @@ namespace Lister.Views
             var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
             this.Margin = new Avalonia.Thickness (5);
+            extender.FocusAdorner = null;
 
             Loaded += OnLoaded;
         }
@@ -44,10 +45,10 @@ namespace Lister.Views
         }
 
 
-        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges )
+        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges, PageViewModel firstPage )
         {
             ModernMainView mainView = ModernMainView.Instance;
-            mainView.EditIncorrectBadges ( incorrectBadges );
+            mainView.EditIncorrectBadges ( incorrectBadges, firstPage );
         }
     }
 }

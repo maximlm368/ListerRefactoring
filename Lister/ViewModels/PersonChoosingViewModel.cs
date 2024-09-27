@@ -36,14 +36,14 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private static double _withScroll = 434;
-        private static double _withoutScroll = 449;
+        private static double _withScroll = 432;
+        private static double _withoutScroll = 447;
         private static readonly double _minRunnerHeight = 10;
         private static readonly double _upperHeight = 15;
-        private static readonly double _scrollingScratch = 25;
+        private static readonly double _scrollingScratch = 32;
         private static readonly string _placeHolder = "Весь список";
         private static readonly int _maxVisibleCount = 4;
-        private static readonly double _oneHeight = 25;
+        private static readonly double _oneHeight = 32;
         private static readonly int _edge = 3;
 
         private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
@@ -311,7 +311,7 @@ namespace Lister.ViewModels
 
                 if ( value ) 
                 {
-                    FirstItemHeight = 28;
+                    FirstItemHeight = 32;
                 }
                 else 
                 {

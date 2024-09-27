@@ -1,3 +1,4 @@
+using AnimatedImage.Avalonia;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -29,6 +30,18 @@ public partial class WaitingView : UserControl
         //vm.PassView (this);
 
         //canvas.AddHandler (Canvas.TappedEvent, PreventPasting, RoutingStrategies.Direct);
+
+
+        //var image = new BitmapImage ();
+        //image.BeginInit ();
+        //image.UriSource = new Uri (fileName);
+        //image.EndInit ();
+        //ImageBehavior.SetAnimatedSource (img, image);
+
+        //image.Source = new AnimatedImageSourceUri (new Uri ("avares://Assets/Loading.gif"));
+
+
+
     }
 
 
@@ -65,4 +78,14 @@ public partial class WaitingView : UserControl
 
         this.Margin = new Thickness (0, _thisMarginTop);
     }
+
+
+    public void ShowGif ()
+    {
+        WaitingViewModel vm = App.services.GetRequiredService<WaitingViewModel> ();
+        vm.Show ();
+    }
 }
+
+
+
