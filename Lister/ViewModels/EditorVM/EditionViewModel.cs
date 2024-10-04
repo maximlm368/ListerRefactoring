@@ -71,6 +71,7 @@ namespace Lister.ViewModels
 
         //private Dictionary <BadgeViewModel, BadgeViewModel> _sourceToDrafts;
 
+        private Dictionary<int, BadgeViewModel> _currentVisibleCollection;
         internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
         internal Dictionary<int, BadgeViewModel> IncorrectNumbered { get; private set; }
         internal Dictionary<int, BadgeViewModel> CorrectNumbered { get; private set; }
@@ -154,6 +155,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private string eC;
+        internal string ExtenderContent
+        {
+            get { return eC; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref eC, value, nameof (ExtenderContent));
+            }
+        }
+
         //private string fS;
         //internal string FocusedFontSize
         //{
@@ -194,6 +205,7 @@ namespace Lister.ViewModels
             //_correctBadges = new ();
             //_sourceToDrafts = new ();
 
+            ExtenderContent = "\uF053";
             WorkAreaWidth = _workAreaWidth + _namesFilterWidth;
             SetUpSliderBlock ( incorrectBadgesAmmount );
 
@@ -212,7 +224,7 @@ namespace Lister.ViewModels
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
             ChangeScrollHeight (heightDifference);
-            WorkAreaWidth -= widthDifference;
+            //WorkAreaWidth -= widthDifference;
             //EntireBlockHeight -= heightDifference;
             //ScrollHeight -= heightDifference;
         }
@@ -283,7 +295,6 @@ namespace Lister.ViewModels
             _scaleStorage = new ();
 
             _incorrectsAmmount = incorrects.Count;
-            _currentAmmount = incorrects.Count;
 
             int counter = 0;
 
@@ -298,6 +309,8 @@ namespace Lister.ViewModels
 
                 counter++;
             }
+
+            _currentVisibleCollection = AllNumbered;
 
             Dispatcher.UIThread.InvokeAsync
             (
@@ -463,6 +476,25 @@ namespace Lister.ViewModels
             BeingProcessedBadge = beingProcessed;
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedNumber = 1;
+        }
+
+
+        internal void ExtendOrShrinkCollectionManagement ()
+        {
+            if ( _filterIsOpen )
+            {
+                CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
+                WorkAreaWidth += _namesFilterWidth;
+                _filterIsOpen = false;
+                ExtenderContent = "\uF053";
+            }
+            else
+            {
+                CollectionFilterMargin = new Thickness (0, 0);
+                WorkAreaWidth -= _namesFilterWidth;
+                _filterIsOpen = true;
+                ExtenderContent = "\uF054";
+            }
         }
 
 

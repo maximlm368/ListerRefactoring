@@ -224,7 +224,7 @@
 			Margin="-10,2"
 			Padding="6, 0"
 			MaxDropDownHeight="100"
-			SelectedIndex="1"
+			SelectedIndex="0"
 			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
 			GotFocus="CloseCustomCombobox"
 			DropDownClosed="HandleClosing"

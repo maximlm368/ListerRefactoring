@@ -16,8 +16,7 @@
 		MinHeight="460"
         MinWidth="800"
 		Height="460"
-		Width="800"
-		>
+		Width="800">
 
 	<views:ModernMainView
 			Name="view"/>

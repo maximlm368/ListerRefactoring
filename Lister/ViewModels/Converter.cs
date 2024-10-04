@@ -27,6 +27,7 @@ using System.Runtime.CompilerServices;
 using Avalonia.Threading;
 using ExCSS;
 using static QuestPDF.Helpers.Colors;
+using HarfBuzzSharp;
 
 
 namespace Lister.ViewModels;
@@ -40,10 +41,12 @@ class ConverterToPdf
     public List<string> intermidiateFiles = new ();
 
 
-    internal bool ConvertToExtention ( List <PageViewModel> pages, string filePathToSave )
+    internal bool ConvertToExtention ( List <PageViewModel> pages, string ? filePathToSave
+                                                                 , out byte [] ? arrayToPassResult )
     {
+        arrayToPassResult = null;
         bool result = true;
-        bool isNothingToDo = ( pages == null )   ||   ( pages.Count == 0 )   ||   ( filePathToSave == null );
+        bool isNothingToDo = ( pages == null )   ||   ( pages.Count == 0 );
 
         if ( isNothingToDo )
         {
@@ -88,7 +91,38 @@ class ConverterToPdf
 
         try
         {
-            doc.GeneratePdf (filePathToSave);
+            if ( filePathToSave == null )
+            {
+                var settings = new ImageGenerationSettings ();
+                settings.ImageFormat = ImageFormat.Jpeg;
+
+                //doc.GenerateImages
+                //    (( index ) =>
+                //        {
+                //            string filePath = "intermediate" + index + ".jpeg";
+                //            //intermediateFiles.Add ( filePath );
+
+                //            return filePath;
+                //        }
+                //        , settings
+                //    );
+
+                IEnumerable <byte []> images = doc.GenerateImages (settings);
+
+                foreach ( byte [] image   in   images )
+                {
+                    arrayToPassResult = image;
+                }
+
+                int dfd = 0;
+            }
+            else
+            {
+                doc.GeneratePdf (filePathToSave);
+                int df = 0;
+            }
+
+            result = true;
         }
         catch ( IOException ex )
         {

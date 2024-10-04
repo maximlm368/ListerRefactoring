@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Threading;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
@@ -14,6 +15,7 @@ using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
 using ReactiveUI;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace Lister.ViewModels
 {
@@ -25,8 +27,10 @@ namespace Lister.ViewModels
         private double _documentScale;
         private double _zoomDegree = 100;
         private List <PageViewModel> _allPages;
+        private List <PageViewModel> _printablePages;
         
         private PageViewModel _lastPage;
+        private PageViewModel _printableLastPage;
         private SceneUserControl _view;
         private Person _chosenPerson;
         private string procentSymbol = "%";
@@ -176,9 +180,13 @@ namespace Lister.ViewModels
             _personChoosingVM = personChoosingVM;
             _documentScale = 1;
             _allPages = new List <PageViewModel> ();
-            VisiblePage = new PageViewModel (_documentScale);
+            _printablePages = new List <PageViewModel> ();
+            PageViewModel firstPage = new PageViewModel (_documentScale);
+            VisiblePage = firstPage;
             _lastPage = VisiblePage;
             _allPages.Add (VisiblePage);
+            _printableLastPage = firstPage.GetDimendionalOriginalClone ();
+            _printablePages.Add (_printableLastPage);
             VisiblePageNumber = 1;
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
             IncorrectBadges = new List<BadgeViewModel> ();
@@ -212,13 +220,13 @@ namespace Lister.ViewModels
 
             if ( requiredBadges.Count > 0 )
             {
-                List<BadgeViewModel> allBadges = new ();
+                List <BadgeViewModel> allBadges = new ();
 
                 for ( int index = 0;   index < requiredBadges.Count;   index++ )
                 {
                     Person person = requiredBadges [index].Person;
 
-                    if ( _personChoosingVM.IsEmpty( person ) ) 
+                    if ( _personChoosingVM.IsEmpty (person) )
                     {
                         continue;
                     }
@@ -229,7 +237,6 @@ namespace Lister.ViewModels
                     if ( ! beingProcessedBadgeVM.IsCorrect )
                     {
                         IncorrectBadges.Add (beingProcessedBadgeVM);
-                        //EditionMustEnable = true;
                         IncorrectBadgeCount++;
                     }
 
@@ -245,11 +252,31 @@ namespace Lister.ViewModels
 
                     // page number 0 corresponds last page of previous building,  PageViewModel.PlaceIntoPages() method
                     // added badges on it
+
+                    PageViewModel first = newPages [0];
+
+                    Dispatcher.UIThread.InvokeAsync
+                    (() =>
+                    {
+                        _printablePages [_printablePages.Count - 1] = first.GetDimendionalOriginalClone ();
+                    });
+
                     newPages.RemoveAt (0);
                 }
 
                 _allPages.AddRange (newPages);
+
+                foreach ( PageViewModel page   in   newPages )
+                {
+                    Dispatcher.UIThread.InvokeAsync
+                    (() =>
+                    {
+                        _printablePages.Add (page.GetDimendionalOriginalClone ());
+                    });
+                }
+
                 _lastPage = _allPages.Last ();
+                _printableLastPage = _printablePages.Last ();
 
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 PageCount = _allPages.Count;
@@ -267,7 +294,6 @@ namespace Lister.ViewModels
             if ( ! goalVMBadge.IsCorrect )
             {
                 IncorrectBadges.Add (goalVMBadge);
-                //EditionMustEnable = true;
                 IncorrectBadgeCount++;
             }
 
@@ -275,7 +301,7 @@ namespace Lister.ViewModels
 
             if ( placingStartedAfterEntireListAddition )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePage = _lastPage;
                 VisiblePage.Show ();
             }
@@ -285,11 +311,19 @@ namespace Lister.ViewModels
 
             if ( timeToIncrementVisiblePageNumber )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePage = possibleNewVisiblePage;
                 _lastPage = VisiblePage;
+                _printableLastPage = possibleNewVisiblePage.GetDimendionalOriginalClone ();
                 _allPages.Add (possibleNewVisiblePage);
+                _printablePages.Add (_printableLastPage);
                 VisiblePage.Show ();
+            }
+            else 
+            {
+                _printablePages.RemoveAt (_printablePages.Count - 1);
+                _printableLastPage = _allPages.Last ().GetDimendionalOriginalClone ();
+                _printablePages.Add (_printableLastPage);
             }
 
             BadgeCount++;
@@ -307,9 +341,17 @@ namespace Lister.ViewModels
             }
 
             _allPages.Clear ();
+            _printablePages = new List <PageViewModel> ();
             VisiblePage = new PageViewModel (_documentScale);
             _lastPage = VisiblePage;
             _allPages.Add (_lastPage);
+
+            Dispatcher.UIThread.InvokeAsync
+            (() =>
+            {
+                _printablePages.Add (_lastPage.GetDimendionalOriginalClone());
+            });
+
             VisiblePageNumber = 1;
             PageCount = 1;
             BadgeCount = 0;
@@ -383,7 +425,7 @@ namespace Lister.ViewModels
         {
             if ( VisiblePageNumber < _allPages.Count )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePageNumber++;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
@@ -397,7 +439,7 @@ namespace Lister.ViewModels
         {
             if ( VisiblePageNumber > 1 )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePageNumber--;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
@@ -411,7 +453,7 @@ namespace Lister.ViewModels
         {
             if ( VisiblePageNumber < _allPages.Count )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePageNumber = _allPages.Count;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
@@ -425,7 +467,7 @@ namespace Lister.ViewModels
         {
             if ( VisiblePageNumber > 1 )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePageNumber = 1;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
@@ -443,7 +485,7 @@ namespace Lister.ViewModels
 
             if ( visiblePageExists   &&   notTheSamePage   &&   inRange )
             {
-                VisiblePage.Hide ();
+                //VisiblePage.Hide ();
                 VisiblePageNumber = pageNumber;
                 VisiblePage = _allPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
@@ -455,7 +497,8 @@ namespace Lister.ViewModels
 
         internal List <PageViewModel> GetAllPages ()
         {
-            return _allPages;
+            return _printablePages;
+            //return _allPages;
         }
 
 
@@ -467,7 +510,7 @@ namespace Lister.ViewModels
 
         internal void ResetIncorrects ()
         {
-            List<BadgeViewModel> corrects = new List<BadgeViewModel> ();
+            List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
 
             foreach ( BadgeViewModel badge   in   IncorrectBadges )
             {
@@ -480,6 +523,14 @@ namespace Lister.ViewModels
             foreach ( BadgeViewModel correctBadge   in   corrects )
             {
                 IncorrectBadges.Remove (correctBadge);
+            }
+
+            int counter = 0;
+
+            foreach ( BadgeViewModel badge   in   IncorrectBadges )
+            {
+                badge.Id = counter;
+                counter++;
             }
 
             IncorrectBadgeCount = IncorrectBadges. Count;
@@ -532,35 +583,5 @@ namespace Lister.ViewModels
             SaveIsEnable = true;
             PrintIsEnable = true;
         }
-
-
-
-        //internal void EditIncorrectBadges ()
-        //{
-        //    ModernMainView mainView = ModernMainView.Instance;
-        //    MainWindow window = MainWindow.GetMainWindow ();
-
-        //    if ( ( window != null ) && ( IncorrectBadges.Count > 0 ) )
-        //    {
-        //        BadgeEditorView editorView = new BadgeEditorView ();
-
-        //        editorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
-        //        window.CancelSizeDifference ();
-
-        //        editorView.PassIncorrectBadges (IncorrectBadges);
-        //        editorView.PassBackPoint (mainView);
-        //        window.Content = editorView;
-        //    }
-        //}
-
-
-
-
-
-        //internal void ClearBuilt ()
-        //{
-        //    EditionMustEnable = false;
-        //    IncorrectBadges = new List <BadgeViewModel> ();
-        //}
     }
 }

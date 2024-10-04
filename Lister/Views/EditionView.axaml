@@ -383,36 +383,37 @@
 			<Border
 				Name="collectionManagement"
 				Grid.Column="1"
-				Width="250"
+				Width="248"
 				Margin="{Binding  Path=CollectionFilterMargin,  Mode=OneWay}"
-				Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}"
+				Height="380"
 				CornerRadius="5,0,0,5"
 				PointerWheelChanged="ScrollByWheel"
 				Background="LightGray">
 						
 				<StackPanel
 					Name="sliderPanel"
-					Width="250"
-					Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}">
+					Width="248"
+					Height="380">
 
 					<Button
 						Name="extender"
-						Margin="0, 0"
+						Classes="transparent"
+						CornerRadius="5,0,0,0"
 						HorizontalAlignment="Left"
 						HorizontalContentAlignment="Left"
 						VerticalContentAlignment="Center"
 						Width="20"
-						Height="20"
+						Height="30"
 						Padding="4,5"
+						FontFamily="FontAwesome"
 						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
 						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
-						Content="V" />
+						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}" />
 					
 					<Border
 						Name="filterSwitcher"
-						Focusable="True"
 						Height="24"
-						Margin="7,0"
+						Margin="7,5"
 						KeyDown="ToParticularBadge">
 
 						<StackPanel
@@ -438,17 +439,20 @@
 
 					<Button
 						Name="up"
-						Content="u"
-						Width="20"
+						Classes="transparent"
+						Width="{Binding   Path = UpDownWidth,   Mode=OneWay}"
 						Height="20"
 						Padding="0,0"
 						Margin ="15,5"
+						FontSize="14"
+						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+						FontFamily="FontAwesome"
 						Command="{Binding   Path = ToPrevious}"
-						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
+						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
+						Content="&#xF077;"/>
 					
 					<Border
 						Name="slider"
-						Focusable="True"
 						Width="240"
 						Height="{Binding  Path=ScrollHeight,  Mode=OneWay}"
 						Margin ="7,0"
@@ -522,13 +526,15 @@
 
 							<Button
 								Name="upper"
+								Classes="transparent"
 								Grid.Row="0"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Height="15"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								Content="u"
-								FontSize="12"
+								Padding="2,1"
+								FontFamily="FontAwesome"
+								Content="&#xF077;"
+								FontSize="9"
+								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Command="{Binding Path=ScrollUp}"
 								PointerPressed=""/>
 
@@ -553,13 +559,15 @@
 
 							<Button
 								Name="downer"
+								Classes="transparent"
 								Grid.Row="2"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Height="15"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								Content="d"
-								FontSize="12"
+								Padding="2,1"
+								FontSize="9"
+								FontFamily="FontAwesome"
+								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+								Content="&#xF078;"
 								Command="{Binding Path=ScrollDown}"/>
 
 						</Grid>
@@ -570,13 +578,17 @@
 				
 				    <Button
 						Name="down"
-						Content="d"
-						Width="20"
+						Classes="transparent"
+						Width="{Binding   Path = UpDownWidth,   Mode=OneWay}"
 						Height="20"
 						Padding="0,0"
 						Margin ="15,5"
+						FontSize="14"
+						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+						FontFamily="FontAwesome"
 						Command="{Binding   Path = ToNext}"
-						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"/>
+						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
+						Content="&#xF078;"/>
 				
 				</StackPanel>
 				
@@ -754,6 +766,10 @@
 
 
 <!-- 
+
+Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}"
+
+
 
 Content="&#xF3A5;"
 

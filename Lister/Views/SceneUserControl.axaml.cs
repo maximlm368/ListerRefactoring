@@ -32,16 +32,6 @@ namespace Lister.Views
             _vm.PassView (this);
             this.Margin = new Avalonia.Thickness (5);
             extender.FocusAdorner = null;
-
-            Loaded += OnLoaded;
-        }
-
-
-        private void OnLoaded ( object sender, RoutedEventArgs args )
-        {
-            //_vm.SetEdition ();
-            //save.IsEnabled = true;
-            //save.Focusable = true;
         }
 
 

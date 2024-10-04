@@ -34,7 +34,7 @@ public class BadgeViewModel : ViewModelBase
     private string _badLineColor;
     private IBadLineColorProvider _badLineColorProvider;
 
-    internal int Id { get; private set; }
+    internal int Id { get; set; }
     internal double Scale { get; private set; }
     internal double LeftSpan { get; private set; }
     internal double TopSpan { get; private set; }

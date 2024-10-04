@@ -6,7 +6,7 @@ namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
-        private int _numberAmongLoadedIcons = 1;
+        private int _numberAmongVisibleIcons = 1;
 
         private bool fE;
         internal bool FirstIsEnable
@@ -77,20 +77,15 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < _visibleRange;   index++ )
             {
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, _allReadonlyBadges [index]));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, _currentVisibleCollection.ElementAt(index).Value));
 
                 if ( index == 0 ) 
                 {
-                    //if ( BeingProcessedBadge != null ) 
-                    //{
-                    //    AccomodateExProcessableToProperList ();
-                    //}
-
                     BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
                 }
             }
 
-            _numberAmongLoadedIcons = 1;
+            _numberAmongVisibleIcons = 1;
 
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedBadge.Show ();
@@ -120,14 +115,14 @@ namespace Lister.ViewModels
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
             BeingProcessedNumber--;
-            _numberAmongLoadedIcons--;
+            _numberAmongVisibleIcons--;
 
             if ( BeingProcessedNumber < (_visibleRangeEnd - _visibleRange + 2))
             {
                 ScrollUpAtOneStep ();
-                SaveSliderStation ();
+                SaveSliderState ();
 
-                _numberAmongLoadedIcons = 1;
+                _numberAmongVisibleIcons = 1;
                 _doubleRest = 0;
                 _visibleRangeEnd--;
             }
@@ -138,10 +133,10 @@ namespace Lister.ViewModels
 
             if ( isProcessableChangedInSpecificFilter )
             {
-                ShrinkVisibleIconsByNumber (possableRemovableNumber, _numberAmongLoadedIcons);
+                ShrinkVisibleIconsByNumber (possableRemovableNumber, _numberAmongVisibleIcons);
             }
 
-            BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongLoadedIcons - 1];
+            BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
             SetManageControlsAbility ();
         }
@@ -155,19 +150,18 @@ namespace Lister.ViewModels
             }
 
             BeingProcessedBadge.Hide ();
-            int possableRemovableNumber = BeingProcessedNumber - 1;
             SetSliderToStationBeforeScrollingIfShould ();
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
             BeingProcessedNumber++;
-            _numberAmongLoadedIcons++;
+            _numberAmongVisibleIcons++;
 
             if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) )
             {
                 ScrollDownAtOneStep ();
-                SaveSliderStation ();
+                SaveSliderState ();
 
-                _numberAmongLoadedIcons = VisibleIcons. Count;
+                _numberAmongVisibleIcons = VisibleIcons. Count;
                 _doubleRest = 0;
                 _visibleRangeEnd++;
             }
@@ -179,11 +173,11 @@ namespace Lister.ViewModels
             if ( isProcessableChangedInSpecificFilter )
             {
                 BeingProcessedNumber--;
-                ShrinkVisibleIconsByNumber (possableRemovableNumber, _numberAmongLoadedIcons - 2);
-                _numberAmongLoadedIcons--;
+                _numberAmongVisibleIcons--;
+                ShrinkVisibleIconsByNumber (BeingProcessedNumber - 1, _numberAmongVisibleIcons - 1);
             }
 
-            BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongLoadedIcons - 1];
+            BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
             SetManageControlsAbility ();
         }
@@ -197,18 +191,18 @@ namespace Lister.ViewModels
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
             _visibleIconsStorage = VisibleIcons;
 
-            int visibleCountBeforeEnd = _allReadonlyBadges.Count - _visibleRange;
+            int visibleCountBeforeEnd = _currentVisibleCollection.Count - _visibleRange;
 
-            for ( int index = visibleCountBeforeEnd;   index < _allReadonlyBadges.Count;   index++ )
+            for ( int index = visibleCountBeforeEnd;   index < _currentVisibleCollection.Count;   index++ )
             {
-                BadgeViewModel badge = _allReadonlyBadges [index];
+                BadgeViewModel badge = _currentVisibleCollection.ElementAt (index).Value;
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge));
             }
 
             ScrollOffset = RunnerWalkSpace;
 
-            int absoluteNumber = _allReadonlyBadges.Count;
-            _numberAmongLoadedIcons = VisibleIcons. Count;
+            int absoluteNumber = _currentVisibleCollection.Count;
+            _numberAmongVisibleIcons = VisibleIcons. Count;
 
             bool filterOccured = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
@@ -217,7 +211,7 @@ namespace Lister.ViewModels
                 absoluteNumber--;
             }
 
-            ReplaceActiveIcon (VisibleIcons [_numberAmongLoadedIcons - 1]);
+            ReplaceActiveIcon (VisibleIcons [_numberAmongVisibleIcons - 1]);
 
             BeingProcessedNumber = absoluteNumber;
             BeingProcessedNumber = GetAppropriateLastNumber ();
@@ -227,58 +221,96 @@ namespace Lister.ViewModels
 
             SetManageControlsAbility ();
 
-            _scrollStepNumber = _allReadonlyBadges.Count - _visibleRange;
+            _scrollStepNumber = _currentVisibleCollection.Count - _visibleRange;
             _runnerHasWalked = _scrollStepNumber * _runnerStep;
-            _visibleRangeEnd = _allReadonlyBadges.Count - 1;
+            _visibleRangeEnd = _currentVisibleCollection.Count - 1;
         }
 
 
-        internal void ToParticularBadge ( BadgeCorrectnessViewModel icon )
+        internal void ToParticularBadge ( BadgeCorrectnessViewModel destinationIcon )
         {
-            BadgeViewModel goalBadge = icon.BoundBadge;
+            BadgeViewModel destinationBadge = destinationIcon.BoundBadge;
 
-            if ( goalBadge.Equals (BeingProcessedBadge) )
+            if ( destinationBadge.Equals (BeingProcessedBadge) )
             {
                 return;
             }
 
-            string numberAsText = string.Empty;
+            string destinationNumberText = string.Empty;
 
-            for ( int index = 0;   index < _allReadonlyBadges.Count;   index++ )
+            for ( int index = 0;   index < _currentVisibleCollection.Count;   index++ )
             {
-                if ( goalBadge.Equals (_allReadonlyBadges[index]) )
+                if ( destinationBadge.Equals (_currentVisibleCollection.ElementAt (index).Value) )
                 {
-                    numberAsText = ( index + 1 ).ToString ();
+                    destinationNumberText = ( index + 1 ).ToString ();
                     break;
                 }
             }
 
-            ToParticularBadge (numberAsText, icon);
+            ToParticularBadge (destinationNumberText, destinationIcon);
         }
 
 
-        private void ToParticularBadge ( string numberAsText, BadgeCorrectnessViewModel newActiveIcon )
+        private void ToParticularBadge ( string destinationNumberAsText, BadgeCorrectnessViewModel newActiveIcon )
         {
             try
             {
-                int number = int.Parse (numberAsText);
-                //int diff = number - BeingProcessedNumber;
+                int destinationNumber = int.Parse (destinationNumberAsText);
 
                 BeingProcessedBadge.Hide ();
-                //bool filterOccured = FilterProcessableBadge (number);
+                bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
-                //if ( filterOccured   &&   ( number > BeingProcessedNumber ) )
-                //{
-                //    number--;
-                //}
-
-                BeingProcessedNumber = number;
+                int oldNumber = BeingProcessedNumber;
+                int oldNumberAmongVisibleIcons = oldNumber - _scrollStepNumber;
+                BeingProcessedNumber = destinationNumber;
+                int amongVisibleIconsDestinationNum = destinationNumber - _scrollStepNumber;
+                _numberAmongVisibleIcons = BeingProcessedNumber - _scrollStepNumber;
                 BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
-                _numberAmongLoadedIcons = number - _scrollStepNumber;
+
                 _visibleRangeEnd = _scrollStepNumber + _visibleRange - 1;
 
+                if ( isProcessableChangedInSpecificFilter )
+                {
+                    if ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) )
+                    {
+                        ShrinkVisibleIconsByNumber (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ));
+                        newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
+
+                        if ( oldNumber < BeingProcessedNumber )
+                        {
+                            BeingProcessedNumber--;
+                            _numberAmongVisibleIcons--;
+                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
+                        }
+                    }
+                    else if ( _visibleRangeEnd == ( _currentVisibleCollection.Count - 1 ) )
+                    {
+                        ShrinkVisibleIconsByNumber (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ));
+
+                        if ( _currentVisibleCollection.Count <= _visibleRange )
+                        {
+                            amongVisibleIconsDestinationNum--;
+                            _numberAmongVisibleIcons--;
+                            _visibleRangeEnd--;
+                        }
+
+                        if ( oldNumber > BeingProcessedNumber )
+                        {
+                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum];
+                            _numberAmongVisibleIcons++;
+                        }
+                        else if ( oldNumber < BeingProcessedNumber )
+                        {
+                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
+                            BeingProcessedNumber--;
+                        }
+                    }
+
+                    _scrollStepNumber--;
+                }
+
                 ReplaceActiveIcon (newActiveIcon);
-                SaveSliderStation ();
+                SaveSliderState ();
 
                 SetToCorrectScale (BeingProcessedBadge);
                 BeingProcessedBadge.Show ();
@@ -390,32 +422,32 @@ namespace Lister.ViewModels
         //}
 
 
-        private void EnableNavigation ()
+        private void EnableNavigation ( )
         {
-            int badgeCount = _allReadonlyBadges.Count;
+            int badgeCount = _currentVisibleCollection.Count;
 
-            if ( ( BeingProcessedNumber > 1 ) && ( BeingProcessedNumber == badgeCount ) )
+            if ( ( BeingProcessedNumber > 1 )   &&   ( BeingProcessedNumber == badgeCount ) )
             {
                 FirstIsEnable = true;
                 PreviousIsEnable = true;
                 NextIsEnable = false;
                 LastIsEnable = false;
             }
-            else if ( ( BeingProcessedNumber > 1 ) && ( BeingProcessedNumber < badgeCount ) )
+            else if ( ( BeingProcessedNumber > 1 )   &&   ( BeingProcessedNumber < badgeCount ) )
             {
                 FirstIsEnable = true;
                 PreviousIsEnable = true;
                 NextIsEnable = true;
                 LastIsEnable = true;
             }
-            else if ( ( BeingProcessedNumber == 1 ) && ( badgeCount == 1 ) )
+            else if ( ( BeingProcessedNumber == 1 )   &&   ( badgeCount == 1 ) )
             {
                 FirstIsEnable = false;
                 PreviousIsEnable = false;
                 NextIsEnable = false;
                 LastIsEnable = false;
             }
-            else if ( ( BeingProcessedNumber == 1 ) && ( badgeCount > 1 ) )
+            else if ( ( BeingProcessedNumber == 1 )   &&   ( badgeCount > 1 ) )
             {
                 FirstIsEnable = false;
                 PreviousIsEnable = false;

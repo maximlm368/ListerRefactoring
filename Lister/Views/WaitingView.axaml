@@ -68,6 +68,16 @@ Canvas.Top="80"
 			/>
 		  
 	  </Canvas>
+	  
+	  
+	  
+	  		  <Image
+			Name="image"
+			anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
+			Opacity="2"
+			Width="300"
+			Height="300"/>
+	  
 
 
 -->

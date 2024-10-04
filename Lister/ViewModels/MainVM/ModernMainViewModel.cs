@@ -99,15 +99,19 @@ namespace Lister.ViewModels
                 _sceneVM.GeneratePdfDuringWaiting ();
                 return;
             }
-            else if ( SceneViewModel.TappedPrintButton == 1 )
-            {
-                _sceneVM.PrintDuringWaiting ();
-                return;
-            }
+            //else if ( SceneViewModel.TappedPrintButton == 1 )
+            //{
+            //    _sceneVM.PrintDuringWaiting ();
+            //    return;
+            //}
             else if ( ModernMainView.TappedEditorBuildingButton == 1 )
             {
                 _view.BuildEditor ();
             }
+            //else if ( PrintDialogViewModel.IsClosed )
+            //{
+            //    _sceneVM.StartWaiting ();
+            //}
         }
     }
 

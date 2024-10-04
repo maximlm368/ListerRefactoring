@@ -235,35 +235,7 @@ namespace Lister.Views
             );
 
             task.Start ();
-
-
-            //Thread thread = new Thread 
-            //    (
-            //        () => 
-            //        {
-            //            EditorView.PassIncorrectBadges (_incorrectBadges);
-            //            //Dispatcher.UIThread.InvokeAsync (() => { EditorView.PassIncorrectBadges (_incorrectBadges); });
-
-            //            EditorView.PassBackPoint (mainView);
-            //            _isFirstTimeLoading = false;
-
-            //            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-            //            modernMV.EndWaiting ();
-
-            //            Dispatcher.UIThread.InvokeAsync (() => { window.Content = EditorView; });
-
-            //            TappedButton = 0;
-            //        }
-            //    );
-
-            //thread.Start ();
         }
-
-
-        //internal void Hide ()
-        //{
-        //    waiting.IsVisible = false;
-        //}
     }
 }
 

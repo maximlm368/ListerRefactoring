@@ -17,13 +17,19 @@ using QuestPDF.Helpers;
 using ReactiveUI;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Management;
+using Ghostscript.NET.Rasterizer;
+using Ghostscript.NET;
+using System.Runtime.Intrinsics.Arm;
 
 namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
+        public static PrintDialog pd;
+
         private static readonly double _buttonWidth = 32;
         private static readonly double _countLabelWidth = 50;
         private static readonly double _extention = 130;
@@ -35,11 +41,12 @@ namespace Lister.ViewModels
         private static readonly string _suggestedFileNames = "Badge";
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
         public static int TappedPdfGenerationButton { get; set; }
-        public static int TappedPrintButton { get; set; }
+        public static bool PrintingContinues { get; private set; }
 
+        private PrintAdjustingData _printAdjusting;
         private bool _blockIsExtended = false;
         private string _pdfFileName;
-        private bool _isPdfGenerated;
+        //private bool _isPdfGenerated;
 
         private double cW;
         internal double CountWidth
@@ -164,6 +171,9 @@ namespace Lister.ViewModels
                            TappedPdfGenerationButton = 1;
 
                            mainViewModel.SetWaitingPdfOrPrint ();
+
+                           
+
                        }
                    }, uiScheduler
                 );
@@ -229,8 +239,17 @@ namespace Lister.ViewModels
 
         private bool GeneratePdf ( string fileToSave )
         {
-            List<PageViewModel> pages = GetAllPages ();
-            bool result = _converter.ConvertToExtention (pages, fileToSave);
+            List <PageViewModel> pages = GetAllPages ();
+            byte [] intermediateBytes;
+
+            Stopwatch sw = Stopwatch.StartNew ();
+
+            bool result = _converter.ConvertToExtention (pages, fileToSave, out intermediateBytes);
+            
+            sw.Stop ();
+
+            long spendTime = sw.ElapsedMilliseconds;
+            
             return result;
         }
 
@@ -239,11 +258,12 @@ namespace Lister.ViewModels
         {
             TappedPdfGenerationButton = 0;
 
-            Task generationTask = new Task 
+            Task <bool> generationTask = new Task <bool>
             (
                 () => 
                 {
-                    _isPdfGenerated = GeneratePdf (_pdfFileName);
+                    bool isPdfGenerated = GeneratePdf (_pdfFileName);
+                    return isPdfGenerated;
                 }
             );
 
@@ -251,7 +271,7 @@ namespace Lister.ViewModels
                 (
                 ( tsk ) =>
                 {
-                    if ( _isPdfGenerated == false )
+                    if ( tsk.Result == false )
                     {
                         Dispatcher.UIThread.InvokeAsync
                         (() =>
@@ -299,95 +319,169 @@ namespace Lister.ViewModels
 
         public void Print ()
         {
-            ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
-
-            TappedPrintButton = 1;
-
-            mainViewModel.SetWaitingPdfOrPrint ();
-        }
-
-
-        public void PrintDuringWaiting ()
-        {
-            TappedPrintButton = 0;
+            PrintingContinues = true;
 
             List <PageViewModel> pages = GetAllPages ();
-            string fileToSave = @"intermidiate.pdf";
 
-            Task pdf = new Task
-            (
-                () =>
+            _printAdjusting = new PrintAdjustingData ();
+
+            PrintDialog printDialog = new PrintDialog (pages.Count, _printAdjusting);
+
+            printDialog.ShowDialog (MainWindow.Window);
+            pd = printDialog;
+
+            printDialog.Closed += ( sender, args ) =>
+            {
+                if ( _printAdjusting.Cancelled )
                 {
-                    _converter.ConvertToExtention (pages, fileToSave);
+                    PrintingContinues = false;
+                    return;
                 }
-            );
 
-            pdf.Start ();
-
-            Task printTask = pdf.ContinueWith
-            (
-                savingTask =>
-                {
-                    Dispatcher.UIThread.InvokeAsync
-                    (() =>
+                Task printing = new Task 
+                (
+                    () => 
                     {
-                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                        modernMV.EndWaitingPdfOrPrint ();
-                    });
+                        //List <PageViewModel> pages = GetAllPages ();
 
-                    if ( App.OsName == "Windows" )
-                    {
-                        var printerQuery = new ManagementObjectSearcher ("SELECT * from Win32_Printer");
+                        Stopwatch  sw = Stopwatch.StartNew ();
 
-                        foreach ( var printer in printerQuery.Get () )
+                        foreach ( int num   in   _printAdjusting.PageNumbers )
                         {
-                            var name = printer.GetPropertyValue ("Name");
-                            var status = printer.GetPropertyValue ("Status");
-                            var isDefault = printer.GetPropertyValue ("Default");
-                            var isNetworkPrinter = printer.GetPropertyValue ("Network");
+                            //Dispatcher.UIThread.InvokeAsync
+                            //(() =>
+                            //{
 
-                            //Console.WriteLine ("{0} (Status: {1}, Default: {2}, Network: {3}",
-                            //            name, status, isDefault, isNetworkPrinter);
+                            //});
 
-                            int dfd = 0;
+                            PageViewModel page = null;
+                            page = pages [num];
+                            List<PageViewModel> goalPages = new () { page };
+
+                            byte [] intermediateBytes;
+                            bool filesAreGenerated = _converter.ConvertToExtention (goalPages, null, out intermediateBytes);
+
+                            if ( filesAreGenerated )
+                            {
+                                using ( Stream intermediateStream = new MemoryStream (intermediateBytes) )
+                                {
+                                    using ( PrintDocument pd = new System.Drawing.Printing.PrintDocument () )
+                                    {
+                                        //pd.PrinterSettings.Duplex = Duplex.Simplex;
+
+                                        pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
+
+                                        pd.PrintPage += ( sender, args ) =>
+                                        {
+                                            System.Drawing.Image img = System.Drawing.Image.FromStream (intermediateStream);
+                                            args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
+                                        };
+
+                                        //pd.Print ();
+                                    }
+                                }
+                            }
                         }
 
-                        PrintDocument pD = new PrintDocument ();
-                        pD.PrinterSettings.PrinterName = "";
-
-                        
-
-
-
-
-
-                        int length = _converter.intermidiateFiles.Count;
-                        IStorageItem sItem = null;
-                        //string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
-                        //string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
-                        string printerName = "Samsung ML-2160 Seriesqqqqq";
-
-                        ProcessStartInfo info = new ()
-                        {
-                            FileName = fileToSave,
-                            Verb = "Print",
-                            UseShellExecute = true,
-                            ErrorDialog = false,
-                            CreateNoWindow = true,
-                           // Arguments = "\"" + printerName + "\"",
-                            WindowStyle = ProcessWindowStyle.Minimized
-                        };
-
-                        bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);
+                        sw.Stop ();
+                        long time = sw.ElapsedMilliseconds;
+                        int io = 0;
                     }
-                    else if ( App.OsName == "Linux" )
-                    {
-                        string printCommand = "lp " + fileToSave;
-                        ExecuteBashCommand (printCommand);
-                    }
-                }
-            );
+                );
+
+                printing.Start ();
+
+                int ds = 0;
+            };
         }
+
+
+        //public void StartWaiting () 
+        //{
+        //    ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+        //    TappedPrintButton = 1;
+        //    mainViewModel.SetWaitingPdfOrPrint ();
+        //}
+
+
+        //public void PrintDuringWaiting ()
+        //{
+        //    //if ( TappedPrintButton == 1 )
+        //    //{
+        //    //    return;
+        //    //}
+
+        //    TappedPrintButton = 0;
+
+        //    List <PageViewModel> allPages = GetAllPages ();
+        //    List <PageViewModel> goalPages = new ();
+
+        //    foreach ( int num   in   _printAdjusting.PageNumbers ) 
+        //    {
+        //        goalPages.Add (allPages [num]);
+        //    }
+
+        //    string fileToSave = @"intermidiate.pdf";
+        //    List <string> intermediateFiles = new ();
+
+        //    Task <bool> pdf = new Task <bool>
+        //    (
+        //        () =>
+        //        {
+        //            bool filesAreGenerated = _converter.ConvertToExtention (goalPages, null, intermediateFiles);
+        //            return filesAreGenerated;
+        //        }
+        //    );
+
+        //    Task printTask = pdf.ContinueWith
+        //    (
+        //        (savingTask) =>
+        //        {
+        //            Dispatcher.UIThread.InvokeAsync
+        //            (() =>
+        //            {
+        //                ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+        //                modernMV.EndWaitingPdfOrPrint ();
+        //            });
+
+        //            if (savingTask.Result == false) 
+        //            {
+        //                return;
+        //            }
+
+        //            if ( App.OsName == "Windows" )
+        //            {
+        //                using ( var pd = new System.Drawing.Printing.PrintDocument () )
+        //                {
+        //                    //pd.PrinterSettings.Duplex = Duplex.Simplex;
+
+        //                    pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
+
+        //                    pd.PrintPage += ( sender, args ) => 
+        //                    {
+        //                        foreach ( string fileName   in   intermediateFiles ) 
+        //                        {
+        //                            System.Drawing.Image img = System.Drawing.Image.FromFile (fileName);
+
+        //                            //img = System.Drawing.Image.FromStream ();
+
+        //                            args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
+        //                        }
+        //                    };
+
+        //                    //pd.Print ();
+        //                }
+        //            }
+        //            else if ( App.OsName == "Linux" )
+        //            {
+        //                string printCommand = "lp " + fileToSave;
+        //                ExecuteBashCommand (printCommand);
+        //            }
+        //        }
+        //    );
+
+        //    pdf.Start ();
+        //}
 
 
         private static void ExecuteBashCommand ( string command )
@@ -412,3 +506,55 @@ namespace Lister.ViewModels
         }
     }
 }
+
+
+//var printerQuery = new ManagementObjectSearcher ("SELECT * from Win32_Printer");
+
+//var printers = printerQuery.Get ();
+//ManagementBaseObject goalPrinter = null;
+//int counter = 0;
+
+//foreach ( var printer in printers )
+//{
+//    if ( counter == 6 )
+//    {
+//        goalPrinter = printer;
+//    }
+
+//    var name = printer.GetPropertyValue ("Name");
+//    var status = printer.GetPropertyValue ("Status");
+//    var isDefault = printer.GetPropertyValue ("Default");
+//    var isNetworkPrinter = printer.GetPropertyValue ("Network");
+
+//    //Console.WriteLine ("{0} (Status: {1}, Default: {2}, Network: {3}",
+//    //            name, status, isDefault, isNetworkPrinter);
+
+//    int dfd = 0;
+//    counter++;
+//}
+
+
+
+//int length = _converter.intermidiateFiles.Count;
+//IStorageItem sItem = null;
+////string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
+////string printerName = "ORPO-7.mgkb.ru\Samsung ML-2160 Series";
+//string printerName = "Samsung ML-2160 Seriesqqqqq";
+
+//ProcessStartInfo info = new ()
+//{
+//    FileName = fileToSave,
+//    Verb = "Print",
+//    UseShellExecute = true,
+//    ErrorDialog = false,
+//    CreateNoWindow = true,
+//   // Arguments = "\"" + printerName + "\"",
+//    WindowStyle = ProcessWindowStyle.Minimized
+//};
+
+//bool ? procIsExited = Process.Start (info)?.WaitForExit (20_000);                
+
+
+//ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+//TappedPrintButton = 1;
+//mainViewModel.SetWaitingPdfOrPrint ();

@@ -11,25 +11,22 @@
 		WindowStartupLocation="CenterScreen"
 		x:DataType="vm:DialogViewModel"
 		
-		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0"
-		>
+		ExtendClientAreaTitleBarHeightHint = "0">
 
 	<UserControl
 		Width="350"
 		Height="130"
 		BorderBrush = "gray"
-        BorderThickness = "1"
-		>
+        BorderThickness = "1">
+		
 		<StackPanel>
 
 			<Label
 				Content ="Сохранение изменений"
 				FontSize ="12"
-				Margin ="5,5,0,0"
-				/>
+				Margin ="5,5,0,0"/>
 
 			<Grid Height="70"  Margin ="0,-5,0,0">
 
@@ -51,8 +48,7 @@
 					FontSize="12"
 					Margin ="10,37,0,0"
 					TextWrapping="WrapWithOverflow"
-					MaxLines="3"
-					/>
+					MaxLines="3"/>
 			</Grid>
 
 			<Canvas
@@ -60,15 +56,13 @@
 				Width="348"
 				Height="1"
 				Margin ="0,-5,0,0"
-				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-			    />
+				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
 
 			<Canvas
 				Width="348"
 				Height="39"
 				Margin ="0,-2,0,0"
-				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }"
-				>
+				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">
 
 				<Button
 					Name="Yes"
@@ -84,8 +78,7 @@
 					Canvas.Top="8"
 					Canvas.Left="170"
 					Content="Да"
-					Command="{Binding  Path = ChooseYes}"
-					/>
+					Command="{Binding  Path = ChooseYes}"/>
 
 				<Button
 					Name="No"
@@ -101,8 +94,7 @@
 					Canvas.Top="8"
 					Canvas.Left="260"
 					Content="Нет"
-					Command="{Binding  Path = ChooseNo}"
-					/>
+					Command="{Binding  Path = ChooseNo}"/>
 
 			</Canvas>
 

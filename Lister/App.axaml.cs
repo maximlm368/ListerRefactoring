@@ -163,6 +163,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <TextLineViewModel> ();
         collection.AddSingleton <WaitingViewModel> ();
         collection.AddSingleton <MessageViewModel> ();
+        collection.AddSingleton <PrintDialogViewModel> ();
     }
 
 

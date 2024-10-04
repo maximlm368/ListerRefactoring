@@ -177,6 +177,15 @@ namespace Lister.ViewModels
         }
 
 
+        internal void Clone ()
+        {
+            for ( int index = 0;   index < Badges.Count;   index++ )
+            {
+                Badges [index].Clone ();
+            }
+        }
+
+
         internal void Clear ()
         {
             Badges.Clear ();

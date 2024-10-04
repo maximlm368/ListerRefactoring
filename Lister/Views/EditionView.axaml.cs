@@ -84,6 +84,11 @@ namespace Lister.Views
             zoomOnBadge.FocusAdorner = null;
             zoomOutBadge.FocusAdorner = null;
             editionPanel.FocusAdorner = null;
+            extender.FocusAdorner = null;
+            up.FocusAdorner = null;
+            down.FocusAdorner = null;
+            upper.FocusAdorner = null;
+            downer.FocusAdorner = null;
 
             //Back.FocusAdorner = null;
             //editionPanel.FocusAdorner = null;
@@ -110,12 +115,12 @@ namespace Lister.Views
             workArea.Width -= widthDifference;
             workArea.Height -= heightDifference;
 
-            collectionManagement.Height -= heightDifference;
-            sliderPanel.Height -= heightDifference;
-            slider.Height -= heightDifference;
+            //collectionManagement.Height -= heightDifference;
+            //sliderPanel.Height -= heightDifference;
+            //slider.Height -= heightDifference;
             _vm.ChangeSize ( widthDifference, heightDifference);
-            _vm.WidthDelta = widthDifference;
-            _vm.HeightDelta = heightDifference;
+            //_vm.WidthDelta = widthDifference;
+            //_vm.HeightDelta = heightDifference;
         }
 
 

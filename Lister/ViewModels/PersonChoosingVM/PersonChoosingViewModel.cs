@@ -70,8 +70,8 @@ namespace Lister.ViewModels
         internal bool BuildingIsPossible { get; private set; }
         internal List <VisiblePerson> PeopleStorage { get; set; }
 
-        private ObservableCollection<TemplateViewModel> tF;
-        internal ObservableCollection<TemplateViewModel> Templates
+        private ObservableCollection <TemplateViewModel> tF;
+        internal ObservableCollection <TemplateViewModel> Templates
         {
             get
             {
@@ -858,7 +858,7 @@ namespace Lister.ViewModels
                 unfoundColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
             }
 
-            ObservableCollection<TemplateViewModel> templates = new ();
+            ObservableCollection <TemplateViewModel> templates = new ();
 
             foreach ( TemplateName name   in   _templateNames )
             {

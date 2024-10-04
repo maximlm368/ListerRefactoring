@@ -89,6 +89,8 @@ namespace Lister.ViewModels
                     }
                     catch ( Exception ex ) { }
                 }
+
+                CalcVisibleRange (CorrectNumbered. Count);
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
@@ -103,12 +105,14 @@ namespace Lister.ViewModels
                     }
                     catch ( Exception ex ) { }
                 }
+
+                CalcVisibleRange (IncorrectNumbered. Count);
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
                 _filterState = FilterChoosing.All;
 
-                if ( BeingProcessedBadge. IsCorrect )
+                if ((BeingProcessedBadge != null)   &&   BeingProcessedBadge. IsCorrect )
                 {
                     try
                     {
@@ -117,6 +121,8 @@ namespace Lister.ViewModels
                     }
                     catch ( Exception ex ) { }
                 }
+
+                CalcVisibleRange (AllNumbered. Count);
             }
 
             SwitchFilter ();
@@ -167,15 +173,15 @@ namespace Lister.ViewModels
         private void SwitchFilter ()
         {
             BeingProcessedBadge = null;
-            _numberAmongLoadedIcons = 1;
-            _visibleRangeEnd = _visibleRange - 1;
-            _scrollStepNumber = 0;
             VisibleIcons = new ();
+            NextIsEnable = true;
+            LastIsEnable = true;
 
             if ( _filterState == FilterChoosing.All )
             {
-                _currentAmmount = _allReadonlyBadges. Count;
-                ProcessableCount = _allReadonlyBadges.Count;
+                _currentVisibleCollection = AllNumbered;
+                ProcessableCount = AllNumbered.Count;
+                IncorrectBadgesCount = IncorrectNumbered. Count;
 
                 int counter = 0;
 
@@ -206,10 +212,11 @@ namespace Lister.ViewModels
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
-                _currentAmmount = CorrectNumbered. Count;
-
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
+                _currentVisibleCollection = CorrectNumbered;
+                ProcessableCount = _currentVisibleCollection.Count;
+                IncorrectBadgesCount = 0;
 
                 int existingCounter = 0;
                 int firstExistingCommonNumber = -1;
@@ -240,15 +247,15 @@ namespace Lister.ViewModels
                     FilterState = ImageHelper.LoadFromResource (correctUri);
                     ActiveIcon = VisibleIcons [0];
                     BeingProcessedBadge = CorrectNumbered.ElementAt (0).Value;
-                    ProcessableCount = CorrectNumbered. Count;
                 }
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
-                _currentAmmount = IncorrectNumbered. Count;
-
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
+                _currentVisibleCollection = IncorrectNumbered;
+                ProcessableCount = _currentVisibleCollection.Count;
+                IncorrectBadgesCount = _currentVisibleCollection.Count;
 
                 int existingCounter = 0;
                 int firstExistingCommonNumber = -1;
@@ -279,16 +286,18 @@ namespace Lister.ViewModels
                     FilterState = ImageHelper.LoadFromResource (correctUri);
                     ActiveIcon = VisibleIcons [0];
                     BeingProcessedBadge = IncorrectNumbered.ElementAt (0).Value;
-                    ProcessableCount = IncorrectNumbered.Count;
                 }
             }
+
+            _numberAmongVisibleIcons = 1;
+            _scrollStepNumber = 0;
 
             if ( BeingProcessedBadge != null )
             {
                 ScrollWidth = _upDownButtonHeightWigth;
                 _runnerHasWalked = 0;
                 ScrollOffset = 0;
-                _numberAmongLoadedIcons = 1;
+                _numberAmongVisibleIcons = 1;
                 BeingProcessedNumber = 1;
                 BeingProcessedBadge.Show ();
                 ZeroSliderStation (VisibleIcons);
@@ -298,9 +307,24 @@ namespace Lister.ViewModels
                 ScrollWidth = 0;
             }
 
-            if ( VisibleIcons.Count < _visibleRange ) 
+            if ( VisibleIcons. Count < _maxVisibleCount ) 
             {
                 ScrollWidth = 0;
+            }
+
+            if ( VisibleIcons. Count == 0 )
+            {
+                UpDownWidth = 0;
+                UpDownIsFocusable = false;
+                FirstIsEnable = false;
+                PreviousIsEnable = false;
+                NextIsEnable = false;
+                LastIsEnable = false;
+            }
+            else 
+            {
+                UpDownWidth = _upDownWidth;
+                UpDownIsFocusable = true;
             }
         }
     }

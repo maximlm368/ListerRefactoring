@@ -26,6 +26,7 @@ public class PageViewModel : ViewModelBase
     private static double _contentLeftOffset;
     internal static Size PageSize { get; private set; }
 
+    private bool _isShown;
     private int _badgeCount;
     private double _scale;
     private BadgeLine _fillableLine;
@@ -149,7 +150,7 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    internal PageViewModel GetDimendionalOriginal () 
+    internal PageViewModel GetDimendionalOriginalClone () 
     {
         return new PageViewModel ( this );
     }
@@ -300,6 +301,15 @@ public class PageViewModel : ViewModelBase
     }
 
 
+    //internal void Clone ()
+    //{
+    //    for ( int index = 0;   index < Lines.Count;   index++ )
+    //    {
+    //        Lines [index].Show ();
+    //    }
+    //}
+
+
     internal void Show ()
     {
         for ( int index = 0;   index < Lines. Count;   index++ )
@@ -309,13 +319,13 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    internal void Hide ()
-    {
-        for ( int index = 0;   index < Lines. Count;   index++ )
-        {
-            Lines [index].Hide ();
-        }
-    }
+    //internal void Hide ()
+    //{
+    //    for ( int index = 0;   index < Lines. Count;   index++ )
+    //    {
+    //        Lines [index].Hide ();
+    //    }
+    //}
 
 
     private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, double desiredScale )
@@ -343,7 +353,7 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    private static List<PageViewModel> Place ( List <BadgeViewModel> placebleBadges, double desiredScale
+    private static List <PageViewModel> Place ( List <BadgeViewModel> placebleBadges, double desiredScale
                                                                             , PageViewModel fillablePage ) 
     {
         List<PageViewModel> result = new ();
