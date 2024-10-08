@@ -12,6 +12,7 @@ using Lister.Views;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Lister.ViewModels
 {

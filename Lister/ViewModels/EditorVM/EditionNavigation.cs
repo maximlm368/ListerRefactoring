@@ -61,14 +61,20 @@ namespace Lister.ViewModels
 
         internal void ToFirst ()
         {
+            ControlIncorrectCountValue ();
             BeingProcessedBadge.Hide ();
 
             int absoluteNumber = BeingProcessedNumber + 1;
-            bool filterOccured = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+            bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
-            if ( filterOccured )
+            if ( isProcessableChangedInSpecificFilter )
             {
-                absoluteNumber--;
+                ReduceCurrentCollection (BeingProcessedNumber - 1);
+
+                if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                {
+                    _visibleRange = _currentVisibleCollection.Count;
+                }
             }
 
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
@@ -77,7 +83,9 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < _visibleRange;   index++ )
             {
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, _currentVisibleCollection.ElementAt(index).Value));
+                BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
+
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge));
 
                 if ( index == 0 ) 
                 {
@@ -107,17 +115,36 @@ namespace Lister.ViewModels
                 return;
             }
 
+            ControlIncorrectCountValue ();
             BeingProcessedBadge.Hide ();
-            int possableRemovableNumber = BeingProcessedNumber - 1;
+            int possableRemovableNumber = BeingProcessedNumber;
+            int possableRemovableAmongVisibleNumber = _numberAmongVisibleIcons;
             SetSliderToStationBeforeScrollingIfShould ();
 
             int absoluteNumber = BeingProcessedNumber + 1;
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
 
             BeingProcessedNumber--;
             _numberAmongVisibleIcons--;
 
-            if ( BeingProcessedNumber < (_visibleRangeEnd - _visibleRange + 2))
+            if ( isProcessableChangedInSpecificFilter )
+            {
+                bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
+                bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
+
+                ShrinkFilteredListsByNumbers 
+                (possableRemovableNumber-1, possableRemovableAmongVisibleNumber-1, shiftToSideLast, true, sliderIsScrollable);
+
+                if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+                {
+                    _numberAmongVisibleIcons++;
+                    _visibleRangeEnd--;
+                    _scrollStepNumber--;
+                }
+            }
+
+            if ( BeingProcessedNumber < ( _visibleRangeEnd - _visibleRange + 2 ) )
             {
                 ScrollUpAtOneStep ();
                 SaveSliderState ();
@@ -131,13 +158,16 @@ namespace Lister.ViewModels
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedBadge.Show ();
 
-            if ( isProcessableChangedInSpecificFilter )
-            {
-                ShrinkVisibleIconsByNumber (possableRemovableNumber, _numberAmongVisibleIcons);
-            }
-
             BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
+
+            sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+
+            if ( ! sliderIsScrollable )
+            {
+                ScrollWidth = 0;
+            }
+
             SetManageControlsAbility ();
         }
 
@@ -149,19 +179,40 @@ namespace Lister.ViewModels
                 return;
             }
 
+            ControlIncorrectCountValue ();
             BeingProcessedBadge.Hide ();
             SetSliderToStationBeforeScrollingIfShould ();
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
 
             BeingProcessedNumber++;
             _numberAmongVisibleIcons++;
+
+            if ( isProcessableChangedInSpecificFilter )
+            {
+                BeingProcessedNumber--;
+                _numberAmongVisibleIcons--;
+                
+                bool endIsNotAchieved = (_visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ));
+                bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
+
+                ShrinkFilteredListsByNumbers
+                ((BeingProcessedNumber - 1), (_numberAmongVisibleIcons - 1), shiftToSideLast, true, sliderIsScrollable);
+
+                if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+                {
+                    _numberAmongVisibleIcons++;
+                    _visibleRangeEnd--;
+                    _scrollStepNumber--;
+                }
+            }
 
             if ( BeingProcessedNumber > ( _visibleRangeEnd + 1 ) )
             {
                 ScrollDownAtOneStep ();
                 SaveSliderState ();
 
-                _numberAmongVisibleIcons = VisibleIcons. Count;
+                _numberAmongVisibleIcons = VisibleIcons.Count;
                 _doubleRest = 0;
                 _visibleRangeEnd++;
             }
@@ -170,50 +221,63 @@ namespace Lister.ViewModels
             BeingProcessedBadge.Show ();
             SetToCorrectScale (BeingProcessedBadge);
 
-            if ( isProcessableChangedInSpecificFilter )
-            {
-                BeingProcessedNumber--;
-                _numberAmongVisibleIcons--;
-                ShrinkVisibleIconsByNumber (BeingProcessedNumber - 1, _numberAmongVisibleIcons - 1);
-            }
-
             BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
+
+            sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+
+            if ( ! sliderIsScrollable ) 
+            {
+                ScrollWidth = 0;
+            }
+
             SetManageControlsAbility ();
         }
 
 
         internal void ToLast ()
         {
+            ControlIncorrectCountValue ();
             BeingProcessedBadge.Hide ();
             BadgeViewModel newProcesseble = null;
+            int oldNumber = BeingProcessedNumber;
 
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
             _visibleIconsStorage = VisibleIcons;
+
+            bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+
+            if ( isProcessableChangedInSpecificFilter )
+            {
+                ReduceCurrentCollection (BeingProcessedNumber - 1);
+
+                //if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                //{
+                //    _visibleRangeEnd--;
+                //    _visibleRange--;
+                //}
+
+                if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                {
+                    _visibleRangeEnd--;
+                    _visibleRange = _currentVisibleCollection.Count;
+                }
+            }
 
             int visibleCountBeforeEnd = _currentVisibleCollection.Count - _visibleRange;
 
             for ( int index = visibleCountBeforeEnd;   index < _currentVisibleCollection.Count;   index++ )
             {
-                BadgeViewModel badge = _currentVisibleCollection.ElementAt (index).Value;
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge));
+                BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge));
             }
 
             ScrollOffset = RunnerWalkSpace;
-
-            int absoluteNumber = _currentVisibleCollection.Count;
             _numberAmongVisibleIcons = VisibleIcons. Count;
-
-            bool filterOccured = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
-
-            if ( filterOccured )
-            {
-                absoluteNumber--;
-            }
 
             ReplaceActiveIcon (VisibleIcons [_numberAmongVisibleIcons - 1]);
 
-            BeingProcessedNumber = absoluteNumber;
+            BeingProcessedNumber = _currentVisibleCollection.Count;
             BeingProcessedNumber = GetAppropriateLastNumber ();
             BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
             BeingProcessedBadge.Show ();
@@ -255,6 +319,8 @@ namespace Lister.ViewModels
         {
             try
             {
+                ControlIncorrectCountValue ();
+
                 int destinationNumber = int.Parse (destinationNumberAsText);
 
                 BeingProcessedBadge.Hide ();
@@ -271,42 +337,81 @@ namespace Lister.ViewModels
 
                 if ( isProcessableChangedInSpecificFilter )
                 {
-                    if ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) )
+                    bool sliderIsScrollable = ( _currentVisibleCollection.Count > _visibleRange );
+                    bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
+                    bool exProcessableIsNotInVisibleRange = ( oldNumber > ( _visibleRangeEnd + 1 ) ) 
+                                                      ||  ( oldNumber < (_visibleRangeEnd - _visibleRange + 2) );
+
+                    if ( endIsNotAchieved )
                     {
-                        ShrinkVisibleIconsByNumber (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ));
+                        ShrinkFilteredListsByNumbers (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 )
+                        , true, ! exProcessableIsNotInVisibleRange, sliderIsScrollable);
+
                         newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
 
                         if ( oldNumber < BeingProcessedNumber )
                         {
                             BeingProcessedNumber--;
-                            _numberAmongVisibleIcons--;
-                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
-                        }
-                    }
-                    else if ( _visibleRangeEnd == ( _currentVisibleCollection.Count - 1 ) )
-                    {
-                        ShrinkVisibleIconsByNumber (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ));
 
-                        if ( _currentVisibleCollection.Count <= _visibleRange )
-                        {
-                            amongVisibleIconsDestinationNum--;
-                            _numberAmongVisibleIcons--;
-                            _visibleRangeEnd--;
+                            if ( exProcessableIsNotInVisibleRange )
+                            {
+                                newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
+                                _visibleRangeEnd--;
+                                _scrollStepNumber--;
+                            }
+                            else
+                            {
+                                _numberAmongVisibleIcons--;
+                                _scrollStepNumber--;
+                                newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
+                            }
                         }
-
-                        if ( oldNumber > BeingProcessedNumber )
-                        {
-                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum];
-                            _numberAmongVisibleIcons++;
-                        }
-                        else if ( oldNumber < BeingProcessedNumber )
+                        else 
                         {
                             newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
-                            BeingProcessedNumber--;
                         }
                     }
+                    else
+                    {
+                        if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                        {
+                            ShrinkFilteredListsByNumbers 
+                            (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), true, true, sliderIsScrollable);
 
-                    _scrollStepNumber--;
+                            if ( oldNumber < BeingProcessedNumber )
+                            {
+                                amongVisibleIconsDestinationNum--;
+                                _numberAmongVisibleIcons--;
+                                BeingProcessedNumber--;
+                            }
+
+                            //_visibleRangeEnd--;
+                            //_visibleRange--;
+
+                            newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
+                        }
+                        else 
+                        {
+                            ShrinkFilteredListsByNumbers 
+                            (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), false, true, sliderIsScrollable);
+                            
+                            if ( oldNumber < BeingProcessedNumber )
+                            {
+                                newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
+                                BeingProcessedNumber--;
+                            }
+                            else if ( oldNumber > BeingProcessedNumber )
+                            {
+                                newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum];
+                                _numberAmongVisibleIcons++;
+                                BeingProcessedNumber++;
+                                BeingProcessedNumber--;
+                            } 
+
+                            _scrollStepNumber--;
+                            _visibleRangeEnd--;
+                        }
+                    }
                 }
 
                 ReplaceActiveIcon (newActiveIcon);
@@ -324,14 +429,21 @@ namespace Lister.ViewModels
         }
 
 
+        private void ControlIncorrectCountValue () 
+        {
+            if ( (_filterState == FilterChoosing.Corrects)   &&   ( ! BeingProcessedBadge. IsCorrect) ) 
+            {
+                IncorrectBadgesCount = 0;
+            }
+        }
+
+
         private void SetManageControlsAbility ( )
         {
             EnableNavigation ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
-            //_view.editorTextBox.IsEnabled = false;
-            //_view.scalabilityGrade.IsEnabled = false;
             ReleaseCaptured ();
         }
 
@@ -384,42 +496,6 @@ namespace Lister.ViewModels
 
             return result;
         }
-
-
-        //private void AccomodateExProcessableToProperList ()
-        //{
-        //    if ( BeingProcessedBadge. IsCorrect   &&   ( _filterState == FilterChoosing.Incorrects ) )
-        //    {
-        //        ObservableCollection <BadgeCorrectnessViewModel> newVisibleIcons = new ();
-
-        //        for ( int index = (BeingProcessedNumber - 1);   index < VisibleIcons. Count;   index++ )
-        //        {
-                    
-
-        //            VisibleIcons.Add (new BadgeCorrectnessViewModel (false, _allReadonlyBadges [_scrollStepNumber + index]));
-        //        }
-
-
-        //    }
-        //    else if ( ! BeingProcessedBadge. IsCorrect   &&   ( _filterState == FilterChoosing.Corrects ) )
-        //    {
-
-
-        //        _incorrectsAmmount++;
-
-        //        try
-        //        {
-        //            IncorrectNumberedSources.Add (BeingProcessedBadge. Id, BeingProcessedBadge );
-        //        }
-        //        catch ( Exception ex ) { }
-        //    }
-
-        //    try
-        //    {
-        //        AllNumberedDrafts.Add (BeingProcessedNumber, BeingProcessedBadge);
-        //    }
-        //    catch ( Exception ex ) { }
-        //}
 
 
         private void EnableNavigation ( )

@@ -106,7 +106,7 @@
 					Margin="0,-2"
 					HorizontalAlignment="Left"
 					FontSize="16"
-					Text="{Binding  Path = Pages,  Mode=TwoWay}"
+					Text="{Binding  Path = Pages,  Mode=OneWay}"
 					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"
 					TextChanged="TextChanged"/>
 

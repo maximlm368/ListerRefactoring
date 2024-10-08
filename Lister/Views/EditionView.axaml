@@ -493,8 +493,7 @@
 												Width="36"
 												Height="22"
 												HorizontalAlignment="Left"
-												Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"
-												/>
+												Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"/>
 
 										</Border>
 
@@ -554,8 +553,8 @@
 									Canvas.Left="0"
 									Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
 									Background="Red"/>
-								
-								</Canvas>
+							
+							</Canvas>
 
 							<Button
 								Name="downer"

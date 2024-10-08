@@ -35,7 +35,7 @@ namespace Lister.ViewModels
         private static readonly double _minRunnerHeight = 10;
         private static readonly double _upDownButtonHeightWigth = 15;
         private static readonly double _scrollingScratch = 25;
-        private static int _maxVisibleCount = 9;
+        private int _maxVisibleCount;
         
         //private Stopwatch _scrollTimer;
         //private int _timesCommandCalled;
@@ -274,6 +274,7 @@ namespace Lister.ViewModels
         private void CalcVisibleRange ( int countInCollection )
         {
             _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
+            _maxVisibleCount = _visibleRange;
             _visibleRange = Math.Min ( _visibleRange, countInCollection );
             _visibleRangeEnd = _visibleRange - 1;
         }
@@ -388,21 +389,21 @@ namespace Lister.ViewModels
 
             _scrollStepNumber--;
 
-            ObservableCollection<BadgeCorrectnessViewModel> iconsCopy = VisibleIcons;
+            ObservableCollection <BadgeCorrectnessViewModel> iconsCopy = new ();
             int index = 0;
-
-            VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
 
             int badgeNumberInCurrentList = ( _scrollStepNumber + index );
 
             BadgeCorrectnessViewModel firstIcon = GetCorrespondingIcon (badgeNumberInCurrentList);
 
-            VisibleIcons.Add (firstIcon);
+            iconsCopy.Add (firstIcon);
 
             for ( ; index < ( _visibleRange - 1 );   index++ )
             {
-                VisibleIcons.Add (iconsCopy [index]);
+                iconsCopy.Add (VisibleIcons [index]);
             }
+
+            VisibleIcons = iconsCopy;
 
             _runnerHasWalked -= _runnerStep;
             ScrollOffset = Math.Round (_runnerHasWalked);
@@ -416,7 +417,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void ScrollDownAtOneStep ()
+        private void ScrollDownAtOneStep ( )
         {
             int currentAmount = _currentVisibleCollection.Count;
 
@@ -427,36 +428,43 @@ namespace Lister.ViewModels
 
             _scrollStepNumber++;
 
-            ObservableCollection <BadgeCorrectnessViewModel> iconsCopy = VisibleIcons;
-            VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
+            ObservableCollection <BadgeCorrectnessViewModel> iconsCopy = new ();
             
             int index = 1;
 
             for ( ;   index < _visibleRange;   index++ )
             {
-                VisibleIcons.Add (iconsCopy [index]);
+                iconsCopy.Add (VisibleIcons [index]);
             }
 
             int badgeNumberInCurrentList = ( _scrollStepNumber + index - 1 );
 
             BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (badgeNumberInCurrentList);
 
-            VisibleIcons.Add (lastIcon);
+            iconsCopy.Add (lastIcon);
+            VisibleIcons = iconsCopy;
 
             _runnerHasWalked += _runnerStep;
             ScrollOffset = _runnerHasWalked;
         }
 
 
-        private void ShrinkVisibleIconsByNumber ( int removableIndex, int removableIndexAmongVisibleIcons )
+        private void ShrinkFilteredListsByNumbers ( int removableIndex, int removableIndexAmongVisibleIcons
+                                                  , bool shiftToSideLast, bool shouldShrinkIcons, bool shouldAddOne )
         {
             int indexInEntireList = removableIndex;
             int indexInVisibleRange = removableIndexAmongVisibleIcons;
+
             _visibleRange = Math.Min (_visibleRange, VisibleIcons. Count);
 
-            if ( _visibleRangeEnd < (_currentVisibleCollection.Count - 1) )
+            if ( shouldShrinkIcons   &&   shiftToSideLast )
             {
-                for ( ; indexInVisibleRange < _visibleRange; indexInVisibleRange++, indexInEntireList++ )
+                if ( ! shouldAddOne ) 
+                {
+                    VisibleIcons.RemoveAt (VisibleIcons. Count - 1);
+                }
+
+                for ( ; indexInVisibleRange < _visibleRange;   indexInVisibleRange++, indexInEntireList++ )
                 {
                     BadgeCorrectnessViewModel correspondingIcon = GetCorrespondingIcon (indexInEntireList + 1);
 
@@ -470,163 +478,83 @@ namespace Lister.ViewModels
 
                 BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (indexInEntireList + 1);
 
-                if ( lastIcon != null )
+                if ( lastIcon != null ) 
                 {
                     VisibleIcons.Add (lastIcon);
                 }
-                else
-                {
-                    VisibleIcons.RemoveAt (_visibleRange - 1);
-                }
             }
-            else if ( _visibleRangeEnd == (_currentVisibleCollection.Count - 1) )
+            else if ( shouldShrinkIcons   &&   ! shiftToSideLast )
             {
-                if ( _currentVisibleCollection.Count > _visibleRange )
+                for ( ; indexInVisibleRange >= 0;   indexInVisibleRange--, indexInEntireList-- )
                 {
-                    for ( ; indexInVisibleRange >= 0;   indexInVisibleRange--, indexInEntireList-- )
+                    BadgeCorrectnessViewModel correspondingIcon = GetCorrespondingIcon (indexInEntireList - 1);
+
+                    bool zeroIsAchieved = ( correspondingIcon == null );
+
+                    if ( zeroIsAchieved )
                     {
-                        BadgeCorrectnessViewModel correspondingIcon = GetCorrespondingIcon (indexInEntireList - 1);
-
-                        if ( correspondingIcon == null )
-                        {
-                            break;
-                        }
-
-                        VisibleIcons [indexInVisibleRange] = correspondingIcon;
+                        break;
                     }
 
-                    BadgeCorrectnessViewModel firstIcon = GetCorrespondingIcon (indexInEntireList - 1);
-
-                    if ( firstIcon != null )
-                    {
-                        VisibleIcons [0] = firstIcon;
-                    }
-                    else
-                    {
-                        VisibleIcons.RemoveAt (_visibleRange - 1);
-                    }
-                }
-                else if ( _currentVisibleCollection.Count <= _visibleRange )
-                {
-                    for ( ; indexInVisibleRange < _visibleRangeEnd;   indexInVisibleRange++, indexInEntireList++ )
-                    {
-                        BadgeCorrectnessViewModel correspondingIcon = GetCorrespondingIcon (indexInEntireList + 1);
-
-                        if ( correspondingIcon == null )
-                        {
-                            break;
-                        }
-
-                        VisibleIcons [indexInVisibleRange] = correspondingIcon;
-                    }
-
-                    BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (indexInEntireList + 1);
-
-                    if ( lastIcon != null )
-                    {
-                        VisibleIcons.Add (lastIcon);
-                    }
-                    else
-                    {
-                        VisibleIcons.RemoveAt (_visibleRangeEnd);
-                    }
+                    VisibleIcons [indexInVisibleRange] = correspondingIcon;
                 }
             }
 
+            ReduceCurrentCollection (removableIndex);
+
+            if ( shouldShrinkIcons   &&   (_currentVisibleCollection.Count <= _maxVisibleCount)) 
+            {
+                _visibleRangeEnd--;
+                _visibleRange--;
+            }
+
+            //_runnerHasWalked += _runnerStep;
+            //ScrollOffset = _runnerHasWalked;
+        }
+
+
+        private void ReduceCurrentCollection ( int removableIndex ) 
+        {
             if ( _filterState == FilterChoosing.Corrects )
             {
                 BadgeViewModel badge = CorrectNumbered.ElementAt (removableIndex).Value;
                 IncorrectNumbered.Add (badge.Id, badge);
                 CorrectNumbered.Remove (badge.Id);
             }
-            else if ( _filterState == FilterChoosing.Incorrects ) 
+            else if ( _filterState == FilterChoosing.Incorrects )
             {
                 BadgeViewModel badge = IncorrectNumbered.ElementAt (removableIndex).Value;
                 CorrectNumbered.Add (badge.Id, badge);
                 IncorrectNumbered.Remove (badge.Id);
-
-                int dfd = _currentVisibleCollection.Count;
-
-                int dd = 0;
             }
 
-            if ( _filterState != FilterChoosing.All ) 
+            if ( _filterState != FilterChoosing.All )
             {
                 ProcessableCount--;
             }
-
-            //_runnerHasWalked += _runnerStep;
-            //ScrollOffset = _runnerHasWalked;
         }
 
 
-        private void ShrinkAbandonedIcon ( int removableNumber, int numberAmongVisibleIcons )
-        {
-            int indexInEntireList = removableNumber;
-            int indexInVisibleRange = numberAmongVisibleIcons;
-            _visibleRange = Math.Min (_visibleRange, VisibleIcons.Count);
-
-            for ( ; indexInVisibleRange < _visibleRange; indexInVisibleRange++, indexInEntireList++ )
-            {
-                BadgeCorrectnessViewModel correspondingIcon = GetCorrespondingIcon (indexInEntireList + 1);
-
-                if ( correspondingIcon == null )
-                {
-                    break;
-                }
-
-                VisibleIcons [indexInVisibleRange] = correspondingIcon;
-            }
-
-            BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (indexInEntireList + 1);
-
-            if ( lastIcon != null )
-            {
-                VisibleIcons.Add (lastIcon);
-            }
-            else
-            {
-                VisibleIcons.RemoveAt (_visibleRange - 1);
-            }
-
-            if ( _filterState == FilterChoosing.Corrects )
-            {
-                BadgeViewModel badge = CorrectNumbered.ElementAt (removableNumber).Value;
-                IncorrectNumbered.Add (badge.Id, badge);
-                CorrectNumbered.Remove (badge.Id);
-            }
-            else if ( _filterState == FilterChoosing.Incorrects )
-            {
-                BadgeViewModel badge = IncorrectNumbered.ElementAt (removableNumber).Value;
-                CorrectNumbered.Add (badge.Id, badge);
-                IncorrectNumbered.Remove (badge.Id);
-            }
-
-            //_runnerHasWalked += _runnerStep;
-            //ScrollOffset = _runnerHasWalked;
-        }
-
-
-        private BadgeCorrectnessViewModel ? GetCorrespondingIcon ( int badgeNumber )
+        private BadgeCorrectnessViewModel ? GetCorrespondingIcon ( int badgeIndex )
         {
             BadgeCorrectnessViewModel result = null;
             bool isCorrect = false;
             BadgeViewModel goalBadge = null;
 
-            if ( (_filterState == FilterChoosing.Incorrects)   &&   (badgeNumber < IncorrectNumbered. Count) )
+            if ( _filterState == FilterChoosing.All )
             {
-                goalBadge = IncorrectNumbered.ElementAt (badgeNumber).Value;
+                goalBadge = AllNumbered [badgeIndex];
                 isCorrect = goalBadge.IsCorrect;
             }
-            else if ( (_filterState == FilterChoosing.Corrects)   &&   ( badgeNumber < CorrectNumbered. Count ) )
+            else 
             {
-                goalBadge = CorrectNumbered.ElementAt (badgeNumber).Value;
-                isCorrect = goalBadge.IsCorrect;
-            }
-            else if ( _filterState == FilterChoosing.All )
-            {
-                goalBadge = AllNumbered [badgeNumber];
-                isCorrect = goalBadge.IsCorrect;
+                bool indexIsWithinCollection = ((_currentVisibleCollection.Count ) > badgeIndex)   &&   (badgeIndex >= 0);
+
+                if ( indexIsWithinCollection ) 
+                {
+                    goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
+                    isCorrect = goalBadge.IsCorrect;
+                }
             }
 
             if ( goalBadge != null ) 

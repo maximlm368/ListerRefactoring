@@ -32,6 +32,10 @@
 			<Setter Property="BorderBrush" Value="BlueViolet"/>
 		</Style>
 
+		<Style Selector="Button.mainButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="LightSeaGreen"/>
+		</Style>
+
 	</Application.Styles>
 
 	<Application.Resources>

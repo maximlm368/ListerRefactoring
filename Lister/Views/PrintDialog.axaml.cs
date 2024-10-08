@@ -10,6 +10,7 @@ using Avalonia.Media;
 using ExtentionsAndAuxiliary;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Interactivity;
+using static QuestPDF.Helpers.Colors;
 
 namespace Lister.Views;
 
@@ -41,18 +42,23 @@ public partial class PrintDialog : BaseWindow
         TextBox textBox = (TextBox)sender;
         string text = textBox.Text;
 
+        bool glyphIsIncorrect = true;
+
         for ( int index = 0;   index < text.Length;   index++ ) 
         {
             char ch = text [index];
 
-            bool glyphIsIncorrect = ( ch == '_' );
+            glyphIsIncorrect = ( ch == ' ' )   ||   ( ch == '-' )   ||   ( ch == ',' ) 
+                                    ||   ( ch == '0' )   ||   ( ch == '1' )   ||   ( ch == '2' )
+                                    ||   (ch == '3')   ||   ( ch == '4' )   ||   ( ch == '5' )
+                                    ||   (ch == '6')   ||   ( ch == '7' )   ||   ( ch == '8' )   ||   ( ch == '9' );
 
-            if (true) 
+            if ( ! glyphIsIncorrect )
             {
-            
+                textBox.Text = text.Remove ( index, 1 );
+                break;
             }
         }
-
     }
 }
 
