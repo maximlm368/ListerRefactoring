@@ -245,10 +245,10 @@ public class TemplateChoosingViewModel : ViewModelBase
             TappedBadgesBuildingButton = 1;
             ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
 
-            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            //WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
 
             mainViewModel.SetWaiting ();
-            waitingVM.Show ();
+            //waitingVM.Show ();
         }
         else if ( _personChoosingVM.SinglePersonIsSelected )
         {

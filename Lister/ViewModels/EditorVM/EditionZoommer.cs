@@ -97,6 +97,11 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ()
         {
+            if ( BeingProcessedBadge == null )
+            {
+                return;
+            }
+
             if ( _scalabilityDepth < _maxDepth )
             {
 
@@ -123,6 +128,11 @@ namespace Lister.ViewModels
 
         internal void ZoomOut ()
         {
+            if ( BeingProcessedBadge == null ) 
+            {
+                return;
+            }
+
             if ( _scalabilityDepth > _minDepth )
             {
                 BeingProcessedBadge.ZoomOut (_scalabilityCoefficient, false);

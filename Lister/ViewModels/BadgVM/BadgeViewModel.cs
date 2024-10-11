@@ -292,11 +292,11 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth = BadgeWidth + 2;
         BadgeHeight = badge.BadgeHeight;
         BorderHeight = BadgeHeight + 2;
-        TextLines = new ObservableCollection<TextLineViewModel> ();
-        BorderViolentLines = new List<TextLineViewModel> ();
-        OverlayViolentLines = new List<TextLineViewModel> ();
-        InsideImages = new ObservableCollection<ImageViewModel> ();
-        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        TextLines = new ObservableCollection <TextLineViewModel> ();
+        BorderViolentLines = new List <TextLineViewModel> ();
+        OverlayViolentLines = new List <TextLineViewModel> ();
+        InsideImages = new ObservableCollection <ImageViewModel> ();
+        InsideShapes = new ObservableCollection <ImageViewModel> ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         Scale = badge.Scale;
@@ -388,11 +388,11 @@ public class BadgeViewModel : ViewModelBase
         BorderWidth = BadgeWidth + 2;
         BadgeHeight = badge.BadgeHeight;
         BorderHeight = BadgeHeight + 2;
-        TextLines = new ObservableCollection<TextLineViewModel> ();
-        BorderViolentLines = new List<TextLineViewModel> ();
-        OverlayViolentLines = new List<TextLineViewModel> ();
-        InsideImages = new ObservableCollection<ImageViewModel> ();
-        InsideShapes = new ObservableCollection<ImageViewModel> ();
+        TextLines = new ObservableCollection <TextLineViewModel> ();
+        BorderViolentLines = new List <TextLineViewModel> ();
+        OverlayViolentLines = new List <TextLineViewModel> ();
+        InsideImages = new ObservableCollection <ImageViewModel> ();
+        InsideShapes = new ObservableCollection <ImageViewModel> ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         Scale = badge.Scale;
@@ -401,7 +401,7 @@ public class BadgeViewModel : ViewModelBase
         FocusedFontSize = string.Empty;
         _badLineColor = badge._badLineColor;
 
-        foreach ( TextLineViewModel line in badge.TextLines )
+        foreach ( TextLineViewModel line   in   badge.TextLines )
         {
             TextLineViewModel clone = line.Clone ();
             TextLines.Add (clone);
@@ -479,7 +479,7 @@ public class BadgeViewModel : ViewModelBase
 
         if ( FocusedLine != null )
         {
-            int visibleFontSize = ( int ) Math.Round (FocusedLine.FontSize / Scale);
+            int visibleFontSize = ( int ) Math.Round (FocusedLine. FontSize / Scale);
             FocusedFontSize = visibleFontSize.ToString ();
         }
     }
@@ -665,15 +665,18 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ModernMainViewModel.MainViewIsWaiting )
                 {
-                    var result =
-                    Dispatcher.UIThread.InvokeAsync<double>
-                    (() => { return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom); });
-                    usefulTextBlockWidth = result.Result;
+                    var result = Dispatcher.UIThread.Invoke<double>
+                    (() => 
+                    { 
+                        return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom); 
+                    });
+
+                    usefulTextBlockWidth = result;
                 }
                 else
                 {
-                    //usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
-                    usefulTextBlockWidth = 0;
+                    usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
+                    //usefulTextBlockWidth = 0;
                 }
 
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
@@ -699,10 +702,13 @@ public class BadgeViewModel : ViewModelBase
 
                     if ( ModernMainViewModel.MainViewIsWaiting )
                     {
-                        var result2 =
-                        Dispatcher.UIThread.InvokeAsync<TextLineViewModel>
-                        (() => { return new TextLineViewModel (atom); });
-                        textLine = result2.Result;
+                        var result2 = Dispatcher.UIThread.Invoke<TextLineViewModel>
+                        (() => 
+                        { 
+                            return new TextLineViewModel (atom); 
+                        });
+
+                        textLine = result2;
                     }
                     else 
                     {
@@ -741,10 +747,13 @@ public class BadgeViewModel : ViewModelBase
 
                     if ( ModernMainViewModel.MainViewIsWaiting )
                     {
-                        var result2 =
-                        Dispatcher.UIThread.InvokeAsync<TextLineViewModel>
-                        (() => { return new TextLineViewModel (atom); });
-                        textLine = result2.Result;
+                        var result3 = Dispatcher.UIThread.Invoke<TextLineViewModel>
+                        (() => 
+                        { 
+                            return new TextLineViewModel (atom); 
+                        });
+
+                        textLine = result3;
                     }
                     else 
                     {
@@ -948,10 +957,13 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ModernMainViewModel.MainViewIsWaiting )
                 {
-                    var result =
-                    Dispatcher.UIThread.InvokeAsync<IBrush>
-                    (() => { return new SolidColorBrush (new Color (255, r, g, b)); });
-                    brush = result.Result;
+                    var result = Dispatcher.UIThread.Invoke<IBrush>
+                    (() => 
+                    { 
+                        return new SolidColorBrush (new Color (255, r, g, b)); 
+                    });
+
+                    brush = result;
                 }
                 else 
                 {

@@ -160,7 +160,7 @@
 					IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=Print}"
-					ToolTip.Tip="Печатать на принтере по умолчанию">
+					ToolTip.Tip="Печатать на принтере">
 
 					<StackPanel Orientation="Horizontal">
 						<Label 

@@ -6,22 +6,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AnimatedImage.Avalonia;
+using Avalonia;
 
 namespace Lister.ViewModels
 {
-    public class WaitingViewModel : ViewModelBase
+    public partial class WaitingViewModel : ViewModelBase
     {
-        private WaitingView _view;
+        private WaitingView ? _view;
         private double _canvasTop = 80;
         private double _canvasLeft = 250;
         private double _canvasHeight = 467;
+        private double _canvasWidth = 800;
+        private readonly double _canvasHiddenVerticalMargin = 4;
+        private double _canvasShownVerticalMargin = -460;
         private double _imageHeight = 300;
 
         private AnimatedImageSource _gifSource;
-        public AnimatedImageSource GifSource
+        private AnimatedImageSource ? gS;
+        public AnimatedImageSource ? GifSource
         {
-            get => _gifSource;
-            set => this.RaiseAndSetIfChanged (ref _gifSource, value);
+            get { return gS; }
+            private set 
+            { 
+                this.RaiseAndSetIfChanged (ref gS, value, nameof(GifSource)); 
+            }
         }
 
         private double cT;
@@ -54,6 +62,26 @@ namespace Lister.ViewModels
             }
         }
 
+        private double cW;
+        public double CanvasWidth
+        {
+            get { return cW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref cW, value, nameof (CanvasWidth));
+            }
+        }
+
+        //private double vM;
+        //public double CanvasVerticalMargin
+        //{
+        //    get { return vM; }
+        //    private set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref vM, value, nameof (CanvasVerticalMargin));
+        //    }
+        //}
+
         private double iH;
         public double ImageHeight
         {
@@ -74,44 +102,86 @@ namespace Lister.ViewModels
             }
         }
 
+        private double pW;
+        public double ProgressWidth
+        {
+            get { return pW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref pW, value, nameof (ProgressWidth));
+            }
+        }
+
+        private Thickness mg;
+        public Thickness Margin
+        {
+            get { return mg; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref mg, value, nameof (Margin));
+            }
+        }
+
+        //private Thickness mg;
+        //public Thickness WaitingCurtainMargin
+        //{
+        //    get { return mg; }
+        //    private set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref mg, value, nameof (WaitingCurtainMargin));
+        //    }
+        //}
+
 
         public WaitingViewModel () 
         {
-            CanvasHeight = 467;
-            ImageHeight = 0;
-            ImageIsVisible = true;
-            CanvasLeft = _canvasLeft;
-            CanvasTop = _canvasTop;
-
-            // GifSource = new AnimatedImageSourceUri (new Uri ("avares://Lister/Assets/Loading.gif"));
-
-            string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
-            GifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
-
-            int dfdf = 0;
+            Margin = new Thickness (0, _canvasHiddenVerticalMargin);
         }
 
-        public void Show ()
-        {
-            //CanvasHeight = _canvasHeight;
-            //ImageHeight = _imageHeight;
-            //string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
-            //GifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
 
-            GifSource = new AnimatedImageSourceUri (new Uri ("avares://Lister/Assets/Loading.gif"));
+        public void Show ( )
+        {
+            CanvasHeight = _canvasHeight;
+            CanvasWidth = _canvasWidth;
+            Margin = new Thickness (0, _canvasShownVerticalMargin);
+            CanvasTop = _canvasTop;
+            CanvasLeft = _canvasLeft;
+
+            if ( _gifSource == null )
+            {
+                string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
+                _gifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
+            }
+
+            GifSource = _gifSource;
         }
 
 
         public void Hide ()
         {
-            CanvasHeight = 0;
-            ImageHeight = 0;
+            Margin = new Thickness (0, _canvasHiddenVerticalMargin);
+            GifSource = null;
         }
 
 
-        //public void PassView ( WaitingView view )
-        //{
-        //    _view = view;
-        //}
+        public void ChangeSize ( double heightDiff, double widthDiff )
+        {
+            CanvasWidth -= widthDiff;
+            _canvasWidth -= widthDiff;
+            CanvasHeight -= heightDiff;
+            _canvasHeight -= heightDiff;
+
+            CanvasTop -= heightDiff/2;
+            _canvasTop -= heightDiff/2;
+            CanvasLeft -= widthDiff/2;
+            _canvasLeft -= widthDiff/2;
+
+            _canvasShownVerticalMargin += heightDiff;
+
+            if ( ModernMainViewModel.MainViewIsWaiting ) 
+            {
+                Margin = new Thickness (0, _canvasShownVerticalMargin);
+            }
+        }
     }
 }

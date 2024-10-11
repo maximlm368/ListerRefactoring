@@ -7,9 +7,9 @@
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 x:Class="Lister.Views.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel"
-			 Height="460"
-			 Width="800"
-			 >
+			 
+			 Height="{Binding  Path=ViewHeight,  Mode=OneWay}"
+			 Width="{Binding  Path=ViewWidth,  Mode=OneWay}">
 	
 	<StackPanel
 		Name="editionPanel"
@@ -284,7 +284,7 @@
 					Name="workArea"
 					HorizontalAlignment="Left"
 					Width="{Binding  Path=WorkAreaWidth,  Mode=OneWay}"
-					Height="380"
+					Height="{Binding  Path=WorkAreaHeight,  Mode=OneWay}"
 					Margin="-130, 0"
 					Background="AliceBlue"
 					BorderThickness="0">
@@ -421,18 +421,50 @@
 
 							<Button
 								Name="switcher"
-								Width="36"
-								Height="22"
+								Width="{Binding  Path=SwitcherWidth,  Mode=OneWay}"
+								Height="32"
+								Margin="2,0"
+								Padding="7,7"
+								FontFamily="FontAwesome"
+								Content="&#xF008;"
+								Background="{Binding  Path=SwitcherBackground,  Mode=OneWay}"
 								ToolTip.Tip="Переключить фильтр"
 								Command="{Binding  Path = Filter}"
-								KeyDown="ToParticularBadge">
+								KeyDown="ToParticularBadge"/>
+							
+							<Label
+								Name="filterLabel"
+								FontSize="16"
+								Height="32"
+								Width="{Binding  Path=FilterLabelWidth,  Mode=OneWay}"
+								Margin="-2,4"
+								Padding="0, 0"
+								Content="Фильтры"/>
 
-								<Button.Background>
-									<ImageBrush
-										Source = "{Binding  Path = FilterState,  Mode=OneWay }"/>
-								</Button.Background>
-							</Button>
+							<ComboBox
+								Name="filterChoosing"
+								Background="White"
+								FontSize="16"
+								Height="32"
+								Width="150"
+								Margin="10,-4"
+								MaxDropDownHeight="200"
+								IsEnabled="{Binding  Path=IsComboboxEnabled,  Mode=OneWay}"
+								SelectedIndex="{Binding  Path=ComboboxSelectedIndex,  Mode=OneWay}"
+								IsDropDownOpen="{Binding  Path=IsDropDownOpen,  Mode=OneWayToSource}"
+								SelectionChanged="SelectionChanged"
+								ItemsSource="{Binding  Path=FilterNames,  Mode=OneWay}">
 
+								<ComboBox.ItemTemplate >
+									<DataTemplate >
+										<Label
+											FontSize="16"
+											Padding="0,0"
+											Content="{Binding,  Mode=OneWay}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+
+							</ComboBox>
 
 						</StackPanel>
 					</Border>
@@ -664,7 +696,7 @@
 				Margin="0,3"
 				Focusable="False"
 				IsReadOnly="True"
-				Text="{Binding   Path = BeingProcessedNumber,   Mode=OneWay}"/>
+				Text="{Binding   Path = BeingProcessedNumberText,   Mode=OneWay}"/>
 			
 			<Label
 				Content="Из"
@@ -765,6 +797,13 @@
 
 
 <!-- 
+
+								<Button.Background>
+									<ImageBrush
+										Source = "{Binding  Path = FilterState,  Mode=OneWay }"/>
+								</Button.Background>
+
+
 
 Height="{Binding  Path=EntireBlockHeight,  Mode=OneWay}"
 

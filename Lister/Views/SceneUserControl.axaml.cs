@@ -35,10 +35,11 @@ namespace Lister.Views
         }
 
 
-        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges, PageViewModel firstPage )
+        internal void EditIncorrectBadges 
+            ( List <BadgeViewModel> incorrectBadges, List <BadgeViewModel> allPrintableBadges, PageViewModel firstPage )
         {
             ModernMainView mainView = ModernMainView.Instance;
-            mainView.EditIncorrectBadges ( incorrectBadges, firstPage );
+            mainView.EditIncorrectBadges ( incorrectBadges, allPrintableBadges, firstPage );
         }
     }
 }

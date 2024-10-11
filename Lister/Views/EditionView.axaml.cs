@@ -90,6 +90,9 @@ namespace Lister.Views
             upper.FocusAdorner = null;
             downer.FocusAdorner = null;
 
+            filterChoosing.SelectedValue = "Все";
+            
+
             //Back.FocusAdorner = null;
             //editionPanel.FocusAdorner = null;
 
@@ -100,7 +103,7 @@ namespace Lister.Views
         internal void ComplateBacking ( )
         {
             MainWindow mainWindow = Parent as MainWindow;
-            _back.SetProperSize (Width, Height);
+            _back.SetProperSize ( _vm.ViewWidth, _vm.ViewHeight );
 
             mainWindow.CancelSizeDifference ();
             _back.ResetIncorrects ();
@@ -110,17 +113,15 @@ namespace Lister.Views
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
-            Width -= widthDifference;
-            Height -= heightDifference;
-            workArea.Width -= widthDifference;
-            workArea.Height -= heightDifference;
+            //Width -= widthDifference;
+            //Height -= heightDifference;
+            //workArea.Width -= widthDifference;
+            //workArea.Height -= heightDifference;
 
-            //collectionManagement.Height -= heightDifference;
-            //sliderPanel.Height -= heightDifference;
-            //slider.Height -= heightDifference;
             _vm.ChangeSize ( widthDifference, heightDifference);
-            //_vm.WidthDelta = widthDifference;
-            //_vm.HeightDelta = heightDifference;
+
+            WaitingViewModel waitingVM = App.services.GetRequiredService <WaitingViewModel> ();
+            waitingVM.ChangeSize ( heightDifference, widthDifference );
         }
 
 
@@ -156,9 +157,10 @@ namespace Lister.Views
         }
 
 
-        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects, PageViewModel firstPage ) 
+        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects
+                                          , List <BadgeViewModel> allPrintable, PageViewModel firstPage ) 
         {
-            _vm.PassIncorrects (incorrects, firstPage);
+            _vm.PassIncorrects (incorrects, allPrintable, firstPage);
         }
 
 
@@ -166,6 +168,15 @@ namespace Lister.Views
         {
             _back = back;
             _vm.PassView (this);
+        }
+
+
+        internal void CorrespondToEmptyCurrentCollection ( int currentCount )
+        {
+            if ( currentCount < 1 )
+            {
+                cancel.IsEnabled = false;
+            }
         }
 
 
@@ -202,6 +213,19 @@ namespace Lister.Views
             }
 
             _vm.ResetFocusedText (edited);
+        }
+
+
+        internal void SelectionChanged ( object sender, SelectionChangedEventArgs args )
+        {
+            if ( _vm == null ) 
+            {
+                return;
+            }
+
+            ComboBox comboBox = sender as ComboBox;
+            string selected = comboBox.SelectedValue as string;
+            _vm.ChangeFilter (selected);
         }
 
 
@@ -277,7 +301,6 @@ namespace Lister.Views
 
             _vm.Focus (content, lineNumber);
             Cursor = new Cursor (StandardCursorType.SizeAll);
-
             _isReleaseLocked = true;
             _focusTime = Stopwatch.StartNew ();
         }

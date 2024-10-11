@@ -54,7 +54,26 @@ namespace Lister.ViewModels
             get { return bpN; }
             private set
             {
+                if ( value < 1 )
+                {
+                    BeingProcessedNumberText = string.Empty;
+                }
+                else 
+                {
+                    BeingProcessedNumberText = value.ToString ();
+                }
+
                 this.RaiseAndSetIfChanged (ref bpN, value, nameof (BeingProcessedNumber));
+            }
+        }
+
+        private string bpNT;
+        internal string BeingProcessedNumberText
+        {
+            get { return bpNT; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref bpNT, value, nameof (BeingProcessedNumberText));
             }
         }
 
@@ -74,6 +93,8 @@ namespace Lister.ViewModels
                 if ( _currentVisibleCollection.Count <= _maxVisibleCount )
                 {
                     _visibleRange = _currentVisibleCollection.Count;
+                    _visibleRangeEnd = _currentVisibleCollection.Count - 1;
+                    ScrollWidth = 0;
                 }
             }
 
@@ -99,9 +120,11 @@ namespace Lister.ViewModels
             BeingProcessedBadge.Show ();
 
             ScrollOffset = 0;
-            _scrollStepNumber = 0;
+            _scrollStepIndex = 0;
             _runnerHasWalked = 0;
             _visibleRangeEnd = _visibleRange - 1;
+
+            CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
 
             ReplaceActiveIcon (VisibleIcons [0]);
             SetManageControlsAbility ();
@@ -110,7 +133,7 @@ namespace Lister.ViewModels
 
         internal void ToPrevious ()
         {
-            if ( BeingProcessedNumber <= 1 )
+            if ( (BeingProcessedNumber <= 1)   ||   (IsDropDownOpen) )
             {
                 return;
             }
@@ -133,14 +156,19 @@ namespace Lister.ViewModels
                 bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
                 bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
 
-                ShrinkFilteredListsByNumbers 
+                ReduceCurrentCollectionAndIcon 
                 (possableRemovableNumber-1, possableRemovableAmongVisibleNumber-1, shiftToSideLast, true, sliderIsScrollable);
+
+                CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
 
                 if ( ! endIsNotAchieved   &&   sliderIsScrollable )
                 {
                     _numberAmongVisibleIcons++;
                     _visibleRangeEnd--;
-                    _scrollStepNumber--;
+                    _scrollStepIndex--;
+
+                    _runnerHasWalked = _scrollStepIndex * _runnerStep;
+                    ScrollOffset = _runnerHasWalked;
                 }
             }
 
@@ -174,7 +202,7 @@ namespace Lister.ViewModels
 
         internal void ToNext ()
         {
-            if ( BeingProcessedNumber >= ProcessableCount )
+            if ( (BeingProcessedNumber >= ProcessableCount)   ||   (IsDropDownOpen) )
             {
                 return;
             }
@@ -193,17 +221,22 @@ namespace Lister.ViewModels
                 BeingProcessedNumber--;
                 _numberAmongVisibleIcons--;
                 
-                bool endIsNotAchieved = (_visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ));
+                bool endIsNotAchieved = (_visibleRangeEnd < (_currentVisibleCollection.Count - 1));
                 bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
 
-                ShrinkFilteredListsByNumbers
+                ReduceCurrentCollectionAndIcon
                 ((BeingProcessedNumber - 1), (_numberAmongVisibleIcons - 1), shiftToSideLast, true, sliderIsScrollable);
+
+                CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
 
                 if ( ! endIsNotAchieved   &&   sliderIsScrollable )
                 {
                     _numberAmongVisibleIcons++;
                     _visibleRangeEnd--;
-                    _scrollStepNumber--;
+                    _scrollStepIndex--;
+
+                    _runnerHasWalked = _scrollStepIndex * _runnerStep;
+                    ScrollOffset = _runnerHasWalked;
                 }
             }
 
@@ -250,18 +283,6 @@ namespace Lister.ViewModels
             if ( isProcessableChangedInSpecificFilter )
             {
                 ReduceCurrentCollection (BeingProcessedNumber - 1);
-
-                //if ( _currentVisibleCollection.Count <= _maxVisibleCount )
-                //{
-                //    _visibleRangeEnd--;
-                //    _visibleRange--;
-                //}
-
-                if ( _currentVisibleCollection.Count <= _maxVisibleCount )
-                {
-                    _visibleRangeEnd--;
-                    _visibleRange = _currentVisibleCollection.Count;
-                }
             }
 
             int visibleCountBeforeEnd = _currentVisibleCollection.Count - _visibleRange;
@@ -272,7 +293,6 @@ namespace Lister.ViewModels
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge));
             }
 
-            ScrollOffset = RunnerWalkSpace;
             _numberAmongVisibleIcons = VisibleIcons. Count;
 
             ReplaceActiveIcon (VisibleIcons [_numberAmongVisibleIcons - 1]);
@@ -283,11 +303,26 @@ namespace Lister.ViewModels
             BeingProcessedBadge.Show ();
             SetToCorrectScale (BeingProcessedBadge);
 
-            SetManageControlsAbility ();
-
-            _scrollStepNumber = _currentVisibleCollection.Count - _visibleRange;
-            _runnerHasWalked = _scrollStepNumber * _runnerStep;
+            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
             _visibleRangeEnd = _currentVisibleCollection.Count - 1;
+
+            CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+
+            if ( ! sliderIsScrollable )
+            {
+                ScrollWidth = 0;
+                _visibleRange = _currentVisibleCollection.Count;
+                _scrollStepIndex = 0;
+                _runnerHasWalked = 0;
+            }
+            else 
+            {
+                _scrollStepIndex = _currentVisibleCollection.Count - _visibleRange;
+                _runnerHasWalked = _scrollStepIndex * _runnerStep;
+                ScrollOffset = _runnerHasWalked;
+            }
+
+            SetManageControlsAbility ();
         }
 
 
@@ -327,24 +362,26 @@ namespace Lister.ViewModels
                 bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
                 int oldNumber = BeingProcessedNumber;
-                int oldNumberAmongVisibleIcons = oldNumber - _scrollStepNumber;
+                int oldNumberAmongVisibleIcons = oldNumber - _scrollStepIndex;
                 BeingProcessedNumber = destinationNumber;
-                int amongVisibleIconsDestinationNum = destinationNumber - _scrollStepNumber;
-                _numberAmongVisibleIcons = BeingProcessedNumber - _scrollStepNumber;
+                int amongVisibleIconsDestinationNum = destinationNumber - _scrollStepIndex;
+                _numberAmongVisibleIcons = BeingProcessedNumber - _scrollStepIndex;
+                
                 BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
 
-                _visibleRangeEnd = _scrollStepNumber + _visibleRange - 1;
+                bool sliderIsScrollable = ( _currentVisibleCollection.Count > _visibleRange );
+
+                _visibleRangeEnd = _scrollStepIndex + _visibleRange - 1;
 
                 if ( isProcessableChangedInSpecificFilter )
                 {
-                    bool sliderIsScrollable = ( _currentVisibleCollection.Count > _visibleRange );
                     bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
                     bool exProcessableIsNotInVisibleRange = ( oldNumber > ( _visibleRangeEnd + 1 ) ) 
                                                       ||  ( oldNumber < (_visibleRangeEnd - _visibleRange + 2) );
 
                     if ( endIsNotAchieved )
                     {
-                        ShrinkFilteredListsByNumbers (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 )
+                        ReduceCurrentCollectionAndIcon (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 )
                         , true, ! exProcessableIsNotInVisibleRange, sliderIsScrollable);
 
                         newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
@@ -357,12 +394,12 @@ namespace Lister.ViewModels
                             {
                                 newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
                                 _visibleRangeEnd--;
-                                _scrollStepNumber--;
+                                _scrollStepIndex--;
                             }
                             else
                             {
                                 _numberAmongVisibleIcons--;
-                                _scrollStepNumber--;
+                                //_scrollStepNumber--;
                                 newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
                             }
                         }
@@ -375,7 +412,7 @@ namespace Lister.ViewModels
                     {
                         if ( _currentVisibleCollection.Count <= _maxVisibleCount )
                         {
-                            ShrinkFilteredListsByNumbers 
+                            ReduceCurrentCollectionAndIcon 
                             (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), true, true, sliderIsScrollable);
 
                             if ( oldNumber < BeingProcessedNumber )
@@ -392,7 +429,7 @@ namespace Lister.ViewModels
                         }
                         else 
                         {
-                            ShrinkFilteredListsByNumbers 
+                            ReduceCurrentCollectionAndIcon 
                             (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), false, true, sliderIsScrollable);
                             
                             if ( oldNumber < BeingProcessedNumber )
@@ -408,9 +445,17 @@ namespace Lister.ViewModels
                                 BeingProcessedNumber--;
                             } 
 
-                            _scrollStepNumber--;
+                            _scrollStepIndex--;
                             _visibleRangeEnd--;
                         }
+                    }
+
+                    CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+
+                    if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+                    {
+                        _runnerHasWalked = _scrollStepIndex * _runnerStep;
+                        ScrollOffset = _runnerHasWalked;
                     }
                 }
 
@@ -419,6 +464,13 @@ namespace Lister.ViewModels
 
                 SetToCorrectScale (BeingProcessedBadge);
                 BeingProcessedBadge.Show ();
+
+                sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+
+                if ( !sliderIsScrollable )
+                {
+                    ScrollWidth = 0;
+                }
 
                 SetManageControlsAbility ();
             }
@@ -483,7 +535,7 @@ namespace Lister.ViewModels
 
             if ( _filterState == FilterChoosing.All )
             {
-                result = _allReadonlyBadges.Count;
+                result = AllNumbered. Count;
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
@@ -530,6 +582,8 @@ namespace Lister.ViewModels
                 NextIsEnable = true;
                 LastIsEnable = true;
             }
+
+            _view.CorrespondToEmptyCurrentCollection (_currentVisibleCollection.Count);
         }
     }
 }

@@ -39,6 +39,14 @@ namespace Lister.ViewModels
         internal static double _scale = 1.5624;
         //internal static readonly double _scale = 2.5;
 
+        private double _viewWidth = 800;
+        private double _viewHeight = 460;
+
+        private double _workAreaWidth = 550;
+        private double _workAreaHeight = 380;
+
+
+
         private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
         private List <BadgeViewModel> _allReadonlyBadges;
@@ -69,13 +77,42 @@ namespace Lister.ViewModels
             }
         }
 
-        //private Dictionary <BadgeViewModel, BadgeViewModel> _sourceToDrafts;
+        private double wAH;
+        internal double WorkAreaHeight
+        {
+            get { return wAH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref wAH, value, nameof (WorkAreaHeight));
+            }
+        }
+
+        private double vW;
+        internal double ViewWidth
+        {
+            get { return vW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref vW, value, nameof (ViewWidth));
+            }
+        }
+
+        private double vH;
+        internal double ViewHeight
+        {
+            get { return vH; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref vH, value, nameof (ViewHeight));
+            }
+        }
 
         private Dictionary<int, BadgeViewModel> _currentVisibleCollection;
         internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
         internal Dictionary<int, BadgeViewModel> IncorrectNumbered { get; private set; }
         internal Dictionary<int, BadgeViewModel> CorrectNumbered { get; private set; }
         internal Dictionary<int, BadgeViewModel> BackupNumbered { get; private set; }
+        internal List <BadgeViewModel> Printable { get; private set; }
 
         internal BadgeViewModel FirstIncorrect { get; private set; }
 
@@ -201,15 +238,15 @@ namespace Lister.ViewModels
         {
             _scaleStorage = new ();
             _allReadonlyBadges = new ();
-            //_incorrectBadges = new ();
-            //_correctBadges = new ();
-            //_sourceToDrafts = new ();
+
+            ViewWidth = _viewWidth;
+            ViewHeight = _viewHeight;
 
             ExtenderContent = "\uF053";
             WorkAreaWidth = _workAreaWidth + _namesFilterWidth;
+            WorkAreaHeight = _workAreaHeight;
             SetUpSliderBlock ( incorrectBadgesAmmount );
 
-            //SetUpIcons ();
             ChangeScrollHeight (0);
             SetUpZoommer ();
 
@@ -278,7 +315,8 @@ namespace Lister.ViewModels
         }
 
 
-        internal void PassIncorrects ( List <BadgeViewModel> incorrects, PageViewModel firstPage )
+        internal void PassIncorrects ( List <BadgeViewModel> incorrects
+                                     , List <BadgeViewModel> allPrintable, PageViewModel firstPage )
         {
             bool isNullOrEmpty = ( incorrects == null )   ||   ( incorrects.Count == 0 );
 
@@ -292,6 +330,7 @@ namespace Lister.ViewModels
             IncorrectNumbered = new ();
             CorrectNumbered = new ();
             BackupNumbered = new ();
+            Printable = allPrintable;
             _scaleStorage = new ();
 
             _incorrectsAmmount = incorrects.Count;
@@ -476,25 +515,6 @@ namespace Lister.ViewModels
             BeingProcessedBadge = beingProcessed;
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedNumber = 1;
-        }
-
-
-        internal void ExtendOrShrinkCollectionManagement ()
-        {
-            if ( _filterIsOpen )
-            {
-                CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
-                WorkAreaWidth += _namesFilterWidth;
-                _filterIsOpen = false;
-                ExtenderContent = "\uF053";
-            }
-            else
-            {
-                CollectionFilterMargin = new Thickness (0, 0);
-                WorkAreaWidth -= _namesFilterWidth;
-                _filterIsOpen = true;
-                ExtenderContent = "\uF054";
-            }
         }
 
 

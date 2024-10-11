@@ -43,40 +43,13 @@ namespace Lister.ViewModels
             ResetActiveIcon ();
         }
 
-
-        //internal void Left ()
-        //{
-        //    BeingProcessedBadge.Left (_scale);
-        //    ResetActiveIcon ();
-        //}
-
-
-        //internal void Right ()
-        //{
-        //    BeingProcessedBadge.Right (_scale);
-        //    ResetActiveIcon ();
-        //}
-
-
-        //internal void Up ()
-        //{
-        //    BeingProcessedBadge.Up (_scale);
-        //    ResetActiveIcon ();
-        //}
-
-
-        //internal void Down ()
-        //{
-        //    BeingProcessedBadge.Down (_scale);
-        //    ResetActiveIcon ();
-        //}
         #endregion
 
         internal void Focus ( string focusedContent, int elementNumber )
         {
-            if ( ! BeingProcessedBadge. IsChanged    &&   ( BackupNumbered [BeingProcessedBadge.Id] == null ) ) 
+            if ( ! BeingProcessedBadge. IsChanged    &&   ( BackupNumbered [BeingProcessedBadge. Id] == null ) ) 
             {
-                BackupNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge.Clone ();
+                BackupNumbered [BeingProcessedBadge. Id] = BeingProcessedBadge.Clone ();
             }
 
             BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
@@ -92,15 +65,24 @@ namespace Lister.ViewModels
 
         internal void ReleaseCaptured ()
         {
+            ZoommerIsEnable = false;
+            MoversAreEnable = false;
+            SplitterIsEnable = false;
+
+            if ( BeingProcessedBadge == null ) 
+            {
+                return;
+            }
+
             if ( BeingProcessedBadge.FocusedLine != null )
             {
                 BeingProcessedBadge.CheckFocusedLineCorrectness ();
                 BeingProcessedBadge.FocusedLine = null;
                 BeingProcessedBadge.FocusedFontSize = string.Empty;
+
+                Printable [BeingProcessedBadge. Id].CopyFrom ( BeingProcessedBadge );
+
                 ResetActiveIcon ();
-                ZoommerIsEnable = false;
-                MoversAreEnable = false;
-                SplitterIsEnable = false;
             }
         }
 

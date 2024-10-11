@@ -3,6 +3,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using ContentAssembler;
 using Lister.Views;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -24,15 +25,15 @@ namespace Lister.ViewModels
         private SceneViewModel _sceneVM;
         private ModernMainView _view;
 
-        private bool wV;
-        public bool WaitingIsVisible
-        {
-            get { return wV; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref wV, value, nameof (WaitingIsVisible));
-            }
-        }
+        //private bool wV;
+        //public bool WaitingIsVisible
+        //{
+        //    get { return wV; }
+        //    private set
+        //    {
+        //        this.RaiseAndSetIfChanged (ref wV, value, nameof (WaitingIsVisible));
+        //    }
+        //}
 
 
         public ModernMainViewModel ( PersonSourceViewModel personSourceVM, PersonChoosingViewModel personChoosingVM,
@@ -63,27 +64,41 @@ namespace Lister.ViewModels
 
         internal void SetWaiting ( )
         {
-            WaitingIsVisible = true;
+            WaitingViewModel waitingVM = App.services.GetRequiredService <WaitingViewModel> ();
+            waitingVM.Show ();
             MainViewIsWaiting = true;
         }
 
 
         internal void SetWaitingPdfOrPrint ()
         {
-            WaitingIsVisible = true;
+            //WaitingIsVisible = true;
+
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.Show ();
+            MainViewIsWaiting = true;
         }
 
 
         internal void EndWaiting ()
         {
-            WaitingIsVisible = false;
+            //WaitingIsVisible = false;
+
+
+
             _templateChoosingVM.BuildingIsPossible = true;
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.Hide ();
         }
 
 
         internal void EndWaitingPdfOrPrint ()
         {
-            WaitingIsVisible = false;
+            //WaitingIsVisible = false;
+
+
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.Hide ();
         }
 
 

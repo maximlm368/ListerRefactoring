@@ -289,7 +289,7 @@ namespace Lister.ViewModels
                             ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
                             modernMV.EndWaitingPdfOrPrint ();
                         });
-                        
+
                         if ( App.OsName == "Windows" )
                         {
                             Process fileExplorer = new Process ();
@@ -356,7 +356,7 @@ namespace Lister.ViewModels
 
                             PageViewModel page = null;
                             page = pages [num];
-                            List<PageViewModel> goalPages = new () { page };
+                            List <PageViewModel> goalPages = new () { page };
 
                             byte [] intermediateBytes;
                             bool filesAreGenerated = _converter.ConvertToExtention (goalPages, null, out intermediateBytes);

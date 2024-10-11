@@ -29,7 +29,8 @@ namespace Lister.Views
         internal static double ProperHeight { get; private set; }
 
         internal BadgeEditorView EditorView { get; private set; }
-        private List<BadgeViewModel> _incorrectBadges;
+        private List <BadgeViewModel> _incorrectBadges;
+        private List <BadgeViewModel> _allPrintableBadges;
         private PageViewModel _firstPage;
 
 
@@ -48,8 +49,8 @@ namespace Lister.Views
             _vm = ( ModernMainViewModel ) DataContext;
             _vm.PassView (this);
 
-            waiting.Margin = new Avalonia.Thickness ( 0, -460 );
-            waiting.IsVisible = false;
+            //waiting.Margin = new Avalonia.Thickness ( 0, -460 );
+            //waiting.IsVisible = false;
 
             //buttonPanel.Margin = new Avalonia.Thickness (0, -260);
 
@@ -167,29 +168,11 @@ namespace Lister.Views
         }
 
 
-        //internal void EditIncorrectBadgess ( List<BadgeViewModel> incorrectBadges )
-        //{
-        //    ModernMainView mainView = this;
-        //    MainWindow window = MainWindow.GetMainWindow ();
-
-        //    if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
-        //    {
-        //        BadgeEditorView editorView = new BadgeEditorView ();
-
-        //        editorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
-        //        window.CancelSizeDifference ();
-
-        //        editorView.PassIncorrectBadges (incorrectBadges);
-        //        editorView.PassBackPoint (mainView);
-        //        _isFirstTimeLoading = false;
-        //        window.Content = editorView;
-        //    }
-        //}
-
-
-        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges, PageViewModel firstPage )
+        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges
+                                          , List <BadgeViewModel> allPrintableBadges, PageViewModel firstPage )
         {
             _incorrectBadges = incorrectBadges;
+            _allPrintableBadges = allPrintableBadges;
             _firstPage = firstPage;
             ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
@@ -215,7 +198,7 @@ namespace Lister.Views
             (
                 () =>
                 {
-                    EditorView.PassIncorrectBadges (_incorrectBadges, _firstPage);
+                    EditorView.PassIncorrectBadges (_incorrectBadges, _allPrintableBadges, _firstPage);
                     EditorView.PassBackPoint (mainView);
                     _isFirstTimeLoading = false;
 

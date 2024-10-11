@@ -156,7 +156,7 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    internal static List <PageViewModel> ? PlaceIntoPages ( List<BadgeViewModel> placebleBadges,
+    internal static List <PageViewModel> ? PlaceIntoPages ( List <BadgeViewModel> placebleBadges,
                                                             double desiredScale, PageViewModel ? scratchPage )
     {
         bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, desiredScale);
@@ -319,13 +319,13 @@ public class PageViewModel : ViewModelBase
     }
 
 
-    //internal void Hide ()
-    //{
-    //    for ( int index = 0;   index < Lines. Count;   index++ )
-    //    {
-    //        Lines [index].Hide ();
-    //    }
-    //}
+    internal void Hide ()
+    {
+        for ( int index = 0; index < Lines.Count; index++ )
+        {
+            Lines [index].Hide ();
+        }
+    }
 
 
     private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, double desiredScale )

@@ -20,6 +20,8 @@ using ExCSS;
 using System;
 using AvaloniaEdit.Utils;
 using System.Collections.Immutable;
+using ReactiveUI;
+using Avalonia;
 
 namespace Lister.ViewModels
 {
@@ -28,6 +30,58 @@ namespace Lister.ViewModels
         private static string _correctnessIcon = "GreenCheckMarker.jpg";
         private static string _incorrectnessIcon = "RedCross.png";
         private FilterChoosing _filterState = FilterChoosing.All;
+        private readonly double _switcherWidth = 32;
+        private readonly double _filterLabelWidth = 70;
+
+        private bool dO;
+        internal bool IsDropDownOpen
+        {
+            get { return dO; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref dO, value, nameof (IsDropDownOpen));
+            }
+        }
+
+        private bool cE;
+        internal bool IsComboboxEnabled
+        {
+            get { return cE; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cE, value, nameof (IsComboboxEnabled));
+            }
+        }
+
+        private double swW;
+        internal double SwitcherWidth
+        {
+            get { return swW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref swW, value, nameof (SwitcherWidth));
+            }
+        }
+
+        private double fLW;
+        internal double FilterLabelWidth
+        {
+            get { return fLW; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref fLW, value, nameof (FilterLabelWidth));
+            }
+        }
+
+        private int cSI;
+        internal int ComboboxSelectedIndex
+        {
+            get { return cSI; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref cSI, value, nameof (ComboboxSelectedIndex));
+            }
+        }
 
 
         internal bool IsProcessableChangedInSpecificFilter ( int filterableNumber )
@@ -59,9 +113,13 @@ namespace Lister.ViewModels
 
         internal void Filter ()
         {
+            _runnerHasWalked = 0;
+
             if ( _filterState == FilterChoosing.All )
             {
                 _filterState = FilterChoosing.Corrects;
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 100, 0));
+                ComboboxSelectedIndex = 1;
 
                 TryChangeSpecificLists ();
 
@@ -73,8 +131,10 @@ namespace Lister.ViewModels
             else if ( _filterState == FilterChoosing.Corrects )
             {
                 _filterState = FilterChoosing.Incorrects;
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 100, 0, 0));
+                ComboboxSelectedIndex = 2;
 
-                TryChangeSpecificLists();
+                TryChangeSpecificLists ();
 
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
@@ -84,6 +144,8 @@ namespace Lister.ViewModels
             else if ( _filterState == FilterChoosing.Incorrects )
             {
                 _filterState = FilterChoosing.All;
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 0, 100));
+                ComboboxSelectedIndex = 0;
 
                 TryChangeSpecificLists ();
 
@@ -92,6 +154,7 @@ namespace Lister.ViewModels
             }
 
             CalcVisibleRange(_currentVisibleCollection.Count);
+            CalcRunner (_currentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
         }
@@ -118,26 +181,18 @@ namespace Lister.ViewModels
             }
 
             _numberAmongVisibleIcons = 1;
-            _scrollStepNumber = 0;
+            _scrollStepIndex = 0;
 
             if ( BeingProcessedBadge != null )
             {
-                ScrollWidth = _upDownButtonHeightWigth;
-                _runnerHasWalked = 0;
-                ScrollOffset = 0;
                 _numberAmongVisibleIcons = 1;
                 BeingProcessedNumber = 1;
                 BeingProcessedBadge.Show ();
                 ZeroSliderStation (VisibleIcons);
             }
-            else
+            else 
             {
-                ScrollWidth = 0;
-            }
-
-            if ( VisibleIcons. Count < _maxVisibleCount ) 
-            {
-                ScrollWidth = 0;
+                BeingProcessedNumber = 0;
             }
 
             if ( VisibleIcons. Count == 0 )
@@ -161,7 +216,7 @@ namespace Lister.ViewModels
         {
             int counter = 0;
 
-            foreach ( KeyValuePair<int, BadgeViewModel> badge   in   AllNumbered )
+            foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllNumbered )
             {
                 if ( counter == _visibleRange )
                 {
@@ -290,6 +345,90 @@ namespace Lister.ViewModels
         {
             _currentVisibleCollection = list;
             ProcessableCount = _currentVisibleCollection.Count;
+        }
+
+
+        internal void ChangeFilter ( string filterName )
+        {
+            _runnerHasWalked = 0;
+
+            bool appLoadingIs = ( AllNumbered == null ) 
+                                || ( CorrectNumbered == null ) 
+                                || ( IncorrectNumbered == null );
+
+            if (appLoadingIs) 
+            {
+                return;
+            }
+
+            if ( filterName == "Все" )
+            {
+                _filterState = FilterChoosing.All;
+
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 200));
+
+                TryChangeSpecificLists ();
+
+                SetCurrentVisible (AllNumbered);
+                IncorrectBadgesCount = IncorrectNumbered.Count;
+            }
+            else if ( filterName == "Без ошибок" )
+            {
+                _filterState = FilterChoosing.Corrects;
+
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 0));
+
+                TryChangeSpecificLists ();
+
+                var imm = CorrectNumbered.ToImmutableSortedDictionary ();
+                CorrectNumbered = imm.ToDictionary ();
+                SetCurrentVisible (CorrectNumbered);
+                IncorrectBadgesCount = 0;
+            }
+            else if ( filterName == "С ошибками" )
+            {
+                _filterState = FilterChoosing.Incorrects;
+
+                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 0, 0));
+
+                TryChangeSpecificLists ();
+
+                var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
+                IncorrectNumbered = imm.ToDictionary ();
+                SetCurrentVisible (IncorrectNumbered);
+                IncorrectBadgesCount = _currentVisibleCollection.Count;
+            }
+
+            CalcVisibleRange (_currentVisibleCollection.Count);
+            CalcRunner (_currentVisibleCollection.Count);
+            SetAccordingIcons ();
+            EnableNavigation ();
+            ReleaseCaptured ();
+        }
+
+
+        internal void ExtendOrShrinkCollectionManagement ()
+        {
+            if ( _filterIsOpen )
+            {
+                CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
+                WorkAreaWidth += _namesFilterWidth;
+                _filterIsOpen = false;
+                ExtenderContent = "\uF053";
+                SwitcherWidth = _switcherWidth;
+                FilterLabelWidth = 0;
+                IsComboboxEnabled = false;
+            }
+            else
+            {
+                CollectionFilterMargin = new Thickness (0, 0);
+                WorkAreaWidth -= _namesFilterWidth;
+                _filterIsOpen = true;
+                ExtenderContent = "\uF054";
+                SwitcherWidth = 0;
+                FilterLabelWidth = _filterLabelWidth;
+                IsComboboxEnabled = true;
+            }
         }
     }
 }

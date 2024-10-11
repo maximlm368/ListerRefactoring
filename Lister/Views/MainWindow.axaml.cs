@@ -98,8 +98,12 @@ public partial class MainWindow : Window
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             mainView.ChangeSize (newWidthDifference, newHeightDifference);
+
             //BadgeEditorViewModel editorVM = App.services.GetRequiredService<BadgeEditorViewModel> ();
-            //editorVM.ChangeSize (newWidthDifference, newHeightDifference);
+            //if (editorVM != null) 
+            //{
+            //    editorVM.ChangeSize (newWidthDifference, newHeightDifference);
+            //}
         }
         catch ( System.InvalidCastException ex )
         {
@@ -115,6 +119,9 @@ public partial class MainWindow : Window
                 _currentWidth = newWidth;
                 _currentHeight = newHeight;
                 mainView.ChangeSize (widthDifference, heightDifference);
+
+                //BadgeEditorViewModel editorVM = App.services.GetRequiredService<BadgeEditorViewModel> ();
+                //editorVM.ChangeSize (widthDifference, heightDifference);
             }
             catch ( System.InvalidCastException excp )
             {
@@ -128,7 +135,7 @@ public partial class MainWindow : Window
         WidthDifference = 0;
         //HeightDifference = 0;
 
-        _mainView. waiting.Recover ();
+        //_mainView. waiting.Recover ();
     }
 
 
