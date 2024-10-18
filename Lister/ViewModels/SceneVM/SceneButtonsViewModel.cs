@@ -28,8 +28,6 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        public static PrintDialog pd;
-
         private static readonly double _buttonWidth = 32;
         private static readonly double _countLabelWidth = 50;
         private static readonly double _extention = 130;
@@ -41,7 +39,7 @@ namespace Lister.ViewModels
         private static readonly string _suggestedFileNames = "Badge";
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
         public static int TappedPdfGenerationButton { get; set; }
-        public static bool PrintingContinues { get; private set; }
+        public static int TappedPrintButton { get; set; }
 
         private PrintAdjustingData _printAdjusting;
         private bool _blockIsExtended = false;
@@ -170,10 +168,7 @@ namespace Lister.ViewModels
 
                            TappedPdfGenerationButton = 1;
 
-                           mainViewModel.SetWaitingPdfOrPrint ();
-
-                           
-
+                           mainViewModel.SetWaiting ();
                        }
                    }, uiScheduler
                 );
@@ -239,11 +234,11 @@ namespace Lister.ViewModels
 
         private bool GeneratePdf ( string fileToSave )
         {
-            List <PageViewModel> pages = GetAllPages ();
-            byte [] intermediateBytes;
+            List <PageViewModel> pages = GetPrintablePages ();
+            IEnumerable <byte []> intermediateBytes = null;
 
             Stopwatch sw = Stopwatch.StartNew ();
-
+            
             bool result = _converter.ConvertToExtention (pages, fileToSave, out intermediateBytes);
             
             sw.Stop ();
@@ -268,16 +263,20 @@ namespace Lister.ViewModels
             );
 
             generationTask.ContinueWith
-                (
-                ( tsk ) =>
+                (( tsk ) =>
                 {
                     if ( tsk.Result == false )
                     {
                         Dispatcher.UIThread.InvokeAsync
                         (() =>
                         {
-                            var messegeDialog = new MessageDialog ();
+                            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                            modernMV.EndWaitingPdfOrPrint ();
+
+                            var messegeDialog = new MessageDialog (ModernMainView.Instance);
                             messegeDialog.Message = _fileIsOpenMessage;
+                            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                            waitingVM.HandleDialogOpenig ();
                             messegeDialog.ShowDialog (MainWindow.Window);
                         });
                     }
@@ -319,169 +318,116 @@ namespace Lister.ViewModels
 
         public void Print ()
         {
-            PrintingContinues = true;
-
-            List <PageViewModel> pages = GetAllPages ();
+            int pagesCount = GetPrintablePagesCount ();
 
             _printAdjusting = new PrintAdjustingData ();
 
-            PrintDialog printDialog = new PrintDialog (pages.Count, _printAdjusting);
-
-            printDialog.ShowDialog (MainWindow.Window);
-            pd = printDialog;
+            PrintDialog printDialog = new PrintDialog (pagesCount, _printAdjusting);
 
             printDialog.Closed += ( sender, args ) =>
             {
                 if ( _printAdjusting.Cancelled )
                 {
-                    PrintingContinues = false;
                     return;
                 }
 
-                Task printing = new Task 
-                (
-                    () => 
-                    {
-                        //List <PageViewModel> pages = GetAllPages ();
-
-                        Stopwatch  sw = Stopwatch.StartNew ();
-
-                        foreach ( int num   in   _printAdjusting.PageNumbers )
-                        {
-                            //Dispatcher.UIThread.InvokeAsync
-                            //(() =>
-                            //{
-
-                            //});
-
-                            PageViewModel page = null;
-                            page = pages [num];
-                            List <PageViewModel> goalPages = new () { page };
-
-                            byte [] intermediateBytes;
-                            bool filesAreGenerated = _converter.ConvertToExtention (goalPages, null, out intermediateBytes);
-
-                            if ( filesAreGenerated )
-                            {
-                                using ( Stream intermediateStream = new MemoryStream (intermediateBytes) )
-                                {
-                                    using ( PrintDocument pd = new System.Drawing.Printing.PrintDocument () )
-                                    {
-                                        //pd.PrinterSettings.Duplex = Duplex.Simplex;
-
-                                        pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
-
-                                        pd.PrintPage += ( sender, args ) =>
-                                        {
-                                            System.Drawing.Image img = System.Drawing.Image.FromStream (intermediateStream);
-                                            args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
-                                        };
-
-                                        //pd.Print ();
-                                    }
-                                }
-                            }
-                        }
-
-                        sw.Stop ();
-                        long time = sw.ElapsedMilliseconds;
-                        int io = 0;
-                    }
-                );
-
-                printing.Start ();
-
-                int ds = 0;
+                WaitForPrinting ();
             };
+
+            HandleDialogOpenig ();
+            printDialog.ShowDialog (MainWindow.Window);
         }
 
 
-        //public void StartWaiting () 
-        //{
-        //    ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
-        //    TappedPrintButton = 1;
-        //    mainViewModel.SetWaitingPdfOrPrint ();
-        //}
+        internal void HandleDialogOpenig ()
+        {
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.HandleDialogOpenig ();
+        }
 
 
-        //public void PrintDuringWaiting ()
-        //{
-        //    //if ( TappedPrintButton == 1 )
-        //    //{
-        //    //    return;
-        //    //}
+        internal void HandleDialogClosing ()
+        {
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.HandleDialogClosing ();
+        }
 
-        //    TappedPrintButton = 0;
 
-        //    List <PageViewModel> allPages = GetAllPages ();
-        //    List <PageViewModel> goalPages = new ();
+        public void WaitForPrinting ()
+        {
+            ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+            TappedPrintButton = 1;
+            mainViewModel.SetWaiting ();
+        }
 
-        //    foreach ( int num   in   _printAdjusting.PageNumbers ) 
-        //    {
-        //        goalPages.Add (allPages [num]);
-        //    }
 
-        //    string fileToSave = @"intermidiate.pdf";
-        //    List <string> intermediateFiles = new ();
+        public void PrintDuringWaiting ()
+        {
+            TappedPrintButton = 0;
 
-        //    Task <bool> pdf = new Task <bool>
-        //    (
-        //        () =>
-        //        {
-        //            bool filesAreGenerated = _converter.ConvertToExtention (goalPages, null, intermediateFiles);
-        //            return filesAreGenerated;
-        //        }
-        //    );
+            Task printing = new Task
+            (() =>
+            {
+                //Stopwatch sw = Stopwatch.StartNew ();
 
-        //    Task printTask = pdf.ContinueWith
-        //    (
-        //        (savingTask) =>
-        //        {
-        //            Dispatcher.UIThread.InvokeAsync
-        //            (() =>
-        //            {
-        //                ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-        //                modernMV.EndWaitingPdfOrPrint ();
-        //            });
+                List <PageViewModel> pages = GetPrintablePages ();
+                List <PageViewModel> goalPages = new ();
 
-        //            if (savingTask.Result == false) 
-        //            {
-        //                return;
-        //            }
+                foreach ( int pageNumber   in   _printAdjusting.PageNumbers )
+                {
+                    PageViewModel page = pages [pageNumber];
+                    goalPages.Add (page);
+                }
 
-        //            if ( App.OsName == "Windows" )
-        //            {
-        //                using ( var pd = new System.Drawing.Printing.PrintDocument () )
-        //                {
-        //                    //pd.PrinterSettings.Duplex = Duplex.Simplex;
+                if ( goalPages.Count < 1 ) 
+                {
+                    return;
+                }
 
-        //                    pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
+                IEnumerable <byte []> intermediateBytes = null;
+                
+                bool dataIsGenerated = _converter.ConvertToExtention (goalPages, null, out intermediateBytes);
 
-        //                    pd.PrintPage += ( sender, args ) => 
-        //                    {
-        //                        foreach ( string fileName   in   intermediateFiles ) 
-        //                        {
-        //                            System.Drawing.Image img = System.Drawing.Image.FromFile (fileName);
+                if ( dataIsGenerated )
+                {
+                    foreach ( byte [] pageBytes   in   intermediateBytes )
+                    {
+                        using ( Stream intermediateStream = new MemoryStream (pageBytes) )
+                        {
+                            using ( PrintDocument pd = new System.Drawing.Printing.PrintDocument () )
+                            {
+                                pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
+                                pd.PrinterSettings.Copies = ( short ) _printAdjusting.CopiesAmount;
 
-        //                            //img = System.Drawing.Image.FromStream ();
+                                pd.PrintPage += ( sender, args ) =>
+                                {
+                                    System.Drawing.Image img = System.Drawing.Image.FromStream (intermediateStream);
+                                    args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
+                                };
 
-        //                            args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
-        //                        }
-        //                    };
+                                //pd.Print ();
+                            }
+                        }
+                    }
+                }
 
-        //                    //pd.Print ();
-        //                }
-        //            }
-        //            else if ( App.OsName == "Linux" )
-        //            {
-        //                string printCommand = "lp " + fileToSave;
-        //                ExecuteBashCommand (printCommand);
-        //            }
-        //        }
-        //    );
+                //sw.Stop ();
+                //long time = sw.ElapsedMilliseconds;
+            });
 
-        //    pdf.Start ();
-        //}
+            printing.ContinueWith
+            (( printingTask ) =>
+            {
+                Dispatcher.UIThread.Invoke
+                (() =>
+                {
+                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                    modernMV.EndWaitingPdfOrPrint ();
+                });
+            });
+
+            printing.Start ();
+        }
 
 
         private static void ExecuteBashCommand ( string command )

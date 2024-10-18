@@ -105,7 +105,7 @@ namespace Lister.ViewModels
             if ( _scalabilityDepth < _maxDepth )
             {
 
-                BeingProcessedBadge.ZoomOn (_scalabilityCoefficient, false);
+                BeingProcessedBadge.ZoomOn (_scalabilityCoefficient);
                 _scalabilityDepth++;
 
                 _zoomDegree *= _scalabilityCoefficient;
@@ -135,7 +135,7 @@ namespace Lister.ViewModels
 
             if ( _scalabilityDepth > _minDepth )
             {
-                BeingProcessedBadge.ZoomOut (_scalabilityCoefficient, false);
+                BeingProcessedBadge.ZoomOut (_scalabilityCoefficient);
                 _scalabilityDepth--;
 
                 _zoomDegree /= _scalabilityCoefficient;
@@ -158,20 +158,20 @@ namespace Lister.ViewModels
 
         #region Scale
 
-        private void SetStandardScale ( BadgeViewModel beingPrecessed )
-        {
-            if ( beingPrecessed.Scale != 1 )
-            {
-                beingPrecessed.ZoomOut (beingPrecessed.Scale, true);
-            }
-        }
+        //private void SetStandardScale ( BadgeViewModel beingPrecessed )
+        //{
+        //    if ( beingPrecessed.Scale != 1 )
+        //    {
+        //        beingPrecessed.ZoomOut (beingPrecessed.Scale);
+        //    }
+        //}
 
 
         private void SetOriginalScale ( BadgeViewModel beingPrecessed, double scale )
         {
             if ( scale != 1 )
             {
-                beingPrecessed.ZoomOn (scale, false);
+                beingPrecessed.ZoomOn (scale);
             }
         }
 
@@ -182,9 +182,10 @@ namespace Lister.ViewModels
             {
                 if ( processable.Scale != 1 )
                 {
-                    processable.ZoomOut (processable.Scale, true);
+                    processable.ZoomOut (processable.Scale);
                 }
-                processable.ZoomOn (_scale, false);
+
+                processable.ZoomOn (_scale);
             }
         }
         #endregion

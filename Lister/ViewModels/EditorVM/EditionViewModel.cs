@@ -49,7 +49,6 @@ namespace Lister.ViewModels
 
         private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
-        private List <BadgeViewModel> _allReadonlyBadges;
 
         //private List <BadgeViewModel> _incorrectBadges;
         //private List <BadgeViewModel> _correctBadges;
@@ -104,6 +103,16 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref vH, value, nameof (ViewHeight));
+            }
+        }
+
+        private Thickness mg;
+        public Thickness Margin
+        {
+            get { return mg; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref mg, value, nameof (Margin));
             }
         }
 
@@ -237,7 +246,6 @@ namespace Lister.ViewModels
         public BadgeEditorViewModel ( int incorrectBadgesAmmount )
         {
             _scaleStorage = new ();
-            _allReadonlyBadges = new ();
 
             ViewWidth = _viewWidth;
             ViewHeight = _viewHeight;
@@ -256,31 +264,31 @@ namespace Lister.ViewModels
         }
 
 
-        #region Change viewSize
+        internal void HandleDialogOpenig ( )
+        {
+            Margin = new Thickness (0, -ViewHeight);
+        }
+
+
+        internal void HandleDialogClosing ()
+        {
+            Margin = new Thickness (0, 0);
+        }
+
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
             ChangeScrollHeight (heightDifference);
-            //WorkAreaWidth -= widthDifference;
-            //EntireBlockHeight -= heightDifference;
+
+            ViewWidth -= widthDifference;
+            ViewHeight -= heightDifference;
+            
+            WorkAreaWidth -= widthDifference;
+            WorkAreaHeight -= heightDifference;
+
+            EntireBlockHeight -= heightDifference;
             //ScrollHeight -= heightDifference;
         }
-
-
-        //internal void ChangeSliderHeight ( double delta )
-        //{
-        //    double oldHeight = _scrollHeight;
-        //    _scrollHeight -= delta;
-
-        //    int oldRange = _visibleRange;
-        //    _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
-
-        //    _visibleRangeEnd += _visibleRange - oldRange;
-
-        //    //SaveProcessableIconVisible ();
-        //}
-
-        #endregion
 
 
         internal void CancelChanges ()
@@ -290,27 +298,14 @@ namespace Lister.ViewModels
                 return;
             }
 
-            BeingProcessedBadge.Hide ();
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
             _view.zoomOn.IsEnabled = false;
             _view.zoomOut.IsEnabled = false;
 
-            AllNumbered [BeingProcessedBadge.Id].CopyFrom (BackupNumbered [BeingProcessedBadge.Id]);
-            BeingProcessedBadge = AllNumbered [BeingProcessedBadge. Id];
+            BeingProcessedBadge.CopyFrom (BackupNumbered [BeingProcessedBadge. Id]);
 
-            if ( CorrectNumbered.ContainsKey (BeingProcessedBadge.Id) )
-            {
-                CorrectNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge;
-            }
-            else if ( IncorrectNumbered.ContainsKey (BeingProcessedBadge.Id) )
-            {
-                IncorrectNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge;
-            }
-
-            SetToCorrectScale (BeingProcessedBadge);
-            BeingProcessedBadge.Show ();
             ResetActiveIcon ();
         }
 
@@ -340,7 +335,6 @@ namespace Lister.ViewModels
             foreach ( BadgeViewModel badge   in   incorrects )
             {
                 _scaleStorage.Add (badge, badge.Scale);
-                _allReadonlyBadges.Add (badge);
 
                 AllNumbered.Add (badge.Id, badge);
                 IncorrectNumbered.Add (badge.Id, badge);
@@ -350,6 +344,7 @@ namespace Lister.ViewModels
             }
 
             _currentVisibleCollection = AllNumbered;
+            SetSliderWideness ();
 
             Dispatcher.UIThread.InvokeAsync
             (
@@ -375,15 +370,6 @@ namespace Lister.ViewModels
         private bool ChangesExist ( )
         {
             bool exist = false;
-
-            //foreach ( KeyValuePair <int, int> fixedBadgeNumber   in   FixedBadges ) 
-            //{
-            //    if ( AllBadges [fixedBadgeNumber.Value].IsChanged ) 
-            //    {
-            //        exist = true;
-            //        return exist;
-            //    }
-            //}
 
             foreach ( KeyValuePair <int, BadgeViewModel> badgeNumber   in   AllNumbered )
             {
@@ -432,72 +418,22 @@ namespace Lister.ViewModels
 
                 if ( scale != badge.Scale ) 
                 {
-                    badge.ZoomOut (badge.Scale, true);
+                    badge.ZoomOut (badge.Scale);
                     SetOriginalScale (badge, scale);
+                }
+
+                if ( badge.IsChanged ) 
+                {
+                    badge.IsChanged = false;
                 }
             }
 
+            ReleaseCaptured ();
             OnBackingToMainView ();
             _scale = _startScale;
             _view.ComplateBacking ();
             _firstPage.Show ();
         }
-
-
-        //private void SetDraftResultsInSource ( Dictionary <int, BadgeViewModel> rewritables )
-        //{
-        //    foreach ( KeyValuePair <intd, BadgeViewModel> badge   in   rewritables )
-        //    {
-        //        BadgeViewModel draftSource = null;
-
-        //        foreach ( var keyValue   in   _drafts )
-        //        {
-        //            if ( keyValue.Value.Equals (badge.Value) )
-        //            {
-        //                draftSource = keyValue.Key;
-        //                break;
-        //            }
-        //        }
-
-        //        SetToCorrectScale (draftSource);
-
-        //        if ( badge.Value.IsChanged )
-        //        {
-        //            badge.Value.ResetPrototype (draftSource);
-        //        }
-        //    }
-        //}
-
-
-        //private void SetDraftResultsInSource ( )
-        //{
-        //    foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllNumbered )
-        //    {
-        //        BadgeViewModel draftSource = null;
-
-        //        //foreach ( KeyValuePair <BadgeViewModel, BadgeViewModel> sourceToDraft   in   _sourceToDrafts )
-        //        //{
-        //        //    if ( sourceToDraft.Value.Equals (badge.Value) )
-        //        //    {
-        //        //        draftSource = sourceToDraft.Key;
-        //        //        break;
-        //        //    }
-        //        //}
-
-        //        //SetToCorrectScale (draftSource);
-
-        //        double sourceScale = draftSource.Scale;
-        //        SetStandardScale (draftSource);
-        //        SetStandardScale (badge.Value);
-
-        //        if ( badge.Value.IsChanged )
-        //        {
-        //            badge.Value.ResetPrototype (draftSource);
-        //        }
-
-        //        SetOriginalScale (draftSource, sourceScale);
-        //    }
-        //}
 
 
         private void AddToScalesStorage ( BadgeViewModel addable )
@@ -530,16 +466,3 @@ namespace Lister.ViewModels
 }
 
 
-//if ( counter < 1 )
-//{
-//    Dispatcher.UIThread.InvokeAsync
-//    (
-//        () =>
-//        {
-//            BadgeViewModel clone = badge.Clone ();
-//            _sourceToDrafts.Add (badge, clone);
-//            AllNumberedDrafts.Add (0, clone);
-//            // FirstIncorrect = clone;
-//        }
-//    );
-//}

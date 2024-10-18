@@ -54,6 +54,8 @@ namespace Lister.ViewModels
         private readonly double _namesFilterWidth = 200;
         private double _entireBlockHeight = 380;
         private double _scrollHeight = 252;
+        private double _iconWidth = 220;
+        private double _iconWidthIncreasing = 20;
         
         private readonly double _normalOpacity = 0.4;
         private readonly double _chosenOpacity = 1;
@@ -206,6 +208,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private double iW;
+        internal double IconWidth
+        {
+            get { return iW; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref iW, value, nameof (IconWidth));
+            }
+        }
+
         private double rBWS;
         internal double RunnerBruttoWalkSpace
         {
@@ -274,7 +286,7 @@ namespace Lister.ViewModels
         {
             SwitcherBackground = new SolidColorBrush (new Color (255, 0, 0, 200));
 
-            FilterNames = new ObservableCollection <string> () { "Все", "Без ошибок", "С ошибками" };
+            FilterNames = new ObservableCollection <string> () { _allLabel, _correctLabel, _incorrectLabel };
 
             CollectionFilterWidth = _sliderWidth;
             CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
@@ -310,6 +322,7 @@ namespace Lister.ViewModels
             {
                 ScrollWidth = 0;
                 UpDownWidth = 0;
+                IconWidth = _iconWidth + _iconWidthIncreasing;
                 UpDownIsFocusable = false;
                 return;
             }
@@ -317,12 +330,14 @@ namespace Lister.ViewModels
             if ( badgesAmount < _scrollHeight/_itemHeight ) 
             {
                 ScrollWidth = 0;
+                IconWidth = _iconWidth + _iconWidthIncreasing;
                 UpDownWidth = _upDownWidth;
                 return;
             }
 
             UpDownIsFocusable = true;
             UpDownWidth = _upDownWidth;
+            IconWidth = _iconWidth;
 
             CalcRunner (badgesAmount);
             FilterState = null;
@@ -471,21 +486,21 @@ namespace Lister.ViewModels
         }
 
 
-        private void ReduceCurrentCollectionAndIcon ( int removableIndex, int removableIndexAmongVisibleIcons
-                                                  , bool shiftToSideLast, bool shouldShrinkIcons, bool shouldAddOne )
+        private void ReduceCurrentCollectionAndIcons ( int removableIndex, int removableIndexAmongVisibleIcons
+                                                  , bool shiftToSideLast, bool shouldReduceIcons, bool shouldAddOne )
         {
             int indexInEntireList = removableIndex;
             int indexInVisibleRange = removableIndexAmongVisibleIcons;
 
             _visibleRange = Math.Min (_visibleRange, VisibleIcons. Count);
 
-            if ( shouldShrinkIcons && ( _currentVisibleCollection.Count < _maxVisibleCount ) )
+            if ( shouldReduceIcons && ( _currentVisibleCollection.Count < _maxVisibleCount ) )
             {
                 _visibleRangeEnd--;
                 _visibleRange--;
             }
 
-            if ( shouldShrinkIcons   &&   shiftToSideLast )
+            if ( shouldReduceIcons   &&   shiftToSideLast )
             {
                 if ( ! shouldAddOne ) 
                 {
@@ -503,15 +518,8 @@ namespace Lister.ViewModels
 
                     VisibleIcons [indexInVisibleRange] = correspondingIcon;
                 }
-
-                BadgeCorrectnessViewModel lastIcon = GetCorrespondingIcon (indexInEntireList + 1);
-
-                if ( lastIcon != null ) 
-                {
-                    VisibleIcons.Add (lastIcon);
-                }
             }
-            else if ( shouldShrinkIcons   &&   ! shiftToSideLast )
+            else if ( shouldReduceIcons   &&   ! shiftToSideLast )
             {
                 for ( ; indexInVisibleRange >= 0;   indexInVisibleRange--, indexInEntireList-- )
                 {
@@ -560,25 +568,34 @@ namespace Lister.ViewModels
             bool isCorrect = false;
             BadgeViewModel goalBadge = null;
 
-            if ( _filterState == FilterChoosing.All )
-            {
-                goalBadge = AllNumbered [badgeIndex];
-                isCorrect = goalBadge.IsCorrect;
-            }
-            else 
-            {
-                bool indexIsWithinCollection = ((_currentVisibleCollection.Count ) > badgeIndex)   &&   (badgeIndex >= 0);
+            //if ( _filterState == FilterChoosing.All )
+            //{
+            //    goalBadge = AllNumbered [badgeIndex];
+            //    isCorrect = goalBadge.IsCorrect;
+            //}
+            //else 
+            //{
+            //    bool indexIsWithinCollection = ((_currentVisibleCollection.Count ) > badgeIndex)   &&   (badgeIndex >= 0);
 
-                if ( indexIsWithinCollection ) 
-                {
-                    goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
-                    isCorrect = goalBadge.IsCorrect;
-                }
+            //    if ( indexIsWithinCollection ) 
+            //    {
+            //        goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
+            //        isCorrect = goalBadge.IsCorrect;
+            //    }
+            //}
+
+            bool indexIsWithinCollection = ( ( _currentVisibleCollection.Count ) > badgeIndex )   &&   ( badgeIndex >= 0 );
+
+            if ( indexIsWithinCollection )
+            {
+                goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
+                isCorrect = goalBadge.IsCorrect;
             }
 
             if ( goalBadge != null ) 
             {
-                result = new BadgeCorrectnessViewModel (isCorrect, goalBadge);
+                result = new BadgeCorrectnessViewModel (isCorrect, goalBadge, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
             }
 
             return result;
@@ -685,16 +702,18 @@ namespace Lister.ViewModels
 
         private void HighLightChosenIcon ( BadgeCorrectnessViewModel icon )
         {
-            //icon.BorderColor = new SolidColorBrush (MainWindow.black);
             icon.BoundFontWeight = FontWeight.Bold;
+            icon.CalcStringPresentation ( _correctnessWidthLimit
+                                        , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
             icon.IconOpacity = _chosenOpacity;
         }
 
 
         private void FadeIcon ( BadgeCorrectnessViewModel icon )
         {
-            //icon.BorderColor = new SolidColorBrush (MainWindow.white);
             icon.BoundFontWeight = FontWeight.Normal;
+            icon.CalcStringPresentation ( _correctnessWidthLimit
+                                        , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
             icon.IconOpacity = _normalOpacity;
         }
 
@@ -747,12 +766,14 @@ namespace Lister.ViewModels
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
             _visibleIconsStorage = new ObservableCollection <BadgeCorrectnessViewModel> ();
 
-            if ( ( _allReadonlyBadges != null )   &&   ( _allReadonlyBadges. Count > 0 )   &&   ( _visibleRange > 0 ) )
+            if ( ( _currentVisibleCollection. Count > 0 )   &&   ( _visibleRange > 0 ) )
             {
                 for ( int index = 0;   index < _visibleRange;   index++ )
                 {
                     BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, boundBadge);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, boundBadge
+                                                                                   , _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
                     VisibleIcons.Add (icon);
                     _visibleIconsStorage.Add (icon);
                     FadeIcon (icon);

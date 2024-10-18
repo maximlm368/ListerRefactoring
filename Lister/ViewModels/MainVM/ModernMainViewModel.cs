@@ -8,6 +8,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,13 @@ namespace Lister.ViewModels
         }
 
 
+        internal void HandleDialogClosing ()
+        {
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.HandleDialogClosing ();
+        }
+
+
         internal void ResetIncorrects ( )
         {
             _sceneVM.ResetIncorrects ();
@@ -70,35 +78,20 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetWaitingPdfOrPrint ()
-        {
-            //WaitingIsVisible = true;
-
-            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-            waitingVM.Show ();
-            MainViewIsWaiting = true;
-        }
-
-
         internal void EndWaiting ()
         {
-            //WaitingIsVisible = false;
-
-
-
             _templateChoosingVM.BuildingIsPossible = true;
             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
             waitingVM.Hide ();
+            MainViewIsWaiting = false;
         }
 
 
         internal void EndWaitingPdfOrPrint ()
         {
-            //WaitingIsVisible = false;
-
-
             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
             waitingVM.Hide ();
+            MainViewIsWaiting = false;
         }
 
 
@@ -114,11 +107,11 @@ namespace Lister.ViewModels
                 _sceneVM.GeneratePdfDuringWaiting ();
                 return;
             }
-            //else if ( SceneViewModel.TappedPrintButton == 1 )
-            //{
-            //    _sceneVM.PrintDuringWaiting ();
-            //    return;
-            //}
+            else if ( SceneViewModel.TappedPrintButton == 1 )
+            {
+                _sceneVM.PrintDuringWaiting ();
+                return;
+            }
             else if ( ModernMainView.TappedEditorBuildingButton == 1 )
             {
                 _view.BuildEditor ();

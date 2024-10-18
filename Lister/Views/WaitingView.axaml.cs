@@ -31,6 +31,18 @@ public partial class WaitingView : UserControl
     }
 
 
+    //internal void HandleDialogOpenig ()
+    //{
+    //    _vm.HandleDialogOpenig ();
+    //}
+
+
+    //internal void HandleDialogClosing ()
+    //{
+    //    _vm.HandleDialogClosing ();
+    //}
+
+
     //private void PreventPasting ( object sender, TappedEventArgs args )
     //{
     //    args.Handled = true;

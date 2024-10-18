@@ -10,6 +10,7 @@ namespace Lister.Views
     public partial class MessageDialog : BaseWindow
     {
         private MessageViewModel _vm;
+        public ShowingDialog Caller { get; private set; }
 
         private string _message;
         internal string Message 
@@ -45,10 +46,11 @@ namespace Lister.Views
         }
 
 
-        public MessageDialog ()
+        public MessageDialog ( ShowingDialog caller )
         {
             InitializeComponent ();
 
+            Caller = caller;
             _vm = new MessageViewModel ();
             DataContext = _vm;
             CanResize = false;
@@ -56,8 +58,9 @@ namespace Lister.Views
         }
 
 
-        internal void HandleTapped ( object sender, TappedEventArgs args )
+        internal void Shut ()
         {
+            Caller.HandleDialogClosing ();
             this.Close ();
         }
     }

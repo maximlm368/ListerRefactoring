@@ -237,7 +237,7 @@ namespace ExtentionsAndAuxiliary
 
                 if ( isGoal )
                 {
-                    beingProcessed = beingProcessed.Substring (0, beingProcessed.Length - 2);
+                    beingProcessed = beingProcessed.Substring (0, beingProcessed.Length - 1);
                 }
             }
 

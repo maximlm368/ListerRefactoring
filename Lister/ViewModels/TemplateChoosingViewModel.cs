@@ -102,14 +102,14 @@ public class TemplateChoosingViewModel : ViewModelBase
     {
         set
         {
-            if ( value ) 
+            if ( value )
             {
                 if ( _personChoosingVM == null )
                 {
                     _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
                 }
 
-                if ( _personChoosingVM.ChosenTemplate == null) 
+                if ( _personChoosingVM.ChosenTemplate == null )
                 {
                     value = false;
                 }
@@ -244,11 +244,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         {
             TappedBadgesBuildingButton = 1;
             ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
-
-            //WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-
             mainViewModel.SetWaiting ();
-            //waitingVM.Show ();
         }
         else if ( _personChoosingVM.SinglePersonIsSelected )
         {
@@ -276,14 +272,17 @@ public class TemplateChoosingViewModel : ViewModelBase
                 {
                     _sceneVM.BuildBadges (_personChoosingVM.ChosenTemplate.Name);
 
-                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                    modernMV.EndWaiting ();
+                    Dispatcher.UIThread.Invoke 
+                    (() => 
+                    {
+                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                        modernMV.EndWaiting ();
+                    });
 
                     _sceneVM.EnableButtons ();
                     _zoomNavigationVM.EnableZoom ();
                     _zoomNavigationVM.SetEnablePageNavigation ();
 
-                    ModernMainViewModel.MainViewIsWaiting = false;
                     _buildingIsLocked = false;
                     TappedBadgesBuildingButton = 0;
                 }
@@ -305,7 +304,9 @@ public class TemplateChoosingViewModel : ViewModelBase
             return;
         }
 
+        _buildingIsLocked = true;
         _sceneVM.BuildSingleBadge (_personChoosingVM.ChosenTemplate. Name);
+        _buildingIsLocked = false;
     }
 
 

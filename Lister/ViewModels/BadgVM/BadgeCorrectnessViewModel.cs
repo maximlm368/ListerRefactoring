@@ -7,6 +7,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,6 +61,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private double pE;
+        internal double PersonNameExpending
+        {
+            get { return pE; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pE, value, nameof (PersonNameExpending));
+            }
+        }
+
         private Avalonia.Media.FontWeight bFW;
         internal Avalonia.Media.FontWeight BoundFontWeight
         {
@@ -96,11 +107,14 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeCorrectnessViewModel ( bool isCorrect, BadgeViewModel boundBadge ) 
+        internal BadgeCorrectnessViewModel ( bool isCorrect, BadgeViewModel boundBadge
+                                           , double widthLimit, int [] remotableGlyphRange ) 
         {
             BoundBadge = boundBadge;
-            BoundPersonName = boundBadge.BadgeModel. Person. StringPresentation;
             BoundFontWeight = Avalonia.Media.FontWeight.Normal;
+
+            CalcStringPresentation ( widthLimit, remotableGlyphRange );
+            
             IconOpacity = 0.5;
 
             if ( isCorrect )
@@ -130,6 +144,34 @@ namespace Lister.ViewModels
                 Correctness = true;
                 CorrectnessIcon = _correctIcon;
             }
+        }
+
+
+        internal void CalcStringPresentation ( double widthLimit, int [] remotableGlyphRange )
+        {
+            string personPresentation = BoundBadge. BadgeModel. Person. StringPresentation;
+
+            int index = Math.Min (personPresentation.Length, remotableGlyphRange [1]);
+
+            for ( ; index > remotableGlyphRange [0]; index-- )
+            {
+                FormattedText formatted = new FormattedText (personPresentation
+                                                           , System.Globalization.CultureInfo.CurrentCulture
+                                                           , FlowDirection.LeftToRight, Typeface.Default, 16, null);
+
+                formatted.SetFontWeight (this.BoundFontWeight);
+
+                if ( formatted.Width <= widthLimit )
+                {
+                    break;
+                }
+                else
+                {
+                    personPresentation = personPresentation.Remove (index) + "...";
+                }
+            }
+
+            BoundPersonName = personPresentation;
         }
     }
 }

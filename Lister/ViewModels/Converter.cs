@@ -42,9 +42,9 @@ class ConverterToPdf
 
 
     internal bool ConvertToExtention ( List <PageViewModel> pages, string ? filePathToSave
-                                                                 , out byte [] ? arrayToPassResult )
+                                                                 , out IEnumerable <byte []> ? arraysToPassResult )
     {
-        arrayToPassResult = null;
+        arraysToPassResult = null;
         bool result = true;
         bool isNothingToDo = ( pages == null )   ||   ( pages.Count == 0 );
 
@@ -84,9 +84,7 @@ class ConverterToPdf
                         }
                     );
                 });
-
             }
-
         });
 
         try
@@ -96,30 +94,11 @@ class ConverterToPdf
                 var settings = new ImageGenerationSettings ();
                 settings.ImageFormat = ImageFormat.Jpeg;
 
-                //doc.GenerateImages
-                //    (( index ) =>
-                //        {
-                //            string filePath = "intermediate" + index + ".jpeg";
-                //            //intermediateFiles.Add ( filePath );
-
-                //            return filePath;
-                //        }
-                //        , settings
-                //    );
-
-                IEnumerable <byte []> images = doc.GenerateImages (settings);
-
-                foreach ( byte [] image   in   images )
-                {
-                    arrayToPassResult = image;
-                }
-
-                int dfd = 0;
+                arraysToPassResult = doc.GenerateImages (settings);
             }
             else
             {
                 doc.GeneratePdf (filePathToSave);
-                int df = 0;
             }
 
             result = true;
@@ -182,7 +161,6 @@ class ConverterToPdf
             currentImagePath = imagePath;
             string complitedImagePath = GetImagePath (imagePath);
             image = Pdf.Image.FromFile (complitedImagePath);
-            //image = Pdf.Image.FromFile (imagePath);
         }
 
         tableForLine.Cell ().Row (1).Column (( uint ) badgeIndex + 1)
@@ -197,7 +175,7 @@ class ConverterToPdf
                                .Image (image)
                                .FitArea ();
 
-                               RenderTextLines (layers, beingRendered.TextLines);
+                               RenderTextLines (layers, beingRendered.TextLines, beingRendered);
                                RenderInsideImages (layers, beingRendered.InsideImages);
                                RenderInsideShapes (layers, beingRendered.InsideShapes);
                            }
@@ -205,13 +183,14 @@ class ConverterToPdf
     }
 
 
-    private void RenderTextLines ( LayersDescriptor layers, IEnumerable <TextLineViewModel> textLines )
+    private void RenderTextLines ( LayersDescriptor layers, IEnumerable <TextLineViewModel> textLines
+                                                                                          , BadgeViewModel renderable )
     {
         foreach ( TextLineViewModel textLine   in   textLines )
         {
             string text = textLine.Content;
-            float paddingLeft = ( float ) textLine.LeftOffset;
-            float paddingTop = ( float ) textLine.TopOffset;
+            float paddingLeft = ( float ) textLine.LeftOffset + ( float ) ( renderable.Scale );
+            float paddingTop = ( float ) textLine.TopOffset - ( float ) ( renderable.Scale * 2 );
             string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;

@@ -1,8 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using ExCSS;
 using Lister.ViewModels;
 using MessageBox.Avalonia.Views;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace Lister.Views
@@ -32,6 +35,7 @@ namespace Lister.Views
         public readonly string no = "no";
 
         private DialogViewModel _viewModel;
+        private ShowingDialog _caller;
 
         private string _message;
         internal string Message
@@ -54,10 +58,11 @@ namespace Lister.Views
         internal string Result { get; private set; }
 
 
-        public DialogWindow ()
+        public DialogWindow ( ShowingDialog caller )
         {
             InitializeComponent ();
 
+            _caller = caller;
             _viewModel = new DialogViewModel (this);
             DataContext = _viewModel;
             CanResize = false;
@@ -69,6 +74,7 @@ namespace Lister.Views
         {
             Result = yes;
             this.Close ();
+            _caller.HandleDialogClosing ();
         }
 
 
@@ -76,6 +82,10 @@ namespace Lister.Views
         {
             Result = no;
             this.Close ();
+            _caller.HandleDialogClosing ();
         }
+
+
+
     }
 }

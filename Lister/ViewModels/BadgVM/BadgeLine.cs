@@ -142,7 +142,7 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
-                Badges [index].ZoomOn (scaleCoefficient, false);
+                Badges [index].ZoomOn (scaleCoefficient);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
-                Badges [index].ZoomOut (scaleCoefficient, false);
+                Badges [index].ZoomOut (scaleCoefficient);
             }
         }
 

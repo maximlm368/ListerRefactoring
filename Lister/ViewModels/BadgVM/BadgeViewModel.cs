@@ -215,7 +215,7 @@ public class BadgeViewModel : ViewModelBase
     internal bool IsChanged
     {
         get { return iC; }
-        private set
+        set
         {
             this.RaiseAndSetIfChanged (ref iC, value, nameof (IsChanged));
         }
@@ -265,7 +265,7 @@ public class BadgeViewModel : ViewModelBase
 
         _badLineColor = _badLineColorProvider.GetBadLineColor (badgeModel.BadgeLayout.TemplateName);
 
-        List<TextualAtom> atoms = layout.TextualFields;
+        List <TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
        
         SetUpTextLines (atoms);
@@ -277,102 +277,6 @@ public class BadgeViewModel : ViewModelBase
 
 
     private BadgeViewModel ( BadgeViewModel badge )
-    {
-        Id = badge.Id;
-
-        BadgeModel = badge.BadgeModel;
-        BadgeLayout layout = BadgeModel.BadgeLayout;
-
-        LeftSpan = badge.LeftSpan;
-        TopSpan = badge.TopSpan;
-        RightSpan = badge.RightSpan;
-        BottomSpan = badge.BottomSpan;
-
-        BadgeWidth = badge.BadgeWidth;
-        BorderWidth = BadgeWidth + 2;
-        BadgeHeight = badge.BadgeHeight;
-        BorderHeight = BadgeHeight + 2;
-        TextLines = new ObservableCollection <TextLineViewModel> ();
-        BorderViolentLines = new List <TextLineViewModel> ();
-        OverlayViolentLines = new List <TextLineViewModel> ();
-        InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideShapes = new ObservableCollection <ImageViewModel> ();
-        IsCorrect = badge.IsCorrect;
-        IsChanged = badge.IsChanged;
-        Scale = badge.Scale;
-        _borderThickness = 1;
-        BorderThickness = new Avalonia.Thickness (_borderThickness);
-        FocusedFontSize = string.Empty;
-        _badLineColor = badge._badLineColor;
-
-        foreach ( TextLineViewModel line in badge.TextLines )
-        {
-            TextLineViewModel clone = line.Clone ();
-            TextLines.Add (clone);
-
-            if ( line.isBorderViolent )
-            {
-                clone.isBorderViolent = true;
-                BorderViolentLines.Add (clone);
-            }
-
-            if ( line.isOverLayViolent )
-            {
-                clone.isOverLayViolent = true;
-                OverlayViolentLines.Add (clone);
-            }
-        }
-
-        Scale = badge.Scale;
-
-        //foreach ( TextLineViewModel line in badge.TextLines )
-        //{
-        //    TextLineViewModel original = line.GetDimensionalOriginal ();
-        //    TextLines.Add (line);
-        //}
-
-
-        //foreach ( ImageViewModel image in badge.InsideImages )
-        //{
-        //    TextLineViewModel original = image.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
-
-        //foreach ( ImageViewModel shape in badge.InsideShapes )
-        //{
-        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
-    }
-
-
-    internal BadgeViewModel GetDimensionalOriginal () 
-    {
-        BadgeViewModel original = new BadgeViewModel (this);
-
-        if ( original.Scale > 1 )
-        {
-            original.ZoomOut (Scale, false);
-        }
-        else if ( original.Scale < 1 )
-        {
-            original.ZoomOn (Scale, false);
-        }
-
-        //original.ZoomOut (Scale);
-
-        return original;
-    }
-
-
-    internal BadgeViewModel Clone ()
-    {
-        BadgeViewModel clone = new BadgeViewModel (this);
-        return clone;
-    }
-
-
-    internal void CopyFrom ( BadgeViewModel badge )
     {
         Id = badge.Id;
 
@@ -442,21 +346,95 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void ResetPrototype ( BadgeViewModel prototype )
+    internal BadgeViewModel GetDimensionalOriginal () 
     {
-        prototype.IsCorrect = IsCorrect;
-        prototype.TextLines = TextLines;
+        BadgeViewModel original = new BadgeViewModel (this);
+
+        if ( original.Scale > 1 )
+        {
+            original.ZoomOut (Scale);
+        }
+        else if ( original.Scale < 1 )
+        {
+            original.ZoomOn (Scale);
+        }
+
+        //original.ZoomOut (Scale);
+
+        return original;
+    }
+
+
+    internal BadgeViewModel Clone ()
+    {
+        BadgeViewModel clone = new BadgeViewModel (this);
+        return clone;
+    }
+
+
+    internal void CopyFrom ( BadgeViewModel badge )
+    {
+        if ( FocusedLine != null ) 
+        {
+            FocusedLine = null;
+        }
+
+        InsideImages = new ObservableCollection <ImageViewModel> ();
+        InsideShapes = new ObservableCollection <ImageViewModel> ();
+        IsCorrect = badge.IsCorrect;
+        IsChanged = badge.IsChanged;
+        _borderThickness = 1;
+        BorderThickness = new Avalonia.Thickness (_borderThickness);
+        FocusedFontSize = string.Empty;
+        _badLineColor = badge._badLineColor;
+
+        TextLines = new ObservableCollection <TextLineViewModel> ();
+        BorderViolentLines = new List <TextLineViewModel> ();
+        OverlayViolentLines = new List <TextLineViewModel> ();
+
+        foreach ( TextLineViewModel line   in   badge.TextLines )
+        {
+            TextLineViewModel clone = line.Clone ();
+
+            clone.ZoomOut (badge.Scale);
+            clone.ZoomOn (Scale);
+
+            TextLines.Add (clone);
+
+            if ( line.isBorderViolent )
+            {
+                clone.isBorderViolent = true;
+                BorderViolentLines.Add (clone);
+            }
+
+            if ( line.isOverLayViolent )
+            {
+                clone.isOverLayViolent = true;
+                OverlayViolentLines.Add (clone);
+            }
+        }
+
+        //foreach ( ImageViewModel image in badge.InsideImages )
+        //{
+        //    TextLineViewModel original = image.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
+
+        //foreach ( ImageViewModel shape in badge.InsideShapes )
+        //{
+        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
+        //    TextLines.Add (original);
+        //}
     }
 
 
     internal TextLineViewModel ? GetCoincidence ( string focusedContent, int elementNumber )
     {
-        ObservableCollection <TextLineViewModel> lines = TextLines;
         string lineContent = string.Empty;
         TextLineViewModel goalLine = null;
         int counter = 0;
 
-        foreach ( TextLineViewModel line   in   lines )
+        foreach ( TextLineViewModel line   in   TextLines )
         {
             lineContent = line.Content;
 
@@ -514,7 +492,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void ZoomOn ( double coefficient, bool isToStandard )
+    internal void ZoomOn ( double coefficient )
     {
         BadgeWidth *= coefficient;
         BadgeHeight *= coefficient;
@@ -531,7 +509,7 @@ public class BadgeViewModel : ViewModelBase
 
         foreach ( TextLineViewModel line   in   TextLines ) 
         {
-            line.ZoomOn (coefficient, isToStandard);
+            line.ZoomOn (coefficient);
         }
 
         //foreach ( ImageViewModel image   in   InsideImages )
@@ -546,7 +524,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void ZoomOut ( double coefficient, bool isToStandard )
+    internal void ZoomOut ( double coefficient )
     {
         BadgeWidth /= coefficient;
         BadgeHeight /= coefficient;
@@ -563,7 +541,7 @@ public class BadgeViewModel : ViewModelBase
 
         foreach ( TextLineViewModel line   in   TextLines )
         {
-            line.ZoomOut (coefficient, isToStandard);
+            line.ZoomOut (coefficient);
         }
 
         //foreach ( ImageViewModel image   in   InsideImages )
@@ -582,7 +560,7 @@ public class BadgeViewModel : ViewModelBase
     {
         if ( scale != 1 )
         {
-            ZoomOn (scale, false);
+            ZoomOn (scale);
         }
     }
 
@@ -595,9 +573,15 @@ public class BadgeViewModel : ViewModelBase
         }
 
         string content = ( string ) FocusedLine. Content;
-        List<string> strings = content.SplitBySeparators (new List<char> () { ' ', '-' });
+        List<string> pieces = content.SplitBySeparators (new List<char> () { ' ', '-' });
+
+        for ( int index = 0;   index < pieces.Count;   index++ ) 
+        {
+            pieces [index] = pieces [index].TrimLastSpaceOrQuoting ();
+        }
+
         double layoutWidth = BadgeWidth;
-        List <TextLineViewModel> splitted = FocusedLine.SplitYourself (strings, scale, layoutWidth);
+        List <TextLineViewModel> splitted = FocusedLine.SplitYourself (pieces, scale, layoutWidth);
         ReplaceTextLine (FocusedLine, splitted);
         FocusedLine = null;
     }
@@ -632,17 +616,6 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    //private void PreSetUpTextLines ( List <TextualAtom> textualFields )
-    //{
-    //    for ( int index = 0;   index < textualFields.Count;   index++ )
-    //    {
-    //        TextualAtom atom = textualFields [index];
-    //        TextLineViewModel textLine = new TextLineViewModel (atom);
-    //        TextLines.Add (textLine);
-    //    }
-    //}
-
-
     private void SetUpTextLines ( List <TextualAtom> orderedTextualFields )
     {
         double summaryVerticalOffset = 0;
@@ -665,18 +638,17 @@ public class BadgeViewModel : ViewModelBase
 
                 if ( ModernMainViewModel.MainViewIsWaiting )
                 {
-                    var result = Dispatcher.UIThread.Invoke<double>
-                    (() => 
-                    { 
-                        return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom); 
+                    var result1 = Dispatcher.UIThread.Invoke<double>
+                    (() =>
+                    {
+                        return TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
                     });
 
-                    usefulTextBlockWidth = result;
+                    usefulTextBlockWidth = result1;
                 }
                 else
                 {
                     usefulTextBlockWidth = TextLineViewModel.CalculateWidth (beingProcessedLine, textAtom);
-                    //usefulTextBlockWidth = 0;
                 }
 
                 bool lineIsOverflow = ( usefulTextBlockWidth >= lineLength );
@@ -703,18 +675,18 @@ public class BadgeViewModel : ViewModelBase
                     if ( ModernMainViewModel.MainViewIsWaiting )
                     {
                         var result2 = Dispatcher.UIThread.Invoke<TextLineViewModel>
-                        (() => 
-                        { 
-                            return new TextLineViewModel (atom); 
+                        (() =>
+                        {
+                            return new TextLineViewModel (atom);
                         });
 
                         textLine = result2;
                     }
-                    else 
+                    else
                     {
                         textLine = new TextLineViewModel (atom);
                     }
-                    
+
                     TextLines.Add (textLine);
 
                     if ( additionalLine != string.Empty ) 
@@ -748,19 +720,18 @@ public class BadgeViewModel : ViewModelBase
                     if ( ModernMainViewModel.MainViewIsWaiting )
                     {
                         var result3 = Dispatcher.UIThread.Invoke<TextLineViewModel>
-                        (() => 
-                        { 
-                            return new TextLineViewModel (atom); 
+                        (() =>
+                        {
+                            return new TextLineViewModel (atom);
                         });
 
                         textLine = result3;
                     }
-                    else 
+                    else
                     {
                         textLine = new TextLineViewModel (atom);
                     }
 
-                    
                     TextLines.Add (textLine);
                     textLine.isBorderViolent = true;
                     break;
@@ -829,13 +800,6 @@ public class BadgeViewModel : ViewModelBase
 
         IsCorrect = ! (borderViolentsExist   ||   overlayingExist);
     }
-
-
-    //internal void CheckCorrectnessAfterCancelation ()
-    //{
-    //    IsCorrect = false;
-    //    IsChanged = false;
-    //}
 
 
     private void CheckLineCorrectness ( TextLineViewModel checkable )
@@ -1122,22 +1086,22 @@ public class BadgeViewModel : ViewModelBase
 
         if ( direction == "Left" )
         {
-            FocusedLine. LeftOffset -= shift;
+            FocusedLine. LeftOffset -= Scale;
         }
 
         if ( direction == "Right" )
         {
-            FocusedLine. LeftOffset += shift;
+            FocusedLine. LeftOffset += Scale;
         }
 
         if ( direction == "Up" )
         {
-            FocusedLine. TopOffset -= shift;
+            FocusedLine. TopOffset -= Scale;
         }
 
         if ( direction == "Down" )
         {
-            FocusedLine. TopOffset += shift;
+            FocusedLine. TopOffset += Scale;
         }
 
         IsChanged = true;
@@ -1178,56 +1142,56 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void Left ( double shift )
-    {
-        if ( FocusedLine == null )
-        {
-            return;
-        }
+    //internal void Left ( double shift )
+    //{
+    //    if ( FocusedLine == null )
+    //    {
+    //        return;
+    //    }
 
-        FocusedLine. LeftOffset -= shift;
-        IsChanged = true;
-        CheckFocusedLineCorrectness ();
-    }
-
-
-    internal void Right ( double shift )
-    {
-        if ( FocusedLine == null )
-        {
-            return;
-        }
-
-        FocusedLine. LeftOffset += shift;
-        IsChanged = true;
-        CheckFocusedLineCorrectness ();
-    }
+    //    FocusedLine. LeftOffset -= shift;
+    //    IsChanged = true;
+    //    CheckFocusedLineCorrectness ();
+    //}
 
 
-    internal void Up ( double shift )
-    {
-        if ( FocusedLine == null )
-        {
-            return;
-        }
+    //internal void Right ( double shift )
+    //{
+    //    if ( FocusedLine == null )
+    //    {
+    //        return;
+    //    }
 
-        FocusedLine. TopOffset -= shift;
-        IsChanged = true;
-        CheckFocusedLineCorrectness ();
-    }
+    //    FocusedLine. LeftOffset += shift;
+    //    IsChanged = true;
+    //    CheckFocusedLineCorrectness ();
+    //}
 
 
-    internal void Down ( double shift )
-    {
-        if ( FocusedLine == null )
-        {
-            return;
-        }
+    //internal void Up ( double shift )
+    //{
+    //    if ( FocusedLine == null )
+    //    {
+    //        return;
+    //    }
 
-        FocusedLine. TopOffset += shift;
-        IsChanged = true;
-        CheckFocusedLineCorrectness ();
-    }
+    //    FocusedLine. TopOffset -= shift;
+    //    IsChanged = true;
+    //    CheckFocusedLineCorrectness ();
+    //}
+
+
+    //internal void Down ( double shift )
+    //{
+    //    if ( FocusedLine == null )
+    //    {
+    //        return;
+    //    }
+
+    //    FocusedLine. TopOffset += shift;
+    //    IsChanged = true;
+    //    CheckFocusedLineCorrectness ();
+    //}
 
     #endregion
 

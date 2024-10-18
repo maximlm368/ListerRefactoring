@@ -8,8 +8,7 @@
              x:Class="Lister.Views.ModernMainView"
 			 x:DataType="vm:ModernMainViewModel"
 			 Height="460"
-			 Width="800"
-			 >
+			 Width="800" >
 
 	<StackPanel ZIndex="1" >
 		<uc:PersonSourceUserControl

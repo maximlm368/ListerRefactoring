@@ -139,6 +139,22 @@ namespace Lister.ViewModels
         }
 
 
+        internal void HandleDialogOpenig ()
+        {
+            CanvasHeight = _canvasHeight;
+            CanvasWidth = _canvasWidth;
+            Margin = new Thickness (0, _canvasShownVerticalMargin);
+            CanvasTop = _canvasTop;
+            CanvasLeft = _canvasLeft;
+        }
+
+
+        internal void HandleDialogClosing ()
+        {
+            Margin = new Thickness (0, _canvasHiddenVerticalMargin);
+        }
+
+
         public void Show ( )
         {
             CanvasHeight = _canvasHeight;

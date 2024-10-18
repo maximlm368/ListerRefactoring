@@ -475,8 +475,10 @@ namespace Lister.Views
             {
                 _vm.ChosenTemplate = null;
                 _chosenTemplate = null;
-                var messegeDialog = new MessageDialog ();
+                var messegeDialog = new MessageDialog (ModernMainView.Instance);
                 messegeDialog.Message = _jsonError;
+                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                waitingVM.HandleDialogOpenig ();
                 messegeDialog.ShowDialog (MainWindow.Window);
                 messegeDialog.Focusable = true;
                 messegeDialog.Focus ();

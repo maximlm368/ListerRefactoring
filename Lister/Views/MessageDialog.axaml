@@ -94,7 +94,6 @@
 				Canvas.Top="8"
 				Canvas.Left="270"
 				Content="Ok"
-				Tapped="HandleTapped"
 				Command="{Binding  Path=Close}"/>
 
 		</Canvas>

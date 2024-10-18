@@ -13,11 +13,12 @@ using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class ModernMainView : UserControl
+    public partial class ModernMainView : ShowingDialog
         //ReactiveUserControl <ModernMainViewModel>
     {
         private static double _widthDelta;
         private static double _heightDelta;
+
         private ModernMainViewModel _vm;
         private bool _isFirstTimeLoading = true;
         internal static readonly string _sourcePathKeeper = "keeper.txt";
@@ -58,6 +59,12 @@ namespace Lister.Views
 
 
             this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
+        }
+
+
+        public override void HandleDialogClosing ()
+        {
+            _vm.HandleDialogClosing ();
         }
 
 
@@ -202,7 +209,7 @@ namespace Lister.Views
                     EditorView.PassBackPoint (mainView);
                     _isFirstTimeLoading = false;
 
-                    Dispatcher.UIThread.InvokeAsync 
+                    Dispatcher.UIThread.Invoke 
                     (
                         () =>
                         {
@@ -212,7 +219,6 @@ namespace Lister.Views
                         }
                     );
 
-                    ModernMainViewModel.MainViewIsWaiting = false;
                     TappedEditorBuildingButton = 0;
                 }
             );

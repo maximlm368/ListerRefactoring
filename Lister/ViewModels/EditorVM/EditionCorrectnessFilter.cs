@@ -32,6 +32,23 @@ namespace Lister.ViewModels
         private FilterChoosing _filterState = FilterChoosing.All;
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;
+        private readonly string _allLabel = "Все";
+        private readonly string _incorrectLabel = "С ошибками";
+        private readonly string _correctLabel = "Без ошибок";
+
+        private readonly double _narrowCorrectnessWidthLimit = 155;
+        private readonly int _narrowMinCorrectnessTextLength = 14;
+        private readonly int _narrowMaxCorrectnessTextLength = 20;
+
+        private readonly double _wideCorrectnessWidthLimit = 170;
+        private readonly int _wideMinCorrectnessTextLength = 17;
+        private readonly int _wideMaxCorrectnessTextLength = 23;
+
+        private double _correctnessWidthLimit;
+        private int _minCorrectnessTextLength;
+        private int _maxCorrectnessTextLength;
+
+        private ScrollWideness _scrollWideness = ScrollWideness.Wide;
 
         private bool dO;
         internal bool IsDropDownOpen
@@ -123,6 +140,8 @@ namespace Lister.ViewModels
 
                 TryChangeSpecificLists ();
 
+                ScrollWidth = 0;
+
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
                 SetCurrentVisible (CorrectNumbered);
@@ -154,7 +173,8 @@ namespace Lister.ViewModels
             }
 
             CalcVisibleRange(_currentVisibleCollection.Count);
-            CalcRunner (_currentVisibleCollection.Count);
+            //CalcRunner (_currentVisibleCollection.Count);
+            SetScroller (_currentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
         }
@@ -169,7 +189,7 @@ namespace Lister.ViewModels
 
             if ( _filterState == FilterChoosing.All )
             {
-                SetCommonIcons ();
+                SetMixedIcons ();
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
@@ -185,6 +205,7 @@ namespace Lister.ViewModels
 
             if ( BeingProcessedBadge != null )
             {
+                SetToCorrectScale (BeingProcessedBadge);
                 _numberAmongVisibleIcons = 1;
                 BeingProcessedNumber = 1;
                 BeingProcessedBadge.Show ();
@@ -212,7 +233,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetCommonIcons ()
+        private void SetMixedIcons ()
         {
             int counter = 0;
 
@@ -223,21 +244,28 @@ namespace Lister.ViewModels
                     break;
                 }
 
+                bool badgeIsCorrect = false;
+
                 if ( CorrectNumbered.ContainsKey (badge.Value.Id) )
                 {
-                    VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value));
+                    badgeIsCorrect = true;
                 }
                 else if ( IncorrectNumbered.ContainsKey (badge.Value.Id) )
                 {
-                    VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value));
+                    badgeIsCorrect = false;
                 }
+
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (badgeIsCorrect, badge.Value, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
 
                 counter++;
             }
 
-            BeingProcessedBadge = AllNumbered [0];
+            BeingProcessedBadge = AllNumbered.ElementAt (0).Value;
             VisibleIcons [0].IconOpacity = 1;
             VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+            VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit
+                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
             ActiveIcon = VisibleIcons [0];
             FilterState = null;
         }
@@ -255,12 +283,15 @@ namespace Lister.ViewModels
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
 
                 if ( existingCounter == 0 )
                 {
                     VisibleIcons [existingCounter].IconOpacity = 1;
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
+                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
                     firstExistingCommonNumber = badge.Key;
                 }
 
@@ -290,12 +321,15 @@ namespace Lister.ViewModels
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
 
                 if ( existingCounter == 0 )
                 {
                     VisibleIcons [existingCounter].IconOpacity = 1;
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
+                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
+                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
                     firstExistingCommonNumber = badge.Key;
                 }
 
@@ -345,11 +379,30 @@ namespace Lister.ViewModels
         {
             _currentVisibleCollection = list;
             ProcessableCount = _currentVisibleCollection.Count;
+            SetSliderWideness ();
         }
 
 
-        internal void ChangeFilter ( string filterName )
+        private void SetSliderWideness ( )
         {
+            if ( _currentVisibleCollection.Count > _visibleRange )
+            {
+                _correctnessWidthLimit = _narrowCorrectnessWidthLimit;
+                _minCorrectnessTextLength = _narrowMinCorrectnessTextLength;
+                _maxCorrectnessTextLength = _narrowMaxCorrectnessTextLength;
+            }
+            else
+            {
+                _correctnessWidthLimit = _wideCorrectnessWidthLimit;
+                _minCorrectnessTextLength = _wideMinCorrectnessTextLength;
+                _maxCorrectnessTextLength = _wideMaxCorrectnessTextLength;
+            }
+        }
+
+
+        internal void Filter ( string filterName )
+        {
+            ReleaseCaptured ();
             _runnerHasWalked = 0;
 
             bool appLoadingIs = ( AllNumbered == null ) 
@@ -361,7 +414,7 @@ namespace Lister.ViewModels
                 return;
             }
 
-            if ( filterName == "Все" )
+            if ( filterName == _allLabel )
             {
                 _filterState = FilterChoosing.All;
 
@@ -372,7 +425,7 @@ namespace Lister.ViewModels
                 SetCurrentVisible (AllNumbered);
                 IncorrectBadgesCount = IncorrectNumbered.Count;
             }
-            else if ( filterName == "Без ошибок" )
+            else if ( filterName == _correctLabel )
             {
                 _filterState = FilterChoosing.Corrects;
 
@@ -385,7 +438,7 @@ namespace Lister.ViewModels
                 SetCurrentVisible (CorrectNumbered);
                 IncorrectBadgesCount = 0;
             }
-            else if ( filterName == "С ошибками" )
+            else if ( filterName == _incorrectLabel )
             {
                 _filterState = FilterChoosing.Incorrects;
 
@@ -400,10 +453,12 @@ namespace Lister.ViewModels
             }
 
             CalcVisibleRange (_currentVisibleCollection.Count);
-            CalcRunner (_currentVisibleCollection.Count);
+            //CalcRunner (_currentVisibleCollection.Count);
+
+            SetScroller (_currentVisibleCollection.Count);
+
             SetAccordingIcons ();
             EnableNavigation ();
-            ReleaseCaptured ();
         }
 
 
@@ -429,6 +484,14 @@ namespace Lister.ViewModels
                 FilterLabelWidth = _filterLabelWidth;
                 IsComboboxEnabled = true;
             }
+        }
+
+
+
+        private enum ScrollWideness 
+        {
+            Wide = 0,
+            Narrow = 1
         }
     }
 }

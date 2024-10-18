@@ -7,7 +7,7 @@
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
 		Width="600"
-		Height="229"
+		Height="267"
 		WindowStartupLocation="CenterScreen"
 		x:DataType="vm:PrintDialogViewModel"
 		
@@ -17,7 +17,7 @@
 
 	<UserControl
 		Width="600"
-		Height="229"
+		Height="267"
 		BorderBrush = "gray"
         BorderThickness = "1">
 
@@ -38,6 +38,7 @@
 
 				<Grid.RowDefinitions>
 					<RowDefinition  Height="36"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
@@ -106,14 +107,23 @@
 					Margin="0,-2"
 					HorizontalAlignment="Left"
 					FontSize="16"
-					Text="{Binding  Path = Pages,  Mode=OneWay}"
-					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"
-					TextChanged="TextChanged"/>
+					LostFocus="PagesLostFocus"
+					Text="{Binding  Path = Pages,  Mode=TwoWay}"
+					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"/>
+
+				<Label
+					Name="error"
+					Grid.Column="1"
+					Grid.Row="3"
+					Padding="10,8"
+					Foreground="Red"
+					Content="{Binding  Path = Error,  Mode=OneWay}"
+					FontSize="16"/>
 
 				<Label
 					Name="amount"
 					Grid.Column="0"
-					Grid.Row="3"
+					Grid.Row="4"
 					Padding="10,8"
 					Content="Количество копий"
 					FontSize="16"/>
@@ -121,13 +131,14 @@
 				<TextBox
 					Name="amountText"
 					Grid.Column="1"
-					Grid.Row="3"
+					Grid.Row="4"
 					Height="32"
 					Width="30"
 					Margin="0,4"
 					HorizontalAlignment="Left"
 					FontSize="16"
-					Text="{Binding  Path = Copies,  Mode=OneWayToSource}"/>
+					LostFocus="CopiesLostFocus"
+					Text="{Binding  Path = Copies,  Mode=TwoWay}"/>
 				
 			</Grid>
 

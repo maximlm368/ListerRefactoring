@@ -31,6 +31,7 @@ namespace Lister.ViewModels
         private static readonly double _minFontSizeLimit = 6;
         private static readonly double _divider = 4;
         private static readonly double _parentToChildCoeff = 2.5;
+        private static TextBlock _textBlock;
 
         public string FontFile { get; private set; }
         public byte Red { get; private set; }
@@ -212,6 +213,21 @@ namespace Lister.ViewModels
 
         public static double CalculateWidth ( string content, TextualAtom demensions )
         {
+            FormattedText formatted = new FormattedText (content
+                                                       , System.Globalization.CultureInfo.CurrentCulture
+                                                       , FlowDirection.LeftToRight, Typeface.Default
+                                                       , demensions.FontSize, null);
+
+            formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
+            formatted.SetFontSize (demensions.FontSize);
+            formatted.SetFontFamily (new FontFamily(demensions.FontName));
+
+            return formatted.Width;
+        }
+
+
+        public static double CalculateWidthqq ( string content, TextualAtom demensions )
+        {
             TextBlock tb = new TextBlock ();
             tb.LetterSpacing = 0;
             tb.Text = content;
@@ -224,6 +240,20 @@ namespace Lister.ViewModels
             Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
             tb.Measure (size);
             tb.Arrange (new Rect ());
+
+
+            //FormattedText formatted = new FormattedText (content
+            //                                           , System.Globalization.CultureInfo.CurrentCulture
+            //                                           , FlowDirection.LeftToRight, Typeface.Default
+            //                                           , demensions.FontSize, null);
+
+            //formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
+            //formatted.SetFontSize (demensions.FontSize);
+            //formatted.SetFontFamily ("Kramola");
+
+            //double wd = formatted.Width;
+
+            //return wd;
 
             return tb.DesiredSize.Width;
         }
@@ -257,27 +287,37 @@ namespace Lister.ViewModels
         }
 
 
-        private static Avalonia.Media.FontFamily GetFontFamily ( string fontName )
+        private static Avalonia.Media.FontFamily GetFontFamilyByName ( string fontName )
         {
-            Avalonia.Media.FontFamily font = new FontFamily(fontName);
-
-            return font;
+            return new FontFamily (fontName);
         }
 
 
         private void SetWidth ()
         {
-            TextBlock tb = new TextBlock ();
-            tb.LetterSpacing = 0;
-            tb.Text = Content;
-            tb.FontSize = FontSize;
-            tb.FontFamily = FontFamily;
-            tb.FontWeight = FontWeight;
+            //TextBlock tb = new TextBlock ();
+            //tb.LetterSpacing = 0;
+            //tb.Text = Content;
+            //tb.FontSize = FontSize;
+            //tb.FontFamily = FontFamily;
+            //tb.FontWeight = FontWeight;
 
-            Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
-            tb.Measure (size);
-            tb.Arrange (new Rect ());
-            UsefullWidth = tb.DesiredSize.Width;
+            //Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
+            //tb.Measure (size);
+            //tb.Arrange (new Rect ());
+            //UsefullWidth = tb.DesiredSize.Width;
+
+
+            FormattedText formatted = new FormattedText (Content
+                                                       , System.Globalization.CultureInfo.CurrentCulture
+                                                       , FlowDirection.LeftToRight, Typeface.Default
+                                                       , FontSize, null);
+
+            formatted.SetFontWeight (FontWeight);
+            formatted.SetFontSize (FontSize);
+            formatted.SetFontFamily (FontFamily);
+
+            UsefullWidth = formatted.Width;
         }
 
 
@@ -288,7 +328,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOn ( double coefficient, bool isToStandard )
+        internal void ZoomOn ( double coefficient )
         {
             base.ZoomOn (coefficient);
             FontSize *= coefficient;
@@ -296,7 +336,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOut ( double coefficient, bool isToStandard )
+        internal void ZoomOut ( double coefficient )
         {
             base.ZoomOut (coefficient);
             FontSize /= coefficient;
@@ -380,11 +420,11 @@ namespace Lister.ViewModels
 
                 if ( scale > 1 )
                 {
-                    newLine.ZoomOn (scale, false);
+                    newLine.ZoomOn (scale);
                 }
                 else if ( scale < 1 ) 
                 {
-                    newLine.ZoomOut (scale, false);
+                    newLine.ZoomOut (scale);
                 }
                 
                 newLine.LeftOffset = offsetInQueue;
@@ -396,7 +436,7 @@ namespace Lister.ViewModels
                 }
                 
                 newLine.TopOffset = TopOffset;
-                offsetInQueue += newLine.UsefullWidth;
+                offsetInQueue += newLine.UsefullWidth + scale;
                 result.Add (newLine);
             }
 
@@ -416,3 +456,36 @@ namespace Lister.ViewModels
         }
     }
 }
+
+
+//public static double CalculateWidth ( string content, TextualAtom demensions )
+//{
+//    //TextBlock tb = new TextBlock ();
+//    //tb.LetterSpacing = 0;
+//    //tb.Text = content;
+//    //tb.FontSize = demensions.FontSize;
+
+//    //tb.FontWeight = GetFontWeight (demensions.FontWeight);
+//    //string fontName = demensions.FontName;
+//    //tb.FontFamily = new FontFamily (fontName);
+
+//    //Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
+//    //tb.Measure (size);
+//    //tb.Arrange (new Rect ());
+
+
+//    FormattedText formatted = new FormattedText (content
+//                                               , System.Globalization.CultureInfo.CurrentCulture
+//                                               , FlowDirection.LeftToRight, Typeface.Default
+//                                               , demensions.FontSize, null);
+
+//    formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
+//    formatted.SetFontSize (demensions.FontSize);
+//    formatted.SetFontFamily ("Kramola");
+
+//    double wd = formatted.Width;
+
+//    return wd;
+
+//    //return tb.DesiredSize.Width;
+//}

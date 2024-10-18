@@ -37,28 +37,15 @@ public partial class PrintDialog : BaseWindow
     }
 
 
-    public void TextChanged ( object sender, TextChangedEventArgs args ) 
+    public void PagesLostFocus ( object sender, RoutedEventArgs args )
     {
-        TextBox textBox = (TextBox)sender;
-        string text = textBox.Text;
+        _vm.PagesLostFocus ();
+    }
 
-        bool glyphIsIncorrect = true;
 
-        for ( int index = 0;   index < text.Length;   index++ ) 
-        {
-            char ch = text [index];
-
-            glyphIsIncorrect = ( ch == ' ' )   ||   ( ch == '-' )   ||   ( ch == ',' ) 
-                                    ||   ( ch == '0' )   ||   ( ch == '1' )   ||   ( ch == '2' )
-                                    ||   (ch == '3')   ||   ( ch == '4' )   ||   ( ch == '5' )
-                                    ||   (ch == '6')   ||   ( ch == '7' )   ||   ( ch == '8' )   ||   ( ch == '9' );
-
-            if ( ! glyphIsIncorrect )
-            {
-                textBox.Text = text.Remove ( index, 1 );
-                break;
-            }
-        }
+    public void CopiesLostFocus ( object sender, RoutedEventArgs args )
+    {
+        _vm.CopiesLostFocus ();
     }
 }
 

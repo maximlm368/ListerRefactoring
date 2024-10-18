@@ -110,7 +110,7 @@ namespace Lister.ViewModels
 
         internal void Close (  )
         {
-            _view.Close ();
+            _view.Shut ();
         }
     }
 }

@@ -24,7 +24,7 @@ using System.Collections.ObjectModel;
 
 namespace Lister.Views
 {
-    public partial class BadgeEditorView : UserControl
+    public partial class BadgeEditorView : ShowingDialog
         //ReactiveUserControl <BadgeEditorViewModel>
     {
         private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
@@ -91,12 +91,18 @@ namespace Lister.Views
             downer.FocusAdorner = null;
 
             filterChoosing.SelectedValue = "Все";
-            
+
 
             //Back.FocusAdorner = null;
             //editionPanel.FocusAdorner = null;
 
             //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
+        }
+
+
+        public override void HandleDialogClosing ()
+        {
+            _vm.HandleDialogClosing ();
         }
 
 
@@ -182,7 +188,8 @@ namespace Lister.Views
 
         internal void CheckBacking ( )
         {
-            var dialog = new DialogWindow ();
+            _vm.HandleDialogOpenig ( );
+            var dialog = new DialogWindow (this);
             dialog.Message = _question;
             Task result = dialog.ShowDialog (MainWindow.Window);
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
@@ -225,7 +232,7 @@ namespace Lister.Views
 
             ComboBox comboBox = sender as ComboBox;
             string selected = comboBox.SelectedValue as string;
-            _vm.ChangeFilter (selected);
+            _vm.Filter (selected);
         }
 
 
@@ -250,7 +257,6 @@ namespace Lister.Views
             {
                 container = _focused.Parent as Border;
                 container.BorderBrush = null;
-                //_focused.Background = null;
             }
 
             _focused = textBlock;
@@ -487,6 +493,13 @@ namespace Lister.Views
 
         #endregion
 
+    }
+
+
+
+    public abstract class ShowingDialog : UserControl 
+    {
+        public abstract void HandleDialogClosing ();
     }
 }
 

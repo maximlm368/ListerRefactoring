@@ -74,14 +74,16 @@ namespace Lister.ViewModels
                 return;
             }
 
-            if ( BeingProcessedBadge.FocusedLine != null )
+            if ( BeingProcessedBadge. FocusedLine != null )
             {
                 BeingProcessedBadge.CheckFocusedLineCorrectness ();
-                BeingProcessedBadge.FocusedLine = null;
+                
                 BeingProcessedBadge.FocusedFontSize = string.Empty;
 
-                Printable [BeingProcessedBadge. Id].CopyFrom ( BeingProcessedBadge );
+                BadgeViewModel printable = Printable [BeingProcessedBadge. Id];
+                printable.CopyFrom ( BeingProcessedBadge );
 
+                BeingProcessedBadge.FocusedLine = null;
                 ResetActiveIcon ();
             }
         }

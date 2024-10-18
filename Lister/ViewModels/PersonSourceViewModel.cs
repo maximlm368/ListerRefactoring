@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using static QuestPDF.Helpers.Colors;
 using MessageBox.Avalonia.Views;
 using Avalonia.Media;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.ViewModels
 {
@@ -233,11 +234,13 @@ namespace Lister.ViewModels
                 }
                 catch ( IOException ex )
                 {
-                    var messegeDialog = new MessageDialog ();
+                    var messegeDialog = new MessageDialog (ModernMainView.Instance);
 
                     if ( !_pathIsFromKeeper )
                     {
                         messegeDialog.Message = _fileIsOpenMessage;
+                        WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                        waitingVM.HandleDialogOpenig ();
                         messegeDialog.ShowDialog (MainWindow.Window);
                     }
 

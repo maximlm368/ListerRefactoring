@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
 using ReactiveUI;
 using System.DirectoryServices.ActiveDirectory;
+using System.Reflection;
 
 namespace Lister.ViewModels
 {
@@ -187,8 +188,7 @@ namespace Lister.ViewModels
             _lastPage = VisiblePage;
             _allPages.Add (VisiblePage);
 
-            PageViewModel firstPrintablePage = new PageViewModel (_documentScale);
-            _lastPrintablePage = firstPrintablePage;
+            _lastPrintablePage = new PageViewModel (_documentScale);
             _printablePages.Add (_lastPrintablePage);
             VisiblePageNumber = 1;
             ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
@@ -206,10 +206,10 @@ namespace Lister.ViewModels
         }
 
 
-        internal void Handle ( )
-        {
-            BuildBadges (_personChoosingVM.ChosenTemplate.Name);
-        }
+        //internal void Handle ( )
+        //{
+        //    BuildBadges (_personChoosingVM.ChosenTemplate.Name);
+        //}
 
 
         internal void PassView ( SceneUserControl view )
@@ -260,40 +260,25 @@ namespace Lister.ViewModels
 
                 if ( placingStartedOnLastPage )
                 {
-                    VisiblePageNumber = _allPages.Count;
-
-                    // page number 0 corresponds last page of previous building,  PageViewModel.PlaceIntoPages() method
-                    // added badges on it
-
-                    //PageViewModel first = newPages [0];
-                    //(() =>
-                    //{
-                    //    _printablePages [_printablePages.Count - 1] = first.GetDimendionalOriginalClone ();
-                    //});
-
+                    Dispatcher.UIThread.Invoke (() => { VisiblePageNumber = _allPages.Count; });
                     newPages.RemoveAt (0);
                     printablePages.RemoveAt (0);
                 }
 
                 _allPages.AddRange (newPages);
                 _printablePages.AddRange (printablePages);
-
-                //foreach ( PageViewModel page   in   newPages )
-                //{
-                //    
-                //    (() =>
-                //    {
-                //        _printablePages.Add (page.GetDimendionalOriginalClone ());
-                //    });
-                //}
-
                 _lastPage = _allPages.Last ();
                 _lastPrintablePage = _printablePages.Last ();
 
                 PrintableBadges.AddRange (allPrintableBadges);
-                VisiblePage = _allPages [VisiblePageNumber - 1];
-                PageCount = _allPages.Count;
-                VisiblePage.Show ();
+
+                Dispatcher.UIThread.Invoke 
+                (() => 
+                {
+                    VisiblePage = _allPages [VisiblePageNumber - 1];
+                    PageCount = _allPages.Count;
+                    VisiblePage.Show ();
+                });
             }
         }
 
@@ -303,14 +288,15 @@ namespace Lister.ViewModels
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
+            BadgeViewModel printableBadge = new BadgeViewModel (requiredBadge, BadgeCount);
 
             if ( ! goalVMBadge.IsCorrect )
             {
                 IncorrectBadges.Add (goalVMBadge);
-                //IncorrectPrintableBadges.Add (printableBadge);
                 IncorrectBadgeCount++;
             }
 
+            PrintableBadges.Add (printableBadge);
             bool placingStartedAfterEntireListAddition = ! _lastPage.Equals (VisiblePage);
 
             if ( placingStartedAfterEntireListAddition )
@@ -321,6 +307,8 @@ namespace Lister.ViewModels
             }
 
             PageViewModel possibleNewVisiblePage = _lastPage.AddBadge (goalVMBadge);
+            PageViewModel possibleNewLastPrintablePage = _lastPrintablePage.AddBadge (printableBadge);
+
             bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (_lastPage);
 
             if ( timeToIncrementVisiblePageNumber )
@@ -328,16 +316,10 @@ namespace Lister.ViewModels
                 VisiblePage.Hide ();
                 VisiblePage = possibleNewVisiblePage;
                 _lastPage = VisiblePage;
-                _lastPrintablePage = possibleNewVisiblePage.GetDimendionalOriginalClone ();
+                _lastPrintablePage = possibleNewLastPrintablePage;
                 _allPages.Add (possibleNewVisiblePage);
                 _printablePages.Add (_lastPrintablePage);
                 VisiblePage.Show ();
-            }
-            else 
-            {
-                _printablePages.RemoveAt (_printablePages.Count - 1);
-                _lastPrintablePage = _allPages.Last ().GetDimendionalOriginalClone ();
-                _printablePages.Add (_lastPrintablePage);
             }
 
             BadgeCount++;
@@ -355,10 +337,14 @@ namespace Lister.ViewModels
             }
 
             _allPages = new List <PageViewModel> ();
-            _printablePages = new List <PageViewModel> ();
             VisiblePage = new PageViewModel (_documentScale);
             _lastPage = VisiblePage;
             _allPages.Add (_lastPage);
+
+            _printablePages = new List<PageViewModel> ();
+            PrintableBadges = new List <BadgeViewModel> ();
+            _lastPrintablePage = new PageViewModel (_documentScale);
+            _printablePages.Add (_lastPrintablePage);
 
             VisiblePageNumber = 1;
             PageCount = 1;
@@ -503,9 +489,15 @@ namespace Lister.ViewModels
         }
 
 
-        internal List <PageViewModel> GetAllPages ()
+        internal List <PageViewModel> GetPrintablePages ()
         {
             return _printablePages;
+        }
+
+
+        internal int GetPrintablePagesCount ()
+        {
+            return _printablePages.Count;
         }
 
 
