@@ -350,6 +350,7 @@
 												Height="{Binding Path = FontSize,  Mode=OneWay}">
 
 												<TextBlock
+													Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
 													VerticalAlignment="Bottom"
 													TextAlignment="Center"
 													Height="{Binding  Path = FontSize,  Mode=OneWay}"
@@ -795,6 +796,7 @@
 
 
 		<StackPanel
+			Name="underDialogCurtain"
 			Margin="{Binding  Path=Margin,  Mode=OneWay}"
 			ZIndex="10">
 
@@ -815,6 +817,13 @@
 
 
 <!-- 
+
+
+
+
+
+
+
 
 								<Button.Background>
 									<ImageBrush

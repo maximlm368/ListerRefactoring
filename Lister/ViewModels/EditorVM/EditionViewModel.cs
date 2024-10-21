@@ -37,7 +37,6 @@ namespace Lister.ViewModels
         //internal static readonly double _scale = 2.44140625;
         internal static readonly double _startScale = 1.5624;
         internal static double _scale = 1.5624;
-        //internal static readonly double _scale = 2.5;
 
         private double _viewWidth = 800;
         private double _viewHeight = 460;
@@ -45,13 +44,8 @@ namespace Lister.ViewModels
         private double _workAreaWidth = 550;
         private double _workAreaHeight = 380;
 
-
-
         private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
-
-        //private List <BadgeViewModel> _incorrectBadges;
-        //private List <BadgeViewModel> _correctBadges;
 
         private TextLineViewModel _splittable;
         private TextLineViewModel _focusedLine;
@@ -64,7 +58,6 @@ namespace Lister.ViewModels
 
         internal double WidthDelta { get; set; }
         internal double HeightDelta { get; set; }
-        //internal bool ScrollChangedByNavigation { get; private set; }
 
         private double wAW;
         internal double WorkAreaWidth
@@ -116,22 +109,12 @@ namespace Lister.ViewModels
             }
         }
 
-        private Dictionary<int, BadgeViewModel> _currentVisibleCollection;
+        private Dictionary <int, BadgeViewModel> _currentVisibleCollection;
         internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
-        internal Dictionary<int, BadgeViewModel> IncorrectNumbered { get; private set; }
-        internal Dictionary<int, BadgeViewModel> CorrectNumbered { get; private set; }
-        internal Dictionary<int, BadgeViewModel> BackupNumbered { get; private set; }
+        internal Dictionary <int, BadgeViewModel> IncorrectNumbered { get; private set; }
+        internal Dictionary <int, BadgeViewModel> CorrectNumbered { get; private set; }
+        internal Dictionary <int, BadgeViewModel> BackupNumbered { get; private set; }
         internal List <BadgeViewModel> Printable { get; private set; }
-
-        internal BadgeViewModel FirstIncorrect { get; private set; }
-
-        //{
-        //    get { return inc; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref inc, value, nameof (IncorrectBadges));
-        //    }
-        //}
 
         private int incBC;
         internal int IncorrectBadgesCount
@@ -142,14 +125,6 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref incBC, value, nameof (IncorrectBadgesCount));
             }
         }
-
-        //{
-        //    get { return fx; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref fx, value, nameof (FixedBadges));
-        //    }
-        //}
 
         private BadgeViewModel bpB;
         internal BadgeViewModel BeingProcessedBadge
@@ -210,26 +185,6 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref eC, value, nameof (ExtenderContent));
             }
         }
-
-        //private string fS;
-        //internal string FocusedFontSize
-        //{
-        //    get { return fS; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref fS, value, nameof (FocusedFontSize));
-        //    }
-        //}
-
-        //private Thickness fBT;
-        //internal Thickness FocusedBorderThickness
-        //{
-        //    get { return fBT; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref fBT, value, nameof (FocusedBorderThickness));
-        //    }
-        //}
 
 
         internal static void OnBackingToMainView ()
@@ -350,7 +305,7 @@ namespace Lister.ViewModels
             (
                 () =>
                 {
-                    SetBeingProcessed (AllNumbered [0]);
+                    SetBeingProcessed (AllNumbered.ElementAt(0).Value);
                     EnableNavigation ();
                     SetVisibleIcons ();
                     ScrollOffset = 0;

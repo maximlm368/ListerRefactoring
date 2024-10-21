@@ -209,13 +209,13 @@ namespace Lister.Views
                     EditorView.PassBackPoint (mainView);
                     _isFirstTimeLoading = false;
 
-                    Dispatcher.UIThread.Invoke 
+                    Dispatcher.UIThread.Invoke
                     (
                         () =>
                         {
                             ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
                             modernMV.EndWaiting ();
-                            window.Content = EditorView; 
+                            window.Content = EditorView;
                         }
                     );
 

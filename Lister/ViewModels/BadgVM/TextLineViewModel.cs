@@ -105,7 +105,7 @@ namespace Lister.ViewModels
                 //                                                    , FlowDirection.LeftToRight, face, FontSize, null);
                 //UsefullWidth = formatted.WidthIncludingTrailingWhitespace;
 
-                SetWidth ();
+                SetUsefullWidth ();
             }
         }
 
@@ -179,7 +179,7 @@ namespace Lister.ViewModels
 
             double correctHeight = FontSize * _parentToChildCoeff;
 
-            SetWidth ();
+            SetUsefullWidth ();
             SetYourself (text.Width, correctHeight, text.TopOffset, text.LeftOffset);
             SetAlignment (text.Alignment);
 
@@ -226,37 +226,37 @@ namespace Lister.ViewModels
         }
 
 
-        public static double CalculateWidthqq ( string content, TextualAtom demensions )
-        {
-            TextBlock tb = new TextBlock ();
-            tb.LetterSpacing = 0;
-            tb.Text = content;
-            tb.FontSize = demensions.FontSize;
+        //public static double CalculateWidthqq ( string content, TextualAtom demensions )
+        //{
+        //    TextBlock tb = new TextBlock ();
+        //    tb.LetterSpacing = 0;
+        //    tb.Text = content;
+        //    tb.FontSize = demensions.FontSize;
 
-            tb.FontWeight = GetFontWeight (demensions.FontWeight);
-            string fontName = demensions.FontName;
-            tb.FontFamily = new FontFamily (fontName);
+        //    tb.FontWeight = GetFontWeight (demensions.FontWeight);
+        //    string fontName = demensions.FontName;
+        //    tb.FontFamily = new FontFamily (fontName);
 
-            Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
-            tb.Measure (size);
-            tb.Arrange (new Rect ());
+        //    Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
+        //    tb.Measure (size);
+        //    tb.Arrange (new Rect ());
 
 
-            //FormattedText formatted = new FormattedText (content
-            //                                           , System.Globalization.CultureInfo.CurrentCulture
-            //                                           , FlowDirection.LeftToRight, Typeface.Default
-            //                                           , demensions.FontSize, null);
+        //    //FormattedText formatted = new FormattedText (content
+        //    //                                           , System.Globalization.CultureInfo.CurrentCulture
+        //    //                                           , FlowDirection.LeftToRight, Typeface.Default
+        //    //                                           , demensions.FontSize, null);
 
-            //formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
-            //formatted.SetFontSize (demensions.FontSize);
-            //formatted.SetFontFamily ("Kramola");
+        //    //formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
+        //    //formatted.SetFontSize (demensions.FontSize);
+        //    //formatted.SetFontFamily ("Kramola");
 
-            //double wd = formatted.Width;
+        //    //double wd = formatted.Width;
 
-            //return wd;
+        //    //return wd;
 
-            return tb.DesiredSize.Width;
-        }
+        //    return tb.DesiredSize.Width;
+        //}
 
 
         private Thickness SetPadding ()
@@ -293,7 +293,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetWidth ()
+        private void SetUsefullWidth ()
         {
             //TextBlock tb = new TextBlock ();
             //tb.LetterSpacing = 0;
@@ -365,7 +365,7 @@ namespace Lister.ViewModels
                 return;
             }
 
-            SetWidth ();
+            SetUsefullWidth ();
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
             Padding = SetPadding ();
@@ -383,7 +383,7 @@ namespace Lister.ViewModels
                 return;
             }
 
-            SetWidth ();
+            SetUsefullWidth ();
             double proportion = oldFontSize / FontSize;
             Height /= proportion;
             Padding = SetPadding ();
@@ -399,7 +399,7 @@ namespace Lister.ViewModels
 
             if ( alignmentName == "Right" )
             {
-                LeftOffset += ( Width - UsefullWidth );
+                LeftOffset += ( Width - Math.Ceiling(UsefullWidth) );
             }
             else if ( alignmentName == "Center" )
             {
@@ -452,7 +452,7 @@ namespace Lister.ViewModels
             }
 
             Content = content;
-            SetWidth ();
+            SetUsefullWidth ();
         }
     }
 }

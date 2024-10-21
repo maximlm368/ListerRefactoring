@@ -40,7 +40,7 @@ namespace Lister.ViewModels
         private readonly int _narrowMinCorrectnessTextLength = 14;
         private readonly int _narrowMaxCorrectnessTextLength = 20;
 
-        private readonly double _wideCorrectnessWidthLimit = 170;
+        private readonly double _wideCorrectnessWidthLimit = 165;
         private readonly int _wideMinCorrectnessTextLength = 17;
         private readonly int _wideMaxCorrectnessTextLength = 23;
 
@@ -144,7 +144,6 @@ namespace Lister.ViewModels
 
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
-                SetCurrentVisible (CorrectNumbered);
                 IncorrectBadgesCount = 0;
             }
             else if ( _filterState == FilterChoosing.Corrects )
@@ -157,7 +156,6 @@ namespace Lister.ViewModels
 
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
-                SetCurrentVisible (IncorrectNumbered);
                 IncorrectBadgesCount = _currentVisibleCollection.Count;
             }
             else if ( _filterState == FilterChoosing.Incorrects )
@@ -168,12 +166,11 @@ namespace Lister.ViewModels
 
                 TryChangeSpecificLists ();
 
-                SetCurrentVisible (AllNumbered);
                 IncorrectBadgesCount = IncorrectNumbered. Count;
             }
 
-            CalcVisibleRange(_currentVisibleCollection.Count);
-            //CalcRunner (_currentVisibleCollection.Count);
+            SetCurrentVisible (_currentVisibleCollection);
+            CalcVisibleRange (_currentVisibleCollection.Count);
             SetScroller (_currentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
@@ -422,7 +419,7 @@ namespace Lister.ViewModels
 
                 TryChangeSpecificLists ();
 
-                SetCurrentVisible (AllNumbered);
+                //SetCurrentVisible (AllNumbered);
                 IncorrectBadgesCount = IncorrectNumbered.Count;
             }
             else if ( filterName == _correctLabel )
@@ -435,7 +432,7 @@ namespace Lister.ViewModels
 
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
-                SetCurrentVisible (CorrectNumbered);
+                //SetCurrentVisible (CorrectNumbered);
                 IncorrectBadgesCount = 0;
             }
             else if ( filterName == _incorrectLabel )
@@ -448,11 +445,13 @@ namespace Lister.ViewModels
 
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
-                SetCurrentVisible (IncorrectNumbered);
+                //SetCurrentVisible (IncorrectNumbered);
                 IncorrectBadgesCount = _currentVisibleCollection.Count;
             }
 
+            SetCurrentVisible (_currentVisibleCollection);
             CalcVisibleRange (_currentVisibleCollection.Count);
+
             //CalcRunner (_currentVisibleCollection.Count);
 
             SetScroller (_currentVisibleCollection.Count);
