@@ -22,7 +22,9 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        public readonly double _scalabilityCoefficient = 1.25;
+        private static readonly int _badgeCountLimit = 9999;
+        private static readonly double _scalabilityCoefficient = 1.25;
+
         private ConverterToPdf _converter;
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
@@ -34,7 +36,8 @@ namespace Lister.ViewModels
         private PageViewModel _lastPrintablePage;
         private SceneUserControl _view;
         private Person _chosenPerson;
-        private string procentSymbol = "%";
+        private string _procentSymbol = "%";
+        private int _visiblePageNumStorage;
 
         private PageViewModel vPage;
         internal PageViewModel VisiblePage
@@ -62,6 +65,11 @@ namespace Lister.ViewModels
             get { return vpN; }
             private set
             {
+                if ( value > 0 ) 
+                {
+                    _visiblePageNumStorage = value;
+                }
+
                 this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
             }
         }
@@ -191,7 +199,7 @@ namespace Lister.ViewModels
             _lastPrintablePage = new PageViewModel (_documentScale);
             _printablePages.Add (_lastPrintablePage);
             VisiblePageNumber = 1;
-            ZoomDegreeInView = _zoomDegree.ToString () + " " + procentSymbol;
+            ZoomDegreeInView = _zoomDegree.ToString () + " " + _procentSymbol;
             IncorrectBadges = new List <BadgeViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
@@ -199,17 +207,16 @@ namespace Lister.ViewModels
         }
 
 
-        internal void PassTemplateChoosing ( TemplateChoosingViewModel templateChoosingViewModel )
+        internal void RecoverPageNumber ()
         {
-            _templateChoosingVM = templateChoosingViewModel;
-            //_templateChoosingVM.WaitingIsSet += Handle;
+            VisiblePageNumber = 0;
         }
 
 
-        //internal void Handle ( )
-        //{
-        //    BuildBadges (_personChoosingVM.ChosenTemplate.Name);
-        //}
+        internal void PassTemplateChoosing ( TemplateChoosingViewModel templateChoosingViewModel )
+        {
+            _templateChoosingVM = templateChoosingViewModel;
+        }
 
 
         internal void PassView ( SceneUserControl view )
@@ -218,9 +225,14 @@ namespace Lister.ViewModels
         }
 
 
-        internal void BuildBadges ( string templateName )
+        internal bool BuildBadges ( string templateName )
         {
             List <Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
+
+            if ( (BadgeCount + requiredBadges.Count) >= _badgeCountLimit ) 
+            {
+                return false;
+            }
 
             if ( requiredBadges.Count > 0 )
             {
@@ -275,16 +287,26 @@ namespace Lister.ViewModels
                 Dispatcher.UIThread.Invoke 
                 (() => 
                 {
+                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                    modernMV.EndWaiting ();
+
                     VisiblePage = _allPages [VisiblePageNumber - 1];
                     PageCount = _allPages.Count;
                     VisiblePage.Show ();
                 });
             }
+
+            return true;
         }
 
 
-        internal void BuildSingleBadge ( string templateName )
+        internal bool BuildSingleBadge ( string templateName )
         {
+            if ( ( BadgeCount + 1 ) >= _badgeCountLimit )
+            {
+                return false;
+            }
+
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
@@ -326,6 +348,8 @@ namespace Lister.ViewModels
             VisiblePageNumber = _allPages.Count;
             PageCount = _allPages.Count;
             goalVMBadge.Show ();
+
+            return true;
         }
 
 
@@ -384,7 +408,7 @@ namespace Lister.ViewModels
 
                 _zoomDegree *= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
-                ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
 
                 CanvasTop *= _scalabilityCoefficient;
                 double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
@@ -406,7 +430,7 @@ namespace Lister.ViewModels
 
                 _zoomDegree /= _scalabilityCoefficient;
                 short zDegree = ( short ) _zoomDegree;
-                ZoomDegreeInView = zDegree.ToString () + " " + procentSymbol;
+                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
 
                 CanvasTop /= _scalabilityCoefficient;
                 double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
@@ -564,7 +588,7 @@ namespace Lister.ViewModels
 
         internal void EnableButtons ()
         {
-            EditionMustEnable = true;
+            EditionMustEnable = ( IncorrectBadgeCount > 0 );
             ClearIsEnable = true;
             SaveIsEnable = true;
             PrintIsEnable = true;

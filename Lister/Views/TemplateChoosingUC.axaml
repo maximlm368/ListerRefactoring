@@ -39,12 +39,13 @@
 			Margin="20,-2"
 			ZIndex="2"
 			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+			ToolTip.Tip="Построить макет на основе выбранных данных"
 			Command="{Binding  BuildBadges}">
 
 			<StackPanel Orientation="Horizontal">
 				<Label
-					FontFamily="FontAwesome"
-					Content="&#xF040;"
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xE2CA;"
 					Width="30"
 					Height="32"
 					FontSize="16"

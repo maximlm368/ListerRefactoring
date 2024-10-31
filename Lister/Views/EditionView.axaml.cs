@@ -32,6 +32,8 @@ namespace Lister.Views
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
 
+        private double _capturingY;
+        private bool _runnerIsCaptured = false;
         private Image _currentIcon;
         private TextBlock _focused;
         private bool _capturedExists;
@@ -106,7 +108,7 @@ namespace Lister.Views
         }
 
 
-        internal void ComplateBacking ( )
+        internal void CompleteBacking ( )
         {
             MainWindow mainWindow = Parent as MainWindow;
             _back.SetProperSize ( _vm.ViewWidth, _vm.ViewHeight );
@@ -450,6 +452,37 @@ namespace Lister.Views
             Canvas activator = sender as Canvas;
             _dastinationPointer = args.GetPosition (activator).Y;
             _vm.ShiftRunner (_dastinationPointer);
+        }
+
+
+        internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
+        {
+            _runnerIsCaptured = true;
+            Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
+            _capturingY = inRunnerRelativePosition.Y;
+
+
+            TextBox tb = new TextBox ();
+        }
+
+
+        internal void MoveRunner ( object sender, PointerEventArgs args )
+        {
+            if ( _runnerIsCaptured )
+            {
+                Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
+                double runnerVerticalDelta = _capturingY - pointerPosition.Y;
+                _vm.MoveRunner (runnerVerticalDelta);
+            }
+        }
+
+
+        internal void ReleaseRunner ( object sender, PointerReleasedEventArgs args )
+        {
+            if ( _runnerIsCaptured )
+            {
+                _runnerIsCaptured = false;
+            }
         }
 
 

@@ -45,9 +45,8 @@
 			IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseFirstPage}"
 			ToolTip.Tip="На первую страницу"
-			FontFamily="FontAwesome"
-			Content="&#xF049;"
-			/>
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf048;"/>
 		
 		<Button
 			Name="previousPage"
@@ -57,7 +56,8 @@
 			IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualisePreviousPage}"
 			ToolTip.Tip="На предыдущую страницу"
-			Content="G" />
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf0d9;" />
 
 		<TextBox
 			Name="visiblePageNumber"
@@ -75,8 +75,7 @@
 			VerticalContentAlignment="Center"
 			FontSize="14"
 			Grid.Column="4"
-			Content="из"
-			/>
+			Content="из"/>
 
 		<Label
 			HorizontalContentAlignment="Center"
@@ -84,8 +83,7 @@
 			FontSize="14"
 			Grid.Column="5"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
-			Content="{Binding   Path = PageCount,   Mode=OneWay}"
-			/>
+			Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
 
 		<Button
 			Name="nextPage"
@@ -95,17 +93,20 @@
 			IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseNextPage}"
 			ToolTip.Tip="На следующую страницу"
-			Content="n" />
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf0da;" />
 		
 		<Button
 			Name="lastPage"
 			Grid.Column="7"
 			HorizontalAlignment="Center"
 			Width="28"
+			FontSize="30"
 			IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = VisualiseLastPage}"
 			ToolTip.Tip="На последнюю страницу"
-			Content="l" />
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf051;" />
 
 		<Button
 			Name="zoomOut"
@@ -114,8 +115,9 @@
 			Width="28"
 			IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = ZoomOut}"
-			ToolTip.Tip="Уменьшить страницу"
-			Content="-" />
+			ToolTip.Tip="Уменьшить масштаб"
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#x2b;" />
 		
 		<Label
 			Name="scalabilityGrade"
@@ -129,8 +131,7 @@
 			CornerRadius = "3"
 			BorderThickness="1"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
-			Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"
-			/>
+			Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"/>
 
 		<Button
 			Name="zoomOn"
@@ -140,8 +141,17 @@
 			Width="28"
 			IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 			Command="{Binding   Path = ZoomOn}"
-			ToolTip.Tip="Увеличить страницу"
-			Content="+" />
+			ToolTip.Tip="Увеличить масштаб"
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf068;" />
+		
+	</Grid>
+	
+</UserControl>
+
+
+
+<!--
 
 		<Button
 			Name="edit"
@@ -152,8 +162,7 @@
 			Command="{Binding   Path = EditIncorrectBadges}"
 			DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 			ToolTip.Tip="Перейти в окно редактирования некорректных бэйджей"
+			FontFamily="Font Awesome 6 Free Solid"
 			Content="Редактировать"/>
-		
-	</Grid>
-	
-</UserControl>
+
+-->

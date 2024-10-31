@@ -1,5 +1,6 @@
 ﻿using ContentAssembler;
 using Lister.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -258,5 +259,11 @@ namespace Lister.ViewModels
             ZoomOutIsEnable = true;
         }
 
+
+        internal void RecoverPageCounterIfEmpty ()
+        {
+            SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel>();
+            sceneVM.RecoverPageNumber ();
+        }
     }
 }

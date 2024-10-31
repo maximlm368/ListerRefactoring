@@ -42,8 +42,8 @@
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseFirstPage}"
 					ToolTip.Tip="На первую страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF049;"/>
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xf048;"/>
 
 				<Button
 					Name="previousPage"
@@ -51,13 +51,13 @@
 				    Classes="transparent"
 					Width="32"
 					Height="32"
-					FontSize="16"
-					Padding="5,7"
+					FontSize="20"
+					Padding="5,5"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualisePreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF04A;" />
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xf0d9;" />
 
 				<TextBox
 					Name="visiblePageNumber"
@@ -66,9 +66,13 @@
 					Width="60"
 					Height="32"
 					FontSize="16"
+					Background="White"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					TextChanged="StepOnPage"
 					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
-					Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"/>
+					Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"
+					LostFocus="PageCounterLostFocus"/>
 
 				<Label
 					HorizontalContentAlignment="Center"
@@ -91,13 +95,13 @@
 					Classes="transparent"
 					Width="32"
 					Height="32"
-					FontSize="16"
-					Padding="8,7"
+					FontSize="20"
+					Padding="8,5"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseNextPage}"
 					ToolTip.Tip="На следующую страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF04E;" />
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xf0da;" />
 
 				<Button
 					Name="lastPage"
@@ -110,8 +114,8 @@
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseLastPage}"
 					ToolTip.Tip="На последнюю страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF050;" />
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xf051;" />
 
 			</Grid>
 
@@ -135,9 +139,9 @@
 					Padding="8,7"
 					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOut}"
-					ToolTip.Tip="Уменьшить страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF068;" />
+					ToolTip.Tip="Уменьшить масштаб"
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#xf068;" />
 
 				<Label
 					Name="scalabilityGrade"
@@ -148,6 +152,7 @@
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
 					BorderBrush="black"
+					Background="White"
 					CornerRadius = "3"
 					BorderThickness="1"
 					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
@@ -162,12 +167,12 @@
 					Width="32"
 					Height="32"
 					FontSize="16"
-					Padding="9,7"
+					Padding="8,7"
 					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOn}"
-					ToolTip.Tip="Увеличить страницу"
-					FontFamily="FontAwesome"
-					Content="&#xF067;"/>
+					ToolTip.Tip="Увеличить масштаб"
+					FontFamily="Font Awesome 6 Free Solid"
+					Content="&#x2b;" />
 				
 			</Grid>
 

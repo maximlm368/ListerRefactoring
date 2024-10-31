@@ -44,6 +44,17 @@ namespace Lister.ViewModels
             get { return zE; }
             private set
             {
+                if ( value )
+                {
+                    FocusedFontSizeColor = _focusedFontSizeColor;
+                    FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
+                }
+                else 
+                {
+                    FocusedFontSizeColor = _releasedFontSizeColor;
+                    FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
+                }
+
                 this.RaiseAndSetIfChanged (ref zE, value, nameof (ZoommerIsEnable));
             }
         }

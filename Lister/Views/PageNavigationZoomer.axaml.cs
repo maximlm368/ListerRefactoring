@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,20 @@ public partial class PageNavigationZoomer : UserControl
         lastPage.FocusAdorner = null;
         zoomOn.FocusAdorner = null;
         zoomOut.FocusAdorner = null;
+
+        visiblePageNumber.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
+    }
+
+
+    private void PreventPasting ( object sender, PointerReleasedEventArgs args )
+    {
+        args.Handled = true;
+    }
+
+
+    private void PageCounterLostFocus ( object sender, RoutedEventArgs args )
+    {
+        _vm.RecoverPageCounterIfEmpty ();
     }
 
 

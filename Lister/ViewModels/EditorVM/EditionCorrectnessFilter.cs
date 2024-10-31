@@ -35,6 +35,9 @@ namespace Lister.ViewModels
         private readonly string _allLabel = "Все";
         private readonly string _incorrectLabel = "С ошибками";
         private readonly string _correctLabel = "Без ошибок";
+        private readonly string _allTip = "Все бейджи";
+        private readonly string _correctTip = "Бейджи без ошибок";
+        private readonly string _incorrectTip = "Бейджи с ошибками";
 
         private readonly double _narrowCorrectnessWidthLimit = 155;
         private readonly int _narrowMinCorrectnessTextLength = 14;
@@ -100,6 +103,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private string sT;
+        internal string SwitcherTip
+        {
+            get { return sT; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref sT, value, nameof (SwitcherTip));
+            }
+        }
+
 
         internal bool IsProcessableChangedInSpecificFilter ( int filterableNumber )
         {
@@ -135,7 +148,9 @@ namespace Lister.ViewModels
             if ( _filterState == FilterChoosing.All )
             {
                 _filterState = FilterChoosing.Corrects;
+                
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 100, 0));
+                SwitcherTip = _correctTip;
                 ComboboxSelectedIndex = 1;
 
                 TryChangeSpecificLists ();
@@ -144,24 +159,31 @@ namespace Lister.ViewModels
 
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
+                CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
             else if ( _filterState == FilterChoosing.Corrects )
             {
                 _filterState = FilterChoosing.Incorrects;
+
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 100, 0, 0));
+                SwitcherTip = _incorrectTip;
                 ComboboxSelectedIndex = 2;
 
                 TryChangeSpecificLists ();
 
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
-                IncorrectBadgesCount = _currentVisibleCollection.Count;
+                CurrentVisibleCollection = IncorrectNumbered;
+                IncorrectBadgesCount = CurrentVisibleCollection.Count;
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
                 _filterState = FilterChoosing.All;
+                CurrentVisibleCollection = AllNumbered;
+
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 0, 100));
+                SwitcherTip = _allTip;
                 ComboboxSelectedIndex = 0;
 
                 TryChangeSpecificLists ();
@@ -169,9 +191,10 @@ namespace Lister.ViewModels
                 IncorrectBadgesCount = IncorrectNumbered. Count;
             }
 
-            SetCurrentVisible (_currentVisibleCollection);
-            CalcVisibleRange (_currentVisibleCollection.Count);
-            SetScroller (_currentVisibleCollection.Count);
+            ProcessableCount = CurrentVisibleCollection.Count;
+            SetSliderWideness ();
+            CalcVisibleRange (CurrentVisibleCollection.Count);
+            SetScroller (CurrentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
         }
@@ -203,7 +226,6 @@ namespace Lister.ViewModels
             if ( BeingProcessedBadge != null )
             {
                 SetToCorrectScale (BeingProcessedBadge);
-                _numberAmongVisibleIcons = 1;
                 BeingProcessedNumber = 1;
                 BeingProcessedBadge.Show ();
                 ZeroSliderStation (VisibleIcons);
@@ -372,17 +394,9 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetCurrentVisible ( Dictionary <int, BadgeViewModel> list ) 
-        {
-            _currentVisibleCollection = list;
-            ProcessableCount = _currentVisibleCollection.Count;
-            SetSliderWideness ();
-        }
-
-
         private void SetSliderWideness ( )
         {
-            if ( _currentVisibleCollection.Count > _visibleRange )
+            if ( CurrentVisibleCollection.Count > _visibleRange )
             {
                 _correctnessWidthLimit = _narrowCorrectnessWidthLimit;
                 _minCorrectnessTextLength = _narrowMinCorrectnessTextLength;
@@ -414,12 +428,12 @@ namespace Lister.ViewModels
             if ( filterName == _allLabel )
             {
                 _filterState = FilterChoosing.All;
+                CurrentVisibleCollection = AllNumbered;
 
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 200));
-
+                SwitcherTip = _allTip;
                 TryChangeSpecificLists ();
 
-                //SetCurrentVisible (AllNumbered);
                 IncorrectBadgesCount = IncorrectNumbered.Count;
             }
             else if ( filterName == _correctLabel )
@@ -427,12 +441,12 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.Corrects;
 
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 0));
-
+                SwitcherTip = _correctTip;
                 TryChangeSpecificLists ();
 
                 var imm = CorrectNumbered.ToImmutableSortedDictionary ();
                 CorrectNumbered = imm.ToDictionary ();
-                //SetCurrentVisible (CorrectNumbered);
+                CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
             else if ( filterName == _incorrectLabel )
@@ -440,22 +454,19 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.Incorrects;
 
                 SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 0, 0));
-
+                SwitcherTip = _incorrectTip;
                 TryChangeSpecificLists ();
 
                 var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
                 IncorrectNumbered = imm.ToDictionary ();
-                //SetCurrentVisible (IncorrectNumbered);
-                IncorrectBadgesCount = _currentVisibleCollection.Count;
+                CurrentVisibleCollection = IncorrectNumbered;
+                IncorrectBadgesCount = CurrentVisibleCollection.Count;
             }
 
-            SetCurrentVisible (_currentVisibleCollection);
-            CalcVisibleRange (_currentVisibleCollection.Count);
-
-            //CalcRunner (_currentVisibleCollection.Count);
-
-            SetScroller (_currentVisibleCollection.Count);
-
+            ProcessableCount = CurrentVisibleCollection.Count;
+            SetSliderWideness ();
+            CalcVisibleRange (CurrentVisibleCollection.Count);
+            SetScroller (CurrentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
         }
@@ -465,23 +476,25 @@ namespace Lister.ViewModels
         {
             if ( _filterIsOpen )
             {
-                CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
+                CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
                 WorkAreaWidth += _namesFilterWidth;
                 _filterIsOpen = false;
-                ExtenderContent = "\uF053";
+                ExtenderContent = "\uF060";
                 SwitcherWidth = _switcherWidth;
                 FilterLabelWidth = 0;
                 IsComboboxEnabled = false;
+                ExtentionTip = _extentionToolTip;
             }
             else
             {
                 CollectionFilterMargin = new Thickness (0, 0);
                 WorkAreaWidth -= _namesFilterWidth;
                 _filterIsOpen = true;
-                ExtenderContent = "\uF054";
+                ExtenderContent = "\uF061";
                 SwitcherWidth = 0;
                 FilterLabelWidth = _filterLabelWidth;
                 IsComboboxEnabled = true;
+                ExtentionTip = _shrinkingToolTip;
             }
         }
 

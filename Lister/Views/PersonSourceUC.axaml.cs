@@ -30,7 +30,7 @@ namespace Lister.Views
 
         internal void SetPath ( string ? path )
         {
-            _vm.SetPath ( this.GetType(), path);
+            _vm.TrySetPath ( this.GetType(), path);
         }
 
 

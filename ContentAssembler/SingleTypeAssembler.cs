@@ -19,7 +19,7 @@ namespace ContentAssembler
 
         public Badge CreateSingleBadgeByModel (string badgeModelName, Person person);
 
-        public List<Person> GetPersons (string? personsFilePath);
+        public List <Person> GetPersons (string? personsFilePath);
 
         public List <TemplateName> GetBadgeModels ( );
     }
@@ -28,17 +28,17 @@ namespace ContentAssembler
 
     public class UniformDocAssembler : IUniformDocumentAssembler
     {
-        private IBadgeAppearenceProvider badgeAppearenceProvider;
-        private IPeopleDataSource peopleDataSource;
-        private List<Person> people;
+        private IBadgeAppearenceProvider _badgeAppearenceProvider;
+        private IPeopleDataSource _peopleDataSource;
+        private List <Person> _people;
         private BadgeLayout _badgeLayout;
 
 
         public UniformDocAssembler (IBadgeAppearenceProvider badgeAppearenceDataSource, IPeopleDataSource peopleDataSource)
         {
-            this.badgeAppearenceProvider = badgeAppearenceDataSource;
-            this.peopleDataSource = peopleDataSource;
-            people = new List<Person>();
+            this._badgeAppearenceProvider = badgeAppearenceDataSource;
+            this._peopleDataSource = peopleDataSource;
+            _people = new List <Person>();
         }
 
 
@@ -52,10 +52,10 @@ namespace ContentAssembler
             }
 
             List<Badge> badges = new ();
-            string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
-            _badgeLayout = badgeAppearenceProvider.GetBadgeLayout (templateName);
+            string backgroundPath = _badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            _badgeLayout = _badgeAppearenceProvider.GetBadgeLayout (templateName);
 
-            foreach ( var person   in   people ) 
+            foreach ( var person   in   _people ) 
             {
                 BadgeLayout badgeLayout = _badgeLayout.Clone ();
                 Badge item = new Badge (person, backgroundPath, badgeLayout);
@@ -75,8 +75,8 @@ namespace ContentAssembler
                 throw new ArgumentNullException("arguments must be not null");
             }
 
-            BadgeLayout badgeLayout = badgeAppearenceProvider.GetBadgeLayout(templateName);
-            string backgroundPath = badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            BadgeLayout badgeLayout = _badgeAppearenceProvider.GetBadgeLayout(templateName);
+            string backgroundPath = _badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
             Badge badge = new Badge ( person, backgroundPath, badgeLayout );
 
             return badge;
@@ -85,14 +85,14 @@ namespace ContentAssembler
 
         public List <TemplateName> GetBadgeModels ( )
         {
-            return badgeAppearenceProvider.GetBadgeTemplateNames ( );
+            return _badgeAppearenceProvider.GetBadgeTemplateNames ( );
         }
 
 
-        public List<Person> GetPersons(string ? personsFilePath) 
+        public List <Person> GetPersons(string personsFilePath) 
         {
-            people = peopleDataSource.GetPersons(personsFilePath);
-            return people;
+            _people = _peopleDataSource.GetPersons(personsFilePath);
+            return _people;
         }
     }
 }

@@ -44,7 +44,6 @@ namespace Lister.ViewModels
         private double _runnerStep;
         private double _runnerHasWalked;
         private double _runnerHasWalkedStorage;
-        private double _scrollingLength;
 
         //private double _scrollHeight = 204;
         private double _itemHeight = 28;
@@ -52,6 +51,7 @@ namespace Lister.ViewModels
         private readonly double _collectionFilterWidth = 250;
         private readonly double _sliderWidth = 50;
         private readonly double _namesFilterWidth = 200;
+        private readonly double _collectionFilterMarginLeft = 220;
         private double _entireBlockHeight = 380;
         private double _scrollHeight = 252;
         private double _iconWidth = 220;
@@ -285,11 +285,12 @@ namespace Lister.ViewModels
         private void SetUpSliderBlock ( int incorrectBadgesAmmount )
         {
             SwitcherBackground = new SolidColorBrush (new Color (255, 0, 0, 200));
+            SwitcherTip = _allTip;
 
             FilterNames = new ObservableCollection <string> () { _allLabel, _correctLabel, _incorrectLabel };
 
             CollectionFilterWidth = _sliderWidth;
-            CollectionFilterMargin = new Thickness (_namesFilterWidth, 0);
+            CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
 
             SwitcherWidth = _switcherWidth;
 
@@ -302,6 +303,8 @@ namespace Lister.ViewModels
             CalcVisibleRange (incorrectBadgesAmmount);
 
             NamesFilterWidth = 0;
+
+            ExtentionTip = _extentionToolTip;
 
             SetScroller (incorrectBadgesAmmount);
         }
@@ -457,7 +460,7 @@ namespace Lister.ViewModels
 
         private void ScrollDownAtOneStep ( )
         {
-            int currentAmount = _currentVisibleCollection.Count;
+            int currentAmount = CurrentVisibleCollection.Count;
 
             if ( _scrollStepIndex == currentAmount - _visibleRange )
             {
@@ -486,6 +489,30 @@ namespace Lister.ViewModels
         }
 
 
+        internal void MoveRunner ( double runnerStep )
+        {
+            double usefullWay = (_itemHeight * CurrentVisibleCollection. Count) - RunnerBruttoWalkSpace;
+            double proportion = usefullWay / ( RunnerBruttoWalkSpace - RealRunnerHeight );
+            double step = runnerStep * proportion;
+            int steps = (int) (Math.Round (step / _itemHeight));
+
+            if ( step > 0 )
+            {
+                for ( int index = 0;   index < steps;   index++ ) 
+                {
+                    ScrollUp ();
+                }
+            }
+            else if ( step < 0 )
+            {
+                for ( int index = 0;   index > steps;   index-- )
+                {
+                    ScrollDown ();
+                }
+            }
+        }
+
+
         private void ReduceCurrentCollectionAndIcons ( int removableIndex, int removableIndexAmongVisibleIcons
                                                   , bool shiftToSideLast, bool shouldReduceIcons, bool shouldAddOne )
         {
@@ -494,7 +521,7 @@ namespace Lister.ViewModels
 
             _visibleRange = Math.Min (_visibleRange, VisibleIcons. Count);
 
-            if ( shouldReduceIcons && ( _currentVisibleCollection.Count < _maxVisibleCount ) )
+            if ( shouldReduceIcons   &&   ( CurrentVisibleCollection. Count < _maxVisibleCount ) )
             {
                 _visibleRangeEnd--;
                 _visibleRange--;
@@ -584,11 +611,11 @@ namespace Lister.ViewModels
             //    }
             //}
 
-            bool indexIsWithinCollection = ( ( _currentVisibleCollection.Count ) > badgeIndex )   &&   ( badgeIndex >= 0 );
+            bool indexIsWithinCollection = ((CurrentVisibleCollection. Count) > badgeIndex)   &&   (badgeIndex >= 0);
 
             if ( indexIsWithinCollection )
             {
-                goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
+                goalBadge = CurrentVisibleCollection.ElementAt (badgeIndex).Value;
                 isCorrect = goalBadge.IsCorrect;
             }
 
@@ -604,10 +631,10 @@ namespace Lister.ViewModels
 
         internal void ShiftRunner ( double dastinationPointer )
         {
-            int currentAmount = _currentVisibleCollection.Count;
+            int currentAmount = CurrentVisibleCollection.Count;
 
-            bool dastinationIsOnRunner = ( dastinationPointer >= _runnerHasWalked )
-                                      && ( dastinationPointer <= (_runnerHasWalked + RunnerHeight) );
+            bool dastinationIsOnRunner = (dastinationPointer >= _runnerHasWalked)
+                                      && (dastinationPointer <= (_runnerHasWalked + RunnerHeight));
 
             if (dastinationIsOnRunner) 
             {
@@ -619,8 +646,8 @@ namespace Lister.ViewModels
 
             if (_scrollStepIndex >= (currentAmount - _visibleRange)) 
             {
-                wayMustWalk = ( RunnerBruttoWalkSpace - RunnerHeight );
-                _scrollStepIndex = ( currentAmount - _visibleRange );
+                wayMustWalk = (RunnerBruttoWalkSpace - RunnerHeight);
+                _scrollStepIndex = (currentAmount - _visibleRange);
             }
 
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
@@ -766,11 +793,11 @@ namespace Lister.ViewModels
             VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
             _visibleIconsStorage = new ObservableCollection <BadgeCorrectnessViewModel> ();
 
-            if ( ( _currentVisibleCollection. Count > 0 )   &&   ( _visibleRange > 0 ) )
+            if ( ( CurrentVisibleCollection. Count > 0 )   &&   ( _visibleRange > 0 ) )
             {
                 for ( int index = 0;   index < _visibleRange;   index++ )
                 {
-                    BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
+                    BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
                     BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, boundBadge
                                                                                    , _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });

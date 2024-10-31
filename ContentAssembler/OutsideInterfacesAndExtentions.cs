@@ -26,9 +26,9 @@
 
     public interface IPeopleDataSource 
     {
-        public List<Person> GetPersons(string? personsFilePath);
+        public List<Person> GetPersons(string personsFilePath);
 
-        public string sourcePath {  get; set; }
+        public string SourcePath {  get; set; }
     }
 
 

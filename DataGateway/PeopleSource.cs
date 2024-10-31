@@ -6,42 +6,75 @@ using System.Text;
 using System.Threading.Tasks;
 using ExtentionsAndAuxiliary;
 using System.Collections.Generic;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace DataGateway
 {
-    public class PeopleSource : IPeopleDataSource
+    public class PeopleSource : IPeopleDataSource, IRowSource
     {
-        public string sourcePath { get; set; }
+        private readonly int _xslxStartRow = 2;
+        private readonly int _xslxWorkSheetNum = 1;
+
+        public string SourcePath { get; set; }
 
 
         public PeopleSource() { }
 
 
-        public List <Person> GetPersons (string ? filePath)
+        public List <Person> GetPersons ( string ? filePath )
         {
             List<Person> result = [];
 
-            if ( string.IsNullOrWhiteSpace(filePath) ) 
+            if ( string.IsNullOrWhiteSpace (filePath) )
             {
                 return result;
             }
+
+            if ( ( filePath.Last () == 'v' ) || ( filePath.Last () == 'V' ) )
+            {
+                result = GetPersonsFromCSV (filePath);
+            }
+            else 
+            {
+                result = GetPersonsFromXLSX (filePath);
+            }
+
+            return result;
+        }
+
+
+        private List <Person> GetPersonsFromXLSX (string filePath)
+        {
+            List <Person> result = [];
             
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding (1251);
-            using StreamReader reader = new StreamReader(filePath, encoding, true);
-            string line = string.Empty;
-            string[] parts;
-            char seperator = ';';
 
-            while ((line = reader.ReadLine()) != null)
+            using  XLWorkbook workbook = new XLWorkbook (filePath);
+            IXLWorksheet worksheet = workbook.Worksheet (_xslxWorkSheetNum);
+
+            int usefullColumnCount = worksheet.Columns ().Count ();
+            int rowCount = worksheet.Rows ().Count ();
+
+            for ( int index = _xslxStartRow;   index <= rowCount;   index++ ) 
             {
-                parts = line.Split(seperator, StringSplitOptions.TrimEntries);
-                Person person = Person.Create (parts);
+                IXLRow row = worksheet.Row (index);
+                List <string> rowData = new ();
 
-                if ( person != null ) 
+                for ( int counter = 1;   counter <= usefullColumnCount;   counter++ ) 
                 {
+                    IXLCell cell = row.Cell (counter);
+                    string value = cell.Value.ToString ();
+                    rowData.Add (value);
+                }
+
+                try
+                {
+                    Person person = Person.Create (rowData.ToArray());
                     result.Add (person);
                 }
+                catch ( ArgumentException ex ){}
             }
 
             IComparer <Person> comparer = new RusStringComparer <Person> ();
@@ -49,5 +82,78 @@ namespace DataGateway
 
             return result;
         }
+
+
+        private List <Person> GetPersonsFromCSV ( string filePath )
+        {
+            List <Person> result = [];
+
+            Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
+            Encoding encoding = Encoding.GetEncoding (1251);
+            using StreamReader reader = new StreamReader (filePath, encoding, true);
+            string line = string.Empty;
+            char seperator = ';';
+
+            while ( ( line = reader.ReadLine () ) != null )
+            {
+                string [] parts = line.Split (seperator, StringSplitOptions.TrimEntries);
+
+                try
+                {
+                    Person person = Person.Create (parts);
+                    result.Add (person);
+                }
+                catch ( ArgumentException ex ){}
+            }
+
+            IComparer<Person> comparer = new RusStringComparer<Person> ();
+            result.Sort (comparer);
+
+            return result;
+        }
+
+
+
+        public List<string> GetRow ( string filePath, int rowNumZeroBased )
+        {
+            List<string> resultRow = new ();
+
+            bool extentionIsXSLX = (filePath.Last () == 'x');
+
+            if ( extentionIsXSLX )
+            {
+                Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
+                Encoding encoding = Encoding.GetEncoding (1251);
+
+                using XLWorkbook workbook = new XLWorkbook (filePath);
+                IXLWorksheet worksheet = workbook.Worksheet (_xslxWorkSheetNum);
+
+                int usefullColumnCount = worksheet.Columns ().Count ();
+                int rowCount = worksheet.Rows ().Count ();
+
+                if ( rowCount < 1 ) 
+                {
+                    return resultRow;
+                }
+
+                IXLRow row = worksheet.Row (rowNumZeroBased + 1);
+
+                for ( int counter = 1;   counter <= usefullColumnCount;   counter++ )
+                {
+                    IXLCell cell = row.Cell (counter);
+                    string value = cell.Value.ToString ();
+                    resultRow.Add (value);
+                }
+            }
+
+            return resultRow;
+        }
+    }
+
+
+
+    public interface IRowSource 
+    {
+        public List<string> GetRow ( string filePath, int rowNumZeroBased );
     }
 }

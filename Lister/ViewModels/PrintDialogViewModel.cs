@@ -26,12 +26,17 @@ namespace Lister.ViewModels
         public static bool IsClosed { get; private set; }
 
         private readonly string _emptyCopies = "Количество копий не может быть пустым";
+        private readonly string _emptyPages = "Список страниц не может быть пустым";
+
+        private readonly int _copiesMaxCount = 10;
+        private readonly int _pagesStringMaxGlyphCount = 30;
 
         private readonly List<char> _pageNumsAcceptables
                                    = new List<char> () { ' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         private readonly List<char> _copiesCountAcceptables
                                    = new List<char> () { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
+        //private int _pagesStringGlyphCount;
         private List<char> _numAsChars;
         private List<int> _pageNumbers;
         private List<int> _currentRange;
@@ -106,8 +111,13 @@ namespace Lister.ViewModels
             get { return ps; }
             private set
             {
-                Error = string.Empty;
+                PagesError = string.Empty;
                 value = RemoveUnacceptableGlyph (value, _pageNumsAcceptables);
+
+                if ( ( ! string.IsNullOrEmpty(value))   &&   (value.Length > _pagesStringMaxGlyphCount) ) 
+                {
+                    value = Pages;
+                }
 
                 try
                 {
@@ -116,7 +126,7 @@ namespace Lister.ViewModels
 
                     SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel> ();
 
-                    for ( int index = 0; index < pageNumbers.Count; index++ )
+                    for ( int index = 0;   index < pageNumbers.Count;   index++ )
                     {
                         int currentNum = pageNumbers [index];
 
@@ -140,6 +150,35 @@ namespace Lister.ViewModels
             }
         }
 
+        private SolidColorBrush pBC;
+        public SolidColorBrush PagesBorderColor
+        {
+            get { return pBC; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref pBC, value, nameof (PagesBorderColor));
+            }
+        }
+
+        private string perr;
+        public string PagesError
+        {
+            get { return perr; }
+            set
+            {
+                if ( string.IsNullOrEmpty (value) )
+                {
+                    PagesBorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                }
+                else
+                {
+                    PagesBorderColor = new SolidColorBrush (new Color (255, 255, 0, 0));
+                }
+
+                this.RaiseAndSetIfChanged (ref perr, value, nameof (PagesError));
+            }
+        }
+
         private string copies;
         public string Copies
         {
@@ -149,22 +188,49 @@ namespace Lister.ViewModels
                 value = RemoveUnacceptableGlyph (value, _copiesCountAcceptables);
                 _copiesHinderPrinting = false;
 
-                if ( Error == _emptyCopies ) 
+                if ( CopiesError == _emptyCopies ) 
                 {
-                    Error = string.Empty;
+                    CopiesError = string.Empty;
+                }
+
+                if ( ! string.IsNullOrEmpty(value) )
+                {
+                    if ( (IsFirstDigitZero(value))   ||   ( Int32.Parse(value) > _copiesMaxCount ) ) 
+                    {
+                        value = Copies;
+                    }
                 }
 
                 this.RaiseAndSetIfChanged (ref copies, value, nameof (Copies));
             }
         }
 
-        private string err;
-        public string Error
+        private SolidColorBrush cBC;
+        public SolidColorBrush CopiesBorderColor
         {
-            get { return err; }
+            get { return cBC; }
             set
             {
-                this.RaiseAndSetIfChanged (ref err, value, nameof (Error));
+                this.RaiseAndSetIfChanged (ref cBC, value, nameof (CopiesBorderColor));
+            }
+        }
+
+        private string cerr;
+        public string CopiesError
+        {
+            get { return cerr; }
+            set
+            {
+                if ( string.IsNullOrEmpty (value) )
+                {
+                    CopiesBorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+                }
+                else
+                {
+                    CopiesBorderColor = new SolidColorBrush (new Color (255, 255, 0, 0));
+                }
+
+                this.RaiseAndSetIfChanged (ref cerr, value, nameof (CopiesError));
             }
         }
 
@@ -187,21 +253,36 @@ namespace Lister.ViewModels
 
             CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
             LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
+
+            PagesBorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            CopiesBorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
         }
 
 
         public void PagesLostFocus ( )
         {
-            try
+            //try
+            //{
+            //    GetPagesFromString (Pages);
+            //}
+            //catch (ParsingException ex) 
+            //{
+            //    PagesError = ex.Message;
+            //    _pagesListError = ex.Message;
+            //    _pagesHinderPrinting = true;
+            //}
+
+            if ( string.IsNullOrEmpty (Pages) )
             {
-                GetPagesFromString (Pages);
-            }
-            catch (ParsingException ex) 
-            {
-                Error = ex.Message;
-                _pagesListError = ex.Message;
+                PagesError = _emptyPages;
                 _pagesHinderPrinting = true;
             }
+        }
+
+
+        public void PagesGotFocus ()
+        {
+            PagesError = string.Empty;
         }
 
 
@@ -209,36 +290,42 @@ namespace Lister.ViewModels
         {
             if ( string.IsNullOrEmpty(Copies) ) 
             {
-                Error = _emptyCopies;
+                CopiesError = _emptyCopies;
                 _copiesHinderPrinting = true;
             }
         }
 
 
+        public void CopiesGotFocus ()
+        {
+            CopiesError = string.Empty;
+        }
+
+
         public void Print ()
         {
-            if ( _pagesHinderPrinting ) 
-            {
-                Error = _pagesListError;
-                return;
-            }
+            //if ( _pagesHinderPrinting ) 
+            //{
+            //    PagesError = _pagesListError;
+            //    return;
+            //}
 
-            if ( _copiesHinderPrinting )
-            {
-                Error = _emptyCopies;
-                return;
-            }
+            //if ( _copiesHinderPrinting )
+            //{
+            //    CopiesError = _emptyCopies;
+            //    return;
+            //}
 
             try
             {
                 if ( string.IsNullOrEmpty (Copies) )
                 {
-                    throw new ParsingException ("Укажите количество копий");
+                    throw new ParsingException (_emptyCopies);
                 }
 
                 if ( string.IsNullOrEmpty (Pages)   &&   Some )
                 {
-                    throw new ParsingException ("Укажите страницы");
+                    throw new ParsingException (_emptyPages);
                 }
 
                 PrinterPresentation printer = Printers [SelectedIndex];
@@ -266,13 +353,25 @@ namespace Lister.ViewModels
             }
             catch (ParsingException ex) 
             {
-                Error = ex.Message;
+                if ( ex.Message == _emptyPages )
+                {
+                    PagesError = ex.Message;
+                }
+                else if ( ex.Message == _emptyCopies ) 
+                {
+                    CopiesError = ex.Message;
+                }
             }
         }
 
 
-        private List <int> GetPagesFromString ( string pageNumbers )
+        private List <int> ? GetPagesFromString ( string pageNumbers )
         {
+            if ( _printingAdjusting.Cancelled   ||   (pageNumbers == null) ) 
+            {
+                return null;
+            }
+
             List <int> result = new ();
             _state = ParserStates.BeforeBetweenAfter;
             _numAsChars = new ();
@@ -304,13 +403,15 @@ namespace Lister.ViewModels
 
         private void ParsePageNumbers ( char glyph, bool isGlyphLast )
         {
-            try
-            {
-                int num = Int32.Parse (glyph.ToString());
+            bool glyphIsInteger = _copiesCountAcceptables.Contains ( glyph );
 
-                if ( ( _state == ParserStates.BeforeBetweenAfter ) || ( _state == ParserStates.InsideIntegerOrFirstInRange ) )
+            if (glyphIsInteger)
+            {
+                int num = Int32.Parse (glyph.ToString ());
+
+                if ( ( _state == ParserStates.BeforeBetweenAfter )  ||  ( _state == ParserStates.InsideIntegerOrFirstInRange ) )
                 {
-                    if ( ( _state == ParserStates.BeforeBetweenAfter )   &&   ( glyph == '0' ) ) 
+                    if ( ( _state == ParserStates.BeforeBetweenAfter )   &&   ( glyph == '0' ) )
                     {
                         throw new ParsingException ("Число не может начинаться с ноля");
                     }
@@ -322,7 +423,7 @@ namespace Lister.ViewModels
                     {
                         string presentation = "";
 
-                        foreach ( char ch in _numAsChars )
+                        foreach ( char ch   in   _numAsChars )
                         {
                             presentation += ch;
                         }
@@ -334,9 +435,14 @@ namespace Lister.ViewModels
                 }
                 else if ( _state == ParserStates.InRange )
                 {
+                    if ( glyph == '0' )
+                    {
+                        throw new ParsingException ("Число не может начинаться с ноля");
+                    }
+
                     string presentation = "";
 
-                    foreach ( char ch in _numAsChars )
+                    foreach ( char ch   in   _numAsChars )
                     {
                         presentation += ch;
                     }
@@ -347,22 +453,29 @@ namespace Lister.ViewModels
                     _state = ParserStates.InRangeEnd;
                     _numAsChars.Add (glyph);
 
-                    if ( isGlyphLast )
+                    presentation = "";
+
+                    foreach ( char ch in _numAsChars )
                     {
-                        presentation = "";
+                        presentation += ch;
+                    }
 
-                        foreach ( char ch in _numAsChars )
-                        {
-                            presentation += ch;
-                        }
+                    int rangeEnd = Int32.Parse (presentation);
 
-                        int rangeEnd = Int32.Parse (presentation);
-
-                        if ( _rangeStart > rangeEnd )
+                    if ( _rangeStart > rangeEnd )
+                    {
+                        if ( ( rangeEnd * 10 ) > _passedPagesAmount )
                         {
                             throw new ParsingException ("Некорректный интервал");
                         }
+                        //else
+                        //{
+                        //    throw new TransparentForTypingParsingException ("Некорректный интервал");
+                        //}
+                    }
 
+                    if ( isGlyphLast )
+                    {
                         for ( int index = _rangeStart;   index <= rangeEnd;   index++ )
                         {
                             _pageNumbers.Add (index);
@@ -373,34 +486,41 @@ namespace Lister.ViewModels
                 {
                     _numAsChars.Add (glyph);
 
-                    if ( isGlyphLast )
+                    string presentation = "";
+
+                    foreach ( char ch   in   _numAsChars )
                     {
-                        string presentation = "";
+                        presentation += ch;
+                    }
 
-                        foreach ( char ch in _numAsChars )
-                        {
-                            presentation += ch;
-                        }
+                    int rangeEnd = Int32.Parse (presentation);
 
-                        int rangeEnd = Int32.Parse (presentation);
-
-                        if ( _rangeStart > rangeEnd )
+                    if ( _rangeStart > rangeEnd )
+                    {
+                        if ( ( rangeEnd * 10 ) > _passedPagesAmount )
                         {
                             throw new ParsingException ("Некорректный интервал");
                         }
+                        //else
+                        //{
+                        //    throw new TransparentForTypingParsingException ("Некорректный интервал");
+                        //}
+                    }
 
+                    if ( isGlyphLast )
+                    {
                         for ( int index = _rangeStart;   index <= rangeEnd;   index++ )
                         {
                             _pageNumbers.Add (index);
                         }
                     }
                 }
-                else if ( _state == ParserStates.AfterInteger ) 
+                else if ( _state == ParserStates.AfterInteger )
                 {
                     throw new ParsingException ("Цифра не может идти после пробела");
                 }
             }
-            catch ( FormatException ex ) 
+            else if ( ! glyphIsInteger )
             {
                 switch ( glyph )
                 {
@@ -438,11 +558,11 @@ namespace Lister.ViewModels
                         break;
                     case '-':
 
-                        if ((_state == ParserStates.InsideIntegerOrFirstInRange)   ||   ( _state == ParserStates.AfterInteger ))
+                        if ( ( _state == ParserStates.InsideIntegerOrFirstInRange )  ||  ( _state == ParserStates.AfterInteger ) )
                         {
                             _state = ParserStates.InRange;
 
-                            if ( isGlyphLast ) 
+                            if ( isGlyphLast )
                             {
                                 throw new TransparentForTypingParsingException ("Тире не может быть последним в строке");
                             }
@@ -470,7 +590,7 @@ namespace Lister.ViewModels
                         break;
                     case ',':
 
-                        if ( ( _state == ParserStates.InsideIntegerOrFirstInRange ) || ( _state == ParserStates.AfterInteger ) )
+                        if ( ( _state == ParserStates.InsideIntegerOrFirstInRange )  ||  ( _state == ParserStates.AfterInteger ) )
                         {
                             string presentation = "";
 
@@ -487,7 +607,7 @@ namespace Lister.ViewModels
 
                             _state = ParserStates.BeforeBetweenAfter;
 
-                            if ( isGlyphLast ) 
+                            if ( isGlyphLast )
                             {
                                 throw new TransparentForTypingParsingException ("Запятая не может быть последней в строке");
                             }
@@ -496,7 +616,7 @@ namespace Lister.ViewModels
                         {
                             string presentation = "";
 
-                            foreach ( char ch in _numAsChars )
+                            foreach ( char ch   in   _numAsChars )
                             {
                                 presentation += ch;
                             }
@@ -521,9 +641,9 @@ namespace Lister.ViewModels
                                 throw new TransparentForTypingParsingException ("Запятая не может быть последней в строке");
                             }
                         }
-                        else if ( _state == ParserStates.BeforeBetweenAfter ) 
+                        else if ( _state == ParserStates.BeforeBetweenAfter )
                         {
-                            if ( _pageNumbers.Count < 1 ) 
+                            if ( _pageNumbers.Count < 1 )
                             {
                                 throw new ParsingException ("Запятая не может быть первой");
                             }
@@ -532,7 +652,7 @@ namespace Lister.ViewModels
                                 throw new ParsingException ("Запятые не могут идти подряд");
                             }
                         }
-                        else if (_state == ParserStates.InRange)
+                        else if ( _state == ParserStates.InRange )
                         {
                             throw new ParsingException ("Запятая не может идти после тире");
                         }
@@ -564,12 +684,31 @@ namespace Lister.ViewModels
         }
 
 
+        private bool IsFirstDigitZero ( string value )
+        {
+            bool firstDigitIsZero = false;
+
+            char ch = value [0];
+
+            if ( ch == '0' )
+            {
+                firstDigitIsZero = true;
+            }
+
+            return firstDigitIsZero;
+        }
+
+
         public void Cancel ()
         {
+            CopiesError = string.Empty;
+            PagesError = string.Empty;
+
             _printingAdjusting.Cancelled = true;
             IsClosed = true;
             SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel> ();
             sceneVM.HandleDialogClosing ();
+
             _view.Close ();
         }
 
@@ -578,25 +717,32 @@ namespace Lister.ViewModels
         {
             IsClosed = false;
 
-            var printersList = new ObservableCollection <PrinterPresentation> ();
+            ObservableCollection <PrinterPresentation> printersList = new ();
 
-            PrinterSettings settings = new PrinterSettings ();
-            string defaultPrinterName = settings.PrinterName;
-
-            var printers = PrinterSettings.InstalledPrinters;
-
-            int counter = 0;
-
-            foreach ( string printer   in   printers )
+            if ( App.OsName == "Windows" )
             {
-                printersList.Add (new PrinterPresentation (printer));
+                PrinterSettings settings = new PrinterSettings ();
+                string defaultPrinterName = settings.PrinterName;
 
-                if (defaultPrinterName == printer) 
+                var printers = PrinterSettings.InstalledPrinters;
+
+                int counter = 0;
+
+                foreach ( string printer   in   printers )
                 {
-                    SelectedIndex = counter;
-                }
+                    printersList.Add (new PrinterPresentation (printer));
 
-                counter++;
+                    if ( defaultPrinterName == printer )
+                    {
+                        SelectedIndex = counter;
+                    }
+
+                    counter++;
+                }
+            }
+            else if ( App.OsName == "Linux" )
+            {
+                
             }
 
             Printers = printersList;

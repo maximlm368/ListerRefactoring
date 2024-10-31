@@ -7,7 +7,7 @@
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
 		Width="600"
-		Height="267"
+		Height="305"
 		WindowStartupLocation="CenterScreen"
 		x:DataType="vm:PrintDialogViewModel"
 		
@@ -17,7 +17,7 @@
 
 	<UserControl
 		Width="600"
-		Height="267"
+		Height="305"
 		BorderBrush = "gray"
         BorderThickness = "1">
 
@@ -38,6 +38,7 @@
 
 				<Grid.RowDefinitions>
 					<RowDefinition  Height="36"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
 					<RowDefinition  Height="38"></RowDefinition>
@@ -107,17 +108,21 @@
 					Margin="0,-2"
 					HorizontalAlignment="Left"
 					FontSize="16"
+					BorderBrush="{Binding  Path = PagesBorderColor,  Mode=OneWay}"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					LostFocus="PagesLostFocus"
+					GotFocus="PagesGotFocus"
 					Text="{Binding  Path = Pages,  Mode=TwoWay}"
 					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"/>
 
 				<Label
-					Name="error"
+					Name="pagesError"
 					Grid.Column="1"
 					Grid.Row="3"
 					Padding="10,8"
 					Foreground="Red"
-					Content="{Binding  Path = Error,  Mode=OneWay}"
+					Content="{Binding  Path = PagesError,  Mode=OneWay}"
 					FontSize="16"/>
 
 				<Label
@@ -137,8 +142,21 @@
 					Margin="0,4"
 					HorizontalAlignment="Left"
 					FontSize="16"
+					BorderBrush="{Binding  Path = CopiesBorderColor,  Mode=OneWay}"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					LostFocus="CopiesLostFocus"
+					GotFocus="CopiesGotFocus"
 					Text="{Binding  Path = Copies,  Mode=TwoWay}"/>
+
+				<Label
+					Name="copiesError"
+					Grid.Column="1"
+					Grid.Row="5"
+					Padding="10,8"
+					Foreground="Red"
+					Content="{Binding  Path = CopiesError,  Mode=OneWay}"
+					FontSize="16"/>
 				
 			</Grid>
 

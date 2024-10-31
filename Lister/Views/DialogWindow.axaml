@@ -13,13 +13,7 @@
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0">
-
-
-	<Window.Effect>
-		<DropShadowDirectionEffect Direction="-90" Color="Black" Opacity="0.5" BlurRadius="10"/>
-	</Window.Effect>
-	
+		ExtendClientAreaTitleBarHeightHint = "0" >
 
 	<UserControl
 		Width="350"
@@ -34,7 +28,8 @@
 				FontSize ="12"
 				Margin ="5,5,0,0"/>
 
-			<Grid Height="70"  Margin ="0,-5,0,0">
+			<Grid Height="70"  
+				  Margin ="0,-5,0,0">
 
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition  Width="30"></ColumnDefinition>

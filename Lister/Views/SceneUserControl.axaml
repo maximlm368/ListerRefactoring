@@ -34,29 +34,67 @@
 					VerticalContentAlignment="Center"
 					Width="20"
 					Height="30"
-					Padding="4,5"
+					Padding="0,5"
 					Command="{Binding  Path=ExtendButtons}"
 					ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
-					FontFamily="FontAwesome"
+					FontFamily="Font Awesome 6 Free Solid"
 					Content="{Binding  Path=ExtenderContent,  Mode=OneWay}"/>
 				
-				<Label
-					Name="entireCount"
-					FontSize="16"
-					Margin="0,0,0,0"
-					Padding="5,5"
-					Width="{Binding   Path = CountWidth,   Mode=OneWay}"
-					Content="{Binding  Path = BadgeCount,  Mode=OneWay}"/>
+				<Grid
+					Name="entireCount">
 
-				<Label
-					Name="incorrectsCount"
-					FontSize="16"
-					Padding="5,0"
-					Margin="0,0,0,5"
-					Width="{Binding   Path = CountWidth,   Mode=OneWay}"
-					Foreground="Red"
-					Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"/>
-			
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50"></ColumnDefinition>
+						<ColumnDefinition Width="170" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+					<Label
+						Grid.Column="0"
+						FontSize="16"
+						Margin="0,0,0,0"
+						Padding="5,5"
+						Width="50"
+						ToolTip.Tip="Всего бейджей"
+						Content="{Binding  Path = BadgeCount,  Mode=OneWay}"/>
+
+					<Label
+						Grid.Column="1"
+						FontSize="16"
+						Margin="0,0,0,0"
+						Padding="2,5"
+						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
+						Content="Всего бейджей"/>
+					
+				</Grid>
+
+				<Grid
+					Name="incorrectsCount">
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50"></ColumnDefinition>
+						<ColumnDefinition Width="170" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+					<Label
+						Grid.Column="0"
+						FontSize="16"
+						Padding="5,0"
+						Margin="0,0,0,5"
+						Width="50"
+						Foreground="Red"
+						ToolTip.Tip="Из них с ошибками"
+						Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"/>
+
+					<Label
+						Grid.Column="1"
+						FontSize="16"
+						Padding="2,0"
+						Margin="0,0,0,5"
+						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
+						Content="Из них с ошибками"/>
+					
+				</Grid>
+
 				<Button
 					Name="edit"
 					Margin="0,5"
@@ -67,12 +105,12 @@
 					IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
 					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Command="{Binding   Path = EditIncorrectBadges}"
-					ToolTip.Tip="Перейти в окно редактирования некорректных бэйджей">
+					ToolTip.Tip="Редактировать макет">
 
 					<StackPanel Orientation="Horizontal">
-						<Label 
-							FontFamily="FontAwesome"
-							Content="&#xF040;"
+						<Label
+							FontFamily="Font Awesome 6 Free Solid"
+							Content="&#xf303;"
 							Width="30"
 							Height="32"
 							FontSize="16"
@@ -81,9 +119,9 @@
 						<Label 
 							Content="Редактировать"
 							Height="32"
-							Width="130"
+							Width="170"
 							FontSize="16"
-							Padding="3,7"/>
+							Padding="13,7"/>
 					</StackPanel>
 
 				</Button>
@@ -98,12 +136,12 @@
 					IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=ClearBadges}"
-					ToolTip.Tip="Удалить все построения">
+					ToolTip.Tip="Очистить макет">
 
 					<StackPanel Orientation="Horizontal">
 						<Label
-							FontFamily="FontAwesome"
-							Content="&#xF1FC;"
+							FontFamily="Font Awesome 6 Free Solid"
+							Content="&#xf51a;"
 							Width="30"
 							Height="32"
 							FontSize="16"
@@ -112,9 +150,9 @@
 						<Label 
 							Content="Очистить"
 							Height="32"
-							Width="130"
+							Width="170"
 							FontSize="16"
-							Padding="23,7"/>
+							Padding="33,7"/>
 					</StackPanel>
 
 				</Button>
@@ -129,12 +167,12 @@
 					IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=GeneratePdf}"
-					ToolTip.Tip="Сохранить в PDF файле">
+					ToolTip.Tip="Сохранить макет в pdf-файл">
 
 					<StackPanel Orientation="Horizontal">
-						<Label 
-							FontFamily="FontAwesome"
-							Content="&#xF1C4;"
+						<Label
+							FontFamily="Font Awesome 6 Free Solid"
+							Content="&#xf1c1;"
 							Width="30"
 							Height="32"
 							FontSize="16"
@@ -143,9 +181,9 @@
 						<Label 
 							Content="Сохранить"
 							Height="32"
-							Width="130"
+							Width="170"
 							FontSize="16"
-							Padding="20,7"/>
+							Padding="30,7"/>
 					</StackPanel>
 					
 				</Button>
@@ -160,12 +198,12 @@
 					IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=Print}"
-					ToolTip.Tip="Печатать на принтере">
+					ToolTip.Tip="Печатать макет">
 
 					<StackPanel Orientation="Horizontal">
-						<Label 
-							FontFamily="FontAwesome"
-							Content="&#xF040;"
+						<Label
+							FontFamily="Font Awesome 6 Free Solid"
+							Content="&#xf02f;"
 							Width="30"
 							Height="32"
 							FontSize="16"
@@ -173,9 +211,9 @@
 						<Label 
 							Content="Печатать"
 							Height="32"
-							Width="130"
+							Width="170"
 							FontSize="16"
-							Padding="25,7"/>
+							Padding="35,7"/>
 					</StackPanel>
 
 				</Button>
@@ -188,14 +226,14 @@
 			Name="workArea"
 			HorizontalAlignment="Left"
 			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
-			Width="800"
+			Width="810"
 			Height="302">
 
 			<ScrollViewer
 				Name="scroller"
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"
-				AllowAutoHide="True"
+				AllowAutoHide="False"
 				Background="AliceBlue">
 
 					<Border

@@ -49,7 +49,7 @@
 			HorizontalAlignment="Center"
             Command="{Binding Path=ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
-			FontFamily="FontAwesome"
+			FontFamily="Font Awesome 6 Free Solid"
 			Content="&#xF141;" />
 
 	</Grid>

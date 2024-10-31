@@ -8,6 +8,16 @@ namespace Lister.ViewModels
     {
         private int _numberAmongVisibleIcons = 1;
 
+        private bool udv;
+        internal bool UpDownIsVisible
+        {
+            get { return udv; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref udv, value, nameof (UpDownIsVisible));
+            }
+        }
+
         private bool fE;
         internal bool FirstIsEnable
         {
@@ -90,10 +100,10 @@ namespace Lister.ViewModels
             {
                 ReduceCurrentCollection (BeingProcessedNumber - 1);
 
-                if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
                 {
-                    _visibleRange = _currentVisibleCollection.Count;
-                    _visibleRangeEnd = _currentVisibleCollection.Count - 1;
+                    _visibleRange = CurrentVisibleCollection.Count;
+                    _visibleRangeEnd = CurrentVisibleCollection.Count - 1;
                     ScrollWidth = 0;
                 }
             }
@@ -104,7 +114,7 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < _visibleRange;   index++ )
             {
-                BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
+                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
@@ -125,7 +135,7 @@ namespace Lister.ViewModels
             _runnerHasWalked = 0;
             _visibleRangeEnd = _visibleRange - 1;
 
-            CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+            CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
 
             ReplaceActiveIcon (VisibleIcons [0]);
             SetManageControlsAbility ();
@@ -147,20 +157,20 @@ namespace Lister.ViewModels
 
             int absoluteNumber = BeingProcessedNumber + 1;
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
-            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+            bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
             BeingProcessedNumber--;
             _numberAmongVisibleIcons--;
 
             if ( isProcessableChangedInSpecificFilter )
             {
-                bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
+                bool endIsNotAchieved = ( _visibleRangeEnd < ( CurrentVisibleCollection.Count - 1 ) );
                 bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
 
                 ReduceCurrentCollectionAndIcons 
                 (possableRemovableNumber-1, possableRemovableAmongVisibleNumber-1, shiftToSideLast, true, sliderIsScrollable);
 
-                CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+                CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
 
                 if ( ! endIsNotAchieved   &&   sliderIsScrollable )
                 {
@@ -190,7 +200,7 @@ namespace Lister.ViewModels
             BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
 
-            sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+            sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
             if ( ! sliderIsScrollable )
             {
@@ -212,7 +222,7 @@ namespace Lister.ViewModels
             //BeingProcessedBadge.Hide ();
             SetSliderToStationBeforeScrollingIfShould ();
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
-            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+            bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
             BeingProcessedNumber++;
             _numberAmongVisibleIcons++;
@@ -222,13 +232,13 @@ namespace Lister.ViewModels
                 BeingProcessedNumber--;
                 _numberAmongVisibleIcons--;
                 
-                bool endIsNotAchieved = (_visibleRangeEnd < (_currentVisibleCollection.Count - 1));
+                bool endIsNotAchieved = (_visibleRangeEnd < (CurrentVisibleCollection.Count - 1));
                 bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
 
                 ReduceCurrentCollectionAndIcons
                 ((BeingProcessedNumber - 1), (_numberAmongVisibleIcons - 1), shiftToSideLast, true, sliderIsScrollable);
 
-                CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+                CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
 
                 if ( ! endIsNotAchieved   &&   sliderIsScrollable )
                 {
@@ -258,7 +268,7 @@ namespace Lister.ViewModels
             BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
             ReplaceActiveIcon (newActiveIcon);
 
-            sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+            sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
             if ( ! sliderIsScrollable ) 
             {
@@ -284,13 +294,20 @@ namespace Lister.ViewModels
             if ( isProcessableChangedInSpecificFilter )
             {
                 ReduceCurrentCollection (BeingProcessedNumber - 1);
+
+                if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
+                {
+                    _visibleRange = CurrentVisibleCollection.Count;
+                    _visibleRangeEnd = CurrentVisibleCollection.Count - 1;
+                    ScrollWidth = 0;
+                }
             }
 
-            int visibleCountBeforeEnd = _currentVisibleCollection.Count - _visibleRange;
+            int visibleCountBeforeEnd = CurrentVisibleCollection.Count - _visibleRange;
 
-            for ( int index = visibleCountBeforeEnd;   index < _currentVisibleCollection.Count;   index++ )
+            for ( int index = visibleCountBeforeEnd;   index < CurrentVisibleCollection.Count;   index++ )
             {
-                BadgeViewModel boundBadge = _currentVisibleCollection.ElementAt (index).Value;
+                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
             }
@@ -299,27 +316,27 @@ namespace Lister.ViewModels
 
             ReplaceActiveIcon (VisibleIcons [_numberAmongVisibleIcons - 1]);
 
-            BeingProcessedNumber = _currentVisibleCollection.Count;
+            BeingProcessedNumber = CurrentVisibleCollection.Count;
             BeingProcessedNumber = GetAppropriateLastNumber ();
             BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
             BeingProcessedBadge.Show ();
             SetToCorrectScale (BeingProcessedBadge);
 
-            bool sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
-            _visibleRangeEnd = _currentVisibleCollection.Count - 1;
+            bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
+            _visibleRangeEnd = CurrentVisibleCollection.Count - 1;
 
-            CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+            CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
 
             if ( ! sliderIsScrollable )
             {
                 ScrollWidth = 0;
-                _visibleRange = _currentVisibleCollection.Count;
+                _visibleRange = CurrentVisibleCollection.Count;
                 _scrollStepIndex = 0;
                 _runnerHasWalked = 0;
             }
             else 
             {
-                _scrollStepIndex = _currentVisibleCollection.Count - _visibleRange;
+                _scrollStepIndex = CurrentVisibleCollection.Count - _visibleRange;
                 _runnerHasWalked = _scrollStepIndex * _runnerStep;
                 ScrollOffset = _runnerHasWalked;
             }
@@ -339,9 +356,9 @@ namespace Lister.ViewModels
 
             string destinationNumberText = string.Empty;
 
-            for ( int index = 0;   index < _currentVisibleCollection.Count;   index++ )
+            for ( int index = 0;   index < CurrentVisibleCollection.Count;   index++ )
             {
-                if ( destinationBadge.Equals (_currentVisibleCollection.ElementAt (index).Value) )
+                if ( destinationBadge.Equals (CurrentVisibleCollection.ElementAt (index).Value) )
                 {
                     destinationNumberText = ( index + 1 ).ToString ();
                     break;
@@ -371,13 +388,13 @@ namespace Lister.ViewModels
                 
                 BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
 
-                bool sliderIsScrollable = ( _currentVisibleCollection.Count > _visibleRange );
+                bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _visibleRange );
 
                 _visibleRangeEnd = _scrollStepIndex + _visibleRange - 1;
 
                 if ( isProcessableChangedInSpecificFilter )
                 {
-                    bool endIsNotAchieved = ( _visibleRangeEnd < ( _currentVisibleCollection.Count - 1 ) );
+                    bool endIsNotAchieved = ( _visibleRangeEnd < ( CurrentVisibleCollection.Count - 1 ) );
                     bool exProcessableIsNotInVisibleRange = ( oldNumber > ( _visibleRangeEnd + 1 ) ) 
                                                       ||  ( oldNumber < (_visibleRangeEnd - _visibleRange + 2) );
 
@@ -412,7 +429,7 @@ namespace Lister.ViewModels
                     }
                     else
                     {
-                        if ( _currentVisibleCollection.Count <= _maxVisibleCount )
+                        if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
                         {
                             ReduceCurrentCollectionAndIcons 
                             (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), true, true, sliderIsScrollable);
@@ -449,7 +466,7 @@ namespace Lister.ViewModels
                         }
                     }
 
-                    CalcRunnerHeightAndStep (_currentVisibleCollection.Count);
+                    CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
 
                     if ( ! endIsNotAchieved   &&   sliderIsScrollable )
                     {
@@ -464,7 +481,7 @@ namespace Lister.ViewModels
                 SetToCorrectScale (BeingProcessedBadge);
                 BeingProcessedBadge.Show ();
 
-                sliderIsScrollable = ( _currentVisibleCollection.Count > _maxVisibleCount );
+                sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
                 if ( !sliderIsScrollable )
                 {
@@ -510,7 +527,7 @@ namespace Lister.ViewModels
         private BadgeViewModel ? GetAppropriateDraft ( int number )
         {
             BadgeViewModel goalBadge = null;
-            goalBadge = _currentVisibleCollection.ElementAt (number - 1).Value;
+            goalBadge = CurrentVisibleCollection.ElementAt (number - 1).Value;
 
             return goalBadge;
         }
@@ -519,7 +536,7 @@ namespace Lister.ViewModels
         private int GetAppropriateLastNumber ( )
         {
             int result = 0;
-            result = _currentVisibleCollection.Count;
+            result = CurrentVisibleCollection.Count;
 
             return result;
         }
@@ -527,7 +544,7 @@ namespace Lister.ViewModels
 
         private void EnableNavigation ( )
         {
-            int badgeCount = _currentVisibleCollection.Count;
+            int badgeCount = CurrentVisibleCollection.Count;
 
             if ( ( BeingProcessedNumber > 1 )   &&   ( BeingProcessedNumber == badgeCount ) )
             {
@@ -558,7 +575,7 @@ namespace Lister.ViewModels
                 LastIsEnable = true;
             }
 
-            _view.CorrespondToEmptyCurrentCollection (_currentVisibleCollection.Count);
+            _view.CorrespondToEmptyCurrentCollection (CurrentVisibleCollection.Count);
         }
     }
 }

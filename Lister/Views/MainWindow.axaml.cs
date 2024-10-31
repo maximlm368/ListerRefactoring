@@ -5,7 +5,6 @@ using Avalonia.Platform.Storage;
 using ContentAssembler;
 using DataGateway;
 using Lister.ViewModels;
-
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Input.Platform;
 using Avalonia.Styling;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Diagnostics;
@@ -58,6 +58,8 @@ public partial class MainWindow : Window
 
         Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
+
+        
 
         //Icon = new WindowIcon ("D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\listerIcon.svg");
     }

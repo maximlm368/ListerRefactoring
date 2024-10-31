@@ -267,26 +267,43 @@ public class TemplateChoosingViewModel : ViewModelBase
         BuildingIsPossible = false;
 
         Task task = new Task
-            (
-                () =>
+        (
+            () =>
+            {
+                bool buildingIsCompleted = _sceneVM.BuildBadges (_personChoosingVM.ChosenTemplate.Name);
+
+                //Dispatcher.UIThread.Invoke 
+                //(() => 
+                //{
+                //    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
+                //    modernMV.EndWaiting ();
+                //});
+
+                _sceneVM.EnableButtons ();
+                _zoomNavigationVM.EnableZoom ();
+                _zoomNavigationVM.SetEnablePageNavigation ();
+
+                _buildingIsLocked = false;
+                TappedBadgesBuildingButton = 0;
+
+                if ( ! buildingIsCompleted )
                 {
-                    _sceneVM.BuildBadges (_personChoosingVM.ChosenTemplate.Name);
-
-                    Dispatcher.UIThread.Invoke 
-                    (() => 
+                    Dispatcher.UIThread.Invoke
+                    (() =>
                     {
-                        ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                        modernMV.EndWaiting ();
+                        TappedBadgesBuildingButton = 0;
+                        ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+                        mainViewModel.EndWaiting ();
+
+                        var messegeDialog = new MessageDialog (ModernMainView.Instance);
+                        messegeDialog.Message = _fileIsOpenMessage;
+                        WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                        waitingVM.HandleDialogOpenig ();
+                        messegeDialog.ShowDialog (MainWindow.Window);
                     });
-
-                    _sceneVM.EnableButtons ();
-                    _zoomNavigationVM.EnableZoom ();
-                    _zoomNavigationVM.SetEnablePageNavigation ();
-
-                    _buildingIsLocked = false;
-                    TappedBadgesBuildingButton = 0;
                 }
-            );
+            }
+        );
 
         task.Start ();
     }
@@ -305,8 +322,17 @@ public class TemplateChoosingViewModel : ViewModelBase
         }
 
         _buildingIsLocked = true;
-        _sceneVM.BuildSingleBadge (_personChoosingVM.ChosenTemplate. Name);
+        bool buildingIsCompleted = _sceneVM.BuildSingleBadge (_personChoosingVM.ChosenTemplate. Name);
         _buildingIsLocked = false;
+
+        if ( ! buildingIsCompleted )
+        {
+            var messegeDialog = new MessageDialog (ModernMainView.Instance);
+            messegeDialog.Message = _fileIsOpenMessage;
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.HandleDialogOpenig ();
+            messegeDialog.ShowDialog (MainWindow.Window);
+        }
     }
 
 
@@ -663,12 +689,12 @@ public class TemplateChoosingViewModel : ViewModelBase
 
 
 
-public enum TappedButton
-{
-    Build = 1,
-    Save = 2,
-    Print = 3
-}
+//public enum TappedButton
+//{
+//    Build = 1,
+//    Save = 2,
+//    Print = 3
+//}
 
 
 

@@ -35,6 +35,8 @@
 				Name="comboboxFrame"
 				Focusable="False"
 				IsReadOnly="True"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				Margin="0,2"
 				Height="32"
 				Width="447" />
@@ -47,6 +49,8 @@
 				Padding="10,4"
 				Margin="0,2"
 				Background="White"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
@@ -55,8 +59,7 @@
 				GotFocus="GotFocus"
 				LostFocus="LostFocus"
 				KeyUp="HandlePersonListReduction"
-				KeyDown="DropOrPickUpPersonsOrScroll"
-				 />
+				KeyDown="DropOrPickUpPersonsOrScroll"/>
 
 			<Border
 				Name="listBorder"
@@ -75,8 +78,7 @@
 						PointerEntered="CursorIsOverPersonList"
 						PointerExited="CursorIsOutOfPersonList"
 						PointerWheelChanged="ScrollByWheel"
-						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}"
-						>
+						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}">
 					
 					<Canvas
 						Name="listFrame"
@@ -96,7 +98,6 @@
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
 							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
-							
 							Tapped="AcceptEntirePersonList"
 							Content="Весь список"/>
 						
@@ -131,7 +132,7 @@
 							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
 							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 							Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
-							ZIndex="2"
+							ZIndex="5"
 							Background="White">
 
 							<Canvas
@@ -202,8 +203,8 @@
 			Focusable="False"
 			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 			Tapped="DropOrPickUpPersons"
-			Content="v"/>
-
+			FontFamily="Font Awesome 6 Free Solid"
+			Content="&#xf0d7;"/>
 
 		<Label
 			Name="template"

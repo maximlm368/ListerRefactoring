@@ -17,11 +17,39 @@ using System.Reactive.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Avalonia.Threading;
 using System.Reflection;
+using ReactiveUI;
 
 namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
+        private readonly SolidColorBrush _focusedFontSizeColor = new SolidColorBrush(new Color(255, 255, 255, 255));
+        private readonly SolidColorBrush _releasedFontSizeColor = new SolidColorBrush (new Color (255, 175, 175, 175));
+
+        private readonly SolidColorBrush _focusedFontSizeBorderColor = new SolidColorBrush (new Color (255, 50, 50, 50));
+        private readonly SolidColorBrush _releasedFontSizeBorderColor = new SolidColorBrush (new Color (255, 150, 150, 150));
+
+        private SolidColorBrush ffsc;
+        internal SolidColorBrush FocusedFontSizeColor
+        {
+            get { return ffsc; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref ffsc, value, nameof (FocusedFontSizeColor));
+            }
+        }
+
+        private SolidColorBrush ffsbc;
+        internal SolidColorBrush FocusedFontSizeBorderColor
+        {
+            get { return ffsbc; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref ffsbc, value, nameof (FocusedFontSizeBorderColor));
+            }
+        }
+
+
         internal void ResetFocusedText ( string newText )
         {
             BeingProcessedBadge.ResetFocusedText (newText);
@@ -47,6 +75,9 @@ namespace Lister.ViewModels
 
         internal void Focus ( string focusedContent, int elementNumber )
         {
+            FocusedFontSizeColor = _focusedFontSizeColor;
+            FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
+
             if ( ! BeingProcessedBadge. IsChanged    &&   ( BackupNumbered [BeingProcessedBadge. Id] == null ) ) 
             {
                 BackupNumbered [BeingProcessedBadge. Id] = BeingProcessedBadge.Clone ();
@@ -65,6 +96,8 @@ namespace Lister.ViewModels
 
         internal void ReleaseCaptured ()
         {
+            FocusedFontSizeColor = _releasedFontSizeColor;
+            FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
             ZoommerIsEnable = false;
             MoversAreEnable = false;
             SplitterIsEnable = false;
@@ -122,6 +155,8 @@ namespace Lister.ViewModels
             BeingProcessedBadge.Split (_scale);
             ResetActiveIcon ();
             SplitterIsEnable = false;
+            MoversAreEnable = false;
+            ZoommerIsEnable = false;
         }
 
         #region FontSizeChange

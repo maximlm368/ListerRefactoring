@@ -112,6 +112,29 @@ public partial class App : Avalonia.Application
 
 
 
+    public static void ExecuteBashCommand ( string command )
+    {
+        using ( Process process = new Process () )
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start ();
+
+            //string result = process.StandardOutput.ReadToEnd ();
+
+            process.WaitForExit ();
+        }
+    }
+
+
+
     public static void InstallFont ( string FontName, string FullFontName )
     {
         string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
@@ -139,6 +162,7 @@ public static class ServiceCollectionExtensions
     {
         collection.AddSingleton <IServiceProvider, BadgeAppearenceServiceProvider> ();
         collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
+        collection.AddSingleton <IRowSource, PeopleSource> ();
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
 

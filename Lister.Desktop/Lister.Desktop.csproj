@@ -13,7 +13,7 @@
 	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 	<PublishSelfContained>true</PublishSelfContained>
 	<RollForward>LatestMinor</RollForward>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	
 	<EmitEntryPoint>true</EmitEntryPoint>
 	
 	 <StartupObject>Lister.Desktop.Program</StartupObject>

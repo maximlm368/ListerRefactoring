@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace Lister.Views
 {
-    public partial class DialogWindow : BaseWindow
+    public partial class DialogWindow : Window
     {
         //internal DialogWindow ()
         //{

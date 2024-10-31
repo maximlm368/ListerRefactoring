@@ -17,15 +17,20 @@ using static QuestPDF.Helpers.Colors;
 using MessageBox.Avalonia.Views;
 using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
+using DataGateway;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
     public class PersonSourceViewModel : ViewModelBase
     {
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
+        private static readonly string _incorrectXSLX = " - некорректный файл.";
         private static readonly string _fileIsAbsentMessage = "Файл не найден.";
         private static readonly string _viewTypeName = "PersonSourceUserControl";
         private static readonly string _filePickerTitle = "Выбор файла";
+        private static readonly List<string> _xslxHeaders = new List<string> () { "№", "Фамилия", "Имя", "Отчество"
+                                                                                , "Отделение", "Должность" };
         
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
@@ -38,10 +43,10 @@ namespace Lister.ViewModels
             get { return sFP; }
             private set
             {
-                string path = SetPersonsFilePath ( value );
+                string path = SetCorrespondingPersons ( value );
                 _pathIsFromKeeper = false;
 
-                if ( (SourceFilePath != null)   &&   (SourceFilePath != string.Empty)   &&   (path == string.Empty) ) 
+                if ((SourceFilePath != null)   &&   (SourceFilePath != string.Empty)   &&   (path == string.Empty)) 
                 {
                     path = SourceFilePath;
                 }
@@ -94,20 +99,22 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetPath ( Type passerType, string ? path )
+        internal void TrySetPath ( Type passerType, string ? path )
         {
-            if ( (path != null)   &&   ( path != string.Empty ) ) 
-            {
-                FileInfo fileInfo = new FileInfo ( path );
+            bool pathExists = (( path != null )   &&   ( path != string.Empty ));
 
-                if ( fileInfo.Exists ) 
+            if ( pathExists )
+            {
+                FileInfo fileInfo = new FileInfo (path);
+
+                if ( fileInfo.Exists )
                 {
                     try
                     {
                         FileStream stream = fileInfo.OpenRead ();
                         stream.Close ();
                     }
-                    catch ( System.IO.IOException ex ) 
+                    catch ( System.IO.IOException ex )
                     {
                         SourceFilePath = null;
                         EditorIsEnable = false;
@@ -115,13 +122,33 @@ namespace Lister.ViewModels
                         return;
                     }
                 }
-            }
 
-            if ( passerType.Name == _viewTypeName ) 
+                if ( passerType.Name == _viewTypeName )
+                {
+                    bool fileIsCorrect = CheckIfIncorrectXSLX (path);
+
+                    if ( !fileIsCorrect )
+                    {
+                        DeclineChosenFile (path);
+
+                        if ( ( SourceFilePath != null ) && ( SourceFilePath != string.Empty ) )
+                        {
+                            SwitchPersonChoosingEnabling (false);
+                        }
+
+                        return;
+                    }
+
+                    _pathIsFromKeeper = true;
+                    SourceFilePath = path;
+                    EditorIsEnable = true;
+                }
+            }
+            else 
             {
-                _pathIsFromKeeper = true;
-                SourceFilePath = path;
-                EditorIsEnable = true;
+                _pathIsFromKeeper = false;
+                SourceFilePath = null;
+                EditorIsEnable = false;
             }
         }
 
@@ -134,6 +161,118 @@ namespace Lister.ViewModels
 
         internal void ChooseFile ()
         {
+            FilePickerOpenOptions options = SetFilePikerOptions ();
+            Task <IReadOnlyList <IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
+            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+
+            chosenFile.ContinueWith
+            (
+                task =>
+                {
+                    if ( task.Result.Count > 0 )
+                    {
+                        string result = task.Result [0].Path.ToString ();
+                        int uriTypeLength = App.ResourceUriType. Length;
+                        result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
+
+                        if ( ( result != null )   &&   (result != string.Empty) )
+                        {
+                            bool fileIsCorrect = CheckIfIncorrectXSLX (result);
+
+                            if ( ! fileIsCorrect )
+                            {
+                                DeclineChosenFile ( result );
+
+                                if ((SourceFilePath != null)    &&   ( SourceFilePath != string.Empty)) 
+                                {
+                                    SwitchPersonChoosingEnabling (true);
+                                }
+
+                                return;
+                            }
+
+                            SourceFilePath = result;
+                            TrySavePathInKeepingFile ();
+                            SwitchPersonChoosingEnabling (true);
+                        }
+                        else 
+                        {
+                            SwitchPersonChoosingEnabling (false);
+                        }
+                    }
+                }
+                , uiScheduler
+            );
+        }
+
+
+        private void TrySavePathInKeepingFile () 
+        {
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directoryPath = containingDirectory.FullName;
+            string keeperPath = directoryPath + ModernMainView._sourcePathKeeper;
+            FileInfo fileInfo = new FileInfo (keeperPath);
+
+            if ( fileInfo.Exists )
+            {
+                List<string> lines = new List<string> ();
+                lines.Add (SourceFilePath);
+                File.WriteAllLines (keeperPath, lines);
+            }
+        }
+
+
+        private void SwitchPersonChoosingEnabling ( bool shouldEnable )
+        {
+            EditorIsEnable = shouldEnable;
+            _personChoosingVM.TextboxIsReadOnly = ! shouldEnable;
+            _personChoosingVM.TextboxIsFocusable = shouldEnable;
+        }
+
+
+        private bool CheckIfIncorrectXSLX ( string path )
+        {
+            bool isOk = true;
+
+            if ( path.Last () == 'x' )
+            {
+                IRowSource headersSource = App.services.GetService<IRowSource> ();
+
+                List<string> headers = headersSource.GetRow (path, 0);
+
+                for ( int index = 0; index < _xslxHeaders.Count; index++ )
+                {
+                    bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
+
+                    if ( isNotCoincident )
+                    {
+                        isOk = false;
+
+                        break;
+                    }
+                }
+            }
+
+            return isOk;
+        }
+
+
+        private void DeclineChosenFile ( string filePath )
+        {
+            var messegeDialog = new MessageDialog (ModernMainView.Instance);
+            messegeDialog.Message = filePath + _incorrectXSLX;
+            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+            waitingVM.HandleDialogOpenig ();
+            messegeDialog.ShowDialog (MainWindow.Window);
+            SourceFilePath = string.Empty;
+        }
+
+
+        private FilePickerOpenOptions SetFilePikerOptions ( )
+        {
+            FilePickerOpenOptions result = new FilePickerOpenOptions ();
+
             FilePickerFileType csvFileType = new FilePickerFileType ("Csv")
             {
                 Patterns = new [] { "*.csv" },
@@ -141,55 +280,22 @@ namespace Lister.ViewModels
                 MimeTypes = new [] { "image/*" }
             };
 
+            FilePickerFileType xlsxFileType = new FilePickerFileType ("Xlsx")
+            {
+                Patterns = new [] { "*.xlsx" },
+                AppleUniformTypeIdentifiers = new [] { "public.image" },
+                MimeTypes = new [] { "image/*" }
+            };
+
             List<FilePickerFileType> fileExtentions = [];
             fileExtentions.Add (csvFileType);
-            FilePickerOpenOptions options = new FilePickerOpenOptions ();
-            options.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-            options.Title = _filePickerTitle;
-            options.AllowMultiple = false;
-            Task <IReadOnlyList <IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
-            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+            fileExtentions.Add (xlsxFileType);
 
-            chosenFile.ContinueWith
-                (
-                   task =>
-                   {
-                       if ( task.Result.Count > 0 )
-                       {
-                           string result = task.Result [0].Path.ToString ();
-                           int uriTypeLength = App.ResourceUriType. Length;
-                           result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
-                           SourceFilePath = result;
+            result.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
+            result.Title = _filePickerTitle;
+            result.AllowMultiple = false;
 
-                           if ( ( SourceFilePath != null )   &&   (SourceFilePath != string.Empty) )
-                           {
-                               EditorIsEnable = true;
-                               _personChoosingVM.TextboxIsReadOnly = false;
-                               _personChoosingVM.TextboxIsFocusable = true;
-
-                               string workDirectory = @"./";
-                               DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-                               string directoryPath = containingDirectory.FullName;
-                               string keeperPath = directoryPath + ModernMainView._sourcePathKeeper;
-                               FileInfo fileInf = new FileInfo (keeperPath);
-
-                               if ( fileInf.Exists )
-                               {
-                                   List<string> lines = new List<string> ();
-                                   lines.Add (SourceFilePath);
-                                   File.WriteAllLines (keeperPath, lines);
-                               }
-                           }
-                           else 
-                           {
-                               EditorIsEnable = false;
-                               _personChoosingVM.TextboxIsReadOnly = true;
-                               _personChoosingVM.TextboxIsFocusable = false;
-                           }
-                       }
-                   }
-                   , uiScheduler
-                );
+            return result;
         }
 
 
@@ -218,7 +324,7 @@ namespace Lister.ViewModels
         }
 
 
-        private string SetPersonsFilePath ( string path )
+        private string SetCorrespondingPersons ( string path )
         {
             bool valueIsSuitable = ( path != null )   &&   ( path != string.Empty );
 
@@ -236,7 +342,7 @@ namespace Lister.ViewModels
                 {
                     var messegeDialog = new MessageDialog (ModernMainView.Instance);
 
-                    if ( !_pathIsFromKeeper )
+                    if ( ! _pathIsFromKeeper )
                     {
                         messegeDialog.Message = _fileIsOpenMessage;
                         WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();

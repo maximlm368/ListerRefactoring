@@ -85,14 +85,18 @@ namespace Lister.Views
         }
 
 
-        internal void AdjustComboboxWidth ( double shift )
+        internal void AdjustComboboxWidth ( double shift, bool shouldChangeComboboxWidth )
         {
-            personList.Width -= shift;
             personTextBox.Width -= shift;
             comboboxFrame.Width -= shift;
             visiblePersons.Width -= shift;
             listFrame.Width -= shift;
-            _vm.ShiftScroller (shift);
+
+            if ( shouldChangeComboboxWidth ) 
+            {
+                personList.Width -= shift;
+                _vm.ShiftScroller (shift);
+            }
         }
 
 

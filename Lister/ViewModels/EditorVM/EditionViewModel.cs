@@ -34,6 +34,9 @@ namespace Lister.ViewModels
     {
         public static event BackingToMainViewHandler BackingToMainViewEvent;
 
+        private static readonly string _extentionToolTip = "Развернуть панель";
+        private static readonly string _shrinkingToolTip = "Свернуть панель";
+
         //internal static readonly double _scale = 2.44140625;
         internal static readonly double _startScale = 1.5624;
         internal static double _scale = 1.5624;
@@ -109,7 +112,26 @@ namespace Lister.ViewModels
             }
         }
 
-        private Dictionary <int, BadgeViewModel> _currentVisibleCollection;
+        private Dictionary<int, BadgeViewModel> _currentVisibleCollection;
+        private Dictionary<int, BadgeViewModel> CurrentVisibleCollection 
+        {
+            get { return _currentVisibleCollection; }
+
+            set 
+            { 
+                if ( ( value == null ) || ( value.Count < 1 ) )
+                {
+                    UpDownIsVisible = false;
+                }
+                else 
+                {
+                    UpDownIsVisible = true;
+                }
+
+                _currentVisibleCollection = value;
+            }
+        }
+
         internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
         internal Dictionary <int, BadgeViewModel> IncorrectNumbered { get; private set; }
         internal Dictionary <int, BadgeViewModel> CorrectNumbered { get; private set; }
@@ -186,6 +208,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private string eT;
+        internal string ExtentionTip
+        {
+            get { return eT; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref eT, value, nameof (ExtentionTip));
+            }
+        }
+
 
         internal static void OnBackingToMainView ()
         {
@@ -205,7 +237,7 @@ namespace Lister.ViewModels
             ViewWidth = _viewWidth;
             ViewHeight = _viewHeight;
 
-            ExtenderContent = "\uF053";
+            ExtenderContent = "\uF060";
             WorkAreaWidth = _workAreaWidth + _namesFilterWidth;
             WorkAreaHeight = _workAreaHeight;
             SetUpSliderBlock ( incorrectBadgesAmmount );
@@ -216,6 +248,9 @@ namespace Lister.ViewModels
             SplitterIsEnable = false;
             IncorrectNumbered = new ();
             CorrectNumbered = new ();
+
+            FocusedFontSizeColor = _releasedFontSizeColor;
+            FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
         }
 
 
@@ -256,8 +291,8 @@ namespace Lister.ViewModels
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
-            _view.zoomOn.IsEnabled = false;
-            _view.zoomOut.IsEnabled = false;
+            //_view.zoomOn.IsEnabled = false;
+            //_view.zoomOut.IsEnabled = false;
 
             BeingProcessedBadge.CopyFrom (BackupNumbered [BeingProcessedBadge. Id]);
 
@@ -298,7 +333,7 @@ namespace Lister.ViewModels
                 counter++;
             }
 
-            _currentVisibleCollection = AllNumbered;
+            CurrentVisibleCollection = AllNumbered;
             SetSliderWideness ();
 
             Dispatcher.UIThread.InvokeAsync
@@ -386,7 +421,7 @@ namespace Lister.ViewModels
             ReleaseCaptured ();
             OnBackingToMainView ();
             _scale = _startScale;
-            _view.ComplateBacking ();
+            _view.CompleteBacking ();
             _firstPage.Show ();
         }
 

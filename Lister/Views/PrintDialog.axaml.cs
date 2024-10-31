@@ -19,7 +19,7 @@ public partial class PrintDialog : BaseWindow
     private PrintDialogViewModel _vm;
 
 
-    public PrintDialog ( int pageAmmount, PrintAdjustingData printAdjusting )
+    public PrintDialog ( int pageAmount, PrintAdjustingData printAdjusting )
     {
         InitializeComponent ();
 
@@ -28,12 +28,15 @@ public partial class PrintDialog : BaseWindow
         _vm = printMV;
 
         _vm.Prepare ();
-        _vm.TakeAmmountAndAdjusting (pageAmmount, printAdjusting);
+        _vm.TakeAmmountAndAdjusting (pageAmount, printAdjusting);
         _vm.TakeView (this);
 
         printerChoosing.SelectedIndex = _vm.SelectedIndex;
         allPages.IsChecked = true;
         amountText.Text = "1";
+
+
+        pagesText.AcceptsReturn = true;
     }
 
 
@@ -43,9 +46,21 @@ public partial class PrintDialog : BaseWindow
     }
 
 
+    public void PagesGotFocus ( object sender, GotFocusEventArgs args )
+    {
+        _vm.PagesGotFocus ();
+    }
+
+
     public void CopiesLostFocus ( object sender, RoutedEventArgs args )
     {
         _vm.CopiesLostFocus ();
+    }
+
+
+    public void CopiesGotFocus ( object sender, GotFocusEventArgs args )
+    {
+        _vm.CopiesGotFocus ();
     }
 }
 

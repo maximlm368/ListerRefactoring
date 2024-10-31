@@ -584,6 +584,7 @@ public class BadgeViewModel : ViewModelBase
         List <TextLineViewModel> splitted = FocusedLine.SplitYourself (pieces, scale, layoutWidth);
         ReplaceTextLine (FocusedLine, splitted);
         FocusedLine = null;
+        FocusedFontSize = null;
     }
 
 

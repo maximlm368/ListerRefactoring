@@ -20,8 +20,6 @@ using System.Drawing.Printing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Management;
-using Ghostscript.NET.Rasterizer;
-using Ghostscript.NET;
 using System.Runtime.Intrinsics.Arm;
 
 namespace Lister.ViewModels
@@ -30,11 +28,11 @@ namespace Lister.ViewModels
     {
         private static readonly double _buttonWidth = 32;
         private static readonly double _countLabelWidth = 50;
-        private static readonly double _extention = 130;
+        private static readonly double _extention = 170;
         private static readonly double _buttonBlockWidth = 50;
         private static readonly double _workAreaLeftMargin = -61;
-        private static readonly string _extentionToolTip = "Развернуть";
-        private static readonly string _shrinkingToolTip = "Свернуть";
+        private static readonly string _extentionToolTip = "Развернуть панель";
+        private static readonly string _shrinkingToolTip = "Свернуть панель";
         private static readonly string _saveTitle = "Сохранение документа";
         private static readonly string _suggestedFileNames = "Badge";
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
@@ -47,12 +45,12 @@ namespace Lister.ViewModels
         //private bool _isPdfGenerated;
 
         private double cW;
-        internal double CountWidth
+        internal double HintWidth
         {
             get { return cW; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cW, value, nameof (CountWidth));
+                this.RaiseAndSetIfChanged (ref cW, value, nameof (HintWidth));
             }
         }
 
@@ -110,11 +108,11 @@ namespace Lister.ViewModels
         private void SetButtonBlock ( )
         {
             ButtonWidth = _buttonWidth;
-            CountWidth = _countLabelWidth;
+            HintWidth = 0;
             ButtonBlockWidth = _buttonBlockWidth;
             WorkAreaMargin = new Thickness (_workAreaLeftMargin, 0);
             ExtentionTip = _extentionToolTip;
-            ExtenderContent = "\uF054";
+            ExtenderContent = "\uF061";
         }
 
 
@@ -122,22 +120,22 @@ namespace Lister.ViewModels
         {
             if ( _blockIsExtended )
             {
-                CountWidth -= _extention;
+                HintWidth = 0;
                 ButtonWidth -= _extention;
                 ButtonBlockWidth -= _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left + _extention ), 0);
                 ExtentionTip = _extentionToolTip;
-                ExtenderContent = "\uF054";
+                ExtenderContent = "\uF061";
                 _blockIsExtended = false;
             }
             else 
             {
-                CountWidth += _extention;
+                HintWidth = _extention;
                 ButtonWidth += _extention;
                 ButtonBlockWidth += _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left - _extention ), 0);
                 ExtentionTip = _shrinkingToolTip;
-                ExtenderContent = "\uF053";
+                ExtenderContent = "\uF060";
                 _blockIsExtended = true;
             }
         }
@@ -232,14 +230,13 @@ namespace Lister.ViewModels
         }
 
 
-        private bool GeneratePdf ( string fileToSave )
+        private bool GeneratePdf ( string fileToSave, List <PageViewModel> printables )
         {
-            List <PageViewModel> pages = GetPrintablePages ();
             IEnumerable <byte []> intermediateBytes = null;
 
             Stopwatch sw = Stopwatch.StartNew ();
             
-            bool result = _converter.ConvertToExtention (pages, fileToSave, out intermediateBytes);
+            bool result = _converter.ConvertToExtention (printables, fileToSave, out intermediateBytes);
             
             sw.Stop ();
 
@@ -252,12 +249,13 @@ namespace Lister.ViewModels
         internal void GeneratePdfDuringWaiting ( )
         {
             TappedPdfGenerationButton = 0;
+            List <PageViewModel> pages = GetPrintablePages ();
 
             Task <bool> generationTask = new Task <bool>
             (
                 () => 
                 {
-                    bool isPdfGenerated = GeneratePdf (_pdfFileName);
+                    bool isPdfGenerated = GeneratePdf (_pdfFileName, pages);
                     return isPdfGenerated;
                 }
             );
@@ -309,8 +307,7 @@ namespace Lister.ViewModels
                             fileExplorer.Start ();
                         }
                     }
-                }
-                );
+                });
 
             generationTask.Start ();
         }
@@ -368,8 +365,6 @@ namespace Lister.ViewModels
             Task printing = new Task
             (() =>
             {
-                //Stopwatch sw = Stopwatch.StartNew ();
-
                 List <PageViewModel> pages = GetPrintablePages ();
                 List <PageViewModel> goalPages = new ();
 
@@ -384,35 +379,14 @@ namespace Lister.ViewModels
                     return;
                 }
 
-                IEnumerable <byte []> intermediateBytes = null;
-                
-                bool dataIsGenerated = _converter.ConvertToExtention (goalPages, null, out intermediateBytes);
-
-                if ( dataIsGenerated )
+                if ( App.OsName == "Windows" )
                 {
-                    foreach ( byte [] pageBytes   in   intermediateBytes )
-                    {
-                        using ( Stream intermediateStream = new MemoryStream (pageBytes) )
-                        {
-                            using ( PrintDocument pd = new System.Drawing.Printing.PrintDocument () )
-                            {
-                                pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
-                                pd.PrinterSettings.Copies = ( short ) _printAdjusting.CopiesAmount;
-
-                                pd.PrintPage += ( sender, args ) =>
-                                {
-                                    System.Drawing.Image img = System.Drawing.Image.FromStream (intermediateStream);
-                                    args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
-                                };
-
-                                //pd.Print ();
-                            }
-                        }
-                    }
+                    PrintOnWindows (goalPages);
                 }
-
-                //sw.Stop ();
-                //long time = sw.ElapsedMilliseconds;
+                else if ( App.OsName == "Linux" ) 
+                {
+                    PrintOnLinux (goalPages);  
+                }
             });
 
             printing.ContinueWith
@@ -430,7 +404,53 @@ namespace Lister.ViewModels
         }
 
 
-        private static void ExecuteBashCommand ( string command )
+        private void PrintOnWindows ( List <PageViewModel> printables )
+        {
+            IEnumerable <byte []> intermediateBytes = null;
+
+            bool dataIsGenerated = _converter.ConvertToExtention (printables, null, out intermediateBytes);
+
+            if ( dataIsGenerated )
+            {
+                foreach ( byte [] pageBytes   in   intermediateBytes )
+                {
+                    using Stream intermediateStream = new MemoryStream (pageBytes);
+                    using PrintDocument pd = new System.Drawing.Printing.PrintDocument ();
+
+                    pd.PrinterSettings.PrinterName = _printAdjusting.PrinterName;
+                    pd.PrinterSettings.Copies = ( short ) _printAdjusting.CopiesAmount;
+
+                    pd.PrintPage += ( sender, args ) =>
+                    {
+                        System.Drawing.Image img = System.Drawing.Image.FromStream (intermediateStream);
+                        args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
+                    };
+
+                    //pd.Print ();
+                }
+            }
+        }
+
+
+        private void PrintOnLinux ( List <PageViewModel> printables )
+        {
+            string pdfProxyName = @"./proxy.pdf";
+
+            bool dataIsGenerated = GeneratePdf (pdfProxyName, printables);
+
+            if ( dataIsGenerated )
+            {
+                string printer = _printAdjusting.PrinterName;
+                string copies = _printAdjusting.CopiesAmount.ToString ();
+
+                string bashPrintCommand = "lp -d " + printer + " -n " + copies + " " + pdfProxyName;
+
+                ExecuteBashCommand (bashPrintCommand);
+            }
+        }
+
+
+        private void ExecuteBashCommand ( string command )
         {
             using ( Process process = new Process () )
             {

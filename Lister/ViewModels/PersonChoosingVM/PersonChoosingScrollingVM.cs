@@ -1,38 +1,4 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using System.Drawing;
-using Avalonia;
-using ContentAssembler;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Controls;
-using Avalonia.Media;
-using System.Windows.Input;
-using System.Text;
-using System.Net.WebSockets;
-using System.ComponentModel;
-using Lister.Views;
-using Lister.Extentions;
-using System.Collections.ObjectModel;
-using static QuestPDF.Helpers.Colors;
-using Avalonia.Controls.Shapes;
-using DynamicData;
-using ReactiveUI;
-using Avalonia.Input;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Buffers.Binary;
-using System.Reflection;
-using Microsoft.Win32;
-using ExtentionsAndAuxiliary;
-using Avalonia.Controls.Primitives;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-
-namespace Lister.ViewModels
+﻿namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {

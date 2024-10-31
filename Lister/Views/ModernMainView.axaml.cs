@@ -19,6 +19,9 @@ namespace Lister.Views
         private static double _widthDelta;
         private static double _heightDelta;
 
+        private static bool _widthIsChanged;
+        private static bool _heightIsChanged;
+
         private ModernMainViewModel _vm;
         private bool _isFirstTimeLoading = true;
         internal static readonly string _sourcePathKeeper = "keeper.txt";
@@ -143,13 +146,31 @@ namespace Lister.Views
 
             //waiting.Padding = new Avalonia.Thickness (0, heightDifference);
 
-            personChoosing.AdjustComboboxWidth (widthDifference);
+            personChoosing.AdjustComboboxWidth (widthDifference, true);
             personChoosing.CloseCustomCombobox ();
         }
 
 
         internal void SetProperSize ( double properWidth, double properHeight )
         {
+            if ( properWidth != ProperWidth )
+            {
+                _widthIsChanged = true;
+            }
+            else
+            {
+                _widthIsChanged = false;
+            }
+
+            if ( properHeight != ProperHeight )
+            {
+                _heightIsChanged = true;
+            }
+            else
+            {
+                _heightIsChanged = false;
+            }
+
             double widthDifference = Width - properWidth;
             double heightDifference = Height - properHeight;
 
@@ -160,7 +181,7 @@ namespace Lister.Views
 
             scene.workArea.Width -= widthDifference;
             scene.workArea.Height -= heightDifference;
-            personChoosing.AdjustComboboxWidth (widthDifference);
+            personChoosing.AdjustComboboxWidth (widthDifference, _widthIsChanged);
         }
 
 

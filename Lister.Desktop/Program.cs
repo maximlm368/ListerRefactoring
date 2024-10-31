@@ -131,10 +131,16 @@ class Program
 
     private static void SetFontsOnLinux ( List<string> fontFiles, List<string> fontNames, string resourcePath )
     {
-        fontFiles.Add ("fontawesome-webfont.ttf");
-        fontNames.Add ("FontAwesome");
+        //fontFiles.Add ("fontawesome-webfont.ttf");
+        //fontNames.Add ("FontAwesome");
 
-        string linuxFontsPath = "~/.local/share/fonts/";
+        fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
+        fontNames.Add ("Font Awesome 6 Free Solid");
+
+        string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+        string linuxFontsPath = userDirectory + "/.local/share/fonts/";
+
+        Directory.CreateDirectory (linuxFontsPath);
 
         for ( int index = 0;   index < fontFiles.Count;   index++ )
         {
@@ -150,31 +156,31 @@ class Program
             }
 
             string fontInstallingCommand = "fc-cache -f -v";
-            ExecuteBashCommand ( fontInstallingCommand );
+            App.ExecuteBashCommand ( fontInstallingCommand );
         }
     }
 
 
-    private static void ExecuteBashCommand ( string command )
-    {
-        using ( Process process = new Process () )
-        {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+    //public static void ExecuteBashCommand ( string command )
+    //{
+    //    using ( Process process = new Process () )
+    //    {
+    //        process.StartInfo = new ProcessStartInfo
+    //        {
+    //            FileName = "/bin/bash",
+    //            Arguments = $"-c \"{command}\"",
+    //            RedirectStandardOutput = true,
+    //            UseShellExecute = false,
+    //            CreateNoWindow = true
+    //        };
 
-            process.Start ();
+    //        process.Start ();
 
-            //string result = process.StandardOutput.ReadToEnd ();
+    //        //string result = process.StandardOutput.ReadToEnd ();
 
-            process.WaitForExit ();
-        }
-    }
+    //        process.WaitForExit ();
+    //    }
+    //}
 
 
 
