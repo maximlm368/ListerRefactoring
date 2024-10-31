@@ -445,31 +445,31 @@ namespace Lister.ViewModels
 
                 string bashPrintCommand = "lp -d " + printer + " -n " + copies + " " + pdfProxyName;
 
-                ExecuteBashCommand (bashPrintCommand);
+                App.ExecuteBashCommand (bashPrintCommand);
             }
         }
 
 
-        private void ExecuteBashCommand ( string command )
-        {
-            using ( Process process = new Process () )
-            {
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{command}\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+        //private void ExecuteBashCommand ( string command )
+        //{
+        //    using ( Process process = new Process () )
+        //    {
+        //        process.StartInfo = new ProcessStartInfo
+        //        {
+        //            FileName = "/bin/bash",
+        //            Arguments = $"-c \"{command}\"",
+        //            RedirectStandardOutput = true,
+        //            UseShellExecute = false,
+        //            CreateNoWindow = true
+        //        };
 
-                process.Start ();
+        //        process.Start ();
 
-                //string result = process.StandardOutput.ReadToEnd ();
+        //        //string result = process.StandardOutput.ReadToEnd ();
 
-                process.WaitForExit ();
-            }
-        }
+        //        process.WaitForExit ();
+        //    }
+        //}
     }
 }
 

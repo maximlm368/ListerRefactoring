@@ -114,7 +114,7 @@
 							Width="30"
 							Height="32"
 							FontSize="16"
-							Padding="8,7"/>
+							Padding="6,7"/>
 						
 						<Label 
 							Content="Редактировать"
@@ -145,7 +145,7 @@
 							Width="30"
 							Height="32"
 							FontSize="16"
-							Padding="8,7"/>
+							Padding="6,7"/>
 
 						<Label 
 							Content="Очистить"
@@ -176,7 +176,7 @@
 							Width="30"
 							Height="32"
 							FontSize="16"
-							Padding="8,7"/>
+							Padding="6,7"/>
 
 						<Label 
 							Content="Сохранить"
@@ -207,7 +207,7 @@
 							Width="30"
 							Height="32"
 							FontSize="16"
-							Padding="8,7"/>
+							Padding="6,7"/>
 						<Label 
 							Content="Печатать"
 							Height="32"

@@ -137,10 +137,12 @@ class Program
         fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
         fontNames.Add ("Font Awesome 6 Free Solid");
 
-        string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
-        string linuxFontsPath = userDirectory + "/.local/share/fonts/";
+        //string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+        //string linuxFontsPath = userDirectory + "/.local/share/fonts/";
 
-        Directory.CreateDirectory (linuxFontsPath);
+        string linuxFontsPath = "/home/maxim/.local/share/fonts/";
+
+        //Directory.CreateDirectory (linuxFontsPath);
 
         for ( int index = 0;   index < fontFiles.Count;   index++ )
         {

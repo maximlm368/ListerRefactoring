@@ -169,7 +169,7 @@ namespace Lister.ViewModels
             (
                 task =>
                 {
-                    if ( task.Result.Count > 0 )
+                    if ( task.Result. Count > 0 )
                     {
                         string result = task.Result [0].Path.ToString ();
                         int uriTypeLength = App.ResourceUriType. Length;
@@ -179,11 +179,11 @@ namespace Lister.ViewModels
                         {
                             bool fileIsCorrect = CheckIfIncorrectXSLX (result);
 
-                            if ( ! fileIsCorrect )
+                            if ( !fileIsCorrect )
                             {
-                                DeclineChosenFile ( result );
+                                DeclineChosenFile (result);
 
-                                if ((SourceFilePath != null)    &&   ( SourceFilePath != string.Empty)) 
+                                if ( ( SourceFilePath != null ) && ( SourceFilePath != string.Empty ) )
                                 {
                                     SwitchPersonChoosingEnabling (true);
                                 }
@@ -241,7 +241,7 @@ namespace Lister.ViewModels
 
                 List<string> headers = headersSource.GetRow (path, 0);
 
-                for ( int index = 0; index < _xslxHeaders.Count; index++ )
+                for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
                 {
                     bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
 
