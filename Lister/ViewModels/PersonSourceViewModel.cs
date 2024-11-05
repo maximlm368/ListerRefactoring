@@ -179,7 +179,7 @@ namespace Lister.ViewModels
                         {
                             bool fileIsCorrect = CheckIfIncorrectXSLX (result);
 
-                            if ( !fileIsCorrect )
+                            if ( ! fileIsCorrect )
                             {
                                 DeclineChosenFile (result);
 

@@ -38,7 +38,7 @@ namespace Lister.ViewModels;
 
 public class TemplateChoosingViewModel : ViewModelBase
 {
-    private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
+    private static readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
     private static readonly string _title = "Ошибка";
     private static readonly string _saveTitle = "Сохранение документа";
     private static readonly string _suggestedFileNames = "Badge";
@@ -296,7 +296,7 @@ public class TemplateChoosingViewModel : ViewModelBase
                         mainViewModel.EndWaiting ();
 
                         var messegeDialog = new MessageDialog (ModernMainView.Instance);
-                        messegeDialog.Message = _fileIsOpenMessage;
+                        messegeDialog.Message = _buildingLimitIsExhaustedMessage;
                         WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                         waitingVM.HandleDialogOpenig ();
                         messegeDialog.ShowDialog (MainWindow.Window);
@@ -328,7 +328,7 @@ public class TemplateChoosingViewModel : ViewModelBase
         if ( ! buildingIsCompleted )
         {
             var messegeDialog = new MessageDialog (ModernMainView.Instance);
-            messegeDialog.Message = _fileIsOpenMessage;
+            messegeDialog.Message = _buildingLimitIsExhaustedMessage;
             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
             waitingVM.HandleDialogOpenig ();
             messegeDialog.ShowDialog (MainWindow.Window);

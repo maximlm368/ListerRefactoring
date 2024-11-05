@@ -24,11 +24,15 @@
     }
 
 
-    public interface IPeopleDataSource 
+    public interface IPeopleSource 
     {
-        public List<Person> GetPersons(string personsFilePath);
+        public List <Person> GetPersons ( string ? personsFilePath );
+    }
 
-        public string SourcePath {  get; set; }
+
+    public interface IPeopleSourceFactory
+    {
+        public IPeopleSource GetPeopleSource ( string ? personsFilePath );
     }
 
 

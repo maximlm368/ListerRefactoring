@@ -22,7 +22,7 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        private static readonly int _badgeCountLimit = 9999;
+        private static readonly int _badgeCountLimit = 3333;
         private static readonly double _scalabilityCoefficient = 1.25;
 
         private ConverterToPdf _converter;

@@ -35,7 +35,6 @@ public partial class PrintDialog : BaseWindow
         allPages.IsChecked = true;
         amountText.Text = "1";
 
-
         pagesText.AcceptsReturn = true;
     }
 

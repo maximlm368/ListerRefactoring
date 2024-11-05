@@ -126,10 +126,10 @@ namespace Lister.Views
         }
 
 
-        internal void LostFocuse ( object sender, RoutedEventArgs args )
-        {
-            personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
-        }
+        //internal void LostFocuse ( object sender, RoutedEventArgs args )
+        //{
+        //    personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
+        //}
 
 
         internal void PointerEntered ( object sender, PointerEventArgs args )
@@ -165,7 +165,9 @@ namespace Lister.Views
 
         private void CloseCombobox ( )
         {
-            bool reasonExists = _personListIsDropped && !_cursorIsOverPersonList && !_buttonIsPressed;
+            //bool reasonExists = _personListIsDropped   &&   ! _cursorIsOverPersonList   &&   ! _buttonIsPressed;
+
+            bool reasonExists = _personListIsDropped   &&   ! _buttonIsPressed;
 
             if ( reasonExists )
             {
@@ -356,16 +358,16 @@ namespace Lister.Views
         }
 
 
-        internal void CursorIsOverPersonList ( object sender, PointerEventArgs args )
-        {
-            _cursorIsOverPersonList = true;
-        }
+        //internal void CursorIsOverPersonList ( object sender, PointerEventArgs args )
+        //{
+        //    _cursorIsOverPersonList = true;
+        //}
 
 
-        internal void CursorIsOutOfPersonList ( object sender, PointerEventArgs args )
-        {
-            _cursorIsOverPersonList = false;
-        }
+        //internal void CursorIsOutOfPersonList ( object sender, PointerEventArgs args )
+        //{
+        //    _cursorIsOverPersonList = false;
+        //}
 
         #region Scrolling
 
@@ -465,7 +467,6 @@ namespace Lister.Views
 
         internal void HandleClosing ( object sender, EventArgs args )
         {
-
             TemplateViewModel chosen = templateChoosing.SelectedItem as TemplateViewModel;
 
             if ( chosen == null )

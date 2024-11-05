@@ -17,6 +17,8 @@ using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Interactivity;
 using static QuestPDF.Helpers.Colors;
+using System.Collections.Specialized;
+using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels
 {
@@ -24,6 +26,9 @@ namespace Lister.ViewModels
     {
         private static string _warnImageName = "warning-alert.ico";
         public static bool IsClosed { get; private set; }
+
+        private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
+        private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
 
         private readonly string _emptyCopies = "Количество копий не может быть пустым";
         private readonly string _emptyPages = "Список страниц не может быть пустым";
@@ -724,7 +729,7 @@ namespace Lister.ViewModels
                 PrinterSettings settings = new PrinterSettings ();
                 string defaultPrinterName = settings.PrinterName;
 
-                var printers = PrinterSettings.InstalledPrinters;
+                PrinterSettings.StringCollection printers = PrinterSettings.InstalledPrinters;
 
                 int counter = 0;
 
@@ -742,7 +747,26 @@ namespace Lister.ViewModels
             }
             else if ( App.OsName == "Linux" )
             {
-                
+                string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
+
+                string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
+                List<string> printers = printersLine.SplitBySeparators (new () { '\n' });
+
+                int counter = 0;
+
+                foreach ( string printer   in   printers )
+                {
+                    string prntr = printer.TrimLastNewLineChar ();
+
+                    printersList.Add (new PrinterPresentation (prntr));
+
+                    if ( defaultPrinterName == prntr )
+                    {
+                        SelectedIndex = counter;
+                    }
+
+                    counter++;
+                }
             }
 
             Printers = printersList;

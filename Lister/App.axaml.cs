@@ -112,7 +112,7 @@ public partial class App : Avalonia.Application
 
 
 
-    public static void ExecuteBashCommand ( string command )
+    public static string ExecuteBashCommand ( string command )
     {
         using ( Process process = new Process () )
         {
@@ -127,9 +127,11 @@ public partial class App : Avalonia.Application
 
             process.Start ();
 
-            //string result = process.StandardOutput.ReadToEnd ();
+            string result = process.StandardOutput.ReadToEnd ();
 
             process.WaitForExit ();
+
+            return result;
         }
     }
 
@@ -161,8 +163,8 @@ public static class ServiceCollectionExtensions
     public static void AddNeededServices ( this IServiceCollection collection )
     {
         collection.AddSingleton <IServiceProvider, BadgeAppearenceServiceProvider> ();
-        collection.AddSingleton <IPeopleDataSource, PeopleSource> ();
-        collection.AddSingleton <IRowSource, PeopleSource> ();
+        collection.AddSingleton <IPeopleSourceFactory, PeopleSourceFactory> ();
+        collection.AddSingleton <IRowSource, PeopleXlsxSource> ();
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
 

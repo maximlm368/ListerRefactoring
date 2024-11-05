@@ -244,6 +244,24 @@ namespace ExtentionsAndAuxiliary
             return beingProcessed;
         }
 
+
+        public static string TrimLastNewLineChar ( this string beingProcessed )
+        {
+            bool isNotEmpty = !string.IsNullOrEmpty (beingProcessed);
+
+            if ( isNotEmpty )
+            {
+                char lastChar = beingProcessed [beingProcessed.Length - 1];
+                bool isGoal = ( lastChar == '\n' );
+
+                if ( isGoal )
+                {
+                    beingProcessed = beingProcessed.Substring (0, beingProcessed.Length - 1);
+                }
+            }
+
+            return beingProcessed;
+        }
     }
 
 

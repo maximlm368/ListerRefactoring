@@ -11,18 +11,38 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace DataGateway
 {
-    public class PeopleSource : IPeopleDataSource, IRowSource
+    public class PeopleXlsxSource : IPeopleSource, IRowSource
     {
         private readonly int _xslxStartRow = 2;
         private readonly int _xslxWorkSheetNum = 1;
 
-        public string SourcePath { get; set; }
+
+        public PeopleXlsxSource() { }
 
 
-        public PeopleSource() { }
+        //public List <Person> GetPersons ( string ? filePath )
+        //{
+        //    List<Person> result = [];
+
+        //    if ( string.IsNullOrWhiteSpace (filePath) )
+        //    {
+        //        return result;
+        //    }
+
+        //    if ( ( filePath.Last () == 'v' ) || ( filePath.Last () == 'V' ) )
+        //    {
+        //        result = GetPersonsFromCSV (filePath);
+        //    }
+        //    else 
+        //    {
+        //        result = GetPersonsFromXLSX (filePath);
+        //    }
+
+        //    return result;
+        //}
 
 
-        public List <Person> GetPersons ( string ? filePath )
+        public List <Person> GetPersons (string ? filePath)
         {
             List<Person> result = [];
 
@@ -31,23 +51,6 @@ namespace DataGateway
                 return result;
             }
 
-            if ( ( filePath.Last () == 'v' ) || ( filePath.Last () == 'V' ) )
-            {
-                result = GetPersonsFromCSV (filePath);
-            }
-            else 
-            {
-                result = GetPersonsFromXLSX (filePath);
-            }
-
-            return result;
-        }
-
-
-        private List <Person> GetPersonsFromXLSX (string filePath)
-        {
-            List <Person> result = [];
-            
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding (1251);
 
@@ -84,37 +87,7 @@ namespace DataGateway
         }
 
 
-        private List <Person> GetPersonsFromCSV ( string filePath )
-        {
-            List <Person> result = [];
-
-            Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
-            Encoding encoding = Encoding.GetEncoding (1251);
-            using StreamReader reader = new StreamReader (filePath, encoding, true);
-            string line = string.Empty;
-            char seperator = ';';
-
-            while ( ( line = reader.ReadLine () ) != null )
-            {
-                string [] parts = line.Split (seperator, StringSplitOptions.TrimEntries);
-
-                try
-                {
-                    Person person = Person.Create (parts);
-                    result.Add (person);
-                }
-                catch ( ArgumentException ex ){}
-            }
-
-            IComparer<Person> comparer = new RusStringComparer<Person> ();
-            result.Sort (comparer);
-
-            return result;
-        }
-
-
-
-        public List<string> GetRow ( string filePath, int rowNumZeroBased )
+        public List <string> GetRow ( string filePath, int rowNumZeroBased )
         {
             List<string> resultRow = new ();
 
@@ -147,6 +120,78 @@ namespace DataGateway
             }
 
             return resultRow;
+        }
+    }
+
+
+
+    public class PeopleCsvSource : IPeopleSource
+    {
+        public PeopleCsvSource () { }
+
+
+        public List <Person> GetPersons ( string ? filePath )
+        {
+            List <Person> result = [];
+
+            if ( string.IsNullOrWhiteSpace (filePath) )
+            {
+                return result;
+            }
+
+            Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
+            Encoding encoding = Encoding.GetEncoding (1251);
+            using StreamReader reader = new StreamReader (filePath, encoding, true);
+            string line = string.Empty;
+            char seperator = ';';
+
+            while ( ( line = reader.ReadLine () ) != null )
+            {
+                string [] parts = line.Split (seperator, StringSplitOptions.TrimEntries);
+
+                try
+                {
+                    Person person = Person.Create (parts);
+                    result.Add (person);
+                }
+                catch ( ArgumentException ex ) { }
+            }
+
+            IComparer<Person> comparer = new RusStringComparer<Person> ();
+            result.Sort (comparer);
+
+            return result;
+        }
+    }
+
+
+
+    public class PeopleSourceFactory : IPeopleSourceFactory
+    {
+        public PeopleSourceFactory () { }
+
+
+        public IPeopleSource GetPeopleSource ( string ? filePath )
+        {
+            IPeopleSource result = new PeopleCsvSource ();
+
+            if ( string.IsNullOrWhiteSpace (filePath) )
+            {
+                return result;
+            }
+
+            bool fileIsCSV = (( filePath.Last () == 'v' )   ||   ( filePath.Last () == 'V' ));
+
+            if ( fileIsCSV )
+            {
+                result = new PeopleCsvSource ();
+            }
+            else
+            {
+                result = new PeopleXlsxSource ();
+            }
+
+            return result;
         }
     }
 

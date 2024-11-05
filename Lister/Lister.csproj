@@ -11,20 +11,16 @@
     <Deterministic>False</Deterministic>
     <Optimize>False</Optimize>
   </PropertyGroup>
+	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <Deterministic>False</Deterministic>
-	
-	
 	<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
 	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 	<PublishSelfContained>true</PublishSelfContained>
 	<RollForward>LatestMinor</RollForward>
 	<EmitEntryPoint>true</EmitEntryPoint>
 	<Optimize>False</Optimize>
-	
-	
-	
   </PropertyGroup>
 
 

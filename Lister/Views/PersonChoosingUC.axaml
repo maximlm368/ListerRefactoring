@@ -75,8 +75,6 @@
 						Name="visiblePersons"
 						Width="445"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
-						PointerEntered="CursorIsOverPersonList"
-						PointerExited="CursorIsOutOfPersonList"
 						PointerWheelChanged="ScrollByWheel"
 						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}">
 					
@@ -249,6 +247,9 @@
 
 
 <!--   
+
+						PointerEntered="CursorIsOverPersonList"
+						PointerExited="CursorIsOutOfPersonList"
 
 
 Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
