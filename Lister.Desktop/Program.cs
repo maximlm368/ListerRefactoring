@@ -137,6 +137,9 @@ class Program
         fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
         fontNames.Add ("Font Awesome 6 Free Solid");
 
+        fontFiles = fontFiles.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
+        fontNames = fontNames.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
+
         //string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
         //string linuxFontsPath = userDirectory + "/.local/share/fonts/";
 

@@ -32,6 +32,7 @@ namespace Lister.ViewModels
 
         private readonly string _emptyCopies = "Количество копий не может быть пустым";
         private readonly string _emptyPages = "Список страниц не может быть пустым";
+        private readonly string _emptyPrinters = "Список принтеров не может быть пустым";
 
         private readonly int _copiesMaxCount = 10;
         private readonly int _pagesStringMaxGlyphCount = 30;
@@ -55,33 +56,33 @@ namespace Lister.ViewModels
         private bool _copiesHinderPrinting;
         private string _pagesListError;
 
-        private SolidColorBrush lB;
+        private SolidColorBrush _lineBackgraund;
         public SolidColorBrush LineBackground
         {
-            get { return lB; }
+            get { return _lineBackgraund; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref lB, value, nameof (LineBackground));
+                this.RaiseAndSetIfChanged (ref _lineBackgraund, value, nameof (LineBackground));
             }
         }
 
-        private SolidColorBrush cB;
+        private SolidColorBrush _canvasBackground;
         public SolidColorBrush CanvasBackground
         {
-            get { return cB; }
+            get { return _canvasBackground; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cB, value, nameof (CanvasBackground));
+                this.RaiseAndSetIfChanged (ref _canvasBackground, value, nameof (CanvasBackground));
             }
         }
 
-        private Bitmap wI;
+        private Bitmap _warnImage;
         public Bitmap WarnImage
         {
-            get { return wI; }
+            get { return _warnImage; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref wI, value, nameof (WarnImage));
+                this.RaiseAndSetIfChanged (ref _warnImage, value, nameof (WarnImage));
             }
         }
 
@@ -95,10 +96,10 @@ namespace Lister.ViewModels
             }
         }
 
-        private bool some;
+        private bool _some;
         public bool Some
         {
-            get { return some; }
+            get { return _some; }
             private set
             {
                 if ( ! value )
@@ -106,14 +107,14 @@ namespace Lister.ViewModels
                     Pages = string.Empty;
                 }
 
-                this.RaiseAndSetIfChanged (ref some, value, nameof (Some));
+                this.RaiseAndSetIfChanged (ref _some, value, nameof (Some));
             }
         }
 
-        private string ps;
+        private string _pages;
         public string Pages
         {
-            get { return ps; }
+            get { return _pages; }
             private set
             {
                 PagesError = string.Empty;
@@ -151,24 +152,24 @@ namespace Lister.ViewModels
                 }
 
                 _pagesHinderPrinting = false;
-                this.RaiseAndSetIfChanged (ref ps, value, nameof (Pages));
+                this.RaiseAndSetIfChanged (ref _pages, value, nameof (Pages));
             }
         }
 
-        private SolidColorBrush pBC;
+        private SolidColorBrush _pagesBorderColor;
         public SolidColorBrush PagesBorderColor
         {
-            get { return pBC; }
+            get { return _pagesBorderColor; }
             set
             {
-                this.RaiseAndSetIfChanged (ref pBC, value, nameof (PagesBorderColor));
+                this.RaiseAndSetIfChanged (ref _pagesBorderColor, value, nameof (PagesBorderColor));
             }
         }
 
-        private string perr;
+        private string _pagesError;
         public string PagesError
         {
-            get { return perr; }
+            get { return _pagesError; }
             set
             {
                 if ( string.IsNullOrEmpty (value) )
@@ -180,14 +181,14 @@ namespace Lister.ViewModels
                     PagesBorderColor = new SolidColorBrush (new Color (255, 255, 0, 0));
                 }
 
-                this.RaiseAndSetIfChanged (ref perr, value, nameof (PagesError));
+                this.RaiseAndSetIfChanged (ref _pagesError, value, nameof (PagesError));
             }
         }
 
-        private string copies;
+        private string _copies;
         public string Copies
         {
-            get { return copies; }
+            get { return _copies; }
             set
             {
                 value = RemoveUnacceptableGlyph (value, _copiesCountAcceptables);
@@ -206,24 +207,24 @@ namespace Lister.ViewModels
                     }
                 }
 
-                this.RaiseAndSetIfChanged (ref copies, value, nameof (Copies));
+                this.RaiseAndSetIfChanged (ref _copies, value, nameof (Copies));
             }
         }
 
-        private SolidColorBrush cBC;
+        private SolidColorBrush _copiesBorderColor;
         public SolidColorBrush CopiesBorderColor
         {
-            get { return cBC; }
+            get { return _copiesBorderColor; }
             set
             {
-                this.RaiseAndSetIfChanged (ref cBC, value, nameof (CopiesBorderColor));
+                this.RaiseAndSetIfChanged (ref _copiesBorderColor, value, nameof (CopiesBorderColor));
             }
         }
 
-        private string cerr;
+        private string _copiesError;
         public string CopiesError
         {
-            get { return cerr; }
+            get { return _copiesError; }
             set
             {
                 if ( string.IsNullOrEmpty (value) )
@@ -235,17 +236,37 @@ namespace Lister.ViewModels
                     CopiesBorderColor = new SolidColorBrush (new Color (255, 255, 0, 0));
                 }
 
-                this.RaiseAndSetIfChanged (ref cerr, value, nameof (CopiesError));
+                this.RaiseAndSetIfChanged (ref _copiesError, value, nameof (CopiesError));
             }
         }
 
-        private int sI;
-        public int SelectedIndex
+        private string _printersEmptyError;
+        public string PrintersEmptyError
         {
-            get { return sI; }
+            get { return _printersEmptyError; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _printersEmptyError, value, nameof (PrintersEmptyError));
+            }
+        }
+
+        private bool _printingIsAvailable;
+        public bool PrintingIsAvailable
+        {
+            get { return _printingIsAvailable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sI, value, nameof (SelectedIndex));
+                this.RaiseAndSetIfChanged (ref _printingIsAvailable, value, nameof (PrintingIsAvailable));
+            }
+        }
+
+        private int _selectedIndex;
+        public int SelectedIndex
+        {
+            get { return _selectedIndex; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _selectedIndex, value, nameof (SelectedIndex));
             }
         }
 
@@ -722,55 +743,98 @@ namespace Lister.ViewModels
         {
             IsClosed = false;
 
-            ObservableCollection <PrinterPresentation> printersList = new ();
+            ObservableCollection <PrinterPresentation> printersList = null;
 
             if ( App.OsName == "Windows" )
             {
-                PrinterSettings settings = new PrinterSettings ();
-                string defaultPrinterName = settings.PrinterName;
-
-                PrinterSettings.StringCollection printers = PrinterSettings.InstalledPrinters;
-
-                int counter = 0;
-
-                foreach ( string printer   in   printers )
-                {
-                    printersList.Add (new PrinterPresentation (printer));
-
-                    if ( defaultPrinterName == printer )
-                    {
-                        SelectedIndex = counter;
-                    }
-
-                    counter++;
-                }
+                printersList = PreparePrintersListOnWindows ();
             }
             else if ( App.OsName == "Linux" )
             {
-                string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
-
-                string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
-                List<string> printers = printersLine.SplitBySeparators (new () { '\n' });
-
-                int counter = 0;
-
-                foreach ( string printer   in   printers )
-                {
-                    string prntr = printer.TrimLastNewLineChar ();
-
-                    printersList.Add (new PrinterPresentation (prntr));
-
-                    if ( defaultPrinterName == prntr )
-                    {
-                        SelectedIndex = counter;
-                    }
-
-                    counter++;
-                }
+                printersList = PreparePrintersListOnLinux ();
             }
 
+            HandleEmptyPrinters (printersList);
             Printers = printersList;
+
+            //ObservableCollection<PrinterPresentation> mock = new ();
+            //HandleEmptyPrinters (mock);
+            //Printers = mock;
+
             Copies = "1";
+        }
+
+
+        private ObservableCollection <PrinterPresentation> PreparePrintersListOnWindows ( )
+        {
+            ObservableCollection <PrinterPresentation> printersList = new ();
+
+            PrinterSettings settings = new PrinterSettings ();
+            string defaultPrinterName = settings.PrinterName;
+
+            PrinterSettings.StringCollection printers = PrinterSettings.InstalledPrinters;
+
+            int counter = 0;
+
+            foreach ( string printer   in   printers )
+            {
+                printersList.Add (new PrinterPresentation (printer));
+
+                if ( defaultPrinterName == printer )
+                {
+                    SelectedIndex = counter;
+                }
+
+                counter++;
+            }
+
+            return printersList;
+        }
+
+
+        private ObservableCollection <PrinterPresentation> PreparePrintersListOnLinux ()
+        {
+            ObservableCollection <PrinterPresentation> printersList = new ();
+
+            string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
+
+            string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
+            List<string> printers = printersLine.SplitBySeparators (new () { '\n' });
+
+            int counter = 0;
+
+            foreach ( string printer in printers )
+            {
+                string prntr = printer.TrimLastNewLineChar ();
+
+                printersList.Add (new PrinterPresentation (prntr));
+
+                if ( defaultPrinterName == prntr )
+                {
+                    SelectedIndex = counter;
+                }
+
+                counter++;
+            }
+
+            return printersList;
+        }
+
+
+        private void HandleEmptyPrinters ( ObservableCollection <PrinterPresentation> printersList )
+        {
+            bool printersIsEmpty = ( printersList.Count < 1 );
+
+            if ( printersIsEmpty )
+            {
+                PrintersEmptyError = _emptyPrinters;
+            }
+            else 
+            {
+                PrintersEmptyError = "";
+            }
+
+            PrintingIsAvailable = ! printersIsEmpty;
         }
 
 

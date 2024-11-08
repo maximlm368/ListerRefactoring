@@ -9,8 +9,9 @@
 			 x:DataType="vm:ModernMainViewModel"
 			 Height="460"
 			 Width="800" >
-
+		
 	<StackPanel ZIndex="1" >
+
 		<uc:PersonSourceUserControl
 			Name="personSource"/>
 
@@ -35,12 +36,10 @@
 
 		<uc:WaitingView
 			Name="waiting"
-			ZIndex = "5"
-			/>
+			ZIndex = "5"/>
 
 	</StackPanel>
-
-
+		
 </UserControl>
 
 

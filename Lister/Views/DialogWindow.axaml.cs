@@ -55,6 +55,8 @@ namespace Lister.Views
             }
         }
 
+        internal static bool IsOpen { get; set; }
+
         internal string Result { get; private set; }
 
 

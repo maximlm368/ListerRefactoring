@@ -8,20 +8,19 @@
 		xmlns:vm="clr-namespace:Lister.ViewModels"
 		MaxWidth="350"
 		MaxHeight="130"
-		WindowStartupLocation="CenterScreen"
+		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:DialogViewModel"
 		
+		SystemDecorations="None"
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
 		ExtendClientAreaTitleBarHeightHint = "0" >
 
-	<UserControl
-		Width="350"
-		Height="130"
-		BorderBrush = "gray"
-        BorderThickness = "1">
+
 		
-		<StackPanel>
+		<StackPanel
+			Width="350"
+			Height="130">
 
 			<Label
 				Content ="Сохранение изменений"
@@ -100,13 +99,20 @@
 			</Canvas>
 
 		</StackPanel>
-	</UserControl>
+	
 		
 		
 </Window>
 
 
 <!--
+
+	<UserControl
+		Width="350"
+		Height="130"
+		BorderBrush = "gray"
+        BorderThickness = "1">
+
 
 	<StackPanel>
 	

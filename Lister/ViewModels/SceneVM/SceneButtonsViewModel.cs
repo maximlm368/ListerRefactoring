@@ -44,63 +44,63 @@ namespace Lister.ViewModels
         private string _pdfFileName;
         //private bool _isPdfGenerated;
 
-        private double cW;
+        private double _hintWidth;
         internal double HintWidth
         {
-            get { return cW; }
+            get { return _hintWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cW, value, nameof (HintWidth));
+                this.RaiseAndSetIfChanged (ref _hintWidth, value, nameof (HintWidth));
             }
         }
 
-        private double bW;
+        private double _butonWidth;
         internal double ButtonWidth
         {
-            get { return bW; }
+            get { return _butonWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bW, value, nameof (ButtonWidth));
+                this.RaiseAndSetIfChanged (ref _butonWidth, value, nameof (ButtonWidth));
             }
         }
 
-        private double bBW;
+        private double _buttonBlockWidht;
         internal double ButtonBlockWidth
         {
-            get { return bBW; }
+            get { return _buttonBlockWidht; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bBW, value, nameof (ButtonBlockWidth));
+                this.RaiseAndSetIfChanged (ref _buttonBlockWidht, value, nameof (ButtonBlockWidth));
             }
         }
 
-        private Thickness wAM;
+        private Thickness _workAreaMargin;
         internal Thickness WorkAreaMargin
         {
-            get { return wAM; }
+            get { return _workAreaMargin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref wAM, value, nameof (WorkAreaMargin));
+                this.RaiseAndSetIfChanged (ref _workAreaMargin, value, nameof (WorkAreaMargin));
             }
         }
 
-        private string eT;
+        private string _extentionTip;
         internal string ExtentionTip
         {
-            get { return eT; }
+            get { return _extentionTip; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eT, value, nameof (ExtentionTip));
+                this.RaiseAndSetIfChanged (ref _extentionTip, value, nameof (ExtentionTip));
             }
         }
 
-        private string eC;
+        private string _extenderContent;
         internal string ExtenderContent
         {
-            get { return eC; }
+            get { return _extenderContent; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eC, value, nameof (ExtenderContent));
+                this.RaiseAndSetIfChanged (ref _extenderContent, value, nameof (ExtenderContent));
             }
         }
 

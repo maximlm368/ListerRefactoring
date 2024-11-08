@@ -192,8 +192,14 @@ namespace Lister.Views
         {
             _vm.HandleDialogOpenig ( );
             var dialog = new DialogWindow (this);
+            DialogWindow.IsOpen = true;
+
+
             dialog.Message = _question;
-            Task result = dialog.ShowDialog (MainWindow.Window);
+            //Task result = dialog.ShowDialog (MainWindow.Window);
+
+            Task result = dialog.ShowDialog ( App.MainWindow );
+
             TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
             result.ContinueWith 
@@ -203,6 +209,7 @@ namespace Lister.Views
                     if ( dialog.Result == dialog.yes )
                     {
                         _vm.ComplateGoBack (this);
+                        DialogWindow.IsOpen = false;
                     }
                 },
                 uiScheduler

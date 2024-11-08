@@ -1,22 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Threading;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Platform.Storage;
 using ContentAssembler;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
-using QuestPDF.Helpers;
 using ReactiveUI;
-using System.DirectoryServices.ActiveDirectory;
-using System.Reflection;
 
 namespace Lister.ViewModels
 {
@@ -39,30 +26,30 @@ namespace Lister.ViewModels
         private string _procentSymbol = "%";
         private int _visiblePageNumStorage;
 
-        private PageViewModel vPage;
+        private PageViewModel _visiblePage;
         internal PageViewModel VisiblePage
         {
-            get { return vPage; }
+            get { return _visiblePage; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref vPage, value, nameof (VisiblePage));
+                this.RaiseAndSetIfChanged (ref _visiblePage, value, nameof (VisiblePage));
             }
         }
 
-        private int pC;
+        private int _pageCount;
         internal int PageCount
         {
-            get { return pC; }
+            get { return _pageCount; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref pC, value, nameof (PageCount));
+                this.RaiseAndSetIfChanged (ref _pageCount, value, nameof (PageCount));
             }
         }
 
-        private int vpN;
+        private int _visiblePageNumber;
         internal int VisiblePageNumber
         {
-            get { return vpN; }
+            get { return _visiblePageNumber; }
             private set
             {
                 if ( value > 0 ) 
@@ -70,111 +57,111 @@ namespace Lister.ViewModels
                     _visiblePageNumStorage = value;
                 }
 
-                this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
+                this.RaiseAndSetIfChanged (ref _visiblePageNumber, value, nameof (VisiblePageNumber));
             }
         }
 
-        private int bC;
+        private int _badgeCount;
         internal int BadgeCount
         {
-            get { return bC; }
+            get { return _badgeCount; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bC, value, nameof (BadgeCount));
+                this.RaiseAndSetIfChanged (ref _badgeCount, value, nameof (BadgeCount));
             }
         }
 
-        private int ibC;
+        private int _incorrectBadgeCount;
         internal int IncorrectBadgeCount
         {
-            get { return ibC; }
+            get { return _incorrectBadgeCount; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ibC, value, nameof (IncorrectBadgeCount));
+                this.RaiseAndSetIfChanged (ref _incorrectBadgeCount, value, nameof (IncorrectBadgeCount));
             }
         }
 
         internal List <BadgeViewModel> IncorrectBadges { get; private set; }
         internal List <BadgeViewModel> PrintableBadges { get; private set; }
 
-        private string zoomDV;
+        private string _zoomDegreeInView;
         internal string ZoomDegreeInView
         {
-            get { return zoomDV; }
+            get { return _zoomDegreeInView; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref zoomDV, value, nameof (ZoomDegreeInView));
+                this.RaiseAndSetIfChanged (ref _zoomDegreeInView, value, nameof (ZoomDegreeInView));
             }
         }
 
-        private Thickness bM;
+        private Thickness _borderMargin;
         internal Thickness BorderMargin
         {
-            get { return bM; }
+            get { return _borderMargin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bM, value, nameof (BorderMargin));
+                this.RaiseAndSetIfChanged (ref _borderMargin, value, nameof (BorderMargin));
             }
         }
 
-        private double cT;
+        private double _canvasTop;
         internal double CanvasTop
         {
-            get { return cT; }
+            get { return _canvasTop; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cT, value, nameof (CanvasTop));
+                this.RaiseAndSetIfChanged (ref _canvasTop, value, nameof (CanvasTop));
             }
         }
 
-        private bool eE;
+        private bool _editionMustEnable;
         internal bool EditionMustEnable
         {
-            get { return eE; }
+            get { return _editionMustEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eE, value, nameof (EditionMustEnable));
+                this.RaiseAndSetIfChanged (ref _editionMustEnable, value, nameof (EditionMustEnable));
             }
         }
 
 
 
-        private bool cE;
+        private bool _clearIsEnable;
         internal bool ClearIsEnable
         {
             set
             {
-                this.RaiseAndSetIfChanged (ref cE, value, nameof (ClearIsEnable));
+                this.RaiseAndSetIfChanged (ref _clearIsEnable, value, nameof (ClearIsEnable));
             }
             get
             {
-                return cE;
+                return _clearIsEnable;
             }
         }
 
-        private bool sE;
+        private bool _saveIsEnable;
         internal bool SaveIsEnable
         {
             set
             {
-                this.RaiseAndSetIfChanged (ref sE, value, nameof (SaveIsEnable));
+                this.RaiseAndSetIfChanged (ref _saveIsEnable, value, nameof (SaveIsEnable));
             }
             get
             {
-                return sE;
+                return _saveIsEnable;
             }
         }
 
-        private bool pE;
+        private bool _printIsEnable;
         internal bool PrintIsEnable
         {
             set
             {
-                this.RaiseAndSetIfChanged (ref pE, value, nameof (PrintIsEnable));
+                this.RaiseAndSetIfChanged (ref _printIsEnable, value, nameof (PrintIsEnable));
             }
             get
             {
-                return pE;
+                return _printIsEnable;
             }
         }
 

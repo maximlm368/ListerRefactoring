@@ -55,49 +55,33 @@ public class TemplateChoosingViewModel : ViewModelBase
     private Stopwatch _stopWatch;
     private bool _buildingIsLocked;
 
-    private ObservableCollection <TemplateViewModel> tF;
+    private ObservableCollection <TemplateViewModel> _templates;
     internal ObservableCollection <TemplateViewModel> Templates
     {
         get
         {
-            return tF;
+            return _templates;
         }
         set
         {
-            this.RaiseAndSetIfChanged (ref tF, value, nameof (Templates));
+            this.RaiseAndSetIfChanged (ref _templates, value, nameof (Templates));
         }
     }
 
-    //private TemplateViewModel cT;
-    //internal TemplateViewModel ChosenTemplate
-    //{
-    //    set
-    //    {
-    //        bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
-
-    //        this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
-    //        TryToEnableBadgeCreationButton ();
-    //    }
-    //    get
-    //    {
-    //        return cT;
-    //    }
-    //}
-
-    private bool isO;
+    private bool _isOpen;
     internal bool IsOpen
     {
         set
         {
-            this.RaiseAndSetIfChanged (ref isO, value, nameof (isO));
+            this.RaiseAndSetIfChanged (ref _isOpen, value, nameof (_isOpen));
         }
         get
         {
-            return isO;
+            return _isOpen;
         }
     }
 
-    private bool isC;
+    private bool _buildingIsPossible;
     internal bool BuildingIsPossible
     {
         set
@@ -115,50 +99,50 @@ public class TemplateChoosingViewModel : ViewModelBase
                 }
             }
 
-            this.RaiseAndSetIfChanged (ref isC, value, nameof (BuildingIsPossible));
+            this.RaiseAndSetIfChanged (ref _buildingIsPossible, value, nameof (BuildingIsPossible));
         }
         get
         {
-            return isC;
+            return _buildingIsPossible;
         }
     }
 
-    private bool cE;
+    private bool _clearIsEnable;
     internal bool ClearIsEnable
     {
         set
         {
-            this.RaiseAndSetIfChanged (ref cE, value, nameof (ClearIsEnable));
+            this.RaiseAndSetIfChanged (ref _clearIsEnable, value, nameof (ClearIsEnable));
         }
         get
         {
-            return cE;
+            return _clearIsEnable;
         }
     }
 
-    private bool sE;
+    private bool _saveIsEnable;
     internal bool SaveIsEnable
     {
         set
         {
-            this.RaiseAndSetIfChanged (ref sE, value, nameof (SaveIsEnable));
+            this.RaiseAndSetIfChanged (ref _saveIsEnable, value, nameof (SaveIsEnable));
         }
         get
         {
-            return sE;
+            return _saveIsEnable;
         }
     }
 
-    private bool pE;
+    private bool _printIsEnable;
     internal bool PrintIsEnable
     {
         set
         {
-            this.RaiseAndSetIfChanged (ref pE, value, nameof (PrintIsEnable));
+            this.RaiseAndSetIfChanged (ref _printIsEnable, value, nameof (PrintIsEnable));
         }
         get
         {
-            return pE;
+            return _printIsEnable;
         }
     }
 

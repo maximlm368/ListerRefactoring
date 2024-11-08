@@ -37,10 +37,10 @@ namespace Lister.ViewModels
         private PersonSourceUserControl _view;
 
         private bool _pathIsFromKeeper;
-        private string sFP;
+        private string _sourceFilePath;
         internal string SourceFilePath
         {
-            get { return sFP; }
+            get { return _sourceFilePath; }
             private set
             {
                 string path = SetCorrespondingPersons ( value );
@@ -51,27 +51,27 @@ namespace Lister.ViewModels
                     path = SourceFilePath;
                 }
 
-                this.RaiseAndSetIfChanged ( ref sFP , path , nameof ( SourceFilePath ) );
+                this.RaiseAndSetIfChanged ( ref _sourceFilePath , path , nameof ( SourceFilePath ) );
             }
         }
 
-        private bool eE;
+        private bool _editorIsEnable;
         internal bool EditorIsEnable
         {
-            get { return eE; }
+            get { return _editorIsEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eE, value, nameof (EditorIsEnable));
+                this.RaiseAndSetIfChanged (ref _editorIsEnable, value, nameof (EditorIsEnable));
             }
         }
 
-        private SolidColorBrush bB;
+        private SolidColorBrush _borderBrush;
         internal SolidColorBrush BorderBrush
         {
-            get { return bB; }
+            get { return _borderBrush; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bB, value, nameof (BorderBrush));
+                this.RaiseAndSetIfChanged (ref _borderBrush, value, nameof (BorderBrush));
             }
         }
 
@@ -125,9 +125,9 @@ namespace Lister.ViewModels
 
                 if ( passerType.Name == _viewTypeName )
                 {
-                    bool fileIsCorrect = CheckIfIncorrectXSLX (path);
+                    bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
 
-                    if ( !fileIsCorrect )
+                    if ( ! fileIsCorrect )
                     {
                         DeclineChosenFile (path);
 
@@ -177,7 +177,7 @@ namespace Lister.ViewModels
 
                         if ( ( result != null )   &&   (result != string.Empty) )
                         {
-                            bool fileIsCorrect = CheckIfIncorrectXSLX (result);
+                            bool fileIsCorrect = CheckWhetherCorrectIfXSLX (result);
 
                             if ( ! fileIsCorrect )
                             {
@@ -231,7 +231,7 @@ namespace Lister.ViewModels
         }
 
 
-        private bool CheckIfIncorrectXSLX ( string path )
+        private bool CheckWhetherCorrectIfXSLX ( string path )
         {
             bool isOk = true;
 

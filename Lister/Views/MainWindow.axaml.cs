@@ -26,6 +26,8 @@ public partial class MainWindow : Window
     public static readonly Color white = new Color (255, 255, 255, 255);
     public static readonly Color black = new Color (255, 0, 0, 0);
 
+    private static PixelPoint _position;
+
     public static IStorageProvider CommonStorageProvider { get; private set; }
     internal static MainWindow Window { get; private set; }
     internal static double HeightfDifference { get; private set; }
@@ -59,6 +61,14 @@ public partial class MainWindow : Window
         Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
 
+        CanResize = true;
+
+        //this.PositionChanged += OnPositionChanged;
+        //_position = Position;
+
+       // this.Deactivated += OnPositionChanged;
+        //this.Hide();
+
         
 
         //Icon = new WindowIcon ("D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\listerIcon.svg");
@@ -77,7 +87,7 @@ public partial class MainWindow : Window
     }
 
 
-    private void OnOpened ( object? sender, EventArgs e )
+    private void OnOpened ( object ? sender, EventArgs args )
     {
         int windowWidth = ( int ) this.DesiredSize.Width / 2;
         int windowHeight = ( int ) this.DesiredSize.Height / 2;
@@ -86,13 +96,21 @@ public partial class MainWindow : Window
     }
 
 
-    private void OnSizeChanged ( object? sender , SizeChangedEventArgs e )
+    private void OnPositionChanged ( object ? sender, PixelPointEventArgs args )
+    {
+        Position = _position;
+
+        //int dfd = 0;
+    }
+
+
+    private void OnSizeChanged ( object ? sender , SizeChangedEventArgs args )
     {
         try
         {
             ModernMainView mainView = ( ModernMainView ) Content;
-            double newWidth = e.NewSize.Width;
-            double newHeight = e.NewSize.Height;
+            double newWidth = args.NewSize.Width;
+            double newHeight = args.NewSize.Height;
             double newWidthDifference = _currentWidth - newWidth;
             double newHeightDifference = _currentHeight - newHeight;
             WidthDifference += newWidthDifference;
@@ -112,8 +130,8 @@ public partial class MainWindow : Window
             try
             {
                 BadgeEditorView mainView = ( BadgeEditorView ) Content;
-                double newWidth = e.NewSize.Width;
-                double newHeight = e.NewSize.Height;
+                double newWidth = args.NewSize.Width;
+                double newHeight = args.NewSize.Height;
                 double widthDifference = _currentWidth - newWidth;
                 double heightDifference = _currentHeight - newHeight;
                 WidthDifference += widthDifference;

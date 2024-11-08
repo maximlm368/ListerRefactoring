@@ -27,6 +27,8 @@ namespace Lister;
 
 public partial class App : Avalonia.Application
 {
+    public static Window MainWindow { get; private set; }
+
     public static string ResourceUriFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
@@ -102,6 +104,7 @@ public partial class App : Avalonia.Application
         if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
             desktop.MainWindow = mainWindow;
+            App.MainWindow = mainWindow;
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {

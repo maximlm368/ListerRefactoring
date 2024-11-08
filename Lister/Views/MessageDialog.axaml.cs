@@ -7,7 +7,7 @@ using MessageBox.Avalonia.Views;
 
 namespace Lister.Views
 {
-    public partial class MessageDialog : Window
+    public partial class MessageDialog : BaseWindow
     {
         private MessageViewModel _vm;
         public ShowingDialog Caller { get; private set; }
