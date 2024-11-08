@@ -140,12 +140,15 @@ class Program
         fontFiles = fontFiles.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
         fontNames = fontNames.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
 
-        //string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
-        //string linuxFontsPath = userDirectory + "/.local/share/fonts/";
+        string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+        string linuxFontsPath = userDirectory + "/.local/share/fonts/";
 
-        string linuxFontsPath = "/home/maxim/.local/share/fonts/";
+        //string linuxFontsPath = "/home/maxim/.local/share/fonts/";
 
-        //Directory.CreateDirectory (linuxFontsPath);
+        if ( ! Directory.Exists(linuxFontsPath) ) 
+        {
+            Directory.CreateDirectory (linuxFontsPath);
+        }
 
         for ( int index = 0;   index < fontFiles.Count;   index++ )
         {

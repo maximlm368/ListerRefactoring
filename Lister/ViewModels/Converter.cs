@@ -160,6 +160,12 @@ class ConverterToPdf
         {
             currentImagePath = imagePath;
             string complitedImagePath = GetImagePath (imagePath);
+
+            if ( App.OsName == "Linux" ) 
+            {
+                complitedImagePath = "/" + complitedImagePath;
+            }
+
             image = Pdf.Image.FromFile (complitedImagePath);
         }
 
