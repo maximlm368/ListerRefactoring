@@ -12,6 +12,7 @@
 		x:DataType="vm:DialogViewModel"
 		
 		SystemDecorations="None"
+		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
 		ExtendClientAreaTitleBarHeightHint = "0" >

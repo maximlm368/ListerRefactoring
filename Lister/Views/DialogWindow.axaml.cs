@@ -67,8 +67,10 @@ namespace Lister.Views
             _caller = caller;
             _viewModel = new DialogViewModel (this);
             DataContext = _viewModel;
+
             CanResize = false;
-            No.Focus (NavigationMethod.Tab, KeyModifiers.None);
+
+            Activated += delegate { Yes.Focus (NavigationMethod.Tab, KeyModifiers.None); };
         }
 
 

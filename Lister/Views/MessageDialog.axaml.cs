@@ -55,6 +55,10 @@ namespace Lister.Views
             DataContext = _vm;
             CanResize = false;
             _vm.PassView (this);
+
+            CanResize = false;
+
+            Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
         }
 
 

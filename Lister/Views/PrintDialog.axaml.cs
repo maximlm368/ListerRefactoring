@@ -36,6 +36,10 @@ public partial class PrintDialog : BaseWindow
         amountText.Text = "1";
 
         pagesText.AcceptsReturn = true;
+
+        CanResize = false;
+
+        Activated += delegate { cancel.Focus (NavigationMethod.Tab, KeyModifiers.None); };
     }
 
 

@@ -8,8 +8,10 @@
 		xmlns:vm="clr-namespace:Lister.ViewModels"
 		MaxWidth="360"
 		MaxHeight="130"
-		WindowStartupLocation="CenterScreen"
+		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:MessageViewModel"
+		
+		SystemDecorations="None"
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
