@@ -15,6 +15,7 @@ namespace DataGateway
 
         //private string _templatesFolderPath = @"./Resources";
         private readonly string _defaultColor = "150,150,150";
+        private readonly string _defaultSplitability = "0";
         
 
         private List<string> _textualAtomNames;
@@ -28,7 +29,6 @@ namespace DataGateway
             _resourceFolder = resourceFolder;
 
             _textualAtomNames = new List<string> ( ) {"FamilyName", "FirstName", "PatronymicName", "Post", "Department"};
-            //DirectoryInfo containingDirectory = new DirectoryInfo (_templatesFolderPath);
             DirectoryInfo containingDirectory = new DirectoryInfo (_resourceFolder);
             FileInfo [ ] fileInfos = containingDirectory.GetFiles ( "*.json" );
             _nameAndJson = new Dictionary<string , string> ( );
@@ -37,7 +37,7 @@ namespace DataGateway
             foreach ( FileInfo fileInfo   in   fileInfos )
             {
                 string jsonPath = fileInfo.FullName;
-                string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath );
+                string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath) ?? "";
                 bool hasNameExist = ! string.IsNullOrEmpty ( templateName );
 
                 if ( hasNameExist )
@@ -45,10 +45,10 @@ namespace DataGateway
                     _nameAndJson.Add ( templateName, jsonPath );
                 }
 
-                string color = GetterFromJson.GetSectionValue (new List<string> { "IncorrectLineBackground" }, jsonPath);
+                string color = GetterFromJson.GetSectionValue (new List<string> { "IncorrectLineBackground" }, jsonPath) ?? "";
                 hasNameExist = ! string.IsNullOrEmpty (templateName);
 
-                if ( hasNameExist )
+                if ( hasNameExist   &&   hasNameExist )
                 {
                     _nameAndColor.Add (templateName, color);
                 }
@@ -59,7 +59,7 @@ namespace DataGateway
         public string GetBadgeBackgroundPath ( string templateName )
         {
             string jsonPath = _nameAndJson [ templateName ];
-            string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
+            string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath) ?? "";
             backgroundPath = _resourceUri + backgroundPath;
             return backgroundPath;
         }
@@ -73,7 +73,7 @@ namespace DataGateway
             {
                 string templateName = item.Key;
                 string jsonPath = item.Value;
-                string fontFile = GetterFromJson.GetSectionValue (new List<string> { "CommonDefaultFontFamily" }, jsonPath);
+                string fontFile = GetterFromJson.GetSectionValue (new List<string> { "CommonDefaultFontFamily" }, jsonPath) ?? "";
                 result.Add ( templateName, fontFile );
             }
 
@@ -93,11 +93,13 @@ namespace DataGateway
             string jsonPath = _nameAndJson [ templateName ];
 
             double badgeWidth = 
-                      GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateIntoDouble ( );
+                      GetterFromJson.GetSectionValue ( new List<string> { "Width" }, jsonPath ).TranslateToDoubleOrZeroIfNot ( );
             double badgeHeight =
-                      GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateIntoDouble ( );
+                      GetterFromJson.GetSectionValue ( new List<string> { "Height" }, jsonPath ).TranslateToDoubleOrZeroIfNot ( );
 
-            List<int> intSpans = GetterFromJson.GetSectionValue (new List<string> { "InsideSpan" }, jsonPath).TranslateIntoIntList ( );
+            List<int> intSpans = 
+                      GetterFromJson.GetSectionValue (new List<string> { "InsideSpan" }, jsonPath).TranslateIntoIntList ( );
+
             List<double> spans = new List<double> ();
 
             foreach ( int item   in   intSpans )
@@ -117,7 +119,7 @@ namespace DataGateway
 
         private List <TextualAtom> GetAtoms ( string jsonPath ) 
         {
-            List<TextualAtom> atoms = new ();
+            List <TextualAtom> atoms = new ();
 
             atoms.Add (BuildTextualAtom ("FamilyName", jsonPath));
             atoms.Add (BuildTextualAtom ("FirstName", jsonPath));
@@ -129,7 +131,7 @@ namespace DataGateway
         }
 
 
-        private void SetUnitingAtoms ( List<TextualAtom> atoms, string jsonPath ) 
+        private void SetUnitingAtoms ( List <TextualAtom> atoms, string jsonPath ) 
         {
             IEnumerable <IConfigurationSection> unitings =
                           GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
@@ -137,7 +139,7 @@ namespace DataGateway
             foreach ( IConfigurationSection unit   in   unitings )
             {
                 IConfigurationSection unitedSection = unit.GetSection ("United");
-                IEnumerable <IConfigurationSection> unitedSections = GetterFromJson.GetChildrenOfSection (unitedSection);
+                IEnumerable <IConfigurationSection> unitedSections = unitedSection.GetChildren();
                 List<string> unitedAtomsNames = new List<string> ();
 
                 foreach ( IConfigurationSection name   in   unitedSections )
@@ -151,7 +153,7 @@ namespace DataGateway
         }
 
 
-        private List<InsideImage> GetImages ( string jsonPath ) 
+        private List <InsideImage> GetImages ( string jsonPath ) 
         {
             List <InsideImage> pictures = new ();
 
@@ -171,18 +173,18 @@ namespace DataGateway
         private TextualAtom BuildTextualAtom ( string atomName, string jsonPath ) 
         {
             double width = GetterFromJson.GetSectionValue (new List<string> { atomName, "Width" }, jsonPath)
-                .TranslateIntoDouble ();
+                .TranslateToDoubleOrZeroIfNot ();
             double height = GetterFromJson.GetSectionValue (new List<string> { atomName, "Height" }, jsonPath)
-            .TranslateIntoDouble ();
+                .TranslateToDoubleOrZeroIfNot ();
             double topOffset = GetterFromJson.GetSectionValue (new List<string> { atomName, "TopOffset" }, jsonPath)
-            .TranslateIntoDouble ();
+                .TranslateToDoubleOrZeroIfNot ();
             double leftOffset = GetterFromJson.GetSectionValue (new List<string> { atomName, "LeftOffset" }, jsonPath)
-            .TranslateIntoDouble ();
-            string alignment = GetterFromJson.GetSectionValue (new List<string> { atomName, "Alignment" }, jsonPath);
+                .TranslateToDoubleOrZeroIfNot ();
+            string alignment = GetterFromJson.GetSectionValue (new List<string> { atomName, "Alignment" }, jsonPath) ?? "";
             double fontSize = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontSize" }, jsonPath)
-            .TranslateIntoDouble ();
-            string fontFile = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFile" }, jsonPath);
-            string fontName = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontName" }, jsonPath);
+                .TranslateToDoubleOrZeroIfNot ();
+            string fontFile = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontFile" }, jsonPath) ?? "";
+            string fontName = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontName" }, jsonPath) ?? "";
 
             List<int> intForeground = GetterFromJson.GetSectionValue (new List<string> { atomName, "Foreground" }, jsonPath)
             .TranslateIntoIntList();
@@ -194,8 +196,9 @@ namespace DataGateway
                 foreground.Add ( (byte) item);
             }
 
-            string fontWeight = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontWeight" }, jsonPath);
-            string shiftableString = GetterFromJson.GetSectionValue (new List<string> { atomName, "IsSplitable" }, jsonPath);
+            string fontWeight = GetterFromJson.GetSectionValue (new List<string> { atomName, "FontWeight" }, jsonPath) ?? "";
+            string shiftableString =
+                GetterFromJson.GetSectionValue (new List<string> { atomName, "IsSplitable" }, jsonPath) ?? _defaultSplitability;
             bool isShiftable = false;
 
             try 
@@ -215,23 +218,31 @@ namespace DataGateway
         private TextualAtom BuildTextualAtom ( IConfigurationSection section, List<string> united )
         {
             IConfigurationSection childSection = section.GetSection ("Name");
-            string atomName = GetterFromJson.GetSectionValue (childSection);
+            string atomName = GetterFromJson.GetSectionValue (childSection) ?? "";
+
             childSection = section.GetSection ("Width");
-            double width = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            double width = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+
             childSection = section.GetSection ("Height");
-            double height = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            double height = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+
             childSection = section.GetSection ("TopOffset");
-            double topOffset = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            double topOffset = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+
             childSection = section.GetSection ("LeftOffset");
-            double leftOffset = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            double leftOffset = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+
             childSection = section.GetSection ("Alignment");
-            string alignment = GetterFromJson.GetSectionValue (childSection);
+            string alignment = GetterFromJson.GetSectionValue (childSection) ?? "";
+
             childSection = section.GetSection ("FontSize");
-            double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateIntoDouble ();
+            double fontSize = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+
             childSection = section.GetSection ("FontFile");
-            string fontFile = GetterFromJson.GetSectionValue (childSection);
+            string fontFile = GetterFromJson.GetSectionValue (childSection) ?? "";
+
             childSection = section.GetSection ("FontName");
-            string fontName = GetterFromJson.GetSectionValue (childSection);
+            string fontName = GetterFromJson.GetSectionValue (childSection) ?? "";
 
             childSection = section.GetSection ("Foreground");
             List<int> intForeground = GetterFromJson.GetSectionValue (childSection).TranslateIntoIntList ();
@@ -244,10 +255,10 @@ namespace DataGateway
             }
 
             childSection = section.GetSection ("FontWeight");
-            string fontWeight = GetterFromJson.GetSectionValue (childSection);
+            string fontWeight = GetterFromJson.GetSectionValue (childSection) ?? "";
 
             childSection = section.GetSection ("IsSplitable");
-            string shiftableString = GetterFromJson.GetSectionValue (childSection);
+            string shiftableString = GetterFromJson.GetSectionValue (childSection) ?? _defaultSplitability;
             bool isShiftable = false;
 
             try
@@ -266,29 +277,29 @@ namespace DataGateway
 
         private InsideImage BuildInsideImage ( IConfigurationSection section )
         {
-            IConfigurationSection childSection = section.GetSection ( "Name" );
-            string imageName = GetterFromJson.GetSectionValue ( childSection );
-            
-            childSection = section.GetSection ( "Width" );
-            double width = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
+            //IConfigurationSection childSection = section.GetSection ("Name");
+            //string imageName = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            IConfigurationSection childSection = section.GetSection ( "Width" );
+            double width = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
             
             childSection = section.GetSection ( "Height" );
-            double height = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
+            double height = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
             
             childSection = section.GetSection ( "TopOffset" );
-            double topOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
+            double topOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
 
             childSection = section.GetSection ( "LeftOffset" );
-            double leftOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateIntoDouble ( );
+            double leftOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
 
             childSection = section.GetSection ( "ImagePath" );
-            string path = GetterFromJson.GetSectionValue ( childSection );
+            string path = GetterFromJson.GetSectionValue ( childSection) ?? "";
 
             childSection = section.GetSection ( "Color" );
-            string color = GetterFromJson.GetSectionValue ( childSection );
+            string color = GetterFromJson.GetSectionValue ( childSection) ?? "";
             
             childSection = section.GetSection ( "GeometricElementName" );
-            string geometricElement = GetterFromJson.GetSectionValue ( childSection );
+            string geometricElement = GetterFromJson.GetSectionValue ( childSection) ?? "";
 
             InsideImage image = 
                        new InsideImage ( path, width , height, color, geometricElement, topOffset, leftOffset );
@@ -303,9 +314,9 @@ namespace DataGateway
             foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
                 string jsonPath = template.Value;
-                string backgroundPath = GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath );
-                //string directoryPath = System.IO.Directory.GetCurrentDirectory ( );
-                //string imagePath = directoryPath + _resourceFolder + backgroundPath;
+                string backgroundPath = 
+                    GetterFromJson.GetSectionValue ( new List<string> { "BackgroundImagePath" } , jsonPath) ?? "";
+
                 string imagePath = _resourceFolder + backgroundPath;
                 bool isFound = true;
 

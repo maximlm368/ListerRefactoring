@@ -194,9 +194,8 @@ class Program
     public static void Main ( string [] args )
     {
         InstallFonts ();
-        Thread.Sleep (1000);
 
-        bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
+        //bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
 
         try
         {

@@ -172,9 +172,14 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static double TranslateIntoDouble ( this string possibleDouble )
+        public static double TranslateToDoubleOrZeroIfNot ( this string possibleDouble )
         {
             double result = 0;
+
+            if ( possibleDouble == null )
+            {
+                return 0;
+            }
 
             try
             {
@@ -189,10 +194,15 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<int> TranslateIntoIntList ( this string possibleArray )
+        public static List <int> TranslateIntoIntList ( this string possibleArray )
         {
             List<int> result = new List<int> ( );
             int startPosition = 0;
+
+            if ( possibleArray == null ) 
+            {
+                return result;
+            }
 
             for ( int index = 0;   index < possibleArray.Length;   index++ ) 
             {

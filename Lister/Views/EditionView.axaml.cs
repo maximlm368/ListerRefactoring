@@ -183,9 +183,7 @@ namespace Lister.Views
             var dialog = new DialogWindow (this);
             DialogWindow.IsOpen = true;
 
-
             dialog.Message = _question;
-            //Task result = dialog.ShowDialog (MainWindow.Window);
 
             Task result = dialog.ShowDialog ( App.MainWindow );
 

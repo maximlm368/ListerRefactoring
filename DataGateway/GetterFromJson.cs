@@ -44,9 +44,14 @@ namespace DataGateway
         }
 
 
-        public static IEnumerable<IConfigurationSection> GetIncludedItemsOfSection
+        public static IEnumerable <IConfigurationSection> GetIncludedItemsOfSection
                                                                           ( List<string> keyPathInJson, string jsonPath )
         {
+            if ( (keyPathInJson == null)   ||   (keyPathInJson.Count < 1) ) 
+            {
+                return Enumerable.Empty<IConfigurationSection> ();
+            }
+
             IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
             string sectionName = keyPathInJson [0];
             IConfigurationSection section = configRoot.GetSection (sectionName);
@@ -61,21 +66,13 @@ namespace DataGateway
             }
 
             IConfigurationSection items = section.GetSection ("Items");
-            IEnumerable<IConfigurationSection> targetChildren = items.GetChildren ();
+            IEnumerable <IConfigurationSection> targetChildren = items.GetChildren ();
 
             foreach ( IConfigurationSection unit   in   targetChildren )
             {
                 IConfigurationSection unitedSection = unit.GetSection ("United");
-                IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
+                IEnumerable <IConfigurationSection> unitedSections = unitedSection.GetChildren ();
             }
-
-            return targetChildren;
-        }
-
-
-        public static IEnumerable <IConfigurationSection> GetChildrenOfSection ( IConfigurationSection parent )
-        {
-            IEnumerable<IConfigurationSection> targetChildren = parent.GetChildren ();
 
             return targetChildren;
         }

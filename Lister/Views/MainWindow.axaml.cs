@@ -25,11 +25,24 @@ public partial class MainWindow : Window
 {
     public static readonly Color white = new Color (255, 255, 255, 255);
     public static readonly Color black = new Color (255, 0, 0, 0);
+    private static readonly int _onScreenRestriction = 50;
 
     private static PixelPoint _position;
 
     public static IStorageProvider CommonStorageProvider { get; private set; }
     internal static MainWindow Window { get; private set; }
+
+    private Window _modalWindow;
+    internal Window ModalWindow 
+    {
+        get { return _modalWindow; }
+
+        set 
+        {
+            _modalWindow = value;
+        } 
+    }
+
     internal static double HeightfDifference { get; private set; }
 
     private ModernMainView _mainView;
@@ -56,22 +69,14 @@ public partial class MainWindow : Window
 
         this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
-        this.PositionChanged += RestrictPosition;
+        this.PositionChanged += HandlePositionChange;
 
         Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
 
         CanResize = true;
 
-        //this.PositionChanged += OnPositionChanged;
-        //_position = Position;
-
-       // this.Deactivated += OnPositionChanged;
-        //this.Hide();
-
-        
-
-        //Icon = new WindowIcon ("D:\\MML\\Lister\\Lister.Desktop\\bin\\Debug\\net8.0\\win-x64\\Resources\\listerIcon.svg");
+        _position = Position;
     }
 
 
@@ -189,7 +194,15 @@ public partial class MainWindow : Window
     }
 
 
-    internal void RestrictPosition ( object sender, PixelPointEventArgs args )
+    internal void HandlePositionChange ( object sender, PixelPointEventArgs args )
+    {
+        RestrictPosition (sender, args);
+        HoldDialogIfExistsOnLinux (sender, args);
+        _position = Position;
+    }
+
+
+    private void RestrictPosition ( object sender, PixelPointEventArgs args )
     {
         PixelPoint currentPosition = this.Position;
 
@@ -200,10 +213,23 @@ public partial class MainWindow : Window
         int screenHeight = screen.WorkingArea.Height;
         int screenWidth = screen.WorkingArea.Width;
 
-        if ( currentPosition.Y > (screenHeight - 50) ) 
+        if ( currentPosition.Y > ( screenHeight - _onScreenRestriction ) )
         {
-            this.Position = new PixelPoint (currentPosition.X, ( screenHeight - 50 ));
+            this.Position = new PixelPoint (currentPosition.X, ( screenHeight - _onScreenRestriction ));
         }
+    }
+
+
+    private void HoldDialogIfExistsOnLinux ( object sender, PixelPointEventArgs args )
+    {
+        if ( ModalWindow == null ) 
+        {
+            return;
+        }
+
+        PixelPoint delta = Position - _position;
+
+        ModalWindow.Position += delta;
     }
 }
 

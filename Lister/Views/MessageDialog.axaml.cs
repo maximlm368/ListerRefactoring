@@ -63,6 +63,9 @@ namespace Lister.Views
             CanResize = false;
 
             Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
+
+            MainWindow mainWindow = App.MainWindow as MainWindow;
+            mainWindow.ModalWindow = this;
         }
 
 
