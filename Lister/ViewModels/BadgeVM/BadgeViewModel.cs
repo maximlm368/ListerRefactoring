@@ -276,7 +276,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private BadgeViewModel ( BadgeViewModel badge )
+    internal BadgeViewModel ( BadgeViewModel badge )
     {
         Id = badge.Id;
 

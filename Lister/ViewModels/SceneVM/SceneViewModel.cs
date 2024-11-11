@@ -238,7 +238,8 @@ namespace Lister.ViewModels
                     BadgeViewModel badge = new BadgeViewModel (requiredBadges [index], BadgeCount);
                     allBadges.Add (badge);
 
-                    BadgeViewModel printableBadge = new BadgeViewModel (requiredBadges [index], BadgeCount);
+                    //BadgeViewModel printableBadge = new BadgeViewModel (requiredBadges [index], BadgeCount);
+                    BadgeViewModel printableBadge = new BadgeViewModel (badge);
                     allPrintableBadges.Add (printableBadge);
 
                     if ( ! badge.IsCorrect )
@@ -297,7 +298,8 @@ namespace Lister.ViewModels
             Person goalPerson = _personChoosingVM.ChosenPerson;
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
-            BadgeViewModel printableBadge = new BadgeViewModel (requiredBadge, BadgeCount);
+            //BadgeViewModel printableBadge = new BadgeViewModel (requiredBadge, BadgeCount);
+            BadgeViewModel printableBadge = new BadgeViewModel (goalVMBadge);
 
             if ( ! goalVMBadge.IsCorrect )
             {

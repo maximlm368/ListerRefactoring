@@ -195,8 +195,8 @@ class ConverterToPdf
         foreach ( TextLineViewModel textLine   in   textLines )
         {
             string text = textLine.Content;
-            float paddingLeft = ( float ) textLine.LeftOffset + ( float ) ( renderable.Scale );
-            float paddingTop = ( float ) textLine.TopOffset - ( float ) ( renderable.Scale * 2 );
+            float paddingLeft = ( float ) textLine.LeftOffset; //+ ( float ) ( renderable.Scale );
+            float paddingTop = ( float ) textLine.TopOffset; // - ( float ) ( renderable.Scale * 2 );
             string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
