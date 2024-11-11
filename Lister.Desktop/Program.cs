@@ -102,6 +102,9 @@ class Program
         fontFiles.Add ("fontawesome-webfont.ttf");
         fontNames.Add ("FontAwesome");
 
+        fontFiles = fontFiles.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
+        fontNames = fontNames.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
+
         string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
         string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
 
@@ -109,6 +112,13 @@ class Program
         {
             string fontFile = fontFiles [index];
             string fontName = fontNames [index];
+
+            bool fontIsEmpty = ( fontFile == null )   ||   (fontName == null);
+
+            if (fontIsEmpty) 
+            {
+                continue;
+            }
 
             string fontPath = Path.Combine (windowsFontsPath, $"{fontFile}");
             string source = resourcePath + fontFile;
@@ -155,6 +165,13 @@ class Program
             string fontFile = fontFiles [index];
             string fontName = fontNames [index];
 
+            bool fontIsEmpty = ( fontFile == null )   ||   ( fontName == null );
+
+            if ( fontIsEmpty )
+            {
+                continue;
+            }
+
             string fontPath = Path.Combine (linuxFontsPath, $"{fontFile}");
             string source = resourcePath + fontFile;
 
@@ -167,28 +184,6 @@ class Program
             App.ExecuteBashCommand ( fontInstallingCommand );
         }
     }
-
-
-    //public static void ExecuteBashCommand ( string command )
-    //{
-    //    using ( Process process = new Process () )
-    //    {
-    //        process.StartInfo = new ProcessStartInfo
-    //        {
-    //            FileName = "/bin/bash",
-    //            Arguments = $"-c \"{command}\"",
-    //            RedirectStandardOutput = true,
-    //            UseShellExecute = false,
-    //            CreateNoWindow = true
-    //        };
-
-    //        process.Start ();
-
-    //        //string result = process.StandardOutput.ReadToEnd ();
-
-    //        process.WaitForExit ();
-    //    }
-    //}
 
 
 

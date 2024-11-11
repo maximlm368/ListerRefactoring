@@ -46,10 +46,14 @@ namespace Lister.Views
         }
 
 
-        public MessageDialog ( ShowingDialog caller )
+        public MessageDialog ()
         {
             InitializeComponent ();
+        }
 
+
+        public MessageDialog ( ShowingDialog caller ) : this()
+        {
             Caller = caller;
             _vm = new MessageViewModel ();
             DataContext = _vm;

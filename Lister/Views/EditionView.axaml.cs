@@ -49,25 +49,14 @@ namespace Lister.Views
         public bool IconIsTapped { get; private set; }
 
 
-        //public BadgeEditorView ()
-        //{
-        //    InitializeComponent ();
-        //    //this.DataContext = new BadgeEditorViewModel ();
-            
-        //    this.DataContext = App.services.GetRequiredService <BadgeEditorViewModel> ();
-        //    _vm = DataContext as BadgeEditorViewModel;
-
-        //    Back.FocusAdorner = null;
-        //    editionPanel.FocusAdorner = null;
-
-        //    //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
-        //}
-
-
-        public BadgeEditorView ( bool newEditorIsNeeded, int incorrectBadgesAmmount )
+        public BadgeEditorView ()
         {
             InitializeComponent ();
+        }
 
+
+        public BadgeEditorView ( bool newEditorIsNeeded, int incorrectBadgesAmmount ) : this()
+        {
             if ( newEditorIsNeeded   ||   _vm == null )
             {
                 BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount);

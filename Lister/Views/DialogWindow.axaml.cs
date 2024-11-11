@@ -60,10 +60,14 @@ namespace Lister.Views
         internal string Result { get; private set; }
 
 
-        public DialogWindow ( ShowingDialog caller )
+        public DialogWindow ( )
         {
             InitializeComponent ();
+        }
 
+
+        public DialogWindow ( ShowingDialog caller ) : this()
+        {
             _caller = caller;
             _viewModel = new DialogViewModel (this);
             DataContext = _viewModel;

@@ -33,9 +33,6 @@ namespace Lister.Views
             _vm = ( TemplateChoosingViewModel ) DataContext;
             Loaded += OnLoaded;
             ActualThemeVariantChanged += ThemeChanged;
-
-            //templateChoosing.IsEnabled = false;
-
         }
 
 

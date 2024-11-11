@@ -19,10 +19,14 @@ public partial class PrintDialog : BaseWindow
     private PrintDialogViewModel _vm;
 
 
-    public PrintDialog ( int pageAmount, PrintAdjustingData printAdjusting )
+    public PrintDialog ()
     {
         InitializeComponent ();
+    }
 
+
+    public PrintDialog ( int pageAmount, PrintAdjustingData printAdjusting ) : this()
+    {
         PrintDialogViewModel printMV = new PrintDialogViewModel ();
         DataContext = printMV;
         _vm = printMV;

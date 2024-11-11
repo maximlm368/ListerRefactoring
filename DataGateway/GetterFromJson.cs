@@ -67,21 +67,13 @@ namespace DataGateway
             {
                 IConfigurationSection unitedSection = unit.GetSection ("United");
                 IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
-
-                foreach ( IConfigurationSection sect   in   unitedSections )
-                {
-                    string jjkj = sect.Value;
-
-                    int fdd = 0;
-                }
             }
-
 
             return targetChildren;
         }
 
 
-        public static IEnumerable<IConfigurationSection> GetChildrenOfSection ( IConfigurationSection parent )
+        public static IEnumerable <IConfigurationSection> GetChildrenOfSection ( IConfigurationSection parent )
         {
             IEnumerable<IConfigurationSection> targetChildren = parent.GetChildren ();
 

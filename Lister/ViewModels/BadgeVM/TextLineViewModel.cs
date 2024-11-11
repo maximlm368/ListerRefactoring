@@ -157,6 +157,14 @@ namespace Lister.ViewModels
         {
             _alignmentName = text.Alignment;
             DataSource = text;
+
+            bool fontSizeIsOutOfRange = ( text.FontSize < _minFontSizeLimit )   ||   ( text.FontSize > _maxFontSizeLimit );
+
+            if ( fontSizeIsOutOfRange ) 
+            {
+            
+            }
+
             FontSize = text.FontSize;
             FontFile = text.FontFile;
 
