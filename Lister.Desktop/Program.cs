@@ -99,8 +99,11 @@ class Program
 
     private static void SetFontsOnWindow ( List<string> fontFiles, List<string> fontNames, string resourcePath )
     {
-        fontFiles.Add ("fontawesome-webfont.ttf");
-        fontNames.Add ("FontAwesome");
+        //fontFiles.Add ("fontawesome-webfont.ttf");
+        //fontNames.Add ("FontAwesome");
+
+        fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
+        fontNames.Add ("Font Awesome 6 Free Solid");
 
         fontFiles = fontFiles.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
         fontNames = fontNames.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
@@ -194,6 +197,7 @@ class Program
     public static void Main ( string [] args )
     {
         InstallFonts ();
+        Thread.Sleep (1000);
 
         //bool isWithoutCollector = GC.TryStartNoGCRegion (500000000);
 

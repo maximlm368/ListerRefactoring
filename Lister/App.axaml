@@ -37,9 +37,9 @@
 		</Style>
 
 	</Application.Styles>
-
+	
 	<Application.Resources>
-		<FontFamily x:Key="fa"> avares://Assets/fontawesome-webfont.ttf # FontAwesome</FontFamily>
+		<FontFamily x:Key="fa">avares://Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
 	</Application.Resources>
 
 </Application>
