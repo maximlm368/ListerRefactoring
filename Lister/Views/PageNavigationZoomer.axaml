@@ -42,7 +42,7 @@
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseFirstPage}"
 					ToolTip.Tip="На первую страницу"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xf048;"/>
 
 				<Button
@@ -56,7 +56,7 @@
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualisePreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xf0d9;" />
 
 				<TextBox
@@ -100,7 +100,7 @@
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseNextPage}"
 					ToolTip.Tip="На следующую страницу"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xf0da;" />
 
 				<Button
@@ -114,7 +114,7 @@
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = VisualiseLastPage}"
 					ToolTip.Tip="На последнюю страницу"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xf051;" />
 
 			</Grid>
@@ -140,7 +140,7 @@
 					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOut}"
 					ToolTip.Tip="Уменьшить масштаб"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xf068;" />
 
 				<Label
@@ -171,7 +171,7 @@
 					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOn}"
 					ToolTip.Tip="Увеличить масштаб"
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#x2b;" />
 				
 			</Grid>

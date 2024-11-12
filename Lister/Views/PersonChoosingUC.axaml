@@ -201,7 +201,7 @@
 			Focusable="False"
 			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 			Tapped="DropOrPickUpPersons"
-			FontFamily="Font Awesome 6 Free Solid"
+			FontFamily="{StaticResource FA}"
 			Content="&#xf0d7;"/>
 
 		<Label

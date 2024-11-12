@@ -102,8 +102,8 @@ class Program
         //fontFiles.Add ("fontawesome-webfont.ttf");
         //fontNames.Add ("FontAwesome");
 
-        fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
-        fontNames.Add ("Font Awesome 6 Free Solid");
+        //fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
+        //fontNames.Add ("Font Awesome 6 Free Solid");
 
         fontFiles = fontFiles.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
         fontNames = fontNames.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
@@ -147,16 +147,14 @@ class Program
         //fontFiles.Add ("fontawesome-webfont.ttf");
         //fontNames.Add ("FontAwesome");
 
-        fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
-        fontNames.Add ("Font Awesome 6 Free Solid");
+        //fontFiles.Add ("Font Awesome 6 Free-Solid-900.otf");
+        //fontNames.Add ("Font Awesome 6 Free Solid");
 
         fontFiles = fontFiles.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
         fontNames = fontNames.Distinct ( StringComparer.OrdinalIgnoreCase ).ToList ();
 
         string userDirectory = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
         string linuxFontsPath = userDirectory + "/.local/share/fonts/";
-
-        //string linuxFontsPath = "/home/maxim/.local/share/fonts/";
 
         if ( ! Directory.Exists(linuxFontsPath) ) 
         {
@@ -185,6 +183,8 @@ class Program
 
             string fontInstallingCommand = "fc-cache -f -v";
             App.ExecuteBashCommand ( fontInstallingCommand );
+
+            QuestPDF.Drawing.FontManager.RegisterFontWithCustomName (fontName, File.OpenRead (fontPath));
         }
     }
 

@@ -44,7 +44,7 @@
 
 			<StackPanel Orientation="Horizontal">
 				<Label
-					FontFamily="Font Awesome 6 Free Solid"
+					FontFamily="{StaticResource FA}"
 					Content="&#xE2CA;"
 					Width="30"
 					Height="32"

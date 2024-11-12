@@ -39,7 +39,7 @@
 	</Application.Styles>
 	
 	<Application.Resources>
-		<FontFamily x:Key="fa">avares://Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
+		<FontFamily x:Key="FA">/Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
 	</Application.Resources>
 
 </Application>

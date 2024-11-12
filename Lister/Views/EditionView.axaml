@@ -49,7 +49,7 @@
 
 				<StackPanel Orientation="Horizontal">
 					<Label
-						FontFamily="Font Awesome 6 Free Solid"
+						FontFamily="{StaticResource FA}"
 						Content="&#xf52b;"
 						Width="25"
 						Height="32"
@@ -204,7 +204,7 @@
 								Width="32"
 								Height="32"
 								FontSize="16"
-								FontFamily="Font Awesome 6 Free Solid"
+								FontFamily="{StaticResource FA}"
 								Content="&#xf068;"
 								ToolTip.Tip="Уменьшить шрифт"
 								KeyDown="ToSide"
@@ -238,7 +238,7 @@
 								Width="32"
 								Height="32"
 								FontSize="16"
-								FontFamily="Font Awesome 6 Free Solid"
+								FontFamily="{StaticResource FA}"
 								Content="&#x2b;"
 								ToolTip.Tip="Увеличить шрифт"
 								KeyDown="ToSide"
@@ -282,7 +282,7 @@
 
 							<StackPanel Orientation="Horizontal">
 								<Label
-									FontFamily="Font Awesome 6 Free Solid"
+									FontFamily="{StaticResource FA}"
 									Content="&#xf529;"
 									Width="20"
 									Height="32"
@@ -313,7 +313,7 @@
 
 							<StackPanel Orientation="Horizontal">
 								<Label
-									FontFamily="Font Awesome 6 Free Solid"
+									FontFamily="{StaticResource FA}"
 									Content="&#xf2ea;"
 									Width="20"
 									Height="32"
@@ -459,7 +459,7 @@
 						Height="30"
 						Margin="4,0"
 						Padding="0,5"
-						FontFamily="Font Awesome 6 Free Solid"
+						FontFamily="{StaticResource FA}"
 						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
 						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
 						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}" />
@@ -479,7 +479,7 @@
 								Height="32"
 								Margin="2,0"
 								Padding="7,9"
-								FontFamily="Font Awesome 6 Free Solid"
+								FontFamily="{StaticResource FA}"
 								Content="&#xf0b0;"
 								Background="{Binding  Path=SwitcherBackground,  Mode=OneWay}"
 								ToolTip.Tip="{Binding  Path=SwitcherTip,  Mode=OneWay}"
@@ -532,7 +532,7 @@
 						Margin ="15,5"
 						FontSize="20"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						FontFamily="Font Awesome 6 Free Solid"
+						FontFamily="{StaticResource FA}"
 						Command="{Binding   Path = ToPrevious}"
 						ToolTip.Tip="К предыдущему бейджу"
 						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
@@ -618,7 +618,7 @@
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Height="15"
 								Padding="2,2"
-								FontFamily="Font Awesome 6 Free Solid"
+								FontFamily="{StaticResource FA}"
 								Content="&#xF077;"
 								FontSize="9"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
@@ -655,7 +655,7 @@
 								Height="15"
 								Padding="2,2"
 								FontSize="9"
-								FontFamily="Font Awesome 6 Free Solid"
+								FontFamily="{StaticResource FA}"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Content="&#xF078;"
 								Command="{Binding Path=ScrollDown}"/>
@@ -675,7 +675,7 @@
 						Margin ="15,5"
 						FontSize="20"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						FontFamily="Font Awesome 6 Free Solid"
+						FontFamily="{StaticResource FA}"
 						Command="{Binding   Path = ToNext}"
 						ToolTip.Tip="К следующему бейджу"
 						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
@@ -728,7 +728,7 @@
 				FontSize="16"
 				Padding="7,7"
 				Command="{Binding   Path = ToFirst}"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#xf048;"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
@@ -743,7 +743,7 @@
 				FontSize="20"
 				Padding="5,5"
 				Command="{Binding   Path = ToPrevious}"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#xf0d9;"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
@@ -788,7 +788,7 @@
 				FontSize="20"
 				Padding="8,5"
 				Command="{Binding   Path = ToNext}"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#xf0da;"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
@@ -803,7 +803,7 @@
 				FontSize="16"
 				Padding="6,7"
 				Command="{Binding   Path = ToLast}"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#xf051;"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
@@ -819,7 +819,7 @@
 				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOut}"
 				ToolTip.Tip="Уменьшить масштаб"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#xf068;"/>
 
 			<Label
@@ -849,7 +849,7 @@
 				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOn}"
 				ToolTip.Tip="Увеличить масштаб"
-				FontFamily="Font Awesome 6 Free Solid"
+				FontFamily="{StaticResource FA}"
 				Content="&#x2b;" />
 
 
