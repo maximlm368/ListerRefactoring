@@ -12,28 +12,39 @@ namespace DataGateway
 {
     public static class GetterFromJson
     {
-        //private static IConfigurationRoot configRoot;
         private static string configFilePath;
         private static string attributeSection;
 
 
         public static string GetSectionValue ( List<string> keyPathInJson, string jsonPath )
         {
-            IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
-            string sectionName = keyPathInJson [0];
-            IConfigurationSection section = configRoot.GetSection (sectionName);
-
-            if ( keyPathInJson.Count > 1 ) 
+            if ( ( keyPathInJson == null )   ||   ( keyPathInJson.Count < 1 ) )
             {
-                for ( int step = 1;   step < keyPathInJson.Count;   step++ )
-                {
-                    sectionName = keyPathInJson [step];
-                    section = section.GetSection (sectionName);
-                }
+                return string.Empty;
             }
 
-            string templateName = section.Value;
-            return templateName;
+            try
+            {
+                IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
+                string sectionName = keyPathInJson [0];
+                IConfigurationSection section = configRoot.GetSection (sectionName);
+
+                if ( keyPathInJson.Count > 1 )
+                {
+                    for ( int step = 1; step < keyPathInJson.Count; step++ )
+                    {
+                        sectionName = keyPathInJson [step];
+                        section = section.GetSection (sectionName);
+                    }
+                }
+
+                string templateName = section.Value;
+                return templateName;
+            }
+            catch ( System.IO.InvalidDataException ex )
+            {
+                return string.Empty;
+            }
         }
 
 
@@ -52,29 +63,36 @@ namespace DataGateway
                 return Enumerable.Empty<IConfigurationSection> ();
             }
 
-            IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
-            string sectionName = keyPathInJson [0];
-            IConfigurationSection section = configRoot.GetSection (sectionName);
-
-            if ( keyPathInJson.Count > 1 )
+            try 
             {
-                for ( int step = 1;   step < keyPathInJson.Count;   step++ )
+                IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
+                string sectionName = keyPathInJson [0];
+                IConfigurationSection section = configRoot.GetSection (sectionName);
+
+                if ( keyPathInJson.Count > 1 )
                 {
-                    sectionName = keyPathInJson [step];
-                    section = section.GetSection (sectionName);
+                    for ( int step = 1; step < keyPathInJson.Count; step++ )
+                    {
+                        sectionName = keyPathInJson [step];
+                        section = section.GetSection (sectionName);
+                    }
                 }
+
+                IConfigurationSection items = section.GetSection ("Items");
+                IEnumerable<IConfigurationSection> targetChildren = items.GetChildren ();
+
+                foreach ( IConfigurationSection unit in targetChildren )
+                {
+                    IConfigurationSection unitedSection = unit.GetSection ("United");
+                    IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
+                }
+
+                return targetChildren;
             }
-
-            IConfigurationSection items = section.GetSection ("Items");
-            IEnumerable <IConfigurationSection> targetChildren = items.GetChildren ();
-
-            foreach ( IConfigurationSection unit   in   targetChildren )
+            catch ( Exception ex ) 
             {
-                IConfigurationSection unitedSection = unit.GetSection ("United");
-                IEnumerable <IConfigurationSection> unitedSections = unitedSection.GetChildren ();
+                return Enumerable.Empty<IConfigurationSection> ();
             }
-
-            return targetChildren;
         }
 
 
@@ -82,6 +100,7 @@ namespace DataGateway
         {
             var builder = new ConfigurationBuilder ();
             builder.AddJsonFile (jsonPath);
+
             return builder.Build ();
         }
     }

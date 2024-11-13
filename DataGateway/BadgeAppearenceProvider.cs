@@ -38,17 +38,17 @@ namespace DataGateway
             {
                 string jsonPath = fileInfo.FullName;
                 string templateName = GetterFromJson.GetSectionValue ( new List<string> { "TemplateName" }, jsonPath) ?? "";
-                bool hasNameExist = ! string.IsNullOrEmpty ( templateName );
+                bool nameShouldBeAdded = ! string.IsNullOrEmpty ( templateName )   &&   ! _nameAndJson.ContainsKey ( templateName );
 
-                if ( hasNameExist )
+                if ( nameShouldBeAdded )
                 {
                     _nameAndJson.Add ( templateName, jsonPath );
                 }
 
                 string color = GetterFromJson.GetSectionValue (new List<string> { "IncorrectLineBackground" }, jsonPath) ?? "";
-                hasNameExist = ! string.IsNullOrEmpty (templateName);
+                bool colorShouldBeAdded = nameShouldBeAdded   &&   ! string.IsNullOrEmpty (templateName);
 
-                if ( hasNameExist   &&   hasNameExist )
+                if ( colorShouldBeAdded )
                 {
                     _nameAndColor.Add (templateName, color);
                 }
