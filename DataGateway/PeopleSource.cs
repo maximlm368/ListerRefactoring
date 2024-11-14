@@ -52,7 +52,7 @@ namespace DataGateway
             }
 
             Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
-            Encoding encoding = Encoding.GetEncoding (1251);
+            //Encoding encoding = Encoding.GetEncoding (1251);
 
             using  XLWorkbook workbook = new XLWorkbook (filePath);
             IXLWorksheet worksheet = workbook.Worksheet (_xslxWorkSheetNum);
@@ -96,7 +96,7 @@ namespace DataGateway
             if ( extentionIsXSLX )
             {
                 Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
-                Encoding encoding = Encoding.GetEncoding (1251);
+                //Encoding encoding = Encoding.GetEncoding (1251);
 
                 using XLWorkbook workbook = new XLWorkbook (filePath);
                 IXLWorksheet worksheet = workbook.Worksheet (_xslxWorkSheetNum);

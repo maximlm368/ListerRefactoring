@@ -137,26 +137,6 @@ public partial class App : Avalonia.Application
             return result;
         }
     }
-
-
-
-    public static void InstallFont ( string FontName, string FullFontName )
-    {
-        string localAppDataPath = Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData);
-        string windowsFontsPath = Path.Combine (localAppDataPath, "Microsoft", "Windows", "Fonts");
-        string FontPath = Path.Combine (windowsFontsPath, $"{FontName}.ttf");
-
-        string source = "D:\\MML\\Lister\\Lister\\Assets\\Kramola.ttf";
-
-        if ( ! File.Exists(FontPath) ) 
-        {
-            File.Copy (source, FontPath);
-        }
-
-        RegistryKey fontKey = Registry.CurrentUser.CreateSubKey (@"Software\Microsoft\Windows NT\CurrentVersion\Fonts");
-        fontKey.SetValue ($"{FullFontName} (TrueType)", FontPath);
-        fontKey.Close ();
-    }
 }
 
 

@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="350"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
              x:Class="Lister.Views.PersonChoosingUserControl"
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
@@ -39,11 +39,11 @@
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				Margin="0,2"
 				Height="32"
-				Width="447" />
+				Width="477" />
 
 			<TextBox
 				Name="personTextBox"
-				Width="416"
+				Width="446"
 				Height="32"
 				FontSize="16"
 				Padding="10,4"
@@ -73,14 +73,14 @@
 
 					<uc:CustomViewbox
 						Name="visiblePersons"
-						Width="445"
+						Width="475"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						PointerWheelChanged="ScrollByWheel"
 						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}">
 					
 					<Canvas
 						Name="listFrame"
-						Width="447"
+						Width="477"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 

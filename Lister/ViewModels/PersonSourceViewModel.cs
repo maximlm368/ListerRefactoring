@@ -19,6 +19,10 @@ using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
 using DataGateway;
 using static SkiaSharp.HarfBuzz.SKShaper;
+using DynamicData;
+using ExCSS;
+using Avalonia;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 
 namespace Lister.ViewModels
 {
@@ -31,10 +35,24 @@ namespace Lister.ViewModels
         private static readonly string _filePickerTitle = "Выбор файла";
         private static readonly List<string> _xslxHeaders = new List<string> () { "№", "Фамилия", "Имя", "Отчество"
                                                                                 , "Отделение", "Должность" };
-        
+
         private IUniformDocumentAssembler _uniformAssembler;
         private PersonChoosingViewModel _personChoosingVM;
         private PersonSourceUserControl _view;
+
+        private FilePickerOpenOptions _filePickerOptions;
+        private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new ()
+        {
+            Title = _filePickerTitle,
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType ("Источники данных")
+                {
+                    Patterns = ["*.csv", "*.xlsx"]
+                }
+            ]
+        };
 
         private bool _pathIsFromKeeper;
         private string _sourceFilePath;
@@ -43,35 +61,15 @@ namespace Lister.ViewModels
             get { return _sourceFilePath; }
             private set
             {
-                string path = SetCorrespondingPersons ( value );
+                string path = SetCorrespondingPersons (value);
                 _pathIsFromKeeper = false;
 
-                if ((SourceFilePath != null)   &&   (SourceFilePath != string.Empty)   &&   (path == string.Empty)) 
+                if ( ( SourceFilePath != null )   &&   ( SourceFilePath != string.Empty )   &&   ( path == string.Empty ) )
                 {
                     path = SourceFilePath;
                 }
 
-                this.RaiseAndSetIfChanged ( ref _sourceFilePath , path , nameof ( SourceFilePath ) );
-            }
-        }
-
-        private bool _editorIsEnable;
-        internal bool EditorIsEnable
-        {
-            get { return _editorIsEnable; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _editorIsEnable, value, nameof (EditorIsEnable));
-            }
-        }
-
-        private SolidColorBrush _borderBrush;
-        internal SolidColorBrush BorderBrush
-        {
-            get { return _borderBrush; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _borderBrush, value, nameof (BorderBrush));
+                this.RaiseAndSetIfChanged (ref _sourceFilePath, path, nameof (SourceFilePath));
             }
         }
 
@@ -79,29 +77,17 @@ namespace Lister.ViewModels
 
 
         public PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
-                                                                    , PersonChoosingViewModel personChoosing ) 
+                                                                    , PersonChoosingViewModel personChoosing )
         {
             _uniformAssembler = singleTypeDocumentAssembler;
             _personChoosingVM = personChoosing;
-            EditorIsEnable = false;
             peopleSettingOccured = false;
         }
 
 
-        internal void ChangeAccordingTheme ( string theme )
+        internal void TrySetPath ( Type passerType, string? path )
         {
-            BorderBrush = new SolidColorBrush (MainWindow.black);
-
-            if ( theme == "Dark" )
-            {
-                BorderBrush = new SolidColorBrush (MainWindow.white);
-            }
-        }
-
-
-        internal void TrySetPath ( Type passerType, string ? path )
-        {
-            bool pathExists = (( path != null )   &&   ( path != string.Empty ));
+            bool pathExists = ( ( path != null )   &&   ( path != string.Empty ) );
 
             if ( pathExists )
             {
@@ -117,7 +103,6 @@ namespace Lister.ViewModels
                     catch ( System.IO.IOException ex )
                     {
                         SourceFilePath = null;
-                        EditorIsEnable = false;
 
                         return;
                     }
@@ -141,14 +126,12 @@ namespace Lister.ViewModels
 
                     _pathIsFromKeeper = true;
                     SourceFilePath = path;
-                    EditorIsEnable = true;
                 }
             }
-            else 
+            else
             {
                 _pathIsFromKeeper = false;
                 SourceFilePath = null;
-                EditorIsEnable = false;
             }
         }
 
@@ -159,54 +142,40 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ChooseFile ()
+        internal async void ChooseFile ()
         {
-            FilePickerOpenOptions options = SetFilePikerOptions ();
-            Task <IReadOnlyList <IStorageFile>> chosenFile = MainWindow.CommonStorageProvider.OpenFilePickerAsync (options);
-            TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
+            IReadOnlyList <IStorageFile> files = await MainWindow.CommonStorageProvider.OpenFilePickerAsync (FilePickerOptions);
 
-            chosenFile.ContinueWith
-            (
-                task =>
+            if ((files.Count == 1)   &&   ( files [0] is not null ))
+            {
+                string path = files [0].Path.LocalPath;
+
+                bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
+
+                if ( ! fileIsCorrect )
                 {
-                    if ( task.Result. Count > 0 )
+                    DeclineChosenFile (path);
+
+                    if ( ( SourceFilePath != null )   &&   ( SourceFilePath != string.Empty ) )
                     {
-                        string result = task.Result [0].Path.ToString ();
-                        int uriTypeLength = App.ResourceUriType. Length;
-                        result = result.Substring (uriTypeLength, result.Length - uriTypeLength);
-
-                        if ( ( result != null )   &&   (result != string.Empty) )
-                        {
-                            bool fileIsCorrect = CheckWhetherCorrectIfXSLX (result);
-
-                            if ( ! fileIsCorrect )
-                            {
-                                DeclineChosenFile (result);
-
-                                if ( ( SourceFilePath != null ) && ( SourceFilePath != string.Empty ) )
-                                {
-                                    SwitchPersonChoosingEnabling (true);
-                                }
-
-                                return;
-                            }
-
-                            SourceFilePath = result;
-                            TrySavePathInKeepingFile ();
-                            SwitchPersonChoosingEnabling (true);
-                        }
-                        else 
-                        {
-                            SwitchPersonChoosingEnabling (false);
-                        }
+                        SwitchPersonChoosingEnabling (true);
                     }
+
+                    return;
                 }
-                , uiScheduler
-            );
+
+                SourceFilePath = path;
+                TrySavePathInKeepingFile ();
+                SwitchPersonChoosingEnabling (true);
+            }
+            else
+            {
+                SwitchPersonChoosingEnabling (false);
+            }
         }
 
 
-        private void TrySavePathInKeepingFile () 
+        private void TrySavePathInKeepingFile ()
         {
             string workDirectory = @"./";
             DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
@@ -225,7 +194,6 @@ namespace Lister.ViewModels
 
         private void SwitchPersonChoosingEnabling ( bool shouldEnable )
         {
-            EditorIsEnable = shouldEnable;
             _personChoosingVM.TextboxIsReadOnly = ! shouldEnable;
             _personChoosingVM.TextboxIsFocusable = shouldEnable;
         }
@@ -241,7 +209,7 @@ namespace Lister.ViewModels
 
                 List<string> headers = headersSource.GetRow (path, 0);
 
-                for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
+                for ( int index = 0; index < _xslxHeaders.Count; index++ )
                 {
                     bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
 
@@ -269,64 +237,9 @@ namespace Lister.ViewModels
         }
 
 
-        private FilePickerOpenOptions SetFilePikerOptions ( )
-        {
-            FilePickerOpenOptions result = new FilePickerOpenOptions ();
-
-            FilePickerFileType csvFileType = new FilePickerFileType ("Csv")
-            {
-                Patterns = new [] { "*.csv" },
-                AppleUniformTypeIdentifiers = new [] { "public.image" },
-                MimeTypes = new [] { "image/*" }
-            };
-
-            FilePickerFileType xlsxFileType = new FilePickerFileType ("Xlsx")
-            {
-                Patterns = new [] { "*.xlsx" },
-                AppleUniformTypeIdentifiers = new [] { "public.image" },
-                MimeTypes = new [] { "image/*" }
-            };
-
-            List<FilePickerFileType> fileExtentions = [];
-            fileExtentions.Add (csvFileType);
-            fileExtentions.Add (xlsxFileType);
-
-            result.FileTypeFilter = new ReadOnlyCollection<FilePickerFileType> (fileExtentions);
-            result.Title = _filePickerTitle;
-            result.AllowMultiple = false;
-
-            return result;
-        }
-
-
-        internal void OpenEditor ( )
-        {
-            string filePath = SourceFilePath;
-
-            if ( string.IsNullOrWhiteSpace (SourceFilePath) )
-            {
-                return;
-            }
-
-            ProcessStartInfo procInfo = new ProcessStartInfo ()
-            {
-                FileName = SourceFilePath,
-                UseShellExecute = true
-            };
-
-            try
-            {
-                Process.Start (procInfo);
-            }
-            catch ( System.ComponentModel.Win32Exception ex )
-            {
-            }
-        }
-
-
         private string SetCorrespondingPersons ( string path )
         {
-            bool valueIsSuitable = ( path != null )   &&   ( path != string.Empty );
+            bool valueIsSuitable = ! string.IsNullOrWhiteSpace(path);
 
             if ( valueIsSuitable )
             {
@@ -362,3 +275,8 @@ namespace Lister.ViewModels
         }
     }
 }
+
+
+//string path = files [0].Path.ToString ();
+//int uriTypeLength = App.ResourceUriType.Length;
+//path = path.Substring (uriTypeLength, path.Length - uriTypeLength);

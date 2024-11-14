@@ -24,7 +24,7 @@ namespace Lister.ViewModels
 {
     public partial class PrintDialogViewModel : ViewModelBase
     {
-        private static string _warnImageName = "warning-alert.ico";
+        private static string _warnImageName = "Icons/warning-alert.ico";
         public static bool IsClosed { get; private set; }
 
         private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";

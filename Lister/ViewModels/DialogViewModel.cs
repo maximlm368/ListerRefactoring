@@ -14,7 +14,7 @@ namespace Lister.ViewModels
 {
     public class DialogViewModel : ViewModelBase
     {
-        private static string _warnImageName = "warning-alert.ico";
+        private static string _warnImageName = "Icons/warning-alert.ico";
 
         private DialogWindow _view;
 

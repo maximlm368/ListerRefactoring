@@ -14,9 +14,9 @@ namespace Lister.ViewModels
     {
         private WaitingView ? _view;
         private double _canvasTop = 80;
-        private double _canvasLeft = 250;
+        private double _canvasLeft = 265;
         private double _canvasHeight = 467;
-        private double _canvasWidth = 800;
+        private double _canvasWidth = 830;
         private readonly double _canvasHiddenVerticalMargin = 4;
         private double _canvasShownVerticalMargin = -460;
         private double _imageHeight = 300;
@@ -165,7 +165,7 @@ namespace Lister.ViewModels
 
             if ( _gifSource == null )
             {
-                string waintingImageIriString = App.ResourceDirectoryUri + "Loading.gif";
+                string waintingImageIriString = App.ResourceDirectoryUri + "Icons/Loading.gif";
                 _gifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
             }
 

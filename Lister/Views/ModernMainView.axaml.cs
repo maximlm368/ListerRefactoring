@@ -47,19 +47,12 @@ namespace Lister.Views
             ProperHeight = Height;
 
             Loaded += OnLoaded;
-            //LayoutUpdated += AfterWaiting;
 
             DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
             _vm = ( ModernMainViewModel ) DataContext;
             _vm.PassView (this);
 
-            //waiting.Margin = new Avalonia.Thickness ( 0, -460 );
-            //waiting.IsVisible = false;
-
-            //buttonPanel.Margin = new Avalonia.Thickness (0, -260);
-
             LayoutUpdated += LayoutUpdatedHandler;
-
 
             this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
         }

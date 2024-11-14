@@ -27,8 +27,8 @@ namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
-        private static string _correctnessIcon = "GreenCheckMarker.jpg";
-        private static string _incorrectnessIcon = "RedCross.png";
+        private static string _correctnessIcon = "Icons/GreenCheckMarker.jpg";
+        private static string _incorrectnessIcon = "Icons/RedCross.png";
         private FilterChoosing _filterState = FilterChoosing.All;
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;

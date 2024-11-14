@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="302"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="302"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:SceneViewModel"
              x:Class="Lister.Views.SceneUserControl"
@@ -19,7 +19,6 @@
 			VerticalAlignment="Top"
 			Width="{Binding   Path = ButtonBlockWidth,   Mode=OneWay}"
 			Height="258"
-			Margin="0,0"
 			ZIndex="2"
 			CornerRadius="0,5,5,0">
 		
@@ -226,7 +225,7 @@
 			Name="workArea"
 			HorizontalAlignment="Left"
 			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
-			Width="810"
+			Width="850"
 			Height="302">
 
 			<ScrollViewer
@@ -239,7 +238,7 @@
 
 					<Border
 						Name="pageBorder"
-						Margin="0,20"
+						Margin="5,20"
 						BorderBrush="LightBlue"
 						BorderThickness="1"
 						Width="{Binding  Path = BorderWidth,  Mode=OneWay}"

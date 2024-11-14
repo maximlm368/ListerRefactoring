@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="40"
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
              x:Class="Lister.Views.PersonSourceUserControl"
 			 x:DataType="vm:PersonSourceViewModel">
@@ -31,7 +31,7 @@
 			FontSize="16"
 			Height="32"
 			Padding="10,2"
-			BorderBrush="{Binding  Path = BorderBrush,  Mode=OneWay}"
+			BorderBrush="Black"
 			Background="White"
 			CornerRadius = "3"
 			BorderThickness="1"
@@ -47,7 +47,7 @@
 			Padding="0,8"
 			HorizontalContentAlignment="Center"
 			HorizontalAlignment="Center"
-            Command="{Binding Path=ChooseFile}"
+            Command="{Binding ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
 			FontFamily="{StaticResource FA}"
 			Content="&#xF141;" />

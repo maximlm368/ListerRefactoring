@@ -27,7 +27,7 @@ namespace Lister.ViewModels
 {
     public class MessageViewModel : ViewModelBase
     {
-        private static string _warnImageName = "warning-alert.ico";
+        private static string _warnImageName = "Icons/warning-alert.ico";
 
         private readonly int _lineHeight = 16;
         private int _topMargin = 54;
