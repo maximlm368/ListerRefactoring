@@ -94,6 +94,20 @@ namespace ContentAssembler
         }
 
 
+        public bool IsEmpty ( )
+        {
+            bool isEmpty = false;
+
+            isEmpty = isEmpty || ( string.IsNullOrWhiteSpace (FamilyName) )
+                                || ( string.IsNullOrWhiteSpace (FirstName) )
+                                || ( string.IsNullOrWhiteSpace (PatronymicName) )
+                                || ( string.IsNullOrWhiteSpace (Post) )
+                                || ( string.IsNullOrWhiteSpace (Department) );
+
+            return isEmpty;
+        }
+
+
         public override string ToString()
         {
             string result = $"{Id} {FamilyName} {FirstName} {PatronymicName} {Department} {Post}";

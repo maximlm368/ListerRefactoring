@@ -37,7 +37,6 @@ namespace Lister.ViewModels
         private static readonly string _extentionToolTip = "Развернуть панель";
         private static readonly string _shrinkingToolTip = "Свернуть панель";
 
-        //internal static readonly double _scale = 2.44140625;
         internal static readonly double _startScale = 1.5624;
         internal static double _scale = 1.5624;
 

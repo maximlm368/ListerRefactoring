@@ -128,7 +128,6 @@ namespace Lister.ViewModels
 
                 Badges.Add (badge);
                 _restWidth -= badge.BadgeWidth;
-                //Margin = new Thickness (_restWidth / 2, 0, 0, 0);
 
                 return ActionSuccess.Success;
             }
@@ -139,6 +138,7 @@ namespace Lister.ViewModels
         {
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
+            Height *= scaleCoefficient;
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
@@ -151,6 +151,7 @@ namespace Lister.ViewModels
         {
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
+            Height /= scaleCoefficient;
 
             for ( int index = 0;   index < Badges. Count;   index++ )
             {

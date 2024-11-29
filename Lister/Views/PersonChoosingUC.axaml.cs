@@ -25,8 +25,9 @@ namespace Lister.Views
     {
         private static TemplateViewModel _chosenTemplate;
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
-        private static readonly string _jsonError =
-        "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
+
+        //private static readonly string _jsonError =
+        //"Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
 
         private ModernMainView _parent;
         private readonly int _inputLimit = 100;
@@ -40,7 +41,7 @@ namespace Lister.Views
         private bool _shiftScrollingStarted = false;
         private double _capturingY;
         private double _shiftScratch = 0;
-        private PersonChoosingViewModel _vm;
+        private PersonChoosingViewModel _viewModel;
         private string _textBoxText = string.Empty;
         private string _theme;
 
@@ -52,16 +53,10 @@ namespace Lister.Views
             InitializeComponent ();
 
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
-            _vm = (PersonChoosingViewModel) DataContext;
-            _vm.PassView (this);
+            _viewModel = (PersonChoosingViewModel) DataContext;
 
             Loaded += OnLoaded;
             ActualThemeVariantChanged += ThemeChanged;
-
-            //personTextBox.Background = _personTBBackground;
-
-            //personTextBox.AddHandler 
-            //    ( TextBox.PastingFromClipboardEvent, IgnorPastingFromClipboard, RoutingStrategies.Bubble);
 
             personTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
         }
@@ -72,14 +67,6 @@ namespace Lister.Views
             var point = args.GetCurrentPoint (sender as Control);
             var x = point.Position.X;
             var y = point.Position.Y;
-
-            //if ( point.Properties.IsLeftButtonPressed )
-            //{
-            //}
-            //if ( point.Properties.IsRightButtonPressed )
-            //{
-            //    args.Handled = true;
-            //}
 
             args.Handled = true;
         }
@@ -95,14 +82,14 @@ namespace Lister.Views
             if ( shouldChangeComboboxWidth ) 
             {
                 personList.Width -= shift;
-                _vm.ShiftScroller (shift);
+                _viewModel.ShiftScroller (shift);
             }
         }
 
 
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
-            _vm.SetEntireList ();
+            _viewModel.SetEntireList ();
 
             if ( _chosen != null )
             {
@@ -171,7 +158,7 @@ namespace Lister.Views
 
             if ( reasonExists )
             {
-                _vm.HideDropDownWithoutChange ();
+                _viewModel.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
                 SetTextBoxStartState ();
             }
@@ -219,9 +206,9 @@ namespace Lister.Views
 
         internal void SetTextBoxStartState ( )
         {
-            if ( _vm.FontWeight == FontWeight.Bold )
+            if ( _viewModel.FontWeight == FontWeight.Bold )
             {
-                personTextBox.Text = _vm.PlaceHolder;
+                personTextBox.Text = _viewModel.PlaceHolder;
                 personTextBox.SelectionStart = personTextBox.Text.Length;
                 personTextBox.SelectionEnd = personTextBox.Text.Length;
             }
@@ -241,8 +228,7 @@ namespace Lister.Views
                 return;
             }
 
-            _vm.ToZeroPersonSelection ();
-            _vm.DisableBuildigPossibility ();
+            _viewModel.ToZeroPersonSelection ();
             TextBox textBox = ( TextBox ) sender;
             string input = textBox.Text;
 
@@ -259,7 +245,7 @@ namespace Lister.Views
 
                 List <VisiblePerson> foundVisiblePeople = new List <VisiblePerson> ();
 
-                foreach ( VisiblePerson person   in   _vm.PeopleStorage )
+                foreach ( VisiblePerson person   in   _viewModel.PeopleStorage )
                 {
                     person.BorderBrushColor = _unfocusedColor;
                     string entireName = person.Person. StringPresentation;
@@ -270,7 +256,7 @@ namespace Lister.Views
                     }
                 }
 
-                _vm.SetInvolvedPeople (foundVisiblePeople);
+                _viewModel.SetInvolvedPeople (foundVisiblePeople);
                 _personListIsDropped = true;
             }
         }
@@ -305,7 +291,7 @@ namespace Lister.Views
 
         private void RecoverVisiblePeople ()
         {
-            _vm.RecoverVisiblePeople ();
+            _viewModel.RecoverVisiblePeople ();
             _personListIsDropped = true;
         }
 
@@ -318,7 +304,7 @@ namespace Lister.Views
             Label chosenLabel = ( Label ) sender;
             _chosen = chosenLabel;
             string chosenName = ( string ) chosenLabel.Content;
-            _vm.SetChosenPerson (chosenName);
+            _viewModel.SetChosenPerson (chosenName);
             DropOrPickUp ();
         }
 
@@ -333,12 +319,12 @@ namespace Lister.Views
 
             if ( _personListIsDropped )
             {
-                _vm.HideDropDownWithChange ();
+                _viewModel.HideDropDownWithChange ();
                 _personListIsDropped = false;
             }
             else
             {
-                _vm.ShowDropDown ();
+                _viewModel.ShowDropDown ();
                 _personListIsDropped = true;
             }
 
@@ -351,7 +337,7 @@ namespace Lister.Views
         {
             if ( _personListIsDropped )
             {
-                _vm.HideDropDownWithoutChange ();
+                _viewModel.HideDropDownWithoutChange ();
                 _personListIsDropped = false;
                 SetTextBoxStartState ();
             }
@@ -374,7 +360,7 @@ namespace Lister.Views
         internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
             bool isDirectionUp = args.Delta.Y > 0;
-            _vm.ScrollByWheel ( isDirectionUp );
+            _viewModel.ScrollByWheel ( isDirectionUp );
         }
 
 
@@ -384,7 +370,7 @@ namespace Lister.Views
             bool isDirectionUp = activator.Name == "upper";
             int count = personList.ItemCount;
             _tapScrollingStarted = true;
-            _vm.ScrollByButton ( isDirectionUp, count );
+            _viewModel.ScrollByButton ( isDirectionUp, count );
         }
 
 
@@ -404,7 +390,7 @@ namespace Lister.Views
                 limit = bottomSpan.Height - args.GetPosition (activator).Y;
             }
             
-            _vm.ShiftRunner ( isDirectionUp, limit );
+            _viewModel.ShiftRunner ( isDirectionUp, limit );
         }
 
 
@@ -426,7 +412,7 @@ namespace Lister.Views
             if( _tapScrollingStarted )
             {
                 _tapScrollingStarted = false;
-                _vm.StopScrolling ( );
+                _viewModel.StopScrolling ( );
             }
         }
 
@@ -437,14 +423,14 @@ namespace Lister.Views
             {
                 Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
                 double runnerVerticalDelta = _capturingY - pointerPosition.Y;
-                _vm.MoveRunner ( runnerVerticalDelta );
+                _viewModel.MoveRunner ( runnerVerticalDelta );
             }
         }
 
 
         private void ScrollByKey ( bool isDirectionUp )
         {
-            _vm.ScrollByKey ( isDirectionUp );
+            _viewModel.ScrollByKey ( isDirectionUp );
         }
 
 
@@ -478,36 +464,31 @@ namespace Lister.Views
 
             if ( templateIsIncorrect )
             {
-                _vm.ChosenTemplate = null;
-                _chosenTemplate = null;
-                var messegeDialog = new MessageDialog (ModernMainView.Instance);
-                messegeDialog.Message = _jsonError;
+                var messegeDialog = 
+                           new LargeMessageDialog (ModernMainView.Instance, chosen.CorrectnessMessage, chosen.SourcePath);
                 WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                 waitingVM.HandleDialogOpenig ();
                 messegeDialog.ShowDialog (MainWindow.Window);
                 messegeDialog.Focusable = true;
                 messegeDialog.Focus ();
             }
-            else
-            {
-                _vm.ChosenTemplate = chosen;
-                _chosenTemplate = chosen;
-            }
+
+            _chosenTemplate = chosen;
+            _viewModel.ChosenTemplate = _chosenTemplate;
         }
 
 
         internal void OnLoaded ( object sender, RoutedEventArgs args )
         {
-            _vm.ChosenTemplate = _chosenTemplate;
+            _viewModel.ChosenTemplate = _chosenTemplate;
 
             if ( _chosenTemplate != null )
             {
-                templateChoosing.PlaceholderText = _vm.ChosenTemplate.Name;
+                templateChoosing.PlaceholderText = _viewModel.ChosenTemplate.Name;
             }
 
-            _vm.PassView (this);
             _theme = ActualThemeVariant.Key.ToString ();
-            _vm.ChangeAccordingTheme (_theme);
+            _viewModel.SetUp (_theme);
         }
 
 
@@ -519,7 +500,7 @@ namespace Lister.Views
             }
 
             _theme = ActualThemeVariant.Key.ToString ();
-            _vm.ChangeAccordingTheme (_theme);
+            _viewModel.SetUp (_theme);
         }
     }
 }

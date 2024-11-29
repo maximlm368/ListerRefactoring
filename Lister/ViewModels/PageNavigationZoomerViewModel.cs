@@ -1,4 +1,5 @@
 ﻿using ContentAssembler;
+using DocumentFormat.OpenXml.Math;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -10,30 +11,22 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class PageNavigationZoomerViewModel : ViewModelBase
+    public class PageNavigationZoomerViewModel : ViewModelBase
     {
+        private readonly double _scalabilityCoefficient = 1.25;
+        private readonly string _procentSymbol = "%";
+        private readonly short _maxDepth = 5;
+        private readonly short _minDepth = -5;
+
         private short _scalabilityDepth = 0;
-        private short _maxDepth = 5;
-        private short _minDepth = -5;
-        //private readonly short _scalabilityStep = 25;
 
-        private SceneViewModel sc;
-        internal SceneViewModel SceneVM
-        {
-            get { return sc; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref sc, value, nameof (SceneVM));
-            }
-        }
-
-        private int vpN;
+        private int _visiblePageNumber;
         internal int VisiblePageNumber
         {
-            get { return vpN; }
+            get { return _visiblePageNumber; }
             set
             {
-                this.RaiseAndSetIfChanged (ref vpN, value, nameof (VisiblePageNumber));
+                this.RaiseAndSetIfChanged (ref _visiblePageNumber, value, nameof (VisiblePageNumber));
             }
         }
 
@@ -115,51 +108,99 @@ namespace Lister.ViewModels
             }
         }
 
-
-        public PageNavigationZoomerViewModel ( IUniformDocumentAssembler docAssembler, SceneViewModel sceneViewModel )
+        private string _zoomDegreeInView;
+        internal string ZoomDegreeInView
         {
-            SceneVM = sceneViewModel;
+            get { return _zoomDegreeInView; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _zoomDegreeInView, value, nameof (ZoomDegreeInView));
+            }
+        }
+
+        private double _zoomDegree;
+        internal double ZoomDegree
+        {
+            get { return _zoomDegree; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _zoomDegree, value, nameof (ZoomDegree));
+            }
+        }
+
+        private int _pageCount;
+        internal int PageCount
+        {
+            get { return _pageCount; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _pageCount, value, nameof (PageCount));
+            }
         }
 
 
-        internal void VisualiseNextPage ()
+        public PageNavigationZoomerViewModel ( )
         {
-            VisiblePageNumber = SceneVM.VisualiseNextPage ();
+            ToZeroState ();
+        }
+
+
+        internal void ShowNextPage ()
+        {
+            if ( VisiblePageNumber < PageCount )
+            {
+                VisiblePageNumber++;
+            }
+
             SetEnablePageNavigation ();
         }
 
 
-        internal void VisualisePreviousPage ()
+        internal void ShowPreviousPage ()
         {
-            VisiblePageNumber = SceneVM.VisualisePreviousPage ();
+            if ( VisiblePageNumber > 1 )
+            {
+                VisiblePageNumber--;
+            }
+
             SetEnablePageNavigation ();
         }
 
 
-        internal void VisualiseLastPage ()
+        internal void ShowLastPage ()
         {
-            VisiblePageNumber = SceneVM.VisualiseLastPage ();
+            if ( VisiblePageNumber < PageCount )
+            {
+                VisiblePageNumber = PageCount;
+            }
+
             SetEnablePageNavigation ();
         }
 
 
-        internal void VisualiseFirstPage ()
+        internal void ShowFirstPage ()
         {
-            VisiblePageNumber = SceneVM.VisualiseFirstPage ();
+            if ( VisiblePageNumber > 1 )
+            {
+                VisiblePageNumber = 1;
+            }
+
             SetEnablePageNavigation ();
         }
 
 
-        internal void VisualisePageWithNumber ( int pageNumber )
+        internal void ShowPageWithNumber ( int pageNumber )
         {
-            VisiblePageNumber = SceneVM.VisualisePageWithNumber (pageNumber);
+            int num = VisiblePageNumber;
+
+            if ( (pageNumber < 1)   ||   (pageNumber > PageCount) ) 
+            {
+                VisiblePageNumber = num;
+                return;
+            }
+
+            VisiblePageNumber = pageNumber;
             SetEnablePageNavigation ();
-        }
-
-
-        internal int GetPageCount ()
-        {
-            return SceneVM.GetPageCount ();
         }
 
 
@@ -167,8 +208,9 @@ namespace Lister.ViewModels
         {
             if ( _scalabilityDepth < _maxDepth )
             {
-
-                SceneVM.ZoomOn ();
+                ZoomDegree *= _scalabilityCoefficient;
+                short zDegree = ( short ) _zoomDegree;
+                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
                 _scalabilityDepth++;
             }
 
@@ -177,7 +219,7 @@ namespace Lister.ViewModels
                 ZoomOnIsEnable = false;
             }
 
-            if ( !ZoomOutIsEnable )
+            if ( ! ZoomOutIsEnable )
             {
                 ZoomOutIsEnable = true;
             }
@@ -188,7 +230,9 @@ namespace Lister.ViewModels
         {
             if ( _scalabilityDepth > _minDepth )
             {
-                SceneVM.ZoomOut ();
+                ZoomDegree /= _scalabilityCoefficient;
+                short zDegree = ( short ) _zoomDegree;
+                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
                 _scalabilityDepth--;
             }
 
@@ -204,45 +248,62 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetEnablePageNavigation ()
+        internal void SetEnablePageNavigation ( int pageCount, int currentVisibleNum )
         {
-            int pageCount = GetPageCount ();
-
             if ( pageCount > 1 )
             {
-                if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber == pageCount ) )
-                {
-                    FirstIsEnable = true;
-                    PreviousIsEnable = true;
-                    NextIsEnable = false;
-                    LastIsEnable = false;
-                }
-                else if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber < pageCount ) )
-                {
-                    FirstIsEnable = true;
-                    PreviousIsEnable = true;
-                    NextIsEnable = true;
-                    LastIsEnable = true;
-                }
-                else if ( ( VisiblePageNumber == 1 ) && ( pageCount == 1 ) )
-                {
-                    FirstIsEnable = false;
-                    PreviousIsEnable = false;
-                    NextIsEnable = false;
-                    LastIsEnable = false;
-                }
-                else if ( ( VisiblePageNumber == 1 ) && ( pageCount > 1 ) )
-                {
-                    FirstIsEnable = false;
-                    PreviousIsEnable = false;
-                    NextIsEnable = true;
-                    LastIsEnable = true;
-                }
+                PageCount = pageCount;
+                VisiblePageNumber = currentVisibleNum;
+                SetEnablePageNavigation ();
             }
         }
 
 
-        internal void DisableButtons ()
+        internal void SetEnablePageNavigation ()
+        {
+            if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber == PageCount ) )
+            {
+                FirstIsEnable = true;
+                PreviousIsEnable = true;
+                NextIsEnable = false;
+                LastIsEnable = false;
+            }
+            else if ( ( VisiblePageNumber > 1 ) && ( VisiblePageNumber < PageCount ) )
+            {
+                FirstIsEnable = true;
+                PreviousIsEnable = true;
+                NextIsEnable = true;
+                LastIsEnable = true;
+            }
+            else if ( ( VisiblePageNumber == 1 ) && ( PageCount == 1 ) )
+            {
+                FirstIsEnable = false;
+                PreviousIsEnable = false;
+                NextIsEnable = false;
+                LastIsEnable = false;
+            }
+            else if ( ( VisiblePageNumber == 1 ) && ( PageCount > 1 ) )
+            {
+                FirstIsEnable = false;
+                PreviousIsEnable = false;
+                NextIsEnable = true;
+                LastIsEnable = true;
+            }
+        }
+
+
+        internal void ToZeroState ()
+        {
+            DisableButtons ();
+
+            ZoomDegree = 100;
+            ZoomDegreeInView = ZoomDegree.ToString () + " " + _procentSymbol;
+            VisiblePageNumber = 1;
+            PageCount = 0;
+        }
+
+
+        private void DisableButtons ()
         {
             ZoomOnIsEnable = false;
             ZoomOutIsEnable = false;
@@ -253,17 +314,19 @@ namespace Lister.ViewModels
         }
 
 
-        internal void EnableZoom ()
+        internal void EnableZoomIfPossible ( bool isPossible )
         {
-            ZoomOnIsEnable = true;
-            ZoomOutIsEnable = true;
+            if ( isPossible ) 
+            {
+                ZoomOnIsEnable = true;
+                ZoomOutIsEnable = true;
+            }
         }
 
 
         internal void RecoverPageCounterIfEmpty ()
         {
-            SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel>();
-            sceneVM.RecoverPageNumber ();
+            VisiblePageNumber = 1;
         }
     }
 }

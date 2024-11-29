@@ -45,7 +45,14 @@ public partial class PageNavigationZoomer : UserControl
 
     private void PageCounterLostFocus ( object sender, RoutedEventArgs args )
     {
-        _vm.RecoverPageCounterIfEmpty ();
+        TextBox textBox = ( TextBox ) sender;
+        string text = textBox.Text;
+
+        if ( text == "" ) 
+        {
+            _vm.RecoverPageCounterIfEmpty ();
+            visiblePageNumber.Text = "1";
+        }
     }
 
 
@@ -60,17 +67,17 @@ public partial class PageNavigationZoomer : UserControl
 
             if ( pageNumber == 0 )
             {
+                pageNumber = 1;
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
                 return;
             }
 
-            _vm.VisualisePageWithNumber (pageNumber);
+            _vm.ShowPageWithNumber (pageNumber);
             visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
-            SetEnablePageNavigation ();
         }
         catch ( System.FormatException exp )
         {
-            if ( !string.IsNullOrWhiteSpace (text) )
+            if ( ! string.IsNullOrWhiteSpace (text) )
             {
                 visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
             }
@@ -78,44 +85,6 @@ public partial class PageNavigationZoomer : UserControl
         catch ( System.OverflowException exp )
         {
             visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
-        }
-    }
-
-
-    internal void SetEnablePageNavigation ()
-    {
-        int pageCount = _vm.GetPageCount ();
-
-        if ( pageCount > 1 )
-        {
-            if ( ( _vm.VisiblePageNumber > 1 ) && ( _vm.VisiblePageNumber == pageCount ) )
-            {
-                firstPage.IsEnabled = true;
-                previousPage.IsEnabled = true;
-                nextPage.IsEnabled = false;
-                lastPage.IsEnabled = false;
-            }
-            else if ( ( _vm.VisiblePageNumber > 1 ) && ( _vm.VisiblePageNumber < pageCount ) )
-            {
-                firstPage.IsEnabled = true;
-                previousPage.IsEnabled = true;
-                nextPage.IsEnabled = true;
-                lastPage.IsEnabled = true;
-            }
-            else if ( ( _vm.VisiblePageNumber == 1 ) && ( pageCount == 1 ) )
-            {
-                firstPage.IsEnabled = false;
-                previousPage.IsEnabled = false;
-                nextPage.IsEnabled = false;
-                lastPage.IsEnabled = false;
-            }
-            else if ( ( _vm.VisiblePageNumber == 1 ) && ( pageCount > 1 ) )
-            {
-                firstPage.IsEnabled = false;
-                previousPage.IsEnabled = false;
-                nextPage.IsEnabled = true;
-                lastPage.IsEnabled = true;
-            }
         }
     }
 }

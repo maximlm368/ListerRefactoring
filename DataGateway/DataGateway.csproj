@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.104.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="NJsonSchema" Version="11.1.0" />
   </ItemGroup>
 
   <ItemGroup>

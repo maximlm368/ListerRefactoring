@@ -27,9 +27,10 @@ namespace Lister;
 
 public partial class App : Avalonia.Application
 {
-    public static Window MainWindow { get; private set; }
+    public static MainWindow MainWindow { get; private set; }
 
-    public static string ResourceUriFolderName { get; private set; }
+    public static string JsonSchemeFolderName { get; private set; }
+    public static string ResourceFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
@@ -57,19 +58,20 @@ public partial class App : Avalonia.Application
 
         if ( isWindows )
         {
-            //ResourceUriFolderName = "//Resources//";
-            ResourceUriFolderName = @"Resources\";
+            JsonSchemeFolderName = @"Resources\JsonSchemes\";
+            ResourceFolderName = @"Resources\";
             ResourceUriType = "file:///";
             OsName = "Windows";
         }
         else if ( isLinux ) 
         {
-            ResourceUriFolderName = "Resources/";
+            JsonSchemeFolderName = "Resources/JsonSchemes/";
+            ResourceFolderName = "Resources/";
             ResourceUriType = "file://";
             OsName = "Linux";
         }
 
-        ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceUriFolderName;
+        ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceFolderName;
     }
 
 
@@ -151,27 +153,23 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
 
-        //collection.AddSingleton <IBadgeAppearenceProvider, BadgeAppearenceProvider> ();
-        //collection.AddSingleton <IBadLineColorProvider, BadgeAppearenceProvider> ();
-
         collection.AddSingleton (typeof (IBadgeAppearenceProvider), BadgeAppearenceFactory);
         collection.AddSingleton (typeof (IBadLineColorProvider), BadLineFactory);
-        collection.AddSingleton (typeof (IFontFileProvider), BadgeFontFactory);
+        //collection.AddSingleton (typeof (IFontFileProvider), BadgeFontFactory);
 
         collection.AddSingleton <ModernMainViewModel> ();
-        //collection.AddSingleton <BadgeEditorViewModel> ();
         collection.AddSingleton <BadgeViewModel> ();
         collection.AddSingleton <ImageViewModel> ();
         collection.AddSingleton <PageViewModel> ();
         collection.AddSingleton <PersonChoosingViewModel> ();
         collection.AddSingleton <PersonSourceViewModel> ();
         collection.AddSingleton <SceneViewModel> ();
-        collection.AddSingleton <TemplateChoosingViewModel> ();
+        collection.AddSingleton <BadgesBuildingViewModel> ();
         collection.AddSingleton <PageNavigationZoomerViewModel> ();
-        collection.AddSingleton <ZoomNavigationViewModel> ();
+        collection.AddSingleton <PageNavigationZoomer> ();
         collection.AddSingleton <TextLineViewModel> ();
         collection.AddSingleton <WaitingViewModel> ();
-        collection.AddSingleton <MessageViewModel> ();
+        collection.AddSingleton <LargeMessageViewModel> ();
         collection.AddSingleton <PrintDialogViewModel> ();
     }
 
@@ -180,10 +178,9 @@ public static class ServiceCollectionExtensions
     {
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
-        //IBadgeAppearenceProvider result = service as IBadgeAppearenceProvider;
-
         IBadgeAppearenceProvider result = 
-            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
+            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceFolderName )
+                                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
 
         return result;
     }
@@ -193,23 +190,9 @@ public static class ServiceCollectionExtensions
     {
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
-        //IBadLineColorProvider result = service as IBadLineColorProvider;
-
         IBadLineColorProvider result =
-            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
-
-        return result;
-    }
-
-
-    private static IFontFileProvider BadgeFontFactory ( IServiceProvider serviceProvider )
-    {
-        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
-
-        //IBadLineColorProvider result = service as IBadLineColorProvider;
-
-        IFontFileProvider result =
-            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceUriFolderName ));
+             new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceFolderName )
+                                                                , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
 
         return result;
     }
@@ -236,7 +219,8 @@ public class BadgeAppearenceServiceProvider : IServiceProvider
 
         if ( isAimService )
         {
-            result = new BadgeAppearenceProvider (App.ResourceDirectoryUri, (App.WorkDirectoryPath + App.ResourceUriFolderName));
+            result = new BadgeAppearenceProvider (App.ResourceDirectoryUri, (App.WorkDirectoryPath + App.ResourceFolderName)
+                                                                      , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
         }
 
         return result;

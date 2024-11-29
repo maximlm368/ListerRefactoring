@@ -80,13 +80,11 @@
 
 	
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\MessageDialog.axaml" />
-  </ItemGroup>
-
-	
-  <ItemGroup>
     <AvaloniaResource Update="Assets\Doctors.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\Nurses.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </AvaloniaResource>
   </ItemGroup>
 
@@ -174,6 +172,12 @@
  <ItemGroup>
    <Compile Update="Views\EditionView.axaml.cs">
      <DependentUpon>EditionView.axaml</DependentUpon>
+   </Compile>
+   <Compile Update="Views\BadgesBuildingUC.axaml.cs">
+     <DependentUpon>BadgesBuildingUC.axaml</DependentUpon>
+   </Compile>
+   <Compile Update="Views\LargeMessageDialog.axaml.cs">
+     <DependentUpon>LargeMessageDialog.axaml</DependentUpon>
    </Compile>
  </ItemGroup>
   

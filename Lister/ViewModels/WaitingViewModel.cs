@@ -72,16 +72,6 @@ namespace Lister.ViewModels
             }
         }
 
-        //private double vM;
-        //public double CanvasVerticalMargin
-        //{
-        //    get { return vM; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref vM, value, nameof (CanvasVerticalMargin));
-        //    }
-        //}
-
         private double iH;
         public double ImageHeight
         {
@@ -121,16 +111,6 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref mg, value, nameof (Margin));
             }
         }
-
-        //private Thickness mg;
-        //public Thickness WaitingCurtainMargin
-        //{
-        //    get { return mg; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref mg, value, nameof (WaitingCurtainMargin));
-        //    }
-        //}
 
 
         public WaitingViewModel () 

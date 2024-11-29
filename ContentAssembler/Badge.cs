@@ -88,41 +88,36 @@ namespace ContentAssembler
                 atoms.Add (atom.Clone ());
             }
 
-            BadgeLayout clone = new BadgeLayout (OutlineWidth, OutlineHeight, TemplateName, _spans, atoms, InsideImages);
+            BadgeLayout clone = 
+                         new BadgeLayout (OutlineWidth, OutlineHeight, TemplateName, _spans, atoms, InsideImages);
             return clone;
         }
 
 
         internal void SetTextualValues ( Dictionary <string, string> personProperties )
         {
-            List<TextualAtom> includibles = new ( );
-            List<TextualAtom> includings = new ( );
+            List <TextualAtom> includibles = new ( );
+            List <TextualAtom> includings = new ( );
 
             AllocateValues ( personProperties, includibles );
             SetComplexValuesToIncludingAtoms (includings, includibles);
 
-            List <TextualAtom> removable = new ( );
+            List <TextualAtom> removables = new ( );
 
             foreach ( TextualAtom includedAtom   in   includibles )
             {
                 if ( ! includedAtom.isNeeded )
                 {
-                    removable.Add ( includedAtom );
+                    removables.Add ( includedAtom );
                 }
             }
 
-            List<TextualAtom> neededAtoms = new List<TextualAtom> ();
-            neededAtoms.AddRange ( includibles );
-            neededAtoms.AddRange (includings);
+            foreach ( TextualAtom removable   in   removables )
+            {
+                TextualFields.Remove (removable);
+            }
 
-            //TextualFields.RemoveAt (3);
-
-            TextualFields [1] = TextualFields [5];
-
-            TextualFields.RemoveAt (2);
-            TextualFields.RemoveAt (4);
-            //TextualFields.RemoveAt (4);
-
+            TextualFields.Sort (new TextualAtomComparer <TextualAtom> ());
         }
 
 
@@ -143,7 +138,7 @@ namespace ContentAssembler
         }
 
 
-        private void SetComplexValuesToIncludingAtoms ( List<TextualAtom> includings, List<TextualAtom> includibles ) 
+        private void SetComplexValuesToIncludingAtoms ( List <TextualAtom> includings, List <TextualAtom> includibles ) 
         {
             foreach ( TextualAtom atom   in   TextualFields )
             {
@@ -245,6 +240,7 @@ namespace ContentAssembler
     public class TextualAtom
     {
         public string Name { get; private set; }
+        public int NumberToLocate { get; private set; }
         public double Width { get; private set; }
         public double Height { get; private set; }
         public double TopOffset { get; set; }
@@ -279,7 +275,7 @@ namespace ContentAssembler
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
                            , double fontSize, string fontFile, string fontName, List<byte> foreground
-                           , string fontWeight, List<string>? includedAtoms, bool isSplitable )
+                           , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate )
         {
             _content = "";
             ContentIsSet = false;
@@ -302,6 +298,7 @@ namespace ContentAssembler
             FontWeight = fontWeight;
             IncludedAtoms = includedAtoms ?? new List<string> ();
             IsSplitable = isSplitable;
+            NumberToLocate = numberToLocate;
             isNeeded = true;
         }
 
@@ -323,6 +320,7 @@ namespace ContentAssembler
             FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
             IsSplitable = source.IsSplitable;
+            NumberToLocate = source.NumberToLocate;
             isNeeded = true;
         }
 
@@ -330,7 +328,7 @@ namespace ContentAssembler
         internal TextualAtom Clone () 
         {
             TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile,
-                                                 FontName, Foreground, FontWeight, IncludedAtoms, IsSplitable);
+                                                 FontName, Foreground, FontWeight, IncludedAtoms, IsSplitable, NumberToLocate);
             return clone;
         }
 
@@ -345,7 +343,25 @@ namespace ContentAssembler
                 _content = _content.TrimEnd (symbol);
             }
         }
+    }
 
+
+
+    public class TextualAtomComparer <T> : IComparer <T> where T : TextualAtom
+    {
+        public int Compare ( T first, T second )
+        {
+            int result = -1;
+
+            bool comparingShouldBe = (first != null)   &&   (second != null);
+
+            if ( comparingShouldBe )
+            {
+                result = ( first.NumberToLocate - second.NumberToLocate );
+            }
+
+            return result;
+        }
     }
 
 

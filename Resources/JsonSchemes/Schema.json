@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "TemplateName" : {
+      "type": ["string", null],
+	  "default": null
+    },
+	"BackgroundImagePath" : {
+      "type": "string",
+	  "default": "doctors2.jpg"
+    },
+	"CommonDefaultFontFamily" : {
+      "type": "string",
+	  "default": "Kramola.ttf"
+    },
+	"Width" : {
+      "type": "integer",
+	  "format": "int32",
+	  "minimum": 0,
+	  "maximum": 350,
+	  "default": 350
+    },
+	"Height" : {
+      "type": "integer",
+	  "format": "int32",
+	  "default": 214
+    },
+	"InsideSpan" : {
+      "type": "string",
+	  "default": "10,10,10,10"
+    },
+	"IncorrectLineBackground" : {
+      "type": "string",
+	  "default": "200,200,200"
+    },
+	
+	"FamilyName" : {
+      "type": "object",
+	  
+	  "properties": {
+        "Width": {
+		  "type": "integer",
+		  "format": "int32",
+		  "default": 210
+		},
+		"Height": {
+		  "type": "integer",
+		  "default": 33
+		},
+		"TopOffset": {
+		  "type": "integer",
+		  "default": 60
+		},
+		"LeftOffset": {
+		  "type": "integer",
+		  "default": 130
+		},
+		"Alignment": {
+		  "type": "string",
+		  "default": "Right"
+		},
+		"FontSize": {
+		  "type": "integer",
+		  "default": 24
+		},
+		"FontFile": {
+		  "type": "string",
+		  "default": "Kramola.ttf"
+		},
+		"FontName": {
+		  "type": "string",
+		  "default": "Kramola"
+		},
+		"Foreground": {
+		  "type": "string",
+		  "default": "0,0,0"
+		},
+		"FontWeight": {
+		  "type": "string",
+		  "default": "Bold"
+		},
+		"IsSplitable": {
+		  "type": "boolean",
+		  "default": false
+		}
+      }
+    },
+	
+	"FirstName" : {
+      "type": "object",
+	  
+	  "properties": {
+        "Width": {
+		  "type": "integer",
+		  "default": 210
+		},
+		"Height": {
+		  "type": "integer",
+		  "default": 21
+		},
+		"TopOffset": {
+		  "type": "integer",
+		  "default": 92
+		},
+		"LeftOffset": {
+		  "type": "integer",
+		  "default": 130
+		},
+		"Alignment": {
+		  "type": "string",
+		  "default": "Right"
+		},
+		"FontSize": {
+		  "type": "integer",
+		  "default": 14
+		},
+		"FontFile": {
+		  "type": "string",
+		  "default": "Kramola.ttf"
+		},
+		"FontName": {
+		  "type": "string",
+		  "default": "Kramola"
+		},
+		"Foreground": {
+		  "type": "string",
+		  "default": "0,0,0"
+		},
+		"FontWeight": {
+		  "type": "string",
+		  "default": "Bold"
+		},
+		"IsSplitable": {
+		  "type": "boolean",
+		  "default": false
+		}
+      }
+    },
+	
+	"PatronymicName" : {
+      "type": "object",
+	  
+	  "properties": {
+        "Width": {
+		  "type": "integer",
+		  "default": 210
+		},
+		"Height": {
+		  "type": "integer",
+		  "default": 21
+		},
+		"TopOffset": {
+		  "type": "integer",
+		  "default": 92
+		},
+		"LeftOffset": {
+		  "type": "integer",
+		  "default": 130
+		},
+		"Alignment": {
+		  "type": "string",
+		  "default": "Right"
+		},
+		"FontSize": {
+		  "type": "integer",
+		  "default": 14
+		},
+		"FontFile": {
+		  "type": "string",
+		  "default": "Kramola.ttf"
+		},
+		"FontName": {
+		  "type": "string",
+		  "default": "Kramola"
+		},
+		"Foreground": {
+		  "type": "string",
+		  "default": "0,0,0"
+		},
+		"FontWeight": {
+		  "type": "string",
+		  "default": "Bold"
+		},
+		"IsSplitable": {
+		  "type": "boolean",
+		  "default": false
+		}
+      }
+    },
+	
+	"Post" : {
+      "type": "object",
+	  
+	  "properties": {
+        "Width": {
+		  "type": "integer",
+		  "default": 210
+		},
+		"Height": {
+		  "type": "integer",
+		  "default": 17
+		},
+		"TopOffset": {
+		  "type": "integer",
+		  "default": 122
+		},
+		"LeftOffset": {
+		  "type": "integer",
+		  "default": 130
+		},
+		"Alignment": {
+		  "type": "string",
+		  "default": "Right"
+		},
+		"FontSize": {
+		  "type": "integer",
+		  "default": 10
+		},
+		"FontFile": {
+		  "type": "string",
+		  "default": "Kramola.ttf"
+		},
+		"FontName": {
+		  "type": "string",
+		  "default": "Kramola"
+		},
+		"Foreground": {
+		  "type": "string",
+		  "default": "0,0,0"
+		},
+		"FontWeight": {
+		  "type": "string",
+		  "default": "Bold"
+		},
+		"IsSplitable": {
+		  "type": "boolean",
+		  "default": false
+		}
+      }
+    },
+	
+	"Department" : {
+      "type": "object",
+	  
+	  "properties": {
+        "Width": {
+		  "type": "integer",
+		  "default": 210
+		},
+		"Height": {
+		  "type": "integer",
+		  "default": 17
+		},
+		"TopOffset": {
+		  "type": "integer",
+		  "default": 146
+		},
+		"LeftOffset": {
+		  "type": "integer",
+		  "default": 130
+		},
+		"Alignment": {
+		  "type": "string",
+		  "default": "Right"
+		},
+		"FontSize": {
+		  "type": "integer",
+		  "default": 10
+		},
+		"FontFile": {
+		  "type": "string",
+		  "default": "Kramola.ttf"
+		},
+		"FontName": {
+		  "type": "string",
+		  "default": "Kramola"
+		},
+		"Foreground": {
+		  "type": "string",
+		  "default": "0,0,0"
+		},
+		"FontWeight": {
+		  "type": "string",
+		  "default": "Bold"
+		},
+		"IsSplitable": {
+		  "type": "boolean",
+		  "default": false
+		}
+      }
+    },
+	
+	"UnitedTextBlocks" : {
+      "type": "array",
+	  "items": {
+		"type": "object",
+	  
+	    "properties": {
+		
+			"United": {
+			  "type": "array",
+			  "items": {
+				"type": "string"
+			  }
+			  
+			  
+			},
+			
+			"Name": {
+			  "type": "string",
+			  "default": "FirstAndPatronymic"
+			},
+			"Width": {
+			  "type": "integer",
+			  "default": 210
+			},
+			"Height": {
+			  "type": "integer",
+			  "default": 17
+			},
+			"TopOffset": {
+			  "type": "integer",
+			  "default": 146
+			},
+			"LeftOffset": {
+			  "type": "integer",
+			  "default": 130
+			},
+			"Alignment": {
+				"type": "string",
+				"default": "Right"
+			},
+			"FontSize": {
+				"type": "integer",
+				"default": 14
+			},
+			"FontFile": {
+				"type": "string",
+				"default": "Kramola.ttf"
+			},
+			"FontName": {
+				"type": "string",
+				"default": "Kramola"
+			},
+			"Foreground": {
+				"type": "string",
+				"default": "0,0,0"
+			},
+			"FontWeight": {
+				"type": "string",
+				"default": "Bold"
+			},
+			"IsSplitable": {
+				"type": "boolean",
+				"default": false
+			}
+        }
+	    }
+    }
+  }
+}

@@ -22,22 +22,24 @@
 			Padding="10,2"
 			VerticalContentAlignment="Center"
 			Content="Файл:"/>
-		
-		<Label
-			Name="personsSourceFile"
+
+		<Border
 			Grid.Column="1"
-			HorizontalContentAlignment="Left"
-			VerticalContentAlignment="Center"
-			FontSize="16"
 			Height="32"
-			Padding="10,2"
-			BorderBrush="Black"
 			Background="White"
+			BorderBrush="Black"
 			CornerRadius = "3"
-			BorderThickness="1"
-			Content="{Binding  Path = SourceFilePath,  Mode=OneWay}"
-			/>
-		
+			BorderThickness="1">
+
+			<TextBlock
+				FontSize="16"
+				Height="28"
+				Padding="10,4"
+				Background="White"
+				Text="{Binding  Path = SourceFilePath,  Mode=OneWay}"/>
+
+		</Border>
+
 		<Button 
 			Name="chooseFile"
 			Grid.Column="2"
@@ -60,7 +62,7 @@
 
 
 <!--
-
+Content="{Binding  Path = SourceFilePath,  Mode=OneWay}"
 
 FontFamily="{StaticResource fa}"
 
@@ -74,5 +76,39 @@ Content="&#xF049;"
 			IsEnabled="{ Binding  Path=EditorIsEnable,  Mode=OneWay }"
 			IsVisible="False"
 		    Content="Редактировать файл" />
+			
+			
+			
+			
+		<TextBlock
+			Name="personsSourceFile"
+			Grid.Column="1"
+			HorizontalContentAlignment="Left"
+			VerticalContentAlignment="Center"
+			FontSize="16"
+			Height="32"
+			Padding="10,2"
+			BorderBrush="Black"
+			Background="White"
+			CornerRadius = "3"
+			BorderThickness="1"
+			Content="Заявка_Бейджи_Охрана.xlsx"/>	
+		
+		
+		
+		<Label
+			Name="personsSourceFile"
+			Grid.Column="1"
+			HorizontalContentAlignment="Left"
+			VerticalContentAlignment="Center"
+			FontSize="16"
+			Height="32"
+			Padding="10,2"
+			BorderBrush="Black"
+			Background="White"
+			CornerRadius = "3"
+			BorderThickness="1"
+			Content="{Binding  Path = SourceFilePath,  Mode=OneWay}"
+			/>
 
 -->

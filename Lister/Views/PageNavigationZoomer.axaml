@@ -40,7 +40,7 @@
 					FontSize="16"
 					Padding="7,7"
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = VisualiseFirstPage}"
+					Command="{Binding   Path = ShowFirstPage}"
 					ToolTip.Tip="На первую страницу"
 					FontFamily="{StaticResource FA}"
 					Content="&#xf048;"/>
@@ -54,7 +54,7 @@
 					FontSize="20"
 					Padding="5,5"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = VisualisePreviousPage}"
+					Command="{Binding   Path = ShowPreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
 					FontFamily="{StaticResource FA}"
 					Content="&#xf0d9;" />
@@ -70,7 +70,6 @@
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					TextChanged="StepOnPage"
-					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 					Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"
 					LostFocus="PageCounterLostFocus"/>
 
@@ -86,7 +85,6 @@
 					VerticalContentAlignment="Center"
 					FontSize="16"
 					Grid.Column="5"
-					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 					Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
 
 				<Button
@@ -98,7 +96,7 @@
 					FontSize="20"
 					Padding="8,5"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = VisualiseNextPage}"
+					Command="{Binding   Path = ShowNextPage}"
 					ToolTip.Tip="На следующую страницу"
 					FontFamily="{StaticResource FA}"
 					Content="&#xf0da;" />
@@ -112,7 +110,7 @@
 					FontSize="16"
 					Padding="6,7"
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = VisualiseLastPage}"
+					Command="{Binding   Path = ShowLastPage}"
 					ToolTip.Tip="На последнюю страницу"
 					FontFamily="{StaticResource FA}"
 					Content="&#xf051;" />
@@ -155,7 +153,6 @@
 					Background="White"
 					CornerRadius = "3"
 					BorderThickness="1"
-					DataContext="{Binding   Path = SceneVM,   Mode=OneWay}"
 					Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}" />
 
 				<Button
@@ -182,3 +179,9 @@
 	</StackPanel>
   
 </UserControl>
+
+<!--
+
+TextChanged="StepOnPage"
+
+-->

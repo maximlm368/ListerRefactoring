@@ -6,7 +6,7 @@
 
         public BadgeLayout GetBadgeLayout ( string badgeTemplateName );
 
-        public List <TemplateName> GetBadgeTemplateNames ( );
+        public Dictionary <BadgeLayout, KeyValuePair <string, List<string>>> GetBadgeLayouts ( );
 
         public string GetBadgeBackgroundPath ( string templateName );
     }
@@ -14,14 +14,14 @@
 
     public interface IBadLineColorProvider
     {
-        public string GetBadLineColor ( string templateName );
+        public List<byte> GetBadLineColor ( string templateName );
     }
 
 
-    public interface IFontFileProvider
-    {
-        public Dictionary<string, string> GetTemplateFonts ( );
-    }
+    //public interface IFontFileProvider
+    //{
+    //    public Dictionary<string, string> GetTemplateFonts ( );
+    //}
 
 
     public interface IPeopleSource 
@@ -33,20 +33,6 @@
     public interface IPeopleSourceFactory
     {
         public IPeopleSource GetPeopleSource ( string ? personsFilePath );
-    }
-
-
-    public class TemplateName
-    {
-        public string name;
-        public bool isFound;
-
-
-        public TemplateName (string name, bool isFound ) 
-        {
-            this.name = name;
-            this.isFound = isFound;
-        }
     }
 }
 

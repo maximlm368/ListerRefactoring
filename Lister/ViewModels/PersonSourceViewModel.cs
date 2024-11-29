@@ -23,22 +23,22 @@ using DynamicData;
 using ExCSS;
 using Avalonia;
 using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using Avalonia.Interactivity;
 
 namespace Lister.ViewModels
 {
-    public class PersonSourceViewModel : ViewModelBase
+    public class PersonSourceViewModel : ReactiveObject
     {
+        private static readonly string _sourcePathKeeper = "keeper.txt";
         private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
         private static readonly string _incorrectXSLX = " - некорректный файл.";
         private static readonly string _fileIsAbsentMessage = "Файл не найден.";
-        private static readonly string _viewTypeName = "PersonSourceUserControl";
         private static readonly string _filePickerTitle = "Выбор файла";
         private static readonly List<string> _xslxHeaders = new List<string> () { "№", "Фамилия", "Имя", "Отчество"
                                                                                 , "Отделение", "Должность" };
 
         private IUniformDocumentAssembler _uniformAssembler;
-        private PersonChoosingViewModel _personChoosingVM;
-        private PersonSourceUserControl _view;
+        private bool _isFirstTimeLoading = true;
 
         private FilePickerOpenOptions _filePickerOptions;
         private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new ()
@@ -54,40 +54,62 @@ namespace Lister.ViewModels
             ]
         };
 
-        private bool _pathIsFromKeeper;
         private string _sourceFilePath;
         internal string SourceFilePath
         {
             get { return _sourceFilePath; }
             private set
             {
-                string path = SetCorrespondingPersons (value);
-                _pathIsFromKeeper = false;
-
-                if ( ( SourceFilePath != null )   &&   ( SourceFilePath != string.Empty )   &&   ( path == string.Empty ) )
-                {
-                    path = SourceFilePath;
-                }
-
-                this.RaiseAndSetIfChanged (ref _sourceFilePath, path, nameof (SourceFilePath));
+                this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof(SourceFilePath));
             }
         }
 
-        internal bool peopleSettingOccured;
 
-
-        public PersonSourceViewModel ( IUniformDocumentAssembler singleTypeDocumentAssembler
-                                                                    , PersonChoosingViewModel personChoosing )
+        public PersonSourceViewModel ( )
         {
-            _uniformAssembler = singleTypeDocumentAssembler;
-            _personChoosingVM = personChoosing;
-            peopleSettingOccured = false;
+            _uniformAssembler = App.services.GetRequiredService<IUniformDocumentAssembler> ();
         }
 
 
-        internal void TrySetPath ( Type passerType, string? path )
+        internal void OnLoaded ( )
         {
-            bool pathExists = ( ( path != null )   &&   ( path != string.Empty ) );
+            if ( !_isFirstTimeLoading )
+            {
+                return;
+            }
+
+            string workDirectory = @"./";
+            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+            string directory = containingDirectory.FullName;
+            string keeper = directory + _sourcePathKeeper;
+            FileInfo fileInf = new FileInfo (keeper);
+
+            if ( fileInf.Exists )
+            {
+                string [] lines = File.ReadAllLines (keeper);
+
+                try
+                {
+                    SetPath (lines [0]);
+                }
+                catch ( IndexOutOfRangeException ex )
+                {
+                    SetPath (null);
+                }
+            }
+            else
+            {
+                File.Create (keeper).Close ();
+                SetPath (null);
+            }
+
+            _isFirstTimeLoading = false;
+        }
+
+
+        private void SetPath ( string ? path )
+        {
+            bool pathExists = (( path != null )   &&   ( path != string.Empty ));
 
             if ( pathExists )
             {
@@ -100,7 +122,7 @@ namespace Lister.ViewModels
                         FileStream stream = fileInfo.OpenRead ();
                         stream.Close ();
                     }
-                    catch ( System.IO.IOException ex )
+                    catch ( IOException ex )
                     {
                         SourceFilePath = null;
 
@@ -108,79 +130,56 @@ namespace Lister.ViewModels
                     }
                 }
 
-                if ( passerType.Name == _viewTypeName )
+                bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
+
+                if ( ! fileIsCorrect )
                 {
-                    bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
+                    DeclineChosenFile (path);
+                    SourceFilePath = _sourceFilePath;
 
-                    if ( ! fileIsCorrect )
-                    {
-                        DeclineChosenFile (path);
-
-                        if ( ( SourceFilePath != null ) && ( SourceFilePath != string.Empty ) )
-                        {
-                            SwitchPersonChoosingEnabling (false);
-                        }
-
-                        return;
-                    }
-
-                    _pathIsFromKeeper = true;
-                    SourceFilePath = path;
+                    return;
                 }
+
+                SourceFilePath = path;
             }
             else
             {
-                _pathIsFromKeeper = false;
                 SourceFilePath = null;
             }
         }
 
 
-        internal void PassView ( PersonSourceUserControl view )
-        {
-            _view = view;
-        }
-
-
         internal async void ChooseFile ()
         {
-            IReadOnlyList <IStorageFile> files = await MainWindow.CommonStorageProvider.OpenFilePickerAsync (FilePickerOptions);
+            IReadOnlyList <IStorageFile> files = 
+                await MainWindow.CommonStorageProvider.OpenFilePickerAsync (FilePickerOptions);
 
             if ((files.Count == 1)   &&   ( files [0] is not null ))
             {
-                string path = files [0].Path.LocalPath;
+                string path = files [0].Path. LocalPath;
 
                 bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
 
                 if ( ! fileIsCorrect )
                 {
                     DeclineChosenFile (path);
-
-                    if ( ( SourceFilePath != null )   &&   ( SourceFilePath != string.Empty ) )
-                    {
-                        SwitchPersonChoosingEnabling (true);
-                    }
+                    SourceFilePath = _sourceFilePath;
 
                     return;
                 }
 
                 SourceFilePath = path;
-                TrySavePathInKeepingFile ();
-                SwitchPersonChoosingEnabling (true);
-            }
-            else
-            {
-                SwitchPersonChoosingEnabling (false);
+                SavePath ();
             }
         }
 
 
-        private void TrySavePathInKeepingFile ()
+        private void SavePath ()
         {
             string workDirectory = @"./";
             DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
             string directoryPath = containingDirectory.FullName;
-            string keeperPath = directoryPath + ModernMainView._sourcePathKeeper;
+            string keeperPath = directoryPath + _sourcePathKeeper;
             FileInfo fileInfo = new FileInfo (keeperPath);
 
             if ( fileInfo.Exists )
@@ -192,13 +191,6 @@ namespace Lister.ViewModels
         }
 
 
-        private void SwitchPersonChoosingEnabling ( bool shouldEnable )
-        {
-            _personChoosingVM.TextboxIsReadOnly = ! shouldEnable;
-            _personChoosingVM.TextboxIsFocusable = shouldEnable;
-        }
-
-
         private bool CheckWhetherCorrectIfXSLX ( string path )
         {
             bool isOk = true;
@@ -206,10 +198,9 @@ namespace Lister.ViewModels
             if ( path.Last () == 'x' )
             {
                 IRowSource headersSource = App.services.GetService<IRowSource> ();
-
                 List<string> headers = headersSource.GetRow (path, 0);
 
-                for ( int index = 0; index < _xslxHeaders.Count; index++ )
+                for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
                 {
                     bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
 
@@ -228,50 +219,12 @@ namespace Lister.ViewModels
 
         private void DeclineChosenFile ( string filePath )
         {
-            var messegeDialog = new MessageDialog (ModernMainView.Instance);
-            messegeDialog.Message = filePath + _incorrectXSLX;
+            string message = filePath + _incorrectXSLX;
+            var messegeDialog = new MessageDialog (ModernMainView.Instance, message);
+            
             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
             waitingVM.HandleDialogOpenig ();
             messegeDialog.ShowDialog (MainWindow.Window);
-            SourceFilePath = string.Empty;
-        }
-
-
-        private string SetCorrespondingPersons ( string path )
-        {
-            bool valueIsSuitable = ! string.IsNullOrWhiteSpace(path);
-
-            if ( valueIsSuitable )
-            {
-                try
-                {
-                    List <Person> persons = _uniformAssembler.GetPersons (path);
-                    _personChoosingVM.SetPersons (persons);
-                    peopleSettingOccured = true;
-
-                    return path;
-                }
-                catch ( IOException ex )
-                {
-                    var messegeDialog = new MessageDialog (ModernMainView.Instance);
-
-                    if ( ! _pathIsFromKeeper )
-                    {
-                        messegeDialog.Message = _fileIsOpenMessage;
-                        WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                        waitingVM.HandleDialogOpenig ();
-                        messegeDialog.ShowDialog (MainWindow.Window);
-                    }
-
-                    return string.Empty;
-                }
-            }
-            else
-            {
-                _personChoosingVM.SetPersons (null);
-            }
-
-            return string.Empty;
         }
     }
 }
@@ -280,3 +233,40 @@ namespace Lister.ViewModels
 //string path = files [0].Path.ToString ();
 //int uriTypeLength = App.ResourceUriType.Length;
 //path = path.Substring (uriTypeLength, path.Length - uriTypeLength);
+
+
+//private string SetCorrespondingPersons ( string path )
+//{
+//    bool valueIsSuitable = ! string.IsNullOrWhiteSpace(path);
+
+//    if ( valueIsSuitable )
+//    {
+//        try
+//        {
+//            List <Person> persons = _uniformAssembler.GetPersons (path);
+//            _personChoosingVM.SetPersons (persons);
+
+//            return path;
+//        }
+//        catch ( IOException ex )
+//        {
+//            var messegeDialog = new MessageDialog (ModernMainView.Instance);
+
+//            if ( ! _pathIsFromKeeper )
+//            {
+//                messegeDialog.Message = _fileIsOpenMessage;
+//                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+//                waitingVM.HandleDialogOpenig ();
+//                messegeDialog.ShowDialog (MainWindow.Window);
+//            }
+
+//            return string.Empty;
+//        }
+//    }
+//    else
+//    {
+//        _personChoosingVM.SetPersons (( List<Person>? )null);
+//    }
+
+//    return string.Empty;
+//}

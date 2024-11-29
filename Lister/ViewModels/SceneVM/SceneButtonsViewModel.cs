@@ -42,7 +42,6 @@ namespace Lister.ViewModels
         private PrintAdjustingData _printAdjusting;
         private bool _blockIsExtended = false;
         private string _pdfFileName;
-        //private bool _isPdfGenerated;
 
         private double _hintWidth;
         internal double HintWidth
@@ -271,8 +270,7 @@ namespace Lister.ViewModels
                             ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
                             modernMV.EndWaitingPdfOrPrint ();
 
-                            var messegeDialog = new MessageDialog (ModernMainView.Instance);
-                            messegeDialog.Message = _fileIsOpenMessage;
+                            var messegeDialog = new MessageDialog (ModernMainView.Instance, _fileIsOpenMessage);
                             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                             waitingVM.HandleDialogOpenig ();
                             messegeDialog.ShowDialog (MainWindow.Window);

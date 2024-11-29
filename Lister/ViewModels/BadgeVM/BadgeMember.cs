@@ -15,43 +15,43 @@ namespace Lister.ViewModels
         private readonly double _correctionStep = 0.6;
         protected double _scale = 1;
 
-        private double wd;
+        private double _width;
         public double Width
         {
-            get { return wd; }
+            get { return _width; }
             protected set
             {
-                this.RaiseAndSetIfChanged (ref wd, value, nameof (Width));
+                this.RaiseAndSetIfChanged (ref _width, value, nameof (Width));
             }
         }
 
-        private double ht;
+        private double _height;
         public double Height
         {
-            get { return ht; }
+            get { return _height; }
             protected set
             {
-                this.RaiseAndSetIfChanged (ref ht, value, nameof (Height));
+                this.RaiseAndSetIfChanged (ref _height, value, nameof (Height));
             }
         }
 
-        private double tof;
+        private double _topOffset;
         public double TopOffset
         {
-            get { return tof; }
+            get { return _topOffset; }
             set
             {
-                this.RaiseAndSetIfChanged (ref tof, value, nameof (TopOffset));
+                this.RaiseAndSetIfChanged (ref _topOffset, value, nameof (TopOffset));
             }
         }
 
-        private double lof;
+        private double _leftOffset;
         public double LeftOffset
         {
-            get { return lof; }
+            get { return _leftOffset; }
             set
             {
-                this.RaiseAndSetIfChanged (ref lof, value, nameof (LeftOffset));
+                this.RaiseAndSetIfChanged (ref _leftOffset, value, nameof (LeftOffset));
             }
         }
 

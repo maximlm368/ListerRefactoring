@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -23,11 +24,11 @@ namespace Lister.Views
         private static bool _heightIsChanged;
 
         private ModernMainViewModel _vm;
-        private bool _isFirstTimeLoading = true;
-        internal static readonly string _sourcePathKeeper = "keeper.txt";
+        //private bool _isFirstTimeLoading = true;
+       // internal static readonly string _sourcePathKeeper = "keeper.txt";
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
-        internal static int TappedEditorBuildingButton { get; private set; }
+        internal static int TappedGoToEditorButton { get; private set; }
 
         internal static double ProperWidth { get; private set; }
         internal static double ProperHeight { get; private set; }
@@ -45,8 +46,6 @@ namespace Lister.Views
 
             ProperWidth = Width;
             ProperHeight = Height;
-
-            Loaded += OnLoaded;
 
             DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
             _vm = ( ModernMainViewModel ) DataContext;
@@ -76,38 +75,38 @@ namespace Lister.Views
         }
 
 
-        internal void OnLoaded ( object sender, RoutedEventArgs args )
-        {
-            if ( !_isFirstTimeLoading )
-            {
-                return;
-            }
+        //internal void OnLoaded ( object sender, RoutedEventArgs args )
+        //{
+        //    if ( !_isFirstTimeLoading )
+        //    {
+        //        return;
+        //    }
 
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directoryPath = containingDirectory.FullName;
-            string keeperPath = directoryPath + _sourcePathKeeper;
-            FileInfo fileInf = new FileInfo (keeperPath);
+        //    string workDirectory = @"./";
+        //    DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
+        //    string directoryPath = containingDirectory.FullName;
+        //    string keeperPath = directoryPath + _sourcePathKeeper;
+        //    FileInfo fileInf = new FileInfo (keeperPath);
 
-            if ( fileInf.Exists )
-            {
-                string [] lines = File.ReadAllLines (keeperPath);
+        //    if ( fileInf.Exists )
+        //    {
+        //        string [] lines = File.ReadAllLines (keeperPath);
                 
-                try
-                {
-                    personSource.SetPath (lines [0]);
-                }
-                catch ( IndexOutOfRangeException ex ) 
-                {
-                    personSource.SetPath (null);
-                }
-            }
-            else 
-            {
-                File.Create(keeperPath).Close();
-                personSource.SetPath (null);
-            }
-        }
+        //        try
+        //        {
+        //            personSource.SetPath (lines [0]);
+        //        }
+        //        catch ( IndexOutOfRangeException ex ) 
+        //        {
+        //            personSource.SetPath (null);
+        //        }
+        //    }
+        //    else 
+        //    {
+        //        File.Create(keeperPath).Close();
+        //        personSource.SetPath (null);
+        //    }
+        //}
 
 
         internal void ReleaseRunner () 
@@ -200,10 +199,10 @@ namespace Lister.Views
 
             if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
             {
-                EditorView = new BadgeEditorView ( TemplateChoosingViewModel.BuildingOccured, incorrectBadges.Count );
+                EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, incorrectBadges.Count );
                 EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
                 window.CancelSizeDifference ();
-                TappedEditorBuildingButton = 1;
+                TappedGoToEditorButton = 1;
 
                 _vm.SetWaiting ();
             }
@@ -221,7 +220,6 @@ namespace Lister.Views
                 {
                     EditorView.PassIncorrectBadges (_incorrectBadges, _allPrintableBadges, _firstPage);
                     EditorView.PassBackPoint (mainView);
-                    _isFirstTimeLoading = false;
 
                     Dispatcher.UIThread.Invoke
                     (
@@ -233,7 +231,7 @@ namespace Lister.Views
                         }
                     );
 
-                    TappedEditorBuildingButton = 0;
+                    TappedGoToEditorButton = 0;
                 }
             );
 

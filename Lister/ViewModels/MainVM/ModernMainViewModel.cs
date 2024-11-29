@@ -1,52 +1,124 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Core;
 using Avalonia.Media;
 using Avalonia.VisualTree;
+using ColorTextBlock.Avalonia;
 using ContentAssembler;
+using DocumentFormat.OpenXml.Vml;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
-    public class ModernMainViewModel : ViewModelBase
+    public class ModernMainViewModel : ReactiveObject
     {
         public static bool MainViewIsWaiting { get; set; }
 
-        private PersonSourceViewModel _personSourceVM;
-        private PersonChoosingViewModel _personChoosingVM;
-        private TemplateChoosingViewModel _templateChoosingVM;
-        private ZoomNavigationViewModel _zoomNavigationVM;
-        private SceneViewModel _sceneVM;
+        private PersonSourceViewModel _personSourceViewModel;
+        private PersonChoosingViewModel _personChoosingViewModel;
+        private BadgesBuildingViewModel _badgesBuildingViewModel;
+        private PageNavigationZoomerViewModel _zoomNavigationViewModel;
+        private SceneViewModel _sceneViewModel;
         private ModernMainView _view;
 
-        //private bool wV;
-        //public bool WaitingIsVisible
-        //{
-        //    get { return wV; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref wV, value, nameof (WaitingIsVisible));
-        //    }
-        //}
 
-
-        public ModernMainViewModel ( PersonSourceViewModel personSourceVM, PersonChoosingViewModel personChoosingVM,
-                                     TemplateChoosingViewModel templateChoosingVM, ZoomNavigationViewModel zoomNavigationVM,
-                                     SceneViewModel sceneVM )
+        public ModernMainViewModel ( )
         {
-            _personChoosingVM = personChoosingVM;
-            _personSourceVM = personSourceVM;
-            _templateChoosingVM = templateChoosingVM;
-            _zoomNavigationVM = zoomNavigationVM;
-            _sceneVM = sceneVM;
+            _personChoosingViewModel = App.services.GetRequiredService<PersonChoosingViewModel> ();
+            _personSourceViewModel = App.services.GetRequiredService<PersonSourceViewModel> ();
+            _badgesBuildingViewModel = App.services.GetRequiredService<BadgesBuildingViewModel> ();
+            _zoomNavigationViewModel = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
+            _sceneViewModel = App.services.GetRequiredService<SceneViewModel> ();
+
+
+            _personSourceViewModel.PropertyChanged += PersonSourceChanged;
+            _personChoosingViewModel.PropertyChanged += AllAreReadyChanged;
+            _badgesBuildingViewModel.PropertyChanged += BuildButtonTapped;
+            _sceneViewModel.PropertyChanged += SceneHasChanged;
+            _zoomNavigationViewModel.PropertyChanged += ZoomNavigationChanged;
         }
+
+
+        private void PersonSourceChanged ( object ? sender, PropertyChangedEventArgs args )
+        {
+            if ( args.PropertyName == "SourceFilePath" ) 
+            {
+                PersonSourceViewModel personSource = ( PersonSourceViewModel ) sender;
+
+                _personChoosingViewModel.SetPersonsFromFile (personSource.SourceFilePath);
+            }
+        }
+
+
+        private void AllAreReadyChanged ( object ? sender, PropertyChangedEventArgs args )
+        {
+            if ( args.PropertyName == "AllAreReady" )
+            {
+                PersonChoosingViewModel personChoosingViewModel = (PersonChoosingViewModel) sender;
+
+                _badgesBuildingViewModel.TryToEnableBadgeCreation ( personChoosingViewModel.AllAreReady );
+            }
+        }
+
+
+        private void BuildButtonTapped ( object ? sender, PropertyChangedEventArgs args )
+        {
+            if ( args.PropertyName == "BuildButtonIsTapped" ) 
+            {
+                _sceneViewModel.Build (_personChoosingViewModel.ChosenTemplate. Name, _personChoosingViewModel.ChosenPerson);
+            }
+        }
+
+
+        private void SceneHasChanged ( object? sender, PropertyChangedEventArgs args )
+        {
+            if ( args.PropertyName == "BadgesAreCleared" )
+            {
+                _zoomNavigationViewModel.ToZeroState ();
+            }
+            else if ( args.PropertyName == "BuildingIsOccured" )
+            {
+                SceneViewModel sceneViewModel = (SceneViewModel) sender;
+
+                _zoomNavigationViewModel.EnableZoomIfPossible ( sceneViewModel.BuildingIsOccured );
+                _zoomNavigationViewModel.SetEnablePageNavigation (sceneViewModel.PageCount, sceneViewModel.VisiblePageNumber);
+            }
+            else if ( args.PropertyName == "EditIncorrectsIsSelected" )
+            {
+
+            }
+        }
+
+
+        private void ZoomNavigationChanged ( object? sender, PropertyChangedEventArgs args )
+        {
+            PageNavigationZoomerViewModel zoomerNavigator = ( PageNavigationZoomerViewModel ) sender;
+
+            if ( args.PropertyName == "ZoomDegree" )
+            {
+                _sceneViewModel.Zoom (zoomerNavigator.ZoomDegree);
+            }
+            else if ( args.PropertyName == "VisiblePageNumber" ) 
+            {
+                _sceneViewModel.ShowPageWithNumber (zoomerNavigator.VisiblePageNumber);
+            }
+        }
+
+
+
+
 
 
         internal void HandleDialogClosing ()
@@ -58,7 +130,7 @@ namespace Lister.ViewModels
 
         internal void ResetIncorrects ( )
         {
-            _sceneVM.ResetIncorrects ();
+            _sceneViewModel.ResetIncorrects ();
         }
 
 
@@ -80,7 +152,7 @@ namespace Lister.ViewModels
 
         internal void EndWaiting ()
         {
-            _templateChoosingVM.BuildingIsPossible = true;
+            _badgesBuildingViewModel.BuildingIsPossible = true;
             WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
             waitingVM.Hide ();
             MainViewIsWaiting = false;
@@ -97,34 +169,31 @@ namespace Lister.ViewModels
 
         internal void LayoutUpdated ( )
         {
-            if ( TemplateChoosingViewModel.TappedBadgesBuildingButton == 1 )
+            if ( SceneViewModel.EntireListBuildingIsChosen == 1 )
             {
-                _templateChoosingVM.BuildDuringWaiting ();
+                _sceneViewModel.BuildDuringWaiting ();
                 return;
             }
             else if ( SceneViewModel.TappedPdfGenerationButton == 1 )
             {
-                _sceneVM.GeneratePdfDuringWaiting ();
+                _sceneViewModel.GeneratePdfDuringWaiting ();
                 return;
             }
             else if ( SceneViewModel.TappedPrintButton == 1 )
             {
-                _sceneVM.PrintDuringWaiting ();
+                _sceneViewModel.PrintDuringWaiting ();
                 return;
             }
-            else if ( ModernMainView.TappedEditorBuildingButton == 1 )
+            else if ( ModernMainView.TappedGoToEditorButton == 1 )
             {
                 _view.BuildEditor ();
             }
-            //else if ( PrintDialogViewModel.IsClosed )
-            //{
-            //    _sceneVM.StartWaiting ();
-            //}
         }
     }
 
 
 }
+
 //  IUniformDocumentAssembler singleTypeDocumentAssembler, ContentAssembler.Size pageSize
 
 //public override void Send ( string message, List<object> args, LittleViewModel littleVM )
@@ -160,4 +229,39 @@ namespace Lister.ViewModels
 
 
 //    public abstract void Notify ( string message, List<object> ? args );
+//}
+
+
+//Binding personSourceBinding = new Binding ();
+
+//personSourceBinding.Source = _personSourceVM;
+//personSourceBinding.Mode = BindingMode.OneWay;
+//personSourceBinding.Path = "SourceFilePath";
+
+//var expression = this.Bind (PersonSourceProperty, personSourceBinding);
+
+
+//public static readonly AvaloniaProperty PersonSourceProperty;
+
+//public string PersonSource
+//{
+//    get 
+//    { 
+//        return (string) GetValue (PersonSourceProperty); 
+//    }
+
+//    set 
+//    {
+//        //_personChoosingVM.SetCorrespondingPersons (value);
+
+//        SetValue (PersonSourceProperty, value);
+//    }
+//}
+
+
+//static ModernMainViewModel () 
+//{
+//    //AvaloniaPropertyRegistry.Instance.Register (typeof (ModernMainViewModel), PersonSourceProperty);
+
+//    PersonSourceProperty = AvaloniaProperty.Register<ModernMainViewModel,string> ("PersonSource");
 //}

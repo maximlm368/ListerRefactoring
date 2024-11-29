@@ -82,12 +82,6 @@ namespace Lister.Views
             downer.FocusAdorner = null;
 
             filterChoosing.SelectedValue = "Все";
-
-
-            //Back.FocusAdorner = null;
-            //editionPanel.FocusAdorner = null;
-
-            //this.WhenActivated (action => action (ViewModel!.ShowDialog.RegisterHandler (DoShowDialogAsync)));
         }
 
 

@@ -13,30 +13,30 @@ namespace Lister.Views
         public ShowingDialog Caller { get; private set; }
 
         private string _message;
-        internal string Message 
+        internal string Message
         {
-            get 
+            get
             {
-                return _message; 
+                return _message;
             }
 
-            set 
+            set
             {
-                if ( value != null ) 
+                if ( value != null )
                 {
                     List<string> lines = value.SplitBySeparators (new List<char> () { '.' });
 
-                    if ( lines.Count == 1 ) 
+                    if ( lines.Count == 1 )
                     {
                         lines = new List<string> () { value };
                     }
 
                     List<string> pureLines = new List<string> ();
 
-                    foreach ( string line   in   lines ) 
+                    foreach ( string line in lines )
                     {
                         string pureLine = line.Trim ();
-                        pureLines.Add ( pureLine );
+                        pureLines.Add (pureLine);
                     }
 
                     _vm.MessageLines = pureLines;
@@ -52,7 +52,7 @@ namespace Lister.Views
         }
 
 
-        public MessageDialog ( ShowingDialog caller ) : this()
+        public MessageDialog ( ShowingDialog caller, string message ) : this ()
         {
             Caller = caller;
             _vm = new MessageViewModel ();
@@ -66,6 +66,8 @@ namespace Lister.Views
 
             MainWindow mainWindow = App.MainWindow as MainWindow;
             mainWindow.ModalWindow = this;
+
+            Message = message;
         }
 
 

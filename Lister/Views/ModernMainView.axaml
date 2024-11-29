@@ -21,8 +21,8 @@
 			Margin="0,-155"
 			Height="350"/>
 
-		<uc:TemplateChoosingUserControl
-			Name="templateChoosing"
+		<uc:BadgesBuildingUserControl
+			Name="badgeBuilding"
 			Margin="0,-4"/>
 
 		<uc:SceneUserControl

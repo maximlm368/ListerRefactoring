@@ -22,85 +22,85 @@
 		Height="130"
 		BorderBrush = "gray"
         BorderThickness = "1">
-		
-	<StackPanel>
 
-		<Label 
-			Content ="Ошибка"
-			FontSize ="12"
-			Margin ="5,5,0,0"/>
-		
-		<Grid Height="70"  Margin ="0,-5,0,0">
-			
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition  Width="30"></ColumnDefinition>
-				<ColumnDefinition  Width="330"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-					
-			<Image
-				Grid.Column="0"
-				Width="35"
-				Margin ="10,0,0,0"
-				Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+		<StackPanel>
 
-			
-			<ItemsControl
-				Name="messageLines"
-				Grid.Column="1"
-				Width="330"
-				Margin ="{Binding  Path=messageMargin,  Mode=OneWay}"
-				HorizontalAlignment="Left"
-				ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+			<Label
+				Content ="Ошибка"
+				FontSize ="12"
+				Margin ="5,5,0,0"/>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-					
+			<Grid Height="70"  Margin ="0,-5,0,0">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition  Width="30"></ColumnDefinition>
+					<ColumnDefinition  Width="330"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+
+				<Image
+					Grid.Column="0"
+					Width="35"
+					Margin ="10,0,0,0"
+					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+
+
+				<ItemsControl
+					Name="messageLines"
+					Grid.Column="1"
+					Width="330"
+					Margin ="{Binding  Path=messageMargin,  Mode=OneWay}"
+					HorizontalAlignment="Left"
+					ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+
 							<TextBlock
 								Width="330"
 								FontSize="12"
 								Text ="{Binding,  Mode=OneWay}"
 								TextWrapping="WrapWithOverflow"
 					            MaxLines="3"/>
-						
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-			
-			
-		</Grid>
 
-		<Canvas
-			Name ="Line"
-			Width="358"
-			Height="1"
-			Margin ="0,-5,0,0"
-			Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
 
-		<Canvas
-			Width="358"
-			Height="39"
-			Margin ="0,-2,0,0"
-			Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">	
 
-			<Button
-				Name="ok"
-				Width="80"
-				Height="24"
-				FontSize="11"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Center"
-				CornerRadius = "0"
-				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-				BorderBrush = "gray"
-				BorderThickness = "1"
-				Canvas.Top="8"
-				Canvas.Left="270"
-				Content="Ok"
-				Command="{Binding  Path=Close}"/>
+			</Grid>
 
-		</Canvas>
-			
-	</StackPanel>
-    </UserControl>
-		
+			<Canvas
+				Name ="Line"
+				Width="358"
+				Height="1"
+				Margin ="0,-5,0,0"
+				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+
+			<Canvas
+				Width="358"
+				Height="39"
+				Margin ="0,-2,0,0"
+				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">
+
+				<Button
+					Name="ok"
+					Width="80"
+					Height="24"
+					FontSize="11"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					CornerRadius = "0"
+					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+					BorderBrush = "gray"
+					BorderThickness = "1"
+					Canvas.Top="8"
+					Canvas.Left="270"
+					Content="Ok"
+					Command="{Binding  Path=Close}"/>
+
+			</Canvas>
+
+		</StackPanel>
+	</UserControl>
+
 </Window>

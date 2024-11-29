@@ -234,39 +234,6 @@ namespace Lister.ViewModels
         }
 
 
-        //public static double CalculateWidthqq ( string content, TextualAtom demensions )
-        //{
-        //    TextBlock tb = new TextBlock ();
-        //    tb.LetterSpacing = 0;
-        //    tb.Text = content;
-        //    tb.FontSize = demensions.FontSize;
-
-        //    tb.FontWeight = GetFontWeight (demensions.FontWeight);
-        //    string fontName = demensions.FontName;
-        //    tb.FontFamily = new FontFamily (fontName);
-
-        //    Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
-        //    tb.Measure (size);
-        //    tb.Arrange (new Rect ());
-
-
-        //    //FormattedText formatted = new FormattedText (content
-        //    //                                           , System.Globalization.CultureInfo.CurrentCulture
-        //    //                                           , FlowDirection.LeftToRight, Typeface.Default
-        //    //                                           , demensions.FontSize, null);
-
-        //    //formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
-        //    //formatted.SetFontSize (demensions.FontSize);
-        //    //formatted.SetFontFamily ("Kramola");
-
-        //    //double wd = formatted.Width;
-
-        //    //return wd;
-
-        //    return tb.DesiredSize.Width;
-        //}
-
-
         private Thickness SetPadding ()
         {
             Thickness padding;
@@ -303,19 +270,6 @@ namespace Lister.ViewModels
 
         private void SetUsefullWidth ()
         {
-            //TextBlock tb = new TextBlock ();
-            //tb.LetterSpacing = 0;
-            //tb.Text = Content;
-            //tb.FontSize = FontSize;
-            //tb.FontFamily = FontFamily;
-            //tb.FontWeight = FontWeight;
-
-            //Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
-            //tb.Measure (size);
-            //tb.Arrange (new Rect ());
-            //UsefullWidth = tb.DesiredSize.Width;
-
-
             FormattedText formatted = new FormattedText (Content
                                                        , System.Globalization.CultureInfo.CurrentCulture
                                                        , FlowDirection.LeftToRight, Typeface.Default
@@ -350,16 +304,6 @@ namespace Lister.ViewModels
             FontSize /= coefficient;
             UsefullWidth /= coefficient;
         }
-
-
-        //private void SetStandardDimensions ()
-        //{
-        //    FontSize = _standardFontSize;
-        //    UsefullWidth = _standardUsefullWidth;
-        //    TopOffset = _standardTopOffset;
-        //    Padding =
-        //        new Thickness (_standardPadding.Left, _standardPadding.Top, _standardPadding.Right, _standardPadding.Bottom);
-        //}
 
 
         internal void Increase ( double additable )

@@ -28,9 +28,8 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
             _vm = (SceneViewModel) DataContext;
-            var window = TopLevel.GetTopLevel (this);
+            //var window = TopLevel.GetTopLevel (this);
             _vm.PassView (this);
-            this.Margin = new Avalonia.Thickness (5);
             extender.FocusAdorner = null;
         }
 

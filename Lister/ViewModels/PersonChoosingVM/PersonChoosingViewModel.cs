@@ -31,13 +31,15 @@ using ExtentionsAndAuxiliary;
 using Avalonia.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using DataGateway;
 
 namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private static double _withScroll = 432;
-        private static double _withoutScroll = 447;
+        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
+        private static double _withScroll = 462;
+        private static double _withoutScroll = 477;
         private static readonly double _minRunnerHeight = 10;
         private static readonly double _upperHeight = 15;
         private static readonly double _scrollingScratch = 32;
@@ -51,10 +53,7 @@ namespace Lister.ViewModels
         private static SolidColorBrush _focusedBorderColor = new SolidColorBrush (MainWindow.black);
         private static SolidColorBrush _focusedBackgroundColor = 
                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 200));
-        private List<TemplateName> _templateNames;
-        private TemplateChoosingViewModel _templateChoosingVM;
-        private PersonSourceViewModel _personSourceVM;
-        private PersonChoosingUserControl _view;
+        private Dictionary <BadgeLayout, KeyValuePair<string, List<string>>> _badgeLayouts;
         private bool _allListMustBe = false;
         private double _widthDelta;
         private Timer _timer;
@@ -70,99 +69,79 @@ namespace Lister.ViewModels
         internal bool BuildingIsPossible { get; private set; }
         internal List <VisiblePerson> PeopleStorage { get; set; }
 
-        private ObservableCollection <TemplateViewModel> tF;
+        private ObservableCollection <TemplateViewModel> _templates;
         internal ObservableCollection <TemplateViewModel> Templates
         {
             get
             {
-                return tF;
+                return _templates;
             }
             set
             {
-                this.RaiseAndSetIfChanged (ref tF, value, nameof (Templates));
+                this.RaiseAndSetIfChanged (ref _templates, value, nameof (Templates));
             }
         }
 
-        private bool isO;
+        private bool _isOpen;
         internal bool IsOpen
         {
             set
             {
-                this.RaiseAndSetIfChanged (ref isO, value, nameof (isO));
+                this.RaiseAndSetIfChanged (ref _isOpen, value, nameof (_isOpen));
             }
             get
             {
-                return isO;
+                return _isOpen;
             }
         }
 
-        private TemplateViewModel cT;
+        private TemplateViewModel _chosenTemplate;
         internal TemplateViewModel ChosenTemplate
         {
             set
             {
                 bool valueIsSuitable = ( value != null )   &&   ( value.Name != string.Empty );
 
-                this.RaiseAndSetIfChanged (ref cT, value, nameof (ChosenTemplate));
-                TryToEnableBadgeCreationButton ();
+                if ( valueIsSuitable ) 
+                {
+                    foreach ( TemplateViewModel template in Templates )
+                    {
+                        bool isCoincident = ( template.Name == value.Name );
+
+                        if ( isCoincident )
+                        {
+                            this.RaiseAndSetIfChanged (ref _chosenTemplate, value, nameof (ChosenTemplate));
+
+                            SetReadiness ();
+                        }
+                    }
+                }
             }
+
             get
             {
-                return cT;
+                return _chosenTemplate;
             }
         }
 
-
-
-
-        private List <VisiblePerson> iP;
-        internal List <VisiblePerson> InvolvedPeople 
+        private List <VisiblePerson> _involvedPeople;
+        internal List <VisiblePerson> InvolvedPeople
         {
-            get { return iP; }
+            get { return _involvedPeople; }
             set
             {
-                iP = value;
+                _involvedPeople = value;
                 SetPersonList ();
             } 
         }
 
-        private ObservableCollection <VisiblePerson> vP;
-        internal ObservableCollection <VisiblePerson> VisiblePeople
-        {
-            get { return vP; }
-            set
-            {
-                this.RaiseAndSetIfChanged ( ref vP , value , nameof ( VisiblePeople ) );
-            }
-        }
-
-        private string pH;
-        internal string PlaceHolder
-        {
-            get { return pH; }
-            set
-            {
-                this.RaiseAndSetIfChanged (ref pH, value, nameof (PlaceHolder));
-            }
-        }
-
-        private FontWeight fW;
-        internal FontWeight FontWeight
-        {
-            get { return fW; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref fW, value, nameof (FontWeight));
-            }
-        }
-
-        private Person cP;
+        private Person _chosenPerson;
         internal Person ? ChosenPerson
         {
-            get { return cP; }
+            get { return _chosenPerson; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cP, value, nameof (ChosenPerson));
+                this.RaiseAndSetIfChanged (ref _chosenPerson, value, nameof (ChosenPerson));
 
                 _chosenPersonIsSetInSetter = true;
 
@@ -170,144 +149,182 @@ namespace Lister.ViewModels
                 {
                     SetEntireListChoosingConsequences ();
                 }
-                else 
+                else
                 {
                     SetPersonChoosingConsequences ();
                 }
+            }
+        }
 
-                TryToEnableBadgeCreation ();
+        private bool _allAreSelected;
+        public bool AllAreReady
+        {
+            get { return _allAreSelected; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _allAreSelected, value, nameof (AllAreReady));
+            }
+        }
+
+        private ObservableCollection <VisiblePerson> _visiblePeople;
+        internal ObservableCollection <VisiblePerson> VisiblePeople
+        {
+            get { return _visiblePeople; }
+            set
+            {
+                this.RaiseAndSetIfChanged ( ref _visiblePeople , value , nameof ( VisiblePeople ) );
+            }
+        }
+
+        private string _placeholder;
+        internal string PlaceHolder
+        {
+            get { return _placeholder; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _placeholder, value, nameof (PlaceHolder));
+            }
+        }
+
+        private FontWeight _fontWeight;
+        internal FontWeight FontWeight
+        {
+            get { return _fontWeight; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _fontWeight, value, nameof (FontWeight));
             }
         }
 
         private double _visibleHeightStorage;
-        private double vH;
+        private double _visibleHeight;
         internal double VisibleHeight
         {
-            get { return vH; }
+            get { return _visibleHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref vH, value, nameof (VisibleHeight));
+                this.RaiseAndSetIfChanged (ref _visibleHeight, value, nameof (VisibleHeight));
             }
         }
 
-        private SolidColorBrush eC;
+        private SolidColorBrush _colorForEntireList;
         internal SolidColorBrush EntireListColor
         {
-            get { return eC; }
+            get { return _colorForEntireList; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eC, value, nameof (EntireListColor));
+                this.RaiseAndSetIfChanged (ref _colorForEntireList, value, nameof (EntireListColor));
             }
         }
 
-        private double plW;
+        private double _personListWidth;
         internal double PersonListWidth
         {
-            get { return plW; }
+            get { return _personListWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref plW, value, nameof (PersonListWidth));
+                this.RaiseAndSetIfChanged (ref _personListWidth, value, nameof (PersonListWidth));
             }
         }
 
-        private double plH;
+        private double _personListHeight;
         internal double PersonListHeight
         {
-            get { return plH; }
+            get { return _personListHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref plH, value, nameof (PersonListHeight));
+                this.RaiseAndSetIfChanged (ref _personListHeight, value, nameof (PersonListHeight));
             }
         }
 
-        private double psV;
+        private double _personScrollValue;
         internal double PersonsScrollValue
         {
-            get { return psV; }
+            get { return _personScrollValue; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref psV, value, nameof (PersonsScrollValue));
+                this.RaiseAndSetIfChanged (ref _personScrollValue, value, nameof (PersonsScrollValue));
             }
         }
 
         internal double RealRunnerHeight { get; private set; }
-        private double rH;
+        private double _runnerHeight;
         internal double RunnerHeight
         {
-            get { return rH; }
+            get { return _runnerHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref rH, value, nameof (RunnerHeight));
+                this.RaiseAndSetIfChanged (ref _runnerHeight, value, nameof (RunnerHeight));
             }
         }
 
-        private double rTC;
+        private double _runnerTopCoordinate;
         internal double RunnerTopCoordinate
         {
-            get { return rTC; }
+            get { return _runnerTopCoordinate; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref rTC, value, nameof (RunnerTopCoordinate));
+                this.RaiseAndSetIfChanged (ref _runnerTopCoordinate, value, nameof (RunnerTopCoordinate));
             }
         }
 
-        private double tSH;
+        private double _topSpanHeight;
         internal double TopSpanHeight
         {
-            get { return tSH; }
+            get { return _topSpanHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref tSH, value, nameof (TopSpanHeight));
+                this.RaiseAndSetIfChanged (ref _topSpanHeight, value, nameof (TopSpanHeight));
             }
         }
 
-        private double bSH;
+        private double _bottomSpanHeight;
         internal double BottomSpanHeight
         {
-            get { return bSH; }
+            get { return _bottomSpanHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bSH, value, nameof (BottomSpanHeight));
+                this.RaiseAndSetIfChanged (ref _bottomSpanHeight, value, nameof (BottomSpanHeight));
             }
         }
 
-        private double sW;
+        private double _scrollerWidth;
         internal double ScrollerWidth
         {
-            get { return sW; }
+            get { return _scrollerWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollerWidth));
+                this.RaiseAndSetIfChanged (ref _scrollerWidth, value, nameof (ScrollerWidth));
             }
         }
 
-        private double sCL;
+        private double _scrollerCanvasLeft;
         internal double ScrollerCanvasLeft
         {
-            get { return sCL; }
+            get { return _scrollerCanvasLeft; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sCL, value, nameof (ScrollerCanvasLeft));
+                this.RaiseAndSetIfChanged (ref _scrollerCanvasLeft, value, nameof (ScrollerCanvasLeft));
             }
         }
 
-        private double fH;
+        private double _firstItemHeight;
         internal double FirstItemHeight
         {
-            get { return fH; }
+            get { return _firstItemHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fH, value, nameof (FirstItemHeight));
+                this.RaiseAndSetIfChanged (ref _firstItemHeight, value, nameof (FirstItemHeight));
             }
         }
 
-        private bool fV;
+        private bool _firstIsVisible;
         public bool FirstIsVisible
         {
-            get { return fV; }
+            get { return _firstIsVisible; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fV, value, nameof (FirstIsVisible));
+                this.RaiseAndSetIfChanged (ref _firstIsVisible, value, nameof (FirstIsVisible));
 
                 if ( value ) 
                 {
@@ -320,48 +337,48 @@ namespace Lister.ViewModels
             }
         }
 
-        private bool isPS;
+        private bool _isPersonsScrollable;
         public bool IsPersonsScrollable
         {
-            get { return isPS; }
+            get { return _isPersonsScrollable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref isPS, value, nameof (IsPersonsScrollable));
+                this.RaiseAndSetIfChanged (ref _isPersonsScrollable, value, nameof (IsPersonsScrollable));
             }
         }
 
-        private bool tRO;
+        private bool _textboxIsReadOnly;
         public bool TextboxIsReadOnly
         {
-            get { return tRO; }
+            get { return _textboxIsReadOnly; }
             set
             {
-                this.RaiseAndSetIfChanged (ref tRO, value, nameof (TextboxIsReadOnly));
+                this.RaiseAndSetIfChanged (ref _textboxIsReadOnly, value, nameof (TextboxIsReadOnly));
             }
         }
 
-        private bool tIF;
+        private bool _textboxIsFocusable;
         public bool TextboxIsFocusable
         {
-            get { return tIF; }
+            get { return _textboxIsFocusable; }
             set
             {
-                this.RaiseAndSetIfChanged (ref tIF, value, nameof (TextboxIsFocusable));
+                this.RaiseAndSetIfChanged (ref _textboxIsFocusable, value, nameof (TextboxIsFocusable));
             }
         }
 
-        private double dO;
+        private double _dropDownOpacity;
         public double DropDownOpacity
         {
-            get { return dO; }
+            get { return _dropDownOpacity; }
             set
             {
-                this.RaiseAndSetIfChanged (ref dO, value, nameof (DropDownOpacity));
+                this.RaiseAndSetIfChanged (ref _dropDownOpacity, value, nameof (DropDownOpacity));
             }
         }
 
 
-        public PersonChoosingViewModel ( IUniformDocumentAssembler docAssembler )
+        public PersonChoosingViewModel ( )
         {
             VisiblePeople = new ObservableCollection <VisiblePerson> ();
             ScrollerCanvasLeft = _withScroll;
@@ -371,15 +388,44 @@ namespace Lister.ViewModels
             FontWeight = FontWeight.Bold;
             EntireListColor = _entireListColor;
             _focusedEdge = _edge;
-
-            _templateNames = docAssembler.GetBadgeModels ();
         }
 
 
-        internal void PassView ( PersonChoosingUserControl view )
+        internal void SetPersonsFromFile ( string ? path )
         {
-            _view = view;
+            bool valueIsSuitable = ! string.IsNullOrWhiteSpace (path);
+
+            if ( valueIsSuitable )
+            {
+                try
+                {
+                    IUniformDocumentAssembler documentAssembler = App.services.GetService<IUniformDocumentAssembler> ();
+                    List<Person> persons = documentAssembler.GetPersons (path);
+                    SetPersons (persons);
+                    SwitchPersonChoosingEnabling (true);
+                }
+                catch ( IOException ex )
+                {
+                    var messegeDialog = new MessageDialog (ModernMainView.Instance, _fileIsOpenMessage);
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.HandleDialogOpenig ();
+                    messegeDialog.ShowDialog (MainWindow.Window);
+                }
+            }
+            else
+            {
+                SetPersons (null);
+                SwitchPersonChoosingEnabling (true);
+            }
         }
+
+
+        private void SwitchPersonChoosingEnabling ( bool shouldEnable )
+        {
+            TextboxIsReadOnly = ! shouldEnable;
+            TextboxIsFocusable = shouldEnable;
+        }
+
 
         #region DropDown
 
@@ -400,13 +446,13 @@ namespace Lister.ViewModels
                 {
                     ChosenPerson = _focused.Person;
                 }
-
-                PlaceHolder = ChosenPerson.StringPresentation;
+                ChosenPerson = _focused.Person;
+                PlaceHolder = ChosenPerson. StringPresentation;
             }
 
             _chosenPersonIsSetInSetter = false;
             HideDropDownWithoutChange ();
-            TryToEnableBadgeCreation ();
+            SetReadiness ();
         }
 
 
@@ -424,22 +470,6 @@ namespace Lister.ViewModels
             FirstItemHeight = 0;
             FirstIsVisible = false;
         }
-
-
-        //internal void HideDropDownWith ()
-        //{
-        //    if ( InvolvedPeople.Count == 0 )
-        //    {
-        //        RecoverVisiblePeople ();
-        //        FontWeight = FontWeight.Bold;
-        //        PlaceHolder = _placeHolder;
-        //    }
-
-        //    DropDownOpacity = 0;
-        //    VisibleHeight = 0;
-        //    FirstItemHeight = 0;
-        //    FirstIsVisible = false;
-        //}
 
 
         internal void ShowDropDown ()
@@ -460,18 +490,15 @@ namespace Lister.ViewModels
         {
             if ( persons == null )
             {
-                TextboxIsFocusable = false;
-                TextboxIsReadOnly = true;
-
                 return;
             }
 
             List <VisiblePerson> peopleStorage = new ();
             List <VisiblePerson> involvedPeople = new ();
 
-            foreach ( Person person in persons )
+            foreach ( Person person   in   persons )
             {
-                if (IsEmpty(person))
+                if (person.IsEmpty())
                 {
                     continue;
                 }
@@ -483,6 +510,9 @@ namespace Lister.ViewModels
 
             PeopleStorage = peopleStorage;
             InvolvedPeople = involvedPeople;
+            EntirePersonListIsSelected = true;
+            SinglePersonIsSelected = false;
+            ChosenPerson = null;
         }
 
 
@@ -491,10 +521,10 @@ namespace Lister.ViewModels
             bool isEmpty = false;
 
             isEmpty = isEmpty   ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
-                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
-                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
-                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) )
-                                ||   ( string.IsNullOrWhiteSpace (person.FamilyName) );
+                                ||   ( string.IsNullOrWhiteSpace (person.FirstName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.PatronymicName) )
+                                ||   ( string.IsNullOrWhiteSpace (person.Post) )
+                                ||   ( string.IsNullOrWhiteSpace (person.Department) );
 
             return isEmpty;
         }
@@ -556,7 +586,6 @@ namespace Lister.ViewModels
             }
 
             PlaceHolder = _placeHolder;
-            //_view.personTextBox.Text = _placeHolder;
             EntireListColor = _focusedBorderColor;
             _focusedNumber = _focusedEdge - _maxVisibleCount;
         }
@@ -645,7 +674,7 @@ namespace Lister.ViewModels
                 PersonsScrollValue = 0;
             }
 
-            TryToEnableBadgeCreation ();
+            SetReadiness ();
         }
 
 
@@ -669,10 +698,6 @@ namespace Lister.ViewModels
             TextboxIsFocusable = true;
 
             PlaceHolder = _placeHolder;
-
-            //PlaceHolder = "qwerty";
-            //_view.personTextBox.Text = _placeHolder;
-            //_view.personTextBox.Text = "qwerty";
 
             FontWeight = FontWeight.Bold;
 
@@ -756,52 +781,20 @@ namespace Lister.ViewModels
         }
 
 
-        private void TryToEnableBadgeCreation ()
+        private void SetReadiness ()
         {
             if ( ( InvolvedPeople != null )   &&   ( InvolvedPeople. Count > 0 ) )
             {
-                if ( _templateChoosingVM == null )
+                bool areReady = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected )   &&   (ChosenTemplate != null);
+
+                if ( areReady )
                 {
-                    _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
+                    AllAreReady = true;
                 }
-
-                BuildingIsPossible = ( SinglePersonIsSelected   ||   EntirePersonListIsSelected );
-
-                if ( BuildingIsPossible   &&   ( ChosenTemplate != null ) )
+                else
                 {
-                    _templateChoosingVM.BuildingIsPossible = true;
+                    AllAreReady = false;
                 }
-            }
-        }
-
-
-        internal void DisableBuildigPossibility ()
-        {
-            if ( _templateChoosingVM == null )
-            {
-                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
-            }
-
-            _templateChoosingVM.BuildingIsPossible = false;
-        }
-
-
-        private void TryToEnableBadgeCreationButton ()
-        {
-            if ( _templateChoosingVM == null )
-            {
-                _templateChoosingVM = App.services.GetRequiredService<TemplateChoosingViewModel> ();
-            }
-
-            bool buildingIsPossible = ( ChosenTemplate != null )   &&   BuildingIsPossible;
-
-            if ( buildingIsPossible )
-            {
-                _templateChoosingVM.BuildingIsPossible = true;
-            }
-            else
-            {
-                _templateChoosingVM.BuildingIsPossible = false;
             }
         }
 
@@ -811,12 +804,7 @@ namespace Lister.ViewModels
             SinglePersonIsSelected = false;
             EntirePersonListIsSelected = false;
 
-            if ( _personSourceVM == null )
-            {
-                _personSourceVM = App.services.GetRequiredService<PersonSourceViewModel> ();
-            }
-
-            _personSourceVM. peopleSettingOccured = false;
+            AllAreReady = false;
         }
 
 
@@ -847,57 +835,173 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ChangeAccordingTheme ( string theme )
+        internal void SetUp ( string theme )
         {
-            SolidColorBrush foundColor = new SolidColorBrush (MainWindow.black);
-            SolidColorBrush unfoundColor = new SolidColorBrush (new Avalonia.Media.Color (100, 0, 0, 0));
+            IBadgeAppearenceProvider badgeAppearenceProvider = App.services.GetRequiredService<IBadgeAppearenceProvider> ();
+            _badgeLayouts = badgeAppearenceProvider.GetBadgeLayouts ();
+
+            SolidColorBrush correctColor = new SolidColorBrush (MainWindow.black);
+            SolidColorBrush uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 0, 0, 0));
 
             if ( theme == "Dark" )
             {
-                foundColor = new SolidColorBrush (MainWindow.white);
-                unfoundColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
+                correctColor = new SolidColorBrush (MainWindow.white);
+                uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
             }
 
             ObservableCollection <TemplateViewModel> templates = new ();
 
-            foreach ( TemplateName name   in   _templateNames )
+            foreach ( KeyValuePair <BadgeLayout, KeyValuePair<string, List<string>>> layout   in   _badgeLayouts)
             {
-                SolidColorBrush brush;
+                KeyValuePair<string, List<string>> sourceAndErrors = layout.Value;
 
-                if ( name.isFound )
+                SolidColorBrush brush;
+                bool correctLayoutHasEmptyMessage = ( sourceAndErrors.Value. Count < 1 );
+
+                if ( correctLayoutHasEmptyMessage )
                 {
-                    brush = foundColor;
+                    brush = correctColor;
                 }
                 else
                 {
-                    brush = unfoundColor;
+                    brush = uncorrectColor;
                 }
 
-                templates.Add (new TemplateViewModel (name, brush));
+                List<string> errors = layout.Value. Value;
+                string source = layout.Value. Key;
+                
+                templates.Add (new TemplateViewModel (new TemplateName(layout.Key.TemplateName, correctLayoutHasEmptyMessage)
+                                                      , brush, errors, source));
             }
 
             Templates = templates;
         }
 
 
-        //private void TryToEnableBadgeCreationButton ()
+
+        //public void SetChosenTemplate ( Type callerType, TemplateViewModel settableTemplate )
         //{
-        //    if ( _personChoosingVM == null )
-        //    {
-        //        _personChoosingVM = App.services.GetRequiredService<PersonChoosingViewModel> ();
-        //    }
+        //    bool callerIsExeptable = ( callerType.FullName == "Lister.Views.PersonChoosingUserControl" );
 
-        //    bool buildingIsPossible = ( ChosenTemplate != null ) && _personChoosingVM.BuildingIsPossible;
+        //    if ( callerIsExeptable )
+        //    {
+        //        foreach ( TemplateViewModel template   in   Templates ) 
+        //        {
+        //            bool isCoincident = ( template.Name == settableTemplate.Name );
 
-        //    if ( buildingIsPossible )
-        //    {
-        //        BuildingIsPossible = true;
-        //    }
-        //    else
-        //    {
-        //        BuildingIsPossible = false;
+        //            if ( isCoincident ) 
+        //            {
+                    
+        //            }
+        //        }
+
+
+
+        //        ChosenTemplate = settableTemplate;
         //    }
         //}
+
+
+        //public List <TemplateName> GetBadgeTemplateNames ()
+        //{
+        //    List<TemplateName> templateNames = new ();
+
+        //    foreach ( KeyValuePair<string, string> template in _nameAndJson )
+        //    {
+        //        string jsonPath = template.Value;
+        //        string backgroundPath =
+        //            GetterFromJson.GetSectionValue (new List<string> { "BackgroundImagePath" }, jsonPath) ?? "";
+
+        //        string imagePath = _resourceFolder + backgroundPath;
+        //        bool isFound = true;
+
+        //        try
+        //        {
+        //            using Stream stream = new FileStream (imagePath, FileMode.Open);
+        //        }
+        //        catch ( FileNotFoundException ex )
+        //        {
+        //            isFound = false;
+        //        }
+
+        //        templateNames.Add (new TemplateName (template.Key, isFound));
+        //    }
+
+        //    return templateNames;
+        //}
+    }
+
+
+
+    public class TemplateName
+    {
+        public string Name { get; private set; }
+        public bool IsFound { get; private set; }
+
+
+        public TemplateName ( string name, bool isFound )
+        {
+            Name = name;
+            IsFound = isFound;
+        }
+    }
+
+
+
+    public class TemplateViewModel : ViewModelBase
+    {
+        private TemplateName TemplateName { get; set; }
+        public string SourcePath { get; private set; }
+
+        private string _name;
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _name, value, nameof (Name));
+            }
+        }
+
+        private SolidColorBrush _color;
+        public SolidColorBrush Color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _color, value, nameof (Color));
+            }
+        }
+
+        private List<string> _correctnessMessage;
+        public List<string> CorrectnessMessage
+        {
+            get
+            {
+                return _correctnessMessage;
+            }
+            set
+            {
+                _correctnessMessage = value;
+            }
+        }
+
+
+        public TemplateViewModel ( TemplateName templateName, SolidColorBrush color
+                                  , List<string> correctnessMessage, string sourcePath )
+        {
+            TemplateName = templateName;
+            Name = templateName.Name;
+            Color = color;
+            CorrectnessMessage = correctnessMessage;
+            SourcePath = sourcePath;
+        }
     }
 }
 

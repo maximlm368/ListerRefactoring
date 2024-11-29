@@ -12,22 +12,13 @@ namespace Lister.Views
 {
     public partial class PersonSourceUserControl : UserControl
     {
-        private readonly PersonSourceViewModel _viewModel;
-
-
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
-            _viewModel = App.services.GetRequiredService<PersonSourceViewModel> ();
-            DataContext = _viewModel;
+            PersonSourceViewModel viewModel = App.services.GetRequiredService<PersonSourceViewModel> ();
+            DataContext = viewModel;
 
-            _viewModel.PassView (this);
-        }
-
-
-        internal void SetPath ( string ? path )
-        {
-            _viewModel.TrySetPath ( this.GetType(), path);
+            viewModel.OnLoaded ();
         }
     }
 }

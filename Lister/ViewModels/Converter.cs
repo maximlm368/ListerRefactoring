@@ -206,7 +206,7 @@ class ConverterToPdf
             byte green = textLine.Green;
             byte blue = textLine.Blue;
 
-            string fontFilePath = App.WorkDirectoryPath + App.ResourceUriFolderName + textLine.FontFile;
+            string fontFilePath = App.WorkDirectoryPath + App.ResourceFolderName + textLine.FontFile;
 
             TextBlockDescriptor textBlock = layers
             .Layer ()

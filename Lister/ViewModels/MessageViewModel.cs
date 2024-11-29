@@ -91,7 +91,7 @@ namespace Lister.ViewModels
         }
 
 
-        public MessageViewModel () 
+        public MessageViewModel ()
         {
             string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
@@ -108,7 +108,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void Close (  )
+        internal void Close ()
         {
             _view.Shut ();
         }

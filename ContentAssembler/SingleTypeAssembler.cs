@@ -21,7 +21,7 @@ namespace ContentAssembler
 
         public List <Person> GetPersons (string? personsFilePath);
 
-        public List <TemplateName> GetBadgeModels ( );
+        //public List <TemplateName> GetBadgeModels ( );
     }
 
 
@@ -39,7 +39,7 @@ namespace ContentAssembler
         {
             this._badgeAppearenceProvider = badgeAppearenceDataSource;
             this._peopleSourceFactory = peopleSourceFactory;
-            _people = new List <Person>();
+            _people = new ();
         }
 
 
@@ -84,10 +84,10 @@ namespace ContentAssembler
         }
 
 
-        public List <TemplateName> GetBadgeModels ( )
-        {
-            return _badgeAppearenceProvider.GetBadgeTemplateNames ( );
-        }
+        //public List <TemplateName> GetBadgeModels ( )
+        //{
+        //    return _badgeAppearenceProvider.GetBadgeTemplateNames ( );
+        //}
 
 
         public List <Person> GetPersons(string personsFilePath) 

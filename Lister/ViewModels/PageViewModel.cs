@@ -22,8 +22,8 @@ namespace Lister.ViewModels;
 
 public class PageViewModel : ViewModelBase
 {
-    private static double _contentTopOffset;
-    private static double _contentLeftOffset;
+    private static double _topOffsetOfContent;
+    private static double _leftOffsetOfContent;
     internal static Size PageSize { get; private set; }
 
     private bool _isShown;
@@ -31,73 +31,73 @@ public class PageViewModel : ViewModelBase
     private double _scale;
     private BadgeLine _fillableLine;
 
-    private double pW;
+    private double _pageWidth;
     internal double PageWidth
     {
-        get { return pW; }
+        get { return _pageWidth; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pW, value, nameof (PageWidth));
+            this.RaiseAndSetIfChanged (ref _pageWidth, value, nameof (PageWidth));
         }
     }
 
-    private double pH;
+    private double _pageHeight;
     internal double PageHeight
     {
-        get { return pH; }
+        get { return _pageHeight; }
         set
         {
-            this.RaiseAndSetIfChanged (ref pH, value, nameof (PageHeight));
+            this.RaiseAndSetIfChanged (ref _pageHeight, value, nameof (PageHeight));
         }
     }
 
-    private double bW;
+    private double _borderWidth;
     internal double BorderWidth
     {
-        get { return bW; }
+        get { return _borderWidth; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bW, value, nameof (BorderWidth));
+            this.RaiseAndSetIfChanged (ref _borderWidth, value, nameof (BorderWidth));
         }
     }
 
-    private double bH;
+    private double _borderHeight;
     internal double BorderHeight
     {
-        get { return bH; }
+        get { return _borderHeight; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bH, value, nameof (BorderHeight));
+            this.RaiseAndSetIfChanged (ref _borderHeight, value, nameof (BorderHeight));
         }
     }
 
-    private double tO;
+    private double _contentTopOffset;
     internal double ContentTopOffset
     {
-        get { return tO; }
+        get { return _contentTopOffset; }
         set
         {
-            this.RaiseAndSetIfChanged (ref tO, value, nameof (ContentTopOffset));
+            this.RaiseAndSetIfChanged (ref _contentTopOffset, value, nameof (ContentTopOffset));
         }
     }
 
-    private double lO;
+    private double _contentLeftOffset;
     internal double ContentLeftOffset
     {
-        get { return lO; }
+        get { return _contentLeftOffset; }
         set
         {
-            this.RaiseAndSetIfChanged (ref lO, value, nameof (ContentLeftOffset));
+            this.RaiseAndSetIfChanged (ref _contentLeftOffset, value, nameof (ContentLeftOffset));
         }
     }
 
-    private ObservableCollection <BadgeLine> llines;
+    private ObservableCollection <BadgeLine> _lines;
     internal ObservableCollection <BadgeLine> Lines
     {
-        get { return llines; }
+        get { return _lines; }
         set
         {
-            this.RaiseAndSetIfChanged (ref llines, value, nameof (Lines));
+            this.RaiseAndSetIfChanged (ref _lines, value, nameof (Lines));
         }
     }
 
@@ -105,8 +105,8 @@ public class PageViewModel : ViewModelBase
     static PageViewModel () 
     {
         PageSize = new Size (794, 1123);
-        _contentTopOffset = 20;
-        _contentLeftOffset = 45;
+        _topOffsetOfContent = 20;
+        _leftOffsetOfContent = 45;
     }
 
 
@@ -117,8 +117,8 @@ public class PageViewModel : ViewModelBase
         _badgeCount = 0;
         PageWidth = PageSize. Width;
         PageHeight = PageSize. Height;
-        ContentTopOffset = _contentTopOffset;
-        ContentLeftOffset = _contentLeftOffset;
+        ContentTopOffset = _topOffsetOfContent;
+        ContentLeftOffset = _leftOffsetOfContent;
         double usefullHeight = PageHeight - 20;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
@@ -137,8 +137,8 @@ public class PageViewModel : ViewModelBase
         _badgeCount = page._badgeCount;
         PageWidth = PageSize. Width;
         PageHeight = PageSize. Height;
-        ContentTopOffset = _contentTopOffset;
-        ContentLeftOffset = _contentLeftOffset;
+        ContentTopOffset = _topOffsetOfContent;
+        ContentLeftOffset = _leftOffsetOfContent;
         BorderHeight = PageHeight + 2;
         BorderWidth = PageWidth + 2;
 
@@ -356,12 +356,12 @@ public class PageViewModel : ViewModelBase
     private static List <PageViewModel> Place ( List <BadgeViewModel> placebleBadges, double desiredScale
                                                                             , PageViewModel fillablePage ) 
     {
-        List<PageViewModel> result = new ();
+        List <PageViewModel> result = new ();
 
         for ( int index = 0;   index < placebleBadges.Count;   index++ )
         {
             BadgeViewModel beingProcessedBadge = placebleBadges [index];
-            //beingProcessedBadge.SetCorrectScale (desiredScale);
+
             PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge);
             bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
 

@@ -16,6 +16,13 @@ using DataGateway;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using DocumentFormat.OpenXml.Packaging;
+using System.Text.Json;
+//using Json.Schema;
+//using System.Text.Json.Nodes;
+using Newtonsoft.Json.Linq;
+using NJsonSchema;
+using NJsonSchema.Validation;
+using NJsonSchema.Generation;
 
 
 namespace Lister.Desktop;
@@ -61,29 +68,29 @@ class Program
     }
 
 
-    private static void GetFontFilesAndNames ( FileInfo [] fromFiles, out List<string> fontFiles, out List<string> fontNames ) 
+    private static void GetFontFilesAndNames ( FileInfo [] jsonFiles, out List<string> fontFiles, out List<string> fontNames ) 
     {
         fontFiles = new ();
         fontNames = new ();
 
-        foreach ( FileInfo fileInfo   in   fromFiles )
+        foreach ( FileInfo fileInfo   in   jsonFiles )
         {
             string jsonPath = fileInfo.FullName;
-            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontFile" }, jsonPath));
-            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FamilyName", "FontName" }, jsonPath));
-            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontFile" }, jsonPath));
-            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "FirstName", "FontName" }, jsonPath));
-            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontFile" }, jsonPath));
-            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "PatronymicName", "FontName" }, jsonPath));
-            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontFile" }, jsonPath));
-            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Post", "FontName" }, jsonPath));
-            fontFiles.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontFile" }, jsonPath));
-            fontNames.Add (GetterFromJson.GetSectionValue (new List<string> { "Department", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FamilyName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FamilyName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FirstName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FirstName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionStrValue (new List<string> { "PatronymicName", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "PatronymicName", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Post", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Post", "FontName" }, jsonPath));
+            fontFiles.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Department", "FontFile" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Department", "FontName" }, jsonPath));
 
             IEnumerable<IConfigurationSection> unitings =
                       GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
 
-            foreach ( IConfigurationSection unit in unitings )
+            foreach ( IConfigurationSection unit   in   unitings )
             {
                 IConfigurationSection fontFileSection = unit.GetSection ("FontFile");
                 IConfigurationSection fontNameSection = unit.GetSection ("FontName");

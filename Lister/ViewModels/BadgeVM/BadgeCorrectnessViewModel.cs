@@ -15,79 +15,79 @@ namespace Lister.ViewModels
 {
     internal class BadgeCorrectnessViewModel : ViewModelBase
     {
-        private static string _correctnessIcon = "Icons/GreenCheckMarker.jpg";
-        private static string _incorrectnessIcon = "Icons/RedCross.png";
+        private static string _correctnessIconPath = "Icons/GreenCheckMarker.jpg";
+        private static string _incorrectnessIconPath = "Icons/RedCross.png";
         private static readonly Bitmap _correctIcon;
         private static readonly Bitmap _incorrectIcon;
 
 
-        private bool cr;
+        private bool _correctness;
         internal bool Correctness
         {
-            get { return cr; }
+            get { return _correctness; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cr, value, nameof (Correctness));
+                this.RaiseAndSetIfChanged (ref _correctness, value, nameof (Correctness));
             }
         }
 
-        private Bitmap crI;
+        private Bitmap _correctnessIcon;
         internal Bitmap CorrectnessIcon
         {
-            get { return crI; }
+            get { return _correctnessIcon; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref crI, value, nameof (CorrectnessIcon));
+                this.RaiseAndSetIfChanged (ref _correctnessIcon, value, nameof (CorrectnessIcon));
             }
         }
 
-        private IBrush clr;
+        private IBrush _borderColor;
         internal IBrush BorderColor
         {
-            get { return clr; }
+            get { return _borderColor; }
             set
             {
-                this.RaiseAndSetIfChanged (ref clr, value, nameof (BorderColor));
+                this.RaiseAndSetIfChanged (ref _borderColor, value, nameof (BorderColor));
             }
         }
 
-        private string bPN;
+        private string _boundPersonName;
         internal string BoundPersonName
         {
-            get { return bPN; }
+            get { return _boundPersonName; }
             set
             {
-                this.RaiseAndSetIfChanged (ref bPN, value, nameof (BoundPersonName));
+                this.RaiseAndSetIfChanged (ref _boundPersonName, value, nameof (BoundPersonName));
             }
         }
 
-        private double pE;
+        private double _personNameExpending;
         internal double PersonNameExpending
         {
-            get { return pE; }
+            get { return _personNameExpending; }
             set
             {
-                this.RaiseAndSetIfChanged (ref pE, value, nameof (PersonNameExpending));
+                this.RaiseAndSetIfChanged (ref _personNameExpending, value, nameof (PersonNameExpending));
             }
         }
 
-        private Avalonia.Media.FontWeight bFW;
+        private Avalonia.Media.FontWeight _boundFontWeight;
         internal Avalonia.Media.FontWeight BoundFontWeight
         {
-            get { return bFW; }
+            get { return _boundFontWeight; }
             set
             {
-                this.RaiseAndSetIfChanged (ref bFW, value, nameof (BoundFontWeight));
+                this.RaiseAndSetIfChanged (ref _boundFontWeight, value, nameof (BoundFontWeight));
             }
         }
 
-        private double iO;
+        private double _iconOpacity;
         internal double IconOpacity
         {
-            get { return iO; }
+            get { return _iconOpacity; }
             set
             {
-                this.RaiseAndSetIfChanged (ref iO, value, nameof (IconOpacity));
+                this.RaiseAndSetIfChanged (ref _iconOpacity, value, nameof (IconOpacity));
             }
         }
 
@@ -96,8 +96,8 @@ namespace Lister.ViewModels
 
         static BadgeCorrectnessViewModel ( )
         {
-            string correctUriString = App.ResourceDirectoryUri + _correctnessIcon;
-            string incorrectUriString = App.ResourceDirectoryUri + _incorrectnessIcon;
+            string correctUriString = App.ResourceDirectoryUri + _correctnessIconPath;
+            string incorrectUriString = App.ResourceDirectoryUri + _incorrectnessIconPath;
 
             Uri correctUri = new Uri (correctUriString);
             Uri incorrectUri = new Uri (incorrectUriString);

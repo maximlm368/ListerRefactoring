@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="130"
+        x:Class="Lister.Views.LargeMessageDialog"
+		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
+		xmlns:vm="clr-namespace:Lister.ViewModels"
+		Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
+		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
+		WindowStartupLocation="CenterOwner"
+		x:DataType="vm:LargeMessageViewModel"
+		
+		SystemDecorations="None">
+
+	<UserControl
+		Name="body"
+		Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
+		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
+		BorderBrush = "gray"
+        BorderThickness = "1">
+		
+	<StackPanel>
+
+		<Label 
+			Content ="Ошибка"
+			FontSize ="12"
+			Height="20"
+			Margin ="5,0,0,0"/>
+
+		<Grid
+			Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
+			Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition  Width="35"></ColumnDefinition>
+				<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+
+			<Image
+				Grid.Column="0"
+				Width="35"
+				Margin ="10,17"
+				VerticalAlignment="Top"
+				Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+
+			<Grid
+				Grid.Column="1"
+				Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }">
+				
+				<Grid.RowDefinitions>
+					<RowDefinition  Height="35"></RowDefinition>
+					<RowDefinition  Height="35"></RowDefinition>
+					<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
+				</Grid.RowDefinitions>
+				
+				<Grid
+					Grid.Row="0"
+					Height="35">
+					
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition  Width="55"></ColumnDefinition>
+						<ColumnDefinition  Width="370"></ColumnDefinition>
+						<ColumnDefinition  Width="175"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+					<TextBlock
+						Grid.Column="0"
+						Height="35"
+						FontSize="16"
+						Padding="2,6"
+						Text="Файл:"/>
+
+					<TextBox
+						Grid.Column="1"
+						FontSize="16"
+						BorderThickness="1"
+						IsReadOnly="True"
+						Text="{Binding  Path = ErrorsSource,  Mode=OneWay }"/>
+					
+					<TextBlock
+						Grid.Column="2"
+						Height="35"
+						FontSize="16"
+						Padding="2,6"
+						Text=" - содержит ошибки,"/>
+					
+				</Grid>
+				
+				<TextBlock
+					Grid.Row="1"
+					Height="35"
+					FontSize="16"
+					Padding="2,6"
+					Text="макет будет построен с дефолтными значениями !"/>
+
+				<ScrollViewer
+					Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }"
+					Height="{Binding  Path = ErrorsContainerHeight,  Mode=OneWay }"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto"
+					AllowAutoHide="True"
+					BorderBrush="Gray"
+					BorderThickness="5"
+					Grid.Row="2">
+
+					<ItemsControl
+						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
+						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
+						HorizontalAlignment="Left"
+						ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+
+								<TextBlock
+									Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
+									Height="16"
+									FontSize="12"
+									Text ="{Binding,  Mode=OneWay}"
+									MaxLines="1000"/>
+
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+				
+			</Grid>
+			
+		</Grid>
+
+		<Canvas
+			Name ="Line"
+			Width="{Binding  Path = LineWidth,  Mode=OneWay }"
+			Height="1"
+			Margin ="0,0,0,0"
+			Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+
+		<Canvas
+			Width="{Binding  Path = LineWidth,  Mode=OneWay }"
+			Height="39"
+			Margin ="0,0,0,0"
+			Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">	
+
+			<Button
+				Name="ok"
+				Width="80"
+				Height="24"
+				FontSize="11"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				CornerRadius = "0"
+				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+				BorderBrush = "gray"
+				BorderThickness = "1"
+				Canvas.Top="6"
+				Canvas.Left="{Binding  Path = ButtonCanvasLeft,  Mode=OneWay }"
+				Content="Ok"
+				Command="{Binding  Path=Close}"/>
+
+		</Canvas>
+			
+	</StackPanel>
+    </UserControl>
+		
+</Window>
+
+<!--
+
+				Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
+				HorizontalAlignment="Left"
+
+D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\Resources\Doctor.json
+
+<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
+Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
+
+		ExtendClientAreaToDecorationsHint = "true"
+		ExtendClientAreaChromeHints = "NoChrome"
+		ExtendClientAreaTitleBarHeightHint = "0"
+
+-->

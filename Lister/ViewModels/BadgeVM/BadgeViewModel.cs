@@ -31,7 +31,7 @@ public class BadgeViewModel : ViewModelBase
 
     private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
     private readonly double _interLineAddition = 1;
-    private string _badLineColor;
+    private List<byte> _badLineColor;
     private IBadLineColorProvider _badLineColorProvider;
 
     internal int Id { get; set; }
@@ -43,13 +43,13 @@ public class BadgeViewModel : ViewModelBase
     internal Badge BadgeModel { get; private set; }
 
     private Bitmap _bitMap = null;
-    private Bitmap bM;
+    private Bitmap _imageBitmap;
     internal Bitmap ImageBitmap
     {
-        get { return bM; }
+        get { return _imageBitmap; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref bM, value, nameof (ImageBitmap));
+            this.RaiseAndSetIfChanged (ref _imageBitmap, value, nameof (ImageBitmap));
         }
 
     }
@@ -57,167 +57,167 @@ public class BadgeViewModel : ViewModelBase
     private double _widht;
     private double _height;
 
-    private double bW;
+    private double _badgeWidth;
     internal double BadgeWidth
     {
-        get { return bW; }
+        get { return _badgeWidth; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bW, value, nameof (BadgeWidth));
+            this.RaiseAndSetIfChanged (ref _badgeWidth, value, nameof (BadgeWidth));
         }
     }
 
-    private double bH;
+    private double _badgeHeight;
     internal double BadgeHeight
     {
-        get { return bH; }
+        get { return _badgeHeight; }
         set
         {
-            this.RaiseAndSetIfChanged (ref bH, value, nameof (BadgeHeight));
+            this.RaiseAndSetIfChanged (ref _badgeHeight, value, nameof (BadgeHeight));
         }
     }
 
-    private double hC;
-    internal double HeightCrutch
-    {
-        get { return hC; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref hC, value, nameof (HeightCrutch));
-        }
-    }
+    //private double hC;
+    //internal double HeightCrutch
+    //{
+    //    get { return hC; }
+    //    set
+    //    {
+    //        this.RaiseAndSetIfChanged (ref hC, value, nameof (HeightCrutch));
+    //    }
+    //}
 
-    private double bHC;
-    internal double BorderHeightCrutch
-    {
-        get { return bHC; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref bHC, value, nameof (BorderHeightCrutch));
-        }
-    }
+    //private double bHC;
+    //internal double BorderHeightCrutch
+    //{
+    //    get { return bHC; }
+    //    set
+    //    {
+    //        this.RaiseAndSetIfChanged (ref bHC, value, nameof (BorderHeightCrutch));
+    //    }
+    //}
 
-    private double boW;
+    private double _borderWidth;
     internal double BorderWidth
     {
-        get { return boW; }
+        get { return _borderWidth; }
         set
         {
-            this.RaiseAndSetIfChanged (ref boW, value, nameof (BorderWidth));
+            this.RaiseAndSetIfChanged (ref _borderWidth, value, nameof (BorderWidth));
         }
     }
 
-    private double boH;
+    private double _borderHeight;
     internal double BorderHeight
     {
-        get { return boH; }
+        get { return _borderHeight; }
         set
         {
-            this.RaiseAndSetIfChanged (ref boH, value, nameof (BorderHeight));
+            this.RaiseAndSetIfChanged (ref _borderHeight, value, nameof (BorderHeight));
         }
     }
 
-    private Thickness margin;
+    private Thickness _margin;
     internal Thickness Margin
     {
-        get { return margin; }
+        get { return _margin; }
         set
         {
-            this.RaiseAndSetIfChanged (ref margin, value, nameof (Margin));
+            this.RaiseAndSetIfChanged (ref _margin, value, nameof (Margin));
         }
     }
 
-    private TextLineViewModel fL;
+    private TextLineViewModel _focusedLine;
     internal TextLineViewModel FocusedLine 
     {
-        get { return fL; }
+        get { return _focusedLine; }
         set 
         {
-            fL = value;
+            _focusedLine = value;
 
-            if ( (fL == null)   ||   (fL.Content == null) )
+            if ( (_focusedLine == null)   ||   (_focusedLine.Content == null) )
             {
                 FocusedText = string.Empty;
             }
             else 
             {
-                FocusedText = fL.Content;
+                FocusedText = _focusedLine.Content;
             }
         } 
     }
 
-    private string fT;
+    private string _focusedText;
     internal string FocusedText
     {
-        get { return fT; }
+        get { return _focusedText; }
         set
         {
-            this.RaiseAndSetIfChanged (ref fT, value, nameof (FocusedText));
+            this.RaiseAndSetIfChanged (ref _focusedText, value, nameof (FocusedText));
         }
     }
 
     private List <TextLineViewModel> BorderViolentLines { get; set; }
     private List <TextLineViewModel> OverlayViolentLines { get; set; }
-    private ObservableCollection <TextLineViewModel> tL;
+    private ObservableCollection <TextLineViewModel> _textLines;
     internal ObservableCollection <TextLineViewModel> TextLines
     {
-        get { return tL; }
+        get { return _textLines; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref tL, value, nameof (TextLines));
+            this.RaiseAndSetIfChanged (ref _textLines, value, nameof (TextLines));
         }
     }
 
-    private ObservableCollection <ImageViewModel> iI;
+    private ObservableCollection <ImageViewModel> _insideImages;
     internal ObservableCollection <ImageViewModel> InsideImages
     {
-        get { return iI; }
+        get { return _insideImages; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref iI, value, nameof (InsideImages));
+            this.RaiseAndSetIfChanged (ref _insideImages, value, nameof (InsideImages));
         }
     }
 
-    private ObservableCollection <ImageViewModel> rs;
+    private ObservableCollection <ImageViewModel> _insideShapes;
     internal ObservableCollection <ImageViewModel> InsideShapes
     {
-        get { return rs; }
+        get { return _insideShapes; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref rs, value, nameof (InsideShapes));
+            this.RaiseAndSetIfChanged (ref _insideShapes, value, nameof (InsideShapes));
         }
     }
 
     private double _borderThickness;
-    private Avalonia.Thickness bT;
+    private Avalonia.Thickness _thicknessOfBorder;
     internal Avalonia.Thickness BorderThickness
     {
-        get { return bT; }
+        get { return _thicknessOfBorder; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref bT, value, nameof (BorderThickness));
+            this.RaiseAndSetIfChanged (ref _thicknessOfBorder, value, nameof (BorderThickness));
         }
     }
 
-    private string fS;
+    private string _focusedFontSize;
     internal string FocusedFontSize
     {
-        get { return fS; }
+        get { return _focusedFontSize; }
         set
         {
-            this.RaiseAndSetIfChanged (ref fS, value, nameof (FocusedFontSize));
+            this.RaiseAndSetIfChanged (ref _focusedFontSize, value, nameof (FocusedFontSize));
         }
     }
 
     internal bool IsCorrect { get; private set; }
 
-    private bool iC;
+    private bool _isChanged;
     internal bool IsChanged
     {
-        get { return iC; }
+        get { return _isChanged; }
         set
         {
-            this.RaiseAndSetIfChanged (ref iC, value, nameof (IsChanged));
+            this.RaiseAndSetIfChanged (ref _isChanged, value, nameof (IsChanged));
         }
     }
 
@@ -358,8 +358,6 @@ public class BadgeViewModel : ViewModelBase
         {
             original.ZoomOn (Scale);
         }
-
-        //original.ZoomOut (Scale);
 
         return original;
     }
@@ -910,13 +908,11 @@ public class BadgeViewModel : ViewModelBase
         }
         else 
         {
-            List<int> rgb = _badLineColor.TranslateIntoIntList ();
-
-            if ( rgb.Count == 3 )
+            if ( _badLineColor.Count == 3 )
             {
-                byte r = ( byte ) rgb [0];
-                byte g = ( byte ) rgb [1];
-                byte b = ( byte ) rgb [2];
+                byte r = _badLineColor [0];
+                byte g = _badLineColor [1];
+                byte b = _badLineColor [2];
 
                 IBrush brush;
 

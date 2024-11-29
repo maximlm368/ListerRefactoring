@@ -9,22 +9,36 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
+        private static readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
         private static readonly int _badgeCountLimit = 3333;
         private static readonly double _scalabilityCoefficient = 1.25;
+
+        public static int EntireListBuildingIsChosen { get; private set; }
 
         private ConverterToPdf _converter;
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
-        private double _zoomDegree = 100;
+
         private List <PageViewModel> _allPages;
+        internal List <PageViewModel> AllPages 
+        {
+            get { return _allPages; }
+            private set { _allPages = value; }
+        }
+
         private List <PageViewModel> _printablePages;
         
         private PageViewModel _lastPage;
         private PageViewModel _lastPrintablePage;
         private SceneUserControl _view;
-        private Person _chosenPerson;
-        private string _procentSymbol = "%";
         private int _visiblePageNumStorage;
+
+        private string _templateForBuilding;
+        private Person _chosenPerson;
+
+        private bool _buildingIsLocked;
+
+
 
         private PageViewModel _visiblePage;
         internal PageViewModel VisiblePage
@@ -165,42 +179,79 @@ namespace Lister.ViewModels
             }
         }
 
-        private PersonChoosingViewModel _personChoosingVM;
-        private TemplateChoosingViewModel _templateChoosingVM;
+        private bool _editIncorrectsIsSelected;
+        internal bool EditIncorrectsIsSelected
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _editIncorrectsIsSelected, value, nameof (EditIncorrectsIsSelected));
+            }
+            get
+            {
+                return _editIncorrectsIsSelected;
+            }
+        }
+
+        private bool _buildingIsOccured;
+        internal bool BuildingIsOccured
+        {
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _buildingIsOccured, value, nameof (BuildingIsOccured));
+            }
+            get
+            {
+                return _buildingIsOccured;
+            }
+        }
+
+        private bool _badgesAreCleared;
+        internal bool BadgesAreCleared
+        {
+            set
+            {
+                if ( value )
+                {
+                    this.RaiseAndSetIfChanged (ref _badgesAreCleared, value, nameof (BadgesAreCleared));
+                }
+                else 
+                {
+                    _badgesAreCleared = false;
+                }
+            }
+            get
+            {
+                return _badgesAreCleared;
+            }
+        }
+
+        private BadgesBuildingViewModel _templateChoosingVM;
 
 
-        public SceneViewModel ( IUniformDocumentAssembler docAssembler, PersonChoosingViewModel personChoosingVM ) 
+        public SceneViewModel ( ) 
         {
             SetButtonBlock ();
             _converter = new ConverterToPdf ();
-            _docAssembler = docAssembler;
-            _personChoosingVM = personChoosingVM;
+            _docAssembler = App.services.GetService<IUniformDocumentAssembler> ();
             _documentScale = 1;
-            _allPages = new List <PageViewModel> ();
+            AllPages = new List <PageViewModel> ();
             _printablePages = new List <PageViewModel> ();
             PageViewModel firstPage = new PageViewModel (_documentScale);
             VisiblePage = firstPage;
             _lastPage = VisiblePage;
-            _allPages.Add (VisiblePage);
+            AllPages.Add (VisiblePage);
 
             _lastPrintablePage = new PageViewModel (_documentScale);
             _printablePages.Add (_lastPrintablePage);
             VisiblePageNumber = 1;
-            ZoomDegreeInView = _zoomDegree.ToString () + " " + _procentSymbol;
             IncorrectBadges = new List <BadgeViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
-            PageCount = 1; 
+            PageCount = 1;
         }
 
 
-        internal void RecoverPageNumber ()
-        {
-            VisiblePageNumber = 0;
-        }
-
-
-        internal void PassTemplateChoosing ( TemplateChoosingViewModel templateChoosingViewModel )
+        internal void PassTemplateChoosing ( BadgesBuildingViewModel templateChoosingViewModel )
         {
             _templateChoosingVM = templateChoosingViewModel;
         }
@@ -212,7 +263,88 @@ namespace Lister.ViewModels
         }
 
 
-        internal bool BuildBadges ( string templateName )
+        internal void Build ( string templateName, Person ? person )
+        {
+            if ( string.IsNullOrWhiteSpace(templateName) ) 
+            {
+                return;
+            }
+
+            _chosenPerson = person;
+            _templateForBuilding = templateName;
+            BuildingIsOccured = false;
+
+            if ( _chosenPerson == null )
+            {
+                EntireListBuildingIsChosen = 1;
+                ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+                mainViewModel.SetWaiting ();
+            }
+            else
+            {
+                BuildSingleBadge ();
+                EnableButtons ();
+            }
+        }
+
+
+        internal void BuildDuringWaiting ()
+        {
+            if ( ModernMainViewModel.MainViewIsWaiting   &&   !_buildingIsLocked )
+            {
+                BuildAllBadges ();
+            }
+        }
+
+
+        private void BuildAllBadges ()
+        {
+            _buildingIsLocked = true;
+
+            Task task = new Task
+            (
+                () =>
+                {
+                    bool buildingIsCompleted = BuildAllBadges (_templateForBuilding);
+
+                    EnableButtons ();
+
+                    _buildingIsLocked = false;
+                    EntireListBuildingIsChosen = 0;
+
+                    if ( buildingIsCompleted )
+                    {
+                        Dispatcher.UIThread.Invoke
+                        (() =>
+                        {
+                            BuildingIsOccured = true;
+                        });
+                    }
+                    else 
+                    {
+                        Dispatcher.UIThread.Invoke
+                        (() =>
+                        {
+                            EntireListBuildingIsChosen = 0;
+                            BuildingIsOccured = false;
+                            ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
+                            mainViewModel.EndWaiting ();
+
+                            var messegeDialog = new MessageDialog (ModernMainView.Instance, _buildingLimitIsExhaustedMessage);
+                            
+                            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                            waitingVM.HandleDialogOpenig ();
+                            messegeDialog.ShowDialog (MainWindow.Window);
+                        });
+                    }
+                }
+            );
+
+            task.Start ();
+        }
+
+
+        private bool BuildAllBadges ( string templateName )
         {
             List <Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
 
@@ -230,7 +362,7 @@ namespace Lister.ViewModels
                 {
                     Person person = requiredBadges [index].Person;
 
-                    if ( _personChoosingVM.IsEmpty (person) )
+                    if ( person.IsEmpty () )
                     {
                         continue;
                     }
@@ -259,14 +391,14 @@ namespace Lister.ViewModels
 
                 if ( placingStartedOnLastPage )
                 {
-                    Dispatcher.UIThread.Invoke (() => { VisiblePageNumber = _allPages.Count; });
+                    Dispatcher.UIThread.Invoke (() => { VisiblePageNumber = AllPages.Count; });
                     newPages.RemoveAt (0);
                     printablePages.RemoveAt (0);
                 }
 
-                _allPages.AddRange (newPages);
+                AllPages.AddRange (newPages);
                 _printablePages.AddRange (printablePages);
-                _lastPage = _allPages.Last ();
+                _lastPage = AllPages.Last ();
                 _lastPrintablePage = _printablePages.Last ();
 
                 PrintableBadges.AddRange (allPrintableBadges);
@@ -277,8 +409,8 @@ namespace Lister.ViewModels
                     ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
                     modernMV.EndWaiting ();
 
-                    VisiblePage = _allPages [VisiblePageNumber - 1];
-                    PageCount = _allPages.Count;
+                    VisiblePage = AllPages [VisiblePageNumber - 1];
+                    PageCount = AllPages.Count;
                     VisiblePage.Show ();
                 });
             }
@@ -287,15 +419,30 @@ namespace Lister.ViewModels
         }
 
 
-        internal bool BuildSingleBadge ( string templateName )
+        private void BuildSingleBadge ()
+        {
+            _buildingIsLocked = true;
+            BuildingIsOccured = BuildSingleBadge (_templateForBuilding);
+            _buildingIsLocked = false;
+
+            if ( ! BuildingIsOccured )
+            {
+                var messegeDialog = new MessageDialog (ModernMainView.Instance, _buildingLimitIsExhaustedMessage);
+                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                waitingVM.HandleDialogOpenig ();
+                messegeDialog.ShowDialog (MainWindow.Window);
+            }
+        }
+
+
+        private bool BuildSingleBadge ( string templateName )
         {
             if ( ( BadgeCount + 1 ) >= _badgeCountLimit )
             {
                 return false;
             }
 
-            Person goalPerson = _personChoosingVM.ChosenPerson;
-            Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, goalPerson);
+            Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, _chosenPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
             BadgeViewModel printableBadge = new BadgeViewModel (goalVMBadge);
 
@@ -326,14 +473,14 @@ namespace Lister.ViewModels
                 VisiblePage = possibleNewVisiblePage;
                 _lastPage = VisiblePage;
                 _lastPrintablePage = possibleNewLastPrintablePage;
-                _allPages.Add (possibleNewVisiblePage);
+                AllPages.Add (possibleNewVisiblePage);
                 _printablePages.Add (_lastPrintablePage);
                 VisiblePage.Show ();
             }
 
             BadgeCount++;
-            VisiblePageNumber = _allPages.Count;
-            PageCount = _allPages.Count;
+            VisiblePageNumber = AllPages.Count;
+            PageCount = AllPages.Count;
             goalVMBadge.Show ();
 
             return true;
@@ -342,15 +489,15 @@ namespace Lister.ViewModels
 
         internal void ClearAllPages ()
         {
-            if ( _allPages.Count <= 0 )
+            if ( AllPages.Count <= 0 )
             {
                 return;
             }
 
-            _allPages = new List <PageViewModel> ();
+            AllPages = new List <PageViewModel> ();
             VisiblePage = new PageViewModel (_documentScale);
             _lastPage = VisiblePage;
-            _allPages.Add (_lastPage);
+            AllPages.Add (_lastPage);
 
             _printablePages = new List<PageViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
@@ -382,20 +529,31 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOn ( )
+        internal void Zoom ( double newZoomDegree )
+        {
+            double degree = _documentScale * 100;
+
+            if ( newZoomDegree > degree )
+            {
+                ZoomOn ();
+            }
+            else if ( newZoomDegree < degree ) 
+            {
+                ZoomOut ();
+            }
+        }
+
+
+        private void ZoomOn ( )
         {
             _documentScale *= _scalabilityCoefficient;
 
             if ( VisiblePage != null )
             {
-                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
+                for ( int pageCounter = 0;   pageCounter < AllPages.Count;   pageCounter++ )
                 {
-                    _allPages [pageCounter].ZoomOn (_scalabilityCoefficient);
+                    AllPages [pageCounter].ZoomOn (_scalabilityCoefficient);
                 }
-
-                _zoomDegree *= _scalabilityCoefficient;
-                short zDegree = ( short ) _zoomDegree;
-                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
 
                 CanvasTop *= _scalabilityCoefficient;
                 double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
@@ -404,20 +562,16 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ZoomOut ( )
+        private void ZoomOut ( )
         {
             _documentScale /= _scalabilityCoefficient;
 
             if ( VisiblePage != null )
             {
-                for ( int pageCounter = 0;   pageCounter < _allPages.Count;   pageCounter++ )
+                for ( int pageCounter = 0;   pageCounter < AllPages.Count;   pageCounter++ )
                 {
-                    _allPages [pageCounter].ZoomOut (_scalabilityCoefficient);
+                    AllPages [pageCounter].ZoomOut (_scalabilityCoefficient);
                 }
-
-                _zoomDegree /= _scalabilityCoefficient;
-                short zDegree = ( short ) _zoomDegree;
-                ZoomDegreeInView = zDegree.ToString () + " " + _procentSymbol;
 
                 CanvasTop /= _scalabilityCoefficient;
                 double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
@@ -426,73 +580,17 @@ namespace Lister.ViewModels
         }
 
 
-        internal int VisualiseNextPage ()
-        {
-            if ( VisiblePageNumber < _allPages.Count )
-            {
-                VisiblePage.Hide ();
-                VisiblePageNumber++;
-                VisiblePage = _allPages [VisiblePageNumber - 1];
-                VisiblePage.Show ();
-            }
-
-            return VisiblePageNumber;
-        }
-
-
-        internal int VisualisePreviousPage ()
-        {
-            if ( VisiblePageNumber > 1 )
-            {
-                VisiblePage.Hide ();
-                VisiblePageNumber--;
-                VisiblePage = _allPages [VisiblePageNumber - 1];
-                VisiblePage.Show ();
-            }
-
-            return VisiblePageNumber;
-        }
-
-
-        internal int VisualiseLastPage ()
-        {
-            if ( VisiblePageNumber < _allPages.Count )
-            {
-                VisiblePage.Hide ();
-                VisiblePageNumber = _allPages.Count;
-                VisiblePage = _allPages [VisiblePageNumber - 1];
-                VisiblePage.Show ();
-            }
-
-            return VisiblePageNumber;
-        }
-
-
-        internal int VisualiseFirstPage ()
-        {
-            if ( VisiblePageNumber > 1 )
-            {
-                VisiblePage.Hide ();
-                VisiblePageNumber = 1;
-                VisiblePage = _allPages [VisiblePageNumber - 1];
-                VisiblePage.Show ();
-            }
-
-            return VisiblePageNumber;
-        }
-
-
-        internal int VisualisePageWithNumber ( int pageNumber )
+        internal int ShowPageWithNumber ( int pageNumber )
         {
             bool visiblePageExists = ( VisiblePage != null );
             bool notTheSamePage = ( VisiblePageNumber != pageNumber );
-            bool inRange = pageNumber <= _allPages.Count;
+            bool inRange = pageNumber <= AllPages.Count;
 
             if ( visiblePageExists   &&   notTheSamePage   &&   inRange )
             {
                 VisiblePage.Hide ();
                 VisiblePageNumber = pageNumber;
-                VisiblePage = _allPages [VisiblePageNumber - 1];
+                VisiblePage = AllPages [VisiblePageNumber - 1];
                 VisiblePage.Show ();
             }
 
@@ -509,12 +607,6 @@ namespace Lister.ViewModels
         internal int GetPrintablePagesCount ()
         {
             return _printablePages.Count;
-        }
-
-
-        internal int GetPageCount ()
-        {
-            return _allPages.Count;
         }
 
 
@@ -549,7 +641,9 @@ namespace Lister.ViewModels
 
         internal void EditIncorrectBadges ()
         {
-            _view.EditIncorrectBadges (IncorrectBadges, PrintableBadges, _allPages [0]);
+            EditIncorrectsIsSelected = true;
+
+            _view.EditIncorrectBadges (IncorrectBadges, PrintableBadges, AllPages [0]);
         }
 
 
@@ -557,10 +651,8 @@ namespace Lister.ViewModels
         {
             ClearAllPages ();
             DisableButtons ();
-
-            PageNavigationZoomerViewModel zoomNavigationVM = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
-
-            zoomNavigationVM.DisableButtons ();
+            BadgesAreCleared = true;
+            BadgesAreCleared = false;
         }
 
 

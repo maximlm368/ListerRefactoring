@@ -146,7 +146,7 @@ namespace ExtentionsAndAuxiliary
                 counter++;
             }
 
-            for ( int index = 0; index < chars.Count; index++ )
+            for ( int index = 0;   index < chars.Count;   index++ )
             {
                 result [( short ) chars [index]] = ( short ) chars [index];
             }
@@ -159,9 +159,9 @@ namespace ExtentionsAndAuxiliary
         {
             bool result = true;
 
-            for ( int index = 0; index < parts.Length; index++ )
+            for ( int index = 0;   index < parts.Length;   index++ )
             {
-                if ( !string.IsNullOrWhiteSpace (parts [index]) )
+                if ( ! string.IsNullOrWhiteSpace (parts [index]) )
                 {
                     result = false;
                     break;
