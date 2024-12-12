@@ -241,7 +241,7 @@ namespace Lister.ViewModels
                 ZoomOutIsEnable = false;
             }
 
-            if ( !ZoomOnIsEnable )
+            if ( ! ZoomOnIsEnable )
             {
                 ZoomOnIsEnable = true;
             }
@@ -250,7 +250,7 @@ namespace Lister.ViewModels
 
         internal void SetEnablePageNavigation ( int pageCount, int currentVisibleNum )
         {
-            if ( pageCount > 1 )
+            if ( pageCount > 0 )
             {
                 PageCount = pageCount;
                 VisiblePageNumber = currentVisibleNum;
@@ -296,6 +296,7 @@ namespace Lister.ViewModels
         {
             DisableButtons ();
 
+            _scalabilityDepth = 0;
             ZoomDegree = 100;
             ZoomDegreeInView = ZoomDegree.ToString () + " " + _procentSymbol;
             VisiblePageNumber = 1;

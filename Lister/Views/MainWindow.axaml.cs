@@ -67,7 +67,7 @@ public partial class MainWindow : Window
         _currentWidth = Width;
         _currentHeight = Height;
 
-        this.Tapped += HandleTapping;
+        //this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += HandlePositionChange;
 
@@ -104,8 +104,6 @@ public partial class MainWindow : Window
     private void OnPositionChanged ( object ? sender, PixelPointEventArgs args )
     {
         Position = _position;
-
-        //int dfd = 0;
     }
 
 
@@ -123,12 +121,6 @@ public partial class MainWindow : Window
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             mainView.ChangeSize (newWidthDifference, newHeightDifference);
-
-            //BadgeEditorViewModel editorVM = App.services.GetRequiredService<BadgeEditorViewModel> ();
-            //if (editorVM != null) 
-            //{
-            //    editorVM.ChangeSize (newWidthDifference, newHeightDifference);
-            //}
         }
         catch ( System.InvalidCastException ex )
         {
@@ -144,9 +136,6 @@ public partial class MainWindow : Window
                 _currentWidth = newWidth;
                 _currentHeight = newHeight;
                 mainView.ChangeSize (widthDifference, heightDifference);
-
-                //BadgeEditorViewModel editorVM = App.services.GetRequiredService<BadgeEditorViewModel> ();
-                //editorVM.ChangeSize (widthDifference, heightDifference);
             }
             catch ( System.InvalidCastException excp )
             {
@@ -158,9 +147,6 @@ public partial class MainWindow : Window
     internal void CancelSizeDifference ( )
     {
         WidthDifference = 0;
-        //HeightDifference = 0;
-
-        //_mainView. waiting.Recover ();
     }
 
 
@@ -173,8 +159,6 @@ public partial class MainWindow : Window
         }
         catch ( InvalidCastException ex )
         {
-            //BadgeEditorView mainView = ( BadgeEditorView ) Content;
-            //mainView.ReleaseCaptured ();
         }
     }
 
@@ -232,27 +216,3 @@ public partial class MainWindow : Window
         ModalWindow.Position += delta;
     }
 }
-
-
-//POINT cursorCoordinates = new POINT ();
-//CursorViaWinapi.GetCursorPos (ref cursorCoordinates);
-//int coordinateX = cursorCoordinates.x;
-//int coordinateY = cursorCoordinates.y;
-
-//ContentAssembler.Size pointOfReference = new ContentAssembler.Size (99, 63);
-//int x = 99;
-//int y = 63;
-
-//ContentAssembler.Size targetSize = mainView.GetCustomComboboxDimensions ();
-//int targetWidth = ( int ) targetSize.width;
-//int targetHeight = ( int ) targetSize.height;
-
-//bool cursorIsOutsideTarget = coordinateX < ( x );
-//cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateX > ( x + targetWidth ) );
-//cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateY < y );
-//cursorIsOutsideTarget = cursorIsOutsideTarget && ( coordinateY > ( y + targetHeight ) );
-
-//if ( cursorIsOutsideTarget )
-//{
-//    mainView.CloseCustomCombobox ();
-//}

@@ -10,7 +10,7 @@ namespace Lister.Views
 {
     public partial class LargeMessageDialog : BaseWindow
     {
-        private LargeMessageViewModel _vm;
+        private LargeMessageViewModel _viewModel;
         public ShowingDialog Caller { get; private set; }
 
         private string _message;
@@ -40,7 +40,7 @@ namespace Lister.Views
                         pureLines.Add ( pureLine );
                     }
 
-                    _vm.MessageLines = pureLines;
+                    _viewModel.MessageLines = pureLines;
                     _message = value;
                 }
             }
@@ -56,10 +56,10 @@ namespace Lister.Views
         public LargeMessageDialog ( ShowingDialog caller, List<string> errors, string errorsSource ) : this ()
         {
             Caller = caller;
-            _vm = new LargeMessageViewModel ();
-            DataContext = _vm;
+            _viewModel = new LargeMessageViewModel ();
+            DataContext = _viewModel;
             CanResize = false;
-            _vm.PassView (this);
+            _viewModel.PassView (this);
 
             CanResize = false;
 
@@ -69,7 +69,7 @@ namespace Lister.Views
             mainWindow.ModalWindow = this;
 
             List<string> messageLines = null;
-            _vm.Set (errors, errorsSource);
+            _viewModel.Set (errors, errorsSource);
         }
 
 

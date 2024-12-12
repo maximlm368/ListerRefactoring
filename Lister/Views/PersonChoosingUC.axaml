@@ -32,23 +32,15 @@
 			Grid.Column="1">
 
 			<TextBox
-				Name="comboboxFrame"
-				Focusable="False"
-				IsReadOnly="True"
-				ScrollViewer.VerticalScrollBarVisibility="Disabled"
-				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-				Margin="0,2"
-				Height="32"
-				Width="477" />
-
-			<TextBox
 				Name="personTextBox"
 				Width="446"
 				Height="32"
 				FontSize="16"
 				Padding="10,4"
 				Margin="0,2"
+				CornerRadius="3,0,0,3"
 				Background="White"
+
 				ScrollViewer.VerticalScrollBarVisibility="Disabled"
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
@@ -56,8 +48,8 @@
 				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				SelectionForegroundBrush="White"
-				GotFocus="GotFocus"
-				LostFocus="LostFocus"
+				GotFocus="CustomComboboxGotFocus"
+				LostFocus="CustomComboboxLostFocus"
 				KeyUp="HandlePersonListReduction"
 				KeyDown="DropOrPickUpPersonsOrScroll"/>
 
@@ -140,7 +132,8 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								PointerPressed="ScrollByTapping"/>
+								PointerPressed="ScrollByTapping"
+								/>
 
 							<Canvas
 								Name="topSpan"
@@ -178,7 +171,8 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								PointerPressed="ScrollByTapping"/>
+								PointerPressed="ScrollByTapping"
+								/>
 
 						</Canvas>
 
@@ -192,10 +186,13 @@
 			Name="openListButton"
 			Grid.Column="2"
 			VerticalAlignment="Top"
-			Margin="-15,2"
+			Margin="-14,2"
 			Width="32"
 			Height="32"
 			FontSize="16"
+			CornerRadius="0,3,3,0"
+			BorderBrush="Gray"
+			BorderThickness="1"
 			VerticalContentAlignment="Center"
 			HorizontalContentAlignment="Center"
 			Focusable="False"
@@ -215,17 +212,17 @@
 		<ComboBox
 			Name="templateChoosing"
 			Grid.Column="4"
-			Foreground="{Binding  Path=Color,  Mode=OneWay}"
+			PlaceholderForeground="{Binding  Path=ChosenTemplateColor,  Mode=OneWay}"
+			PlaceholderText="{Binding  Path=ChosenTemplate.Name,  Mode=OneWay}"
 			Background="White"
 			FontSize="16"
 			Height="32"
 			Width="184"
-			Margin="-14,2"
-			Padding="4, 0"
+			Margin="-15,2"
+			Padding="4,0"
 			MaxDropDownHeight="100"
-			SelectedIndex="0"
+			SelectedItem="{Binding  Path=ChosenTemplate,  Mode=OneWay}"
 			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
-			GotFocus="CloseCustomCombobox"
 			DropDownClosed="HandleClosing"
 		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
 
@@ -247,6 +244,35 @@
 
 
 <!--   
+
+
+				SelectionStart="{Binding   Path = SelectionStart,  Mode=OneWay}"
+				SelectionEnd="{Binding   Path = SelectionEnd,  Mode=OneWay}"
+
+
+			<TextBox
+				Name="comboboxFrame"
+				Focusable="False"
+				IsReadOnly="True"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+				Margin="0,2"
+				Height="32"
+				Width="477" />
+
+
+
+
+
+
+
+
+
+
+
+DropDownClosed="HandleClosing"
+
+
 
 						PointerEntered="CursorIsOverPersonList"
 						PointerExited="CursorIsOutOfPersonList"

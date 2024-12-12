@@ -10,7 +10,7 @@ namespace Lister.Views;
 
 public partial class PageNavigationZoomer : UserControl
 {
-    private PageNavigationZoomerViewModel _vm;
+    private PageNavigationZoomerViewModel _viewModel;
     private short _scalabilityDepth = 0;
     private short _maxDepth = 5;
     private short _minDepth = -5;
@@ -24,7 +24,7 @@ public partial class PageNavigationZoomer : UserControl
     {
         InitializeComponent();
         DataContext = App.services.GetRequiredService<PageNavigationZoomerViewModel> ();
-        _vm = ( PageNavigationZoomerViewModel ) DataContext;
+        _viewModel = ( PageNavigationZoomerViewModel ) DataContext;
 
         firstPage.FocusAdorner = null;
         previousPage.FocusAdorner = null;
@@ -50,7 +50,7 @@ public partial class PageNavigationZoomer : UserControl
 
         if ( text == "" ) 
         {
-            _vm.RecoverPageCounterIfEmpty ();
+            _viewModel.RecoverPageCounterIfEmpty ();
             visiblePageNumber.Text = "1";
         }
     }
@@ -68,23 +68,23 @@ public partial class PageNavigationZoomer : UserControl
             if ( pageNumber == 0 )
             {
                 pageNumber = 1;
-                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+                visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
                 return;
             }
 
-            _vm.ShowPageWithNumber (pageNumber);
-            visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+            _viewModel.ShowPageWithNumber (pageNumber);
+            visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
         }
         catch ( System.FormatException exp )
         {
             if ( ! string.IsNullOrWhiteSpace (text) )
             {
-                visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+                visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
             }
         }
         catch ( System.OverflowException exp )
         {
-            visiblePageNumber.Text = _vm.VisiblePageNumber.ToString ();
+            visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
         }
     }
 }

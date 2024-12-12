@@ -32,7 +32,7 @@ using HarfBuzzSharp;
 
 namespace Lister.ViewModels;
 
-class ConverterToPdf 
+public class ConverterToPdf 
 {
     private string ? currentImagePath = null;
     private Pdf.Image? image = null;

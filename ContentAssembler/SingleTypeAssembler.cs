@@ -19,9 +19,7 @@ namespace ContentAssembler
 
         public Badge CreateSingleBadgeByModel (string badgeModelName, Person person);
 
-        public List <Person> GetPersons (string? personsFilePath);
-
-        //public List <TemplateName> GetBadgeModels ( );
+        public List <Person> GetPersons (string ? personsFilePath);
     }
 
 
@@ -82,12 +80,6 @@ namespace ContentAssembler
 
             return badge;
         }
-
-
-        //public List <TemplateName> GetBadgeModels ( )
-        //{
-        //    return _badgeAppearenceProvider.GetBadgeTemplateNames ( );
-        //}
 
 
         public List <Person> GetPersons(string personsFilePath) 

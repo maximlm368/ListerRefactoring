@@ -15,17 +15,15 @@ using System.Diagnostics;
 namespace Lister.Views
 {
     public partial class ModernMainView : ShowingDialog
-        //ReactiveUserControl <ModernMainViewModel>
     {
-        private static double _widthDelta;
-        private static double _heightDelta;
+        //private static double _widthDelta;
+        //private static double _heightDelta;
 
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
 
-        private ModernMainViewModel _vm;
-        //private bool _isFirstTimeLoading = true;
-       // internal static readonly string _sourcePathKeeper = "keeper.txt";
+        private ModernMainViewModel _viewModel;
+
         internal static bool pathIsSet;
         internal static ModernMainView Instance { get; private set; }
         internal static int TappedGoToEditorButton { get; private set; }
@@ -48,9 +46,10 @@ namespace Lister.Views
             ProperHeight = Height;
 
             DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
-            _vm = ( ModernMainViewModel ) DataContext;
-            _vm.PassView (this);
+            _viewModel = ( ModernMainViewModel ) DataContext;
+            _viewModel.PassView (this);
 
+            Loaded += OnLoaded;
             LayoutUpdated += LayoutUpdatedHandler;
 
             this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
@@ -59,13 +58,13 @@ namespace Lister.Views
 
         public override void HandleDialogClosing ()
         {
-            _vm.HandleDialogClosing ();
+            _viewModel.HandleDialogClosing ();
         }
 
 
         internal void LayoutUpdatedHandler ( object sender, EventArgs args )
         {
-            _vm.LayoutUpdated ();
+            _viewModel.LayoutUpdated ();
         }
 
 
@@ -75,38 +74,10 @@ namespace Lister.Views
         }
 
 
-        //internal void OnLoaded ( object sender, RoutedEventArgs args )
-        //{
-        //    if ( !_isFirstTimeLoading )
-        //    {
-        //        return;
-        //    }
-
-        //    string workDirectory = @"./";
-        //    DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-        //    string directoryPath = containingDirectory.FullName;
-        //    string keeperPath = directoryPath + _sourcePathKeeper;
-        //    FileInfo fileInf = new FileInfo (keeperPath);
-
-        //    if ( fileInf.Exists )
-        //    {
-        //        string [] lines = File.ReadAllLines (keeperPath);
-                
-        //        try
-        //        {
-        //            personSource.SetPath (lines [0]);
-        //        }
-        //        catch ( IndexOutOfRangeException ex ) 
-        //        {
-        //            personSource.SetPath (null);
-        //        }
-        //    }
-        //    else 
-        //    {
-        //        File.Create(keeperPath).Close();
-        //        personSource.SetPath (null);
-        //    }
-        //}
+        internal void OnLoaded ( object sender, RoutedEventArgs args )
+        {
+            _viewModel.OnLoaded ();
+        }
 
 
         internal void ReleaseRunner () 
@@ -125,18 +96,17 @@ namespace Lister.Views
         {
             Width -= widthDifference;
             Height -= heightDifference;
+
             ProperWidth = Width;
             ProperHeight = Height;
+
             scene.Width -= widthDifference;
             scene.Height -= heightDifference;
-            scene. workArea.Width -= widthDifference;
-            _widthDelta -= widthDifference;
+
+            scene.workArea.Width -= widthDifference;
             scene.workArea.Height -= heightDifference;
-            _heightDelta -= heightDifference;
 
-            waiting.ChangeSize ( heightDifference, widthDifference );
-
-            //waiting.Padding = new Avalonia.Thickness (0, heightDifference);
+            waiting.ChangeSize (heightDifference, widthDifference);
 
             personChoosing.AdjustComboboxWidth (widthDifference, true);
             personChoosing.CloseCustomCombobox ();
@@ -168,23 +138,20 @@ namespace Lister.Views
 
             Width = properWidth;
             Height = properHeight;
+
             ProperWidth = Width;
             ProperHeight = Height;
 
             scene.workArea.Width -= widthDifference;
             scene.workArea.Height -= heightDifference;
+
             personChoosing.AdjustComboboxWidth (widthDifference, _widthIsChanged);
         }
 
 
         internal void ResetIncorrects ( )
         {
-            ModernMainViewModel vm = DataContext as ModernMainViewModel;
-            
-            if ( vm != null ) 
-            {
-                vm.ResetIncorrects ( );
-            }
+            _viewModel.ResetIncorrects ();
         }
 
 
@@ -204,14 +171,13 @@ namespace Lister.Views
                 window.CancelSizeDifference ();
                 TappedGoToEditorButton = 1;
 
-                _vm.SetWaiting ();
+                _viewModel.SetWaitingUpdatingLayout ();
             }
         }
 
 
-        internal void BuildEditor ( )
+        internal void SwitchToEditor ( )
         {
-            ModernMainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
             Task task = new Task
@@ -219,14 +185,13 @@ namespace Lister.Views
                 () =>
                 {
                     EditorView.PassIncorrectBadges (_incorrectBadges, _allPrintableBadges, _firstPage);
-                    EditorView.PassBackPoint (mainView);
+                    EditorView.PassBackPoint (this);
 
                     Dispatcher.UIThread.Invoke
                     (
                         () =>
                         {
-                            ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                            modernMV.EndWaiting ();
+                            _viewModel.EndWaiting ();
                             window.Content = EditorView;
                         }
                     );

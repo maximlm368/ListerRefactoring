@@ -22,7 +22,7 @@ namespace Lister.Views
         private static TemplateViewModel _chosen;
 
         private ModernMainView _parent;
-        private BadgesBuildingViewModel _vm;
+        private BadgesBuildingViewModel _viewModel;
         private string _theme;
 
 
@@ -31,7 +31,7 @@ namespace Lister.Views
             InitializeComponent ();
 
             DataContext = App.services.GetRequiredService<BadgesBuildingViewModel> ();
-            _vm = ( BadgesBuildingViewModel ) DataContext;
+            _viewModel = ( BadgesBuildingViewModel ) DataContext;
             ActualThemeVariantChanged += ThemeChanged;
         }
 
@@ -44,25 +44,7 @@ namespace Lister.Views
             }
 
             _theme = ActualThemeVariant.Key.ToString ();
-            _vm.ChangeAccordingTheme ( _theme );
-        }
-
-
-        internal void CloseCustomCombobox ( object sender, GotFocusEventArgs args )
-        {
-            _parent = this.Parent.Parent as ModernMainView;
-            PersonChoosingUserControl personChoosing = _parent. personChoosing;
-            
-            if ( personChoosing != null ) 
-            {
-                personChoosing.CloseCustomCombobox ();
-            }
-        }
-
-
-        internal void HandleClosing ( object sender, EventArgs args )
-        {
-
+            _viewModel.ChangeAccordingTheme ( _theme );
         }
     }
 }

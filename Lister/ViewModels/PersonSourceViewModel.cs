@@ -39,6 +39,7 @@ namespace Lister.ViewModels
 
         private IUniformDocumentAssembler _uniformAssembler;
         private bool _isFirstTimeLoading = true;
+        private string _declinedFilePath;
 
         private FilePickerOpenOptions _filePickerOptions;
         private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new ()
@@ -63,6 +64,23 @@ namespace Lister.ViewModels
                 this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof(SourceFilePath));
             }
         }
+
+        private bool _fileIsDeclined;
+        internal bool FileIsDeclined
+        {
+            get { return _fileIsDeclined; }
+            private set
+            {
+                if ( _fileIsDeclined == value )
+                {
+                    _fileIsDeclined = !_fileIsDeclined;
+                }
+
+                this.RaiseAndSetIfChanged (ref _fileIsDeclined, value, nameof (FileIsDeclined));
+            }
+        }
+
+        internal string FilePath { get; private set; }
 
 
         public PersonSourceViewModel ( )
@@ -134,7 +152,7 @@ namespace Lister.ViewModels
 
                 if ( ! fileIsCorrect )
                 {
-                    DeclineChosenFile (path);
+                    _declinedFilePath = path;
                     SourceFilePath = _sourceFilePath;
 
                     return;
@@ -219,12 +237,19 @@ namespace Lister.ViewModels
 
         private void DeclineChosenFile ( string filePath )
         {
-            string message = filePath + _incorrectXSLX;
-            var messegeDialog = new MessageDialog (ModernMainView.Instance, message);
-            
-            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-            waitingVM.HandleDialogOpenig ();
-            messegeDialog.ShowDialog (MainWindow.Window);
+            FilePath = filePath;
+            FileIsDeclined = true;
+        }
+
+
+        internal void DeclineKeepedFileIfIncorrect ( )
+        {
+            if ( string.IsNullOrWhiteSpace(_declinedFilePath) ) 
+            {
+                return;
+            }
+
+            DeclineChosenFile (_declinedFilePath);
         }
     }
 }

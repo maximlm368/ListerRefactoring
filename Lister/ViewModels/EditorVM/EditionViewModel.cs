@@ -276,7 +276,6 @@ namespace Lister.ViewModels
             WorkAreaHeight -= heightDifference;
 
             EntireBlockHeight -= heightDifference;
-            //ScrollHeight -= heightDifference;
         }
 
 

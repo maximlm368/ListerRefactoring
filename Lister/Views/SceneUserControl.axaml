@@ -5,8 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="302"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:SceneViewModel"
-             x:Class="Lister.Views.SceneUserControl"
-			 >
+             x:Class="Lister.Views.SceneUserControl">
 
 	<StackPanel 
 		ZIndex="1"
@@ -225,8 +224,8 @@
 			Name="workArea"
 			HorizontalAlignment="Left"
 			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
-			Width="850"
-			Height="302">
+			Height="302"
+			Width="850" >
 
 			<ScrollViewer
 				Name="scroller"

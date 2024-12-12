@@ -54,5 +54,10 @@ IsVisible="{Binding   Path = WaitingIsVisible,  Mode=OneWay}"
 <uc:ButtonPanel
 	Name="buttonPanel"
 	Margin="0,-300"/>
+	
+	
+				DataContext=""
+			Width="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"
+			Height="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"
 
 -->

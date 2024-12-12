@@ -877,6 +877,9 @@
 
 <!-- 
 
+Margin="{Binding  Path=Margin,  Mode=OneWay}"
+
+
 
 						<StackPanel
 							Name="ammounts"

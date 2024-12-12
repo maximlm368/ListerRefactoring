@@ -16,7 +16,7 @@ namespace Lister.Views;
 
 public partial class PrintDialog : BaseWindow
 {
-    private PrintDialogViewModel _vm;
+    private PrintDialogViewModel _viewModel;
 
 
     public PrintDialog ()
@@ -27,15 +27,13 @@ public partial class PrintDialog : BaseWindow
 
     public PrintDialog ( int pageAmount, PrintAdjustingData printAdjusting ) : this()
     {
-        PrintDialogViewModel printMV = new PrintDialogViewModel ();
-        DataContext = printMV;
-        _vm = printMV;
+        DataContext = App.services.GetRequiredService<PrintDialogViewModel> ();
+        _viewModel = (PrintDialogViewModel) DataContext;
 
-        _vm.Prepare ();
-        _vm.TakeAmmountAndAdjusting (pageAmount, printAdjusting);
-        _vm.TakeView (this);
+        _viewModel.Prepare ();
+        _viewModel.TakeAmmountAndAdjusting (pageAmount, printAdjusting);
 
-        printerChoosing.SelectedIndex = _vm.SelectedIndex;
+        printerChoosing.SelectedIndex = _viewModel.SelectedIndex;
         allPages.IsChecked = true;
         amountText.Text = "1";
 
@@ -43,31 +41,55 @@ public partial class PrintDialog : BaseWindow
 
         CanResize = false;
 
+        //printerChoosing.SelectionChanged += PrinterChanged;
+
         Activated += delegate { cancel.Focus (NavigationMethod.Tab, KeyModifiers.None); };
     }
 
 
     public void PagesLostFocus ( object sender, RoutedEventArgs args )
     {
-        _vm.PagesLostFocus ();
+        _viewModel.PagesLostFocus ();
     }
 
 
     public void PagesGotFocus ( object sender, GotFocusEventArgs args )
     {
-        _vm.PagesGotFocus ();
+        _viewModel.PagesGotFocus ();
     }
 
 
     public void CopiesLostFocus ( object sender, RoutedEventArgs args )
     {
-        _vm.CopiesLostFocus ();
+        _viewModel.CopiesLostFocus ();
     }
 
 
     public void CopiesGotFocus ( object sender, GotFocusEventArgs args )
     {
-        _vm.CopiesGotFocus ();
+        _viewModel.CopiesGotFocus ();
+    }
+
+
+    public void PagesSetChanged ( object sender, TextChangedEventArgs args )
+    {
+        TextBox textBox = sender as TextBox;
+        _viewModel.Pages = textBox.Text;
+        textBox.Text = _viewModel.Pages;
+    }
+
+
+    public void CopiesChanged ( object sender, TextChangedEventArgs args )
+    {
+        TextBox textBox = sender as TextBox;
+        _viewModel.Copies = textBox.Text;
+        textBox.Text = _viewModel.Copies;
+    }
+
+
+    public void PrinterChanged ( object sender, SelectionChangedEventArgs args )
+    {
+
     }
 }
 

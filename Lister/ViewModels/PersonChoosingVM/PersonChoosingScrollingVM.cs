@@ -133,7 +133,6 @@
             {
                 isDirectionUp = false;
                 step = step * ( -1 );
-                //runnerStep = runnerStep * ( -1 );
                 runnerStep = step / proportion;
             }
 

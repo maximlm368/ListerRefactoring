@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Threading;
 using ContentAssembler;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -10,12 +11,11 @@ namespace Lister.ViewModels
     public partial class SceneViewModel : ViewModelBase
     {
         private static readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
-        private static readonly int _badgeCountLimit = 3333;
+        private static readonly int _badgeCountLimit = 3233;
         private static readonly double _scalabilityCoefficient = 1.25;
 
-        public static int EntireListBuildingIsChosen { get; private set; }
+        public static bool EntireListBuildingIsChosen { get; private set; }
 
-        private ConverterToPdf _converter;
         private IUniformDocumentAssembler _docAssembler;
         private double _documentScale;
 
@@ -30,7 +30,6 @@ namespace Lister.ViewModels
         
         private PageViewModel _lastPage;
         private PageViewModel _lastPrintablePage;
-        private SceneUserControl _view;
         private int _visiblePageNumStorage;
 
         private string _templateForBuilding;
@@ -108,8 +107,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Thickness _borderMargin;
-        internal Thickness BorderMargin
+        private Avalonia.Thickness _borderMargin;
+        internal Avalonia.Thickness BorderMargin
         {
             get { return _borderMargin; }
             private set
@@ -182,8 +181,13 @@ namespace Lister.ViewModels
         private bool _editIncorrectsIsSelected;
         internal bool EditIncorrectsIsSelected
         {
-            set
+            private set
             {
+                if ( _editIncorrectsIsSelected == value ) 
+                {
+                    _editIncorrectsIsSelected = !_editIncorrectsIsSelected;
+                }
+
                 this.RaiseAndSetIfChanged (ref _editIncorrectsIsSelected, value, nameof (EditIncorrectsIsSelected));
             }
             get
@@ -195,13 +199,19 @@ namespace Lister.ViewModels
         private bool _buildingIsOccured;
         internal bool BuildingIsOccured
         {
-            set
-            {
-                this.RaiseAndSetIfChanged (ref _buildingIsOccured, value, nameof (BuildingIsOccured));
-            }
             get
             {
                 return _buildingIsOccured;
+            }
+
+            set
+            {
+                if ( _buildingIsOccured == value )
+                {
+                    _buildingIsOccured = !_buildingIsOccured;
+                }
+
+                this.RaiseAndSetIfChanged (ref _buildingIsOccured, value, nameof (BuildingIsOccured));
             }
         }
 
@@ -231,7 +241,7 @@ namespace Lister.ViewModels
         public SceneViewModel ( ) 
         {
             SetButtonBlock ();
-            _converter = new ConverterToPdf ();
+
             _docAssembler = App.services.GetService<IUniformDocumentAssembler> ();
             _documentScale = 1;
             AllPages = new List <PageViewModel> ();
@@ -257,12 +267,6 @@ namespace Lister.ViewModels
         }
 
 
-        internal void PassView ( SceneUserControl view )
-        {
-            _view = view;
-        }
-
-
         internal void Build ( string templateName, Person ? person )
         {
             if ( string.IsNullOrWhiteSpace(templateName) ) 
@@ -272,13 +276,10 @@ namespace Lister.ViewModels
 
             _chosenPerson = person;
             _templateForBuilding = templateName;
-            BuildingIsOccured = false;
 
             if ( _chosenPerson == null )
             {
-                EntireListBuildingIsChosen = 1;
-                ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
-                mainViewModel.SetWaiting ();
+                EntireListBuildingIsChosen = true;
             }
             else
             {
@@ -290,7 +291,7 @@ namespace Lister.ViewModels
 
         internal void BuildDuringWaiting ()
         {
-            if ( ModernMainViewModel.MainViewIsWaiting   &&   !_buildingIsLocked )
+            if ( !_buildingIsLocked )
             {
                 BuildAllBadges ();
             }
@@ -310,7 +311,7 @@ namespace Lister.ViewModels
                     EnableButtons ();
 
                     _buildingIsLocked = false;
-                    EntireListBuildingIsChosen = 0;
+                    EntireListBuildingIsChosen = false;
 
                     if ( buildingIsCompleted )
                     {
@@ -325,16 +326,8 @@ namespace Lister.ViewModels
                         Dispatcher.UIThread.Invoke
                         (() =>
                         {
-                            EntireListBuildingIsChosen = 0;
+                            EntireListBuildingIsChosen = false;
                             BuildingIsOccured = false;
-                            ModernMainViewModel mainViewModel = App.services.GetRequiredService<ModernMainViewModel> ();
-                            mainViewModel.EndWaiting ();
-
-                            var messegeDialog = new MessageDialog (ModernMainView.Instance, _buildingLimitIsExhaustedMessage);
-                            
-                            WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                            waitingVM.HandleDialogOpenig ();
-                            messegeDialog.ShowDialog (MainWindow.Window);
                         });
                     }
                 }
@@ -406,9 +399,6 @@ namespace Lister.ViewModels
                 Dispatcher.UIThread.Invoke 
                 (() => 
                 {
-                    ModernMainViewModel modernMV = App.services.GetRequiredService<ModernMainViewModel> ();
-                    modernMV.EndWaiting ();
-
                     VisiblePage = AllPages [VisiblePageNumber - 1];
                     PageCount = AllPages.Count;
                     VisiblePage.Show ();
@@ -424,14 +414,6 @@ namespace Lister.ViewModels
             _buildingIsLocked = true;
             BuildingIsOccured = BuildSingleBadge (_templateForBuilding);
             _buildingIsLocked = false;
-
-            if ( ! BuildingIsOccured )
-            {
-                var messegeDialog = new MessageDialog (ModernMainView.Instance, _buildingLimitIsExhaustedMessage);
-                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                waitingVM.HandleDialogOpenig ();
-                messegeDialog.ShowDialog (MainWindow.Window);
-            }
         }
 
 
@@ -557,7 +539,7 @@ namespace Lister.ViewModels
 
                 CanvasTop *= _scalabilityCoefficient;
                 double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
-                BorderMargin = new Thickness (marginLeft, 0, 0, 0);
+                BorderMargin = new Avalonia.Thickness (marginLeft, 0, 0, 0);
             }
         }
 
@@ -575,7 +557,7 @@ namespace Lister.ViewModels
 
                 CanvasTop /= _scalabilityCoefficient;
                 double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
-                BorderMargin = new Thickness (marginLeft, 0, 0, 0);
+                BorderMargin = new Avalonia.Thickness (marginLeft, 0, 0, 0);
             }
         }
 
@@ -636,23 +618,11 @@ namespace Lister.ViewModels
             }
 
             IncorrectBadgeCount = IncorrectBadges. Count;
-        }
 
-
-        internal void EditIncorrectBadges ()
-        {
-            EditIncorrectsIsSelected = true;
-
-            _view.EditIncorrectBadges (IncorrectBadges, PrintableBadges, AllPages [0]);
-        }
-
-
-        internal void ClearBadges ()
-        {
-            ClearAllPages ();
-            DisableButtons ();
-            BadgesAreCleared = true;
-            BadgesAreCleared = false;
+            if ( IncorrectBadgeCount < 1 ) 
+            {
+                EditionMustEnable = false;
+            }
         }
 
 

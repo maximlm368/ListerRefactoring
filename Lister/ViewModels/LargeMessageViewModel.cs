@@ -267,27 +267,6 @@ namespace Lister.ViewModels
             return length;
         }
 
-
-        //internal void SetStandard ( List<string> message )
-        //{
-        //    _isLarge = false;
-        //    message.Add ("");
-        //    MessageLines = message;
-        //    SetStandard ();
-
-        //    MessageHeight = message.Count * _lineHeight;
-        //}
-
-
-        //private void SetStandard ( )
-        //{
-        //    WindowHeight = 130;
-        //    WindowWidth = 360;
-        //    LineWidth = 358;
-        //    MessageContainerHeight = 70;
-        //    ButtonCanvasLeft = 270;
-        //    MessageWidth = 323;
-        //}
     }
 }
 

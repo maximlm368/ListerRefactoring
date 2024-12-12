@@ -23,11 +23,7 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        private static TemplateViewModel _chosenTemplate;
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
-
-        //private static readonly string _jsonError =
-        //"Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
 
         private ModernMainView _parent;
         private readonly int _inputLimit = 100;
@@ -35,10 +31,9 @@ namespace Lister.Views
         private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
         private bool _personListIsDropped = false;
-        private Label _chosen;
         private bool _runnerIsCaptured = false;
-        private bool _tapScrollingStarted = false;
-        private bool _shiftScrollingStarted = false;
+        private bool _scrollingCausedByTapping = false;
+        private bool _runnerShiftCaused = false;
         private double _capturingY;
         private double _shiftScratch = 0;
         private PersonChoosingViewModel _viewModel;
@@ -56,7 +51,7 @@ namespace Lister.Views
             _viewModel = (PersonChoosingViewModel) DataContext;
 
             Loaded += OnLoaded;
-            ActualThemeVariantChanged += ThemeChanged;
+            //ActualThemeVariantChanged += ThemeChanged;
 
             personTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
         }
@@ -75,7 +70,6 @@ namespace Lister.Views
         internal void AdjustComboboxWidth ( double shift, bool shouldChangeComboboxWidth )
         {
             personTextBox.Width -= shift;
-            comboboxFrame.Width -= shift;
             visiblePersons.Width -= shift;
             listFrame.Width -= shift;
 
@@ -90,18 +84,10 @@ namespace Lister.Views
         internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
         {
             _viewModel.SetEntireList ();
-
-            if ( _chosen != null )
-            {
-                _chosen.Background = new SolidColorBrush (new Color (255, 255, 255, 255));
-                _chosen = null;
-            }
-
-            DropOrPickUp ();
         }
 
 
-        internal void GotFocus ( object sender, GotFocusEventArgs args )
+        internal void CustomComboboxGotFocus ( object sender, GotFocusEventArgs args )
         {
             if ( personTextBox.Text == null )
             {
@@ -112,58 +98,23 @@ namespace Lister.Views
             personTextBox.SelectionEnd = personTextBox.Text.Length;
         }
 
-
-        //internal void LostFocuse ( object sender, RoutedEventArgs args )
-        //{
-        //    personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
-        //}
-
-
-        internal void PointerEntered ( object sender, PointerEventArgs args )
-        {
-            personTextBox.Foreground = new SolidColorBrush (MainWindow.white);
-        }
-
-
-        internal void PointerExited ( object sender, PointerEventArgs args )
-        {
-            if ( personTextBox.IsFocused ) 
-            {
-                return;
-            }
-
-            personTextBox.Foreground = new SolidColorBrush (MainWindow.black);
-        }
-
-
         #region Drop
 
-        internal void CloseCustomCombobox ()
+        internal void CustomComboboxLostFocus ( object sender, RoutedEventArgs args )
         {
-            CloseCombobox ();
+            CloseCustomCombobox ();
         }
 
 
-        internal void LostFocus ( object sender, RoutedEventArgs args )
+        internal void CloseCustomCombobox ( )
         {
-            CloseCombobox ();
-        }
-
-
-        private void CloseCombobox ( )
-        {
-            //bool reasonExists = _personListIsDropped   &&   ! _cursorIsOverPersonList   &&   ! _buttonIsPressed;
-
-            bool reasonExists = _personListIsDropped   &&   ! _buttonIsPressed;
-
-            if ( reasonExists )
-            {
-                _viewModel.HideDropDownWithoutChange ();
-                _personListIsDropped = false;
-                SetTextBoxStartState ();
-            }
-
             _buttonIsPressed = false;
+
+            if ( _personListIsDropped )
+            {
+                _personListIsDropped = false;
+                _viewModel.HideDropListWithoutChange ();
+            }
         }
 
 
@@ -204,13 +155,32 @@ namespace Lister.Views
         }
 
 
-        internal void SetTextBoxStartState ( )
+        private void DropOrPickUp ()
         {
-            if ( _viewModel.FontWeight == FontWeight.Bold )
+            if ( personTextBox.Text == null )
             {
-                personTextBox.Text = _viewModel.PlaceHolder;
-                personTextBox.SelectionStart = personTextBox.Text.Length;
-                personTextBox.SelectionEnd = personTextBox.Text.Length;
+                return;
+            }
+
+            if ( _personListIsDropped )
+            {
+                _personListIsDropped = false;
+                _viewModel.HideDropListWithChange ();
+            }
+            else
+            {
+                _personListIsDropped = true;
+                _viewModel.ShowDropDown ();
+            }
+        }
+
+
+        private void PickUp ()
+        {
+            if ( _personListIsDropped )
+            {
+                _personListIsDropped = false;
+                _viewModel.HideDropListWithoutChange ();
             }
         }
 
@@ -221,7 +191,7 @@ namespace Lister.Views
         internal void HandlePersonListReduction ( object sender, KeyEventArgs args )
         {
             string key = args.Key.ToString ();
-            bool keyIsUnimpacting = IsKeyUnipacting (key);
+            bool keyIsUnimpacting = IsKeyUnimpacting (key);
 
             if ( keyIsUnimpacting )
             {
@@ -276,9 +246,11 @@ namespace Lister.Views
         }
 
 
-        private bool IsKeyUnipacting ( string key )
+        private bool IsKeyUnimpacting ( string key )
         {
             bool keyIsUnimpacting = key == "Tab";
+            keyIsUnimpacting = keyIsUnimpacting || ( key == "LeftShift" );
+            keyIsUnimpacting = keyIsUnimpacting || ( key == "RightShift" );
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Left" );
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Up" );
             keyIsUnimpacting = keyIsUnimpacting || ( key == "Right" );
@@ -302,58 +274,12 @@ namespace Lister.Views
         internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
         {
             Label chosenLabel = ( Label ) sender;
-            _chosen = chosenLabel;
             string chosenName = ( string ) chosenLabel.Content;
             _viewModel.SetChosenPerson (chosenName);
-            DropOrPickUp ();
         }
 
-        #endregion Choosing
+        #endregion
 
-        private void DropOrPickUp ()
-        {
-            if ( personTextBox.Text == null ) 
-            {
-                return;
-            }
-
-            if ( _personListIsDropped )
-            {
-                _viewModel.HideDropDownWithChange ();
-                _personListIsDropped = false;
-            }
-            else
-            {
-                _viewModel.ShowDropDown ();
-                _personListIsDropped = true;
-            }
-
-            personTextBox.SelectionStart = personTextBox.Text.Length;
-            personTextBox.SelectionEnd = personTextBox.Text.Length;
-        }
-
-
-        private void PickUp ()
-        {
-            if ( _personListIsDropped )
-            {
-                _viewModel.HideDropDownWithoutChange ();
-                _personListIsDropped = false;
-                SetTextBoxStartState ();
-            }
-        }
-
-
-        //internal void CursorIsOverPersonList ( object sender, PointerEventArgs args )
-        //{
-        //    _cursorIsOverPersonList = true;
-        //}
-
-
-        //internal void CursorIsOutOfPersonList ( object sender, PointerEventArgs args )
-        //{
-        //    _cursorIsOverPersonList = false;
-        //}
 
         #region Scrolling
 
@@ -367,9 +293,9 @@ namespace Lister.Views
         internal void ScrollByTapping ( object sender, PointerPressedEventArgs args )
         {
             Canvas activator = sender as Canvas;
-            bool isDirectionUp = activator.Name == "upper";
+            bool isDirectionUp = (activator.Name == "upper");
             int count = personList.ItemCount;
-            _tapScrollingStarted = true;
+            _scrollingCausedByTapping = true;
             _viewModel.ScrollByButton ( isDirectionUp, count );
         }
 
@@ -389,7 +315,8 @@ namespace Lister.Views
             {
                 limit = bottomSpan.Height - args.GetPosition (activator).Y;
             }
-            
+
+            _runnerShiftCaused = true;
             _viewModel.ShiftRunner ( isDirectionUp, limit );
         }
 
@@ -404,15 +331,31 @@ namespace Lister.Views
 
         internal void ReleaseScrollingLeverage ( )
         {
-            if ( _runnerIsCaptured ) 
+            if ( _scrollingCausedByTapping    ||   _runnerIsCaptured )
             {
-                _runnerIsCaptured = false;
-            }
+                if ( _runnerIsCaptured )
+                {
+                    _runnerIsCaptured = false;
+                }
 
-            if( _tapScrollingStarted )
+                if ( _scrollingCausedByTapping )
+                {
+                    _scrollingCausedByTapping = false;
+                }
+
+                _scrollingCausedByTapping = false;
+                _viewModel.StopScrolling ();
+            }
+            else 
             {
-                _tapScrollingStarted = false;
-                _viewModel.StopScrolling ( );
+                if ( !_runnerShiftCaused )
+                {
+                    CloseCustomCombobox ();
+                }
+                else 
+                {
+                    _runnerShiftCaused = false;
+                }
             }
         }
 
@@ -433,22 +376,7 @@ namespace Lister.Views
             _viewModel.ScrollByKey ( isDirectionUp );
         }
 
-
         #endregion Scrolling
-
-
-
-
-        internal void CloseCustomCombobox ( object sender, GotFocusEventArgs args )
-        {
-            _parent = this.Parent.Parent as ModernMainView;
-            PersonChoosingUserControl personChoosing = _parent.personChoosing;
-
-            if ( personChoosing != null )
-            {
-                personChoosing.CloseCustomCombobox ();
-            }
-        }
 
 
         internal void HandleClosing ( object sender, EventArgs args )
@@ -460,33 +388,12 @@ namespace Lister.Views
                 return;
             }
 
-            bool templateIsIncorrect = ( chosen.Color.Color.A == 100 );
-
-            if ( templateIsIncorrect )
-            {
-                var messegeDialog = 
-                           new LargeMessageDialog (ModernMainView.Instance, chosen.CorrectnessMessage, chosen.SourcePath);
-                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                waitingVM.HandleDialogOpenig ();
-                messegeDialog.ShowDialog (MainWindow.Window);
-                messegeDialog.Focusable = true;
-                messegeDialog.Focus ();
-            }
-
-            _chosenTemplate = chosen;
-            _viewModel.ChosenTemplate = _chosenTemplate;
+            _viewModel.ChosenTemplate = chosen;
         }
 
 
         internal void OnLoaded ( object sender, RoutedEventArgs args )
         {
-            _viewModel.ChosenTemplate = _chosenTemplate;
-
-            if ( _chosenTemplate != null )
-            {
-                templateChoosing.PlaceholderText = _viewModel.ChosenTemplate.Name;
-            }
-
             _theme = ActualThemeVariant.Key.ToString ();
             _viewModel.SetUp (_theme);
         }

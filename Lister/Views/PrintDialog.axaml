@@ -124,7 +124,8 @@
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					LostFocus="PagesLostFocus"
 					GotFocus="PagesGotFocus"
-					Text="{Binding  Path = Pages,  Mode=TwoWay}"
+					TextChanged="PagesSetChanged"
+					Text="{Binding  Path = Pages,  Mode=OneWay}"
 					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"/>
 
 				<Label
@@ -158,7 +159,8 @@
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					LostFocus="CopiesLostFocus"
 					GotFocus="CopiesGotFocus"
-					Text="{Binding  Path = Copies,  Mode=TwoWay}"/>
+					TextChanged="CopiesChanged"
+					Text="{Binding  Path = Copies,  Mode=OneWay}"/>
 
 				<Label
 					Name="copiesError"

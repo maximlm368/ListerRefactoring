@@ -119,7 +119,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void HandleDialogOpenig ()
+        internal void Darken ()
         {
             CanvasHeight = _canvasHeight;
             CanvasWidth = _canvasWidth;

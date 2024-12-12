@@ -25,7 +25,6 @@ using System.Collections.ObjectModel;
 namespace Lister.Views
 {
     public partial class BadgeEditorView : ShowingDialog
-        //ReactiveUserControl <BadgeEditorViewModel>
     {
         private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
 
@@ -41,7 +40,7 @@ namespace Lister.Views
         private bool _pointerIsPressed;
         private Point _pointerPosition;
         private ModernMainView _back;
-        private BadgeEditorViewModel _vm;
+        private BadgeEditorViewModel _viewModel;
         private bool _isReleaseLocked;
         private Stopwatch _focusTime;
         private double _dastinationPointer = 0;
@@ -57,15 +56,15 @@ namespace Lister.Views
 
         public BadgeEditorView ( bool newEditorIsNeeded, int incorrectBadgesAmmount ) : this()
         {
-            if ( newEditorIsNeeded   ||   _vm == null )
+            if ( newEditorIsNeeded   ||   _viewModel == null )
             {
                 BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount);
                 this.DataContext = viewModel;
-                _vm = viewModel;
+                _viewModel = viewModel;
             }
             else
             {
-                this.DataContext = _vm;
+                this.DataContext = _viewModel;
             }
 
             firstBadge.FocusAdorner = null;
@@ -87,14 +86,14 @@ namespace Lister.Views
 
         public override void HandleDialogClosing ()
         {
-            _vm.HandleDialogClosing ();
+            _viewModel.HandleDialogClosing ();
         }
 
 
         internal void CompleteBacking ( )
         {
             MainWindow mainWindow = Parent as MainWindow;
-            _back.SetProperSize ( _vm.ViewWidth, _vm.ViewHeight );
+            _back.SetProperSize ( _viewModel.ViewWidth, _viewModel.ViewHeight );
 
             mainWindow.CancelSizeDifference ();
             _back.ResetIncorrects ();
@@ -104,12 +103,7 @@ namespace Lister.Views
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
-            //Width -= widthDifference;
-            //Height -= heightDifference;
-            //workArea.Width -= widthDifference;
-            //workArea.Height -= heightDifference;
-
-            _vm.ChangeSize ( widthDifference, heightDifference);
+            _viewModel.ChangeSize ( widthDifference, heightDifference);
 
             WaitingViewModel waitingVM = App.services.GetRequiredService <WaitingViewModel> ();
             waitingVM.ChangeSize ( heightDifference, widthDifference );
@@ -143,7 +137,7 @@ namespace Lister.Views
 
             if ( _widthIsChanged   ||   _heightIsChanged ) 
             {
-                _vm.ChangeSize (widthDifference, heightDifference);
+                _viewModel.ChangeSize (widthDifference, heightDifference);
             }
         }
 
@@ -151,14 +145,14 @@ namespace Lister.Views
         internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects
                                           , List <BadgeViewModel> allPrintable, PageViewModel firstPage ) 
         {
-            _vm.PassIncorrects (incorrects, allPrintable, firstPage);
+            _viewModel.PassIncorrects (incorrects, allPrintable, firstPage);
         }
 
 
         internal void PassBackPoint ( ModernMainView back )
         {
             _back = back;
-            _vm.PassView (this);
+            _viewModel.PassView (this);
         }
 
 
@@ -173,7 +167,7 @@ namespace Lister.Views
 
         internal void CheckBacking ( )
         {
-            _vm.HandleDialogOpenig ( );
+            _viewModel.HandleDialogOpenig ( );
             var dialog = new DialogWindow (this);
             DialogWindow.IsOpen = true;
 
@@ -189,7 +183,7 @@ namespace Lister.Views
                 {
                     if ( dialog.Result == dialog.yes )
                     {
-                        _vm.ComplateGoBack (this);
+                        _viewModel.ComplateGoBack (this);
                         DialogWindow.IsOpen = false;
                     }
                 },
@@ -209,20 +203,20 @@ namespace Lister.Views
                 return;
             }
 
-            _vm.ResetFocusedText (edited);
+            _viewModel.ResetFocusedText (edited);
         }
 
 
         internal void SelectionChanged ( object sender, SelectionChangedEventArgs args )
         {
-            if ( _vm == null ) 
+            if ( _viewModel == null ) 
             {
                 return;
             }
 
             ComboBox comboBox = sender as ComboBox;
             string selected = comboBox.SelectedValue as string;
-            _vm.Filter (selected);
+            _viewModel.Filter (selected);
         }
 
 
@@ -295,7 +289,7 @@ namespace Lister.Views
             container = textBlock.Parent as Border;
             container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
 
-            _vm.Focus (content, lineNumber);
+            _viewModel.Focus (content, lineNumber);
             Cursor = new Cursor (StandardCursorType.SizeAll);
             _isReleaseLocked = true;
             _focusTime = Stopwatch.StartNew ();
@@ -313,7 +307,7 @@ namespace Lister.Views
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;
                 Point delta = new Point (horizontalDelta, verticalDelta);
-                _vm.MoveCaptured (delta);
+                _viewModel.MoveCaptured (delta);
             }
         }
 
@@ -378,7 +372,7 @@ namespace Lister.Views
             zoomOut.IsEnabled = false;
             spliter.IsEnabled = false;
             Cursor = new Cursor (StandardCursorType.Arrow);
-            _vm.ReleaseCaptured ();
+            _viewModel.ReleaseCaptured ();
         }
         #endregion
 
@@ -421,7 +415,7 @@ namespace Lister.Views
             }
 
             string key = args.Key.ToString ();
-            _vm.ToSide (key);
+            _viewModel.ToSide (key);
         }
         #endregion
 
@@ -431,7 +425,7 @@ namespace Lister.Views
         {
             Avalonia.Controls.Grid image = sender   as   Avalonia.Controls.Grid;
             BadgeCorrectnessViewModel context = image.DataContext as BadgeCorrectnessViewModel;
-            _vm.ToParticularBadge (context);
+            _viewModel.ToParticularBadge (context);
         }
 
 
@@ -439,7 +433,7 @@ namespace Lister.Views
         {
             Canvas activator = sender as Canvas;
             _dastinationPointer = args.GetPosition (activator).Y;
-            _vm.ShiftRunner (_dastinationPointer);
+            _viewModel.ShiftRunner (_dastinationPointer);
         }
 
 
@@ -460,7 +454,7 @@ namespace Lister.Views
             {
                 Point pointerPosition = args.GetPosition (( Canvas ) args.Source);
                 double runnerVerticalDelta = _capturingY - pointerPosition.Y;
-                _vm.MoveRunner (runnerVerticalDelta);
+                _viewModel.MoveRunner (runnerVerticalDelta);
             }
         }
 
@@ -477,7 +471,7 @@ namespace Lister.Views
         internal void ScrollByWheel ( object sender, PointerWheelEventArgs args )
         {
             bool isDirectionUp = args.Delta.Y > 0;
-            _vm.ScrollByWheel (isDirectionUp);
+            _viewModel.ScrollByWheel (isDirectionUp);
         }
 
 
@@ -487,11 +481,11 @@ namespace Lister.Views
 
             if ( key == "Up" )
             {
-                _vm.ToPrevious ();
+                _viewModel.ToPrevious ();
             }
             else if ( key == "Down" )
             {
-                _vm.ToNext ();
+                _viewModel.ToNext ();
             }
         }
 
@@ -523,65 +517,3 @@ namespace Lister.Views
         public abstract void HandleDialogClosing ();
     }
 }
-
-
-//internal void Entered ( object sender, PointerEventArgs args)
-//{
-//    Back.Background = new SolidColorBrush (Colors.White);
-//    Back.Foreground = new SolidColorBrush (Colors.Red);
-//}
-
-
-//internal void Exited ( object sender, PointerEventArgs args )
-//{
-//    Back.Background = new SolidColorBrush (Colors.White);
-//    Back.Foreground = new SolidColorBrush (Colors.Black);
-//}
-
-
-
-//private async Task DoShowDialogAsync ( InteractionContext <DialogViewModel, string?> interaction )
-//{
-//    var dialog = new DialogWindow ();
-//    dialog.DataContext = interaction.Input;
-
-//    var result = await dialog.ShowDialog<string?> (this.Parent as MainWindow);
-//    interaction.SetOutput (result);
-//}
-
-
-//internal void ToParticularBadge ( object sender, TextChangedEventArgs args )
-//{
-//    TextBox textBox = sender as TextBox;
-//    string text = textBox.Text;
-
-//    try
-//    {
-//        int badgeNumber = ( int ) UInt32.Parse (textBox.Text);
-
-//        if ( ( badgeNumber < 1 )   ||   ( badgeNumber > _vm.VisibleBadges. Count ) )
-//        {
-//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-//            return;
-//        }
-
-//        if ( ( text.Length > 1 )   &&   ( text [0] == '0' ) )
-//        {
-//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-//            return;
-//        }
-
-//        _vm.ToParticularBadge (text);
-//    }
-//    catch ( System.FormatException e )
-//    {
-//        if ( ! string.IsNullOrWhiteSpace(text) ) 
-//        {
-//            visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-//        }
-//    }
-//    catch ( System.OverflowException e )
-//    {
-//        visibleBadgeNumber.Text = _vm.BeingProcessedNumber.ToString ();
-//    }
-//}

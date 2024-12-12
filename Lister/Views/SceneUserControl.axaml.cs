@@ -18,7 +18,7 @@ namespace Lister.Views
 {
     public partial class SceneUserControl : UserControl
     {
-        private SceneViewModel _vm;
+        private SceneViewModel _viewModel;
         private double _widthDelta;
         private double _heightDelta;
 
@@ -27,19 +27,8 @@ namespace Lister.Views
         {
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
-            _vm = (SceneViewModel) DataContext;
-            //var window = TopLevel.GetTopLevel (this);
-            _vm.PassView (this);
+            _viewModel = (SceneViewModel) DataContext;
             extender.FocusAdorner = null;
-        }
-
-
-        internal void EditIncorrectBadges 
-            ( List <BadgeViewModel> incorrectBadges, List <BadgeViewModel> allAccordingChangablePrintableBadges
-                                                                                      , PageViewModel firstPage )
-        {
-            ModernMainView mainView = ModernMainView.Instance;
-            mainView.EditIncorrectBadges ( incorrectBadges, allAccordingChangablePrintableBadges, firstPage );
         }
     }
 }

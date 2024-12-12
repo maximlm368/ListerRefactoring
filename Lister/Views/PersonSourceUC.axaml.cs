@@ -15,9 +15,8 @@ namespace Lister.Views
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
-            PersonSourceViewModel viewModel = App.services.GetRequiredService<PersonSourceViewModel> ();
-            DataContext = viewModel;
-
+            DataContext = App.services.GetRequiredService<PersonSourceViewModel> ();
+            PersonSourceViewModel viewModel = (PersonSourceViewModel) DataContext;
             viewModel.OnLoaded ();
         }
     }

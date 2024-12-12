@@ -19,6 +19,8 @@ using DocumentFormat.OpenXml.Office2013.Word;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.ComponentModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using DocumentFormat.OpenXml.InkML;
 //using Newtonsoft.Json.Schema;
 
 
@@ -35,13 +37,17 @@ namespace DataGateway
         
         private Dictionary<string, string> _nameAndJson;
         private Dictionary<string, List<byte>> _nameAndColor;
+        private Dictionary<string, BadgeLayout> _badgeLayouts;
         private Dictionary<string, ICollection <ValidationError>> _jsonAndErrors;
+        private Dictionary<string, string> _incorrectJsonAndError;
 
 
         public BadgeAppearenceProvider ( string resourceUri, string resourceFolder, string jsonSchemeFolder )
         {
             _resourceUri = resourceUri;
             _resourceFolder = resourceFolder;
+
+            _badgeLayouts = new Dictionary<string, BadgeLayout> ();
 
             DirectoryInfo containingDirectory = new DirectoryInfo (jsonSchemeFolder);
             FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
@@ -52,26 +58,49 @@ namespace DataGateway
             _nameAndJson = new ();
             _nameAndColor = new ();
             _jsonAndErrors = new ();
+            _incorrectJsonAndError = new ();
 
             foreach ( FileInfo fileInfo   in   fileInfos )
             {
                 string jsonPath = fileInfo.FullName;
-                string templateName = GetSectionStrValue (new List<string> { "TemplateName" }, jsonPath) ?? "";
 
-                bool nameShouldBeAdded = ! string.IsNullOrEmpty (templateName)
-                                      &&  !_nameAndJson.ContainsKey (templateName);
+                string validationMessage = null;
 
-                if ( nameShouldBeAdded )
+                bool jsonIsValid = GetterFromJson.CheckJsonCorrectness (jsonPath, out validationMessage);
+
+                if ( jsonIsValid )
                 {
-                    _nameAndJson.Add (templateName, jsonPath);
+                    string templateName = GetSectionStrValue (new List<string> { "TemplateName" }, jsonPath);
+
+                    bool nameShouldBeAdded = ! string.IsNullOrEmpty (templateName)
+                                          && !_nameAndJson.ContainsKey (templateName);
+
+                    if ( nameShouldBeAdded )
+                    {
+                        _nameAndJson.Add (templateName, jsonPath);
+                    }
+
+                    bool colorShouldBeAdded = ( nameShouldBeAdded   &&   ! string.IsNullOrEmpty (templateName) );
+
+                    if ( colorShouldBeAdded )
+                    {
+                        List<byte> color = CreateColor (jsonPath);
+                        _nameAndColor.Add (templateName, color);
+                    }
                 }
-
-                bool colorShouldBeAdded = (nameShouldBeAdded   &&   ! string.IsNullOrEmpty (templateName));
-
-                if ( colorShouldBeAdded )
+                else
                 {
-                    List<byte> color = CreateColor (jsonPath);
-                    _nameAndColor.Add (templateName, color);
+                    string templateName;
+                    bool isTemplate = TryFindTemplateFeature (jsonPath, out templateName);
+
+                    if ( isTemplate ) 
+                    {
+                        _incorrectJsonAndError.Add(jsonPath, TranslateIncorrectJsonMessage(validationMessage));
+                        _nameAndJson.Add (templateName, jsonPath);
+
+                        List<byte> color = CreateColor (jsonPath);
+                        _nameAndColor.Add (templateName, color);
+                    }
                 }
             }
         }
@@ -94,6 +123,124 @@ namespace DataGateway
         }
 
 
+        private string TranslateIncorrectJsonMessage ( string message )
+        {
+            string result = null;
+
+            string seekable = "LineNumber: ";
+            int lenght = seekable.Length;
+            int incomingIndex = message.IndexOf (seekable);
+
+            int endIndex = message.IndexOf ("|");
+
+            string lineNumStr = message.Substring (incomingIndex + lenght, endIndex - ( incomingIndex + lenght ));
+
+            result = "Ошибка на строке " + lineNumStr + " (" + message + ")";
+
+            return result;
+        }
+
+
+        private bool TryFindTemplateFeature ( string jsonPath, out string templateName )
+        {
+            List<char> tempNameChars = new ();
+
+            List<char> forbidenForName = new () { '\'', '(', ')', '{', '}', '[', ']' };
+
+            string jsonText = File.ReadAllText ( jsonPath );
+            int lenght = "\"TemplateName\"".Length;
+            int incomingIndex = jsonText.IndexOf ("\"TemplateName\"");
+
+            if ( incomingIndex > -1 ) 
+            {
+                States states = States.BeforeColon;
+
+                int scratch = incomingIndex + lenght + 1;
+
+                for ( int index = scratch;   index < jsonText.Length;   index++ ) 
+                {
+                    char current = jsonText[index];
+
+                    if ( states == States.BeforeColon ) 
+                    {
+                        if ( current == ' ' )
+                        {
+                            continue;
+                        }
+                        else if ( current == ':' ) 
+                        {
+                            states = States.AfterColon;
+                        }
+                        else 
+                        {
+                            templateName = string.Empty;
+                            return false;
+                        }
+                    }
+                    else if ( states == States.AfterColon ) 
+                    {
+                        if ( current == ' ' )
+                        {
+                            continue;
+                        }
+                        else if ( current == '"' )
+                        {
+                            states = States.BeforeName;
+                        }
+                        else
+                        {
+                            templateName = string.Empty;
+                            return false;
+                        }
+                    }
+                    else if ( states == States.BeforeName )
+                    {
+                        if ( ( current == ' ' )   ||   ( current == '"' )   ||   forbidenForName.Contains(current) )
+                        {
+                            templateName = string.Empty;
+                            return false;
+                        }
+                        else
+                        {
+                            states = States.InName;
+                            tempNameChars.Add( current );
+                        }
+                    }
+                    else if ( states == States.InName )
+                    {
+                        if ( current == '"' )
+                        {
+                            templateName = new string (tempNameChars.ToArray());
+                            return true;
+                        }
+                        else if ( forbidenForName.Contains (current) )
+                        {
+                            templateName = string.Empty;
+                            return false;
+                        }
+                        else
+                        {
+                            tempNameChars.Add (current);
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            templateName = string.Empty;
+            return false;
+        }
+
+
+        private enum States 
+        {
+            BeforeColon = 0,
+            AfterColon = 1,
+            BeforeName = 2,
+            InName = 3
+        }
+
+
         public string GetBadgeBackgroundPath ( string templateName )
         {
             string jsonPath = _nameAndJson [ templateName ];
@@ -111,6 +258,11 @@ namespace DataGateway
 
         public BadgeLayout GetBadgeLayout ( string templateName )
         {
+            //if ( _badgeLayouts.ContainsKey (templateName) )
+            //{
+            //    return _badgeLayouts [templateName];
+            //}
+
             string jsonPath = _nameAndJson [ templateName ];
 
             double badgeWidth = GetSectionIntValueOrDefault ( new List<string> { "Width" }, jsonPath );
@@ -137,6 +289,8 @@ namespace DataGateway
 
             BadgeLayout result = new BadgeLayout (badgeWidth, badgeHeight, templateName, spans, atoms, pictures);
 
+            //_badgeLayouts.Add (templateName, result);
+
             return result;
         }
 
@@ -160,9 +314,13 @@ namespace DataGateway
             IEnumerable <IConfigurationSection> items =
                           GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
 
+            int count = items.Count ();
+
             if ( items.Count() < 1 ) 
             {
-                return;
+                List<string> sectionPath = new () { "default", "UnitedTextBlocks" };
+                items = GetterFromJson.GetIncludedItemsOfSection (sectionPath, _schemeFile.FullName);
+                jsonPath = _schemeFile.FullName;
             }
 
             foreach ( IConfigurationSection item   in   items )
@@ -317,9 +475,6 @@ namespace DataGateway
 
         private InsideImage BuildInsideImage ( IConfigurationSection section )
         {
-            //IConfigurationSection childSection = section.GetSection ("Name");
-            //string imageName = GetterFromJson.GetSectionValue (childSection) ?? "";
-
             IConfigurationSection childSection = section.GetSection ( "Width" );
             double width = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
             
@@ -350,6 +505,9 @@ namespace DataGateway
         public Dictionary <BadgeLayout, KeyValuePair <string, List<string>>> GetBadgeLayouts ()
         {
             Dictionary <BadgeLayout, KeyValuePair<string, List<string>>> layouts = new ();
+            var schemeTask = JsonSchema.FromFileAsync (_schemeFile.FullName);
+            schemeTask.Wait ();
+
 
             foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
@@ -358,8 +516,7 @@ namespace DataGateway
                 try
                 {
                     string json = File.ReadAllText (jsonPath);
-                    var schemeTask = JsonSchema.FromFileAsync (_schemeFile.FullName);
-                    schemeTask.Wait ();
+
 
                     var result = schemeTask.Result;
 
@@ -367,60 +524,72 @@ namespace DataGateway
                     {
                         JsonSchemaValidator validator = new ();
                         JsonSchema schema = schemeTask.Result;
-                        ICollection<ValidationError> errors = validator.Validate (json, schema);
-                        bool templateIsCorrect = ( errors.Count == 0 );
                         List<string> message = new ();
 
-                        if ( !templateIsCorrect )
+
+                        if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
                         {
-                            List<ValidationError> children = new ();
-
-                            foreach ( ValidationError err in errors )
+                            if ( !_jsonAndErrors.ContainsKey (jsonPath) )
                             {
-                                ChildSchemaValidationError childErr = err as ChildSchemaValidationError;
+                                message.Add (_incorrectJsonAndError [jsonPath]);
+                            }
+                        }
+                        else 
+                        {
+                            ICollection<ValidationError> errors = validator.Validate (json, schema);
+                            bool templateIsInCorrect = ( errors.Count != 0 );
 
-                                if ( childErr != null )
+                            if ( templateIsInCorrect )
+                            {
+                                List<ValidationError> children = new ();
+
+                                foreach ( ValidationError err in errors )
                                 {
-                                    var childErrors = childErr.Errors;
+                                    ChildSchemaValidationError childErr = err as ChildSchemaValidationError;
 
-                                    foreach ( var chErr in childErrors )
+                                    if ( childErr != null )
                                     {
-                                        if ( chErr.Value.Count > 0 )
+                                        var childErrors = childErr.Errors;
+
+                                        foreach ( var chErr in childErrors )
                                         {
-                                            foreach ( ValidationError er in chErr.Value )
+                                            if ( chErr.Value.Count > 0 )
                                             {
-                                                children.Add (er);
+                                                foreach ( ValidationError er in chErr.Value )
+                                                {
+                                                    children.Add (er);
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            foreach ( ValidationError err in children )
-                            {
-                                errors.Add (err);
-                            }
+                                foreach ( ValidationError err   in   children )
+                                {
+                                    errors.Add (err);
+                                }
 
-                            foreach ( ValidationError err in errors )
-                            {
-                                string messageLine = string.Empty;
+                                foreach ( ValidationError err   in   errors )
+                                {
+                                    string messageLine = string.Empty;
 
-                                string errKind = TranslateErrorKindToRuss (err.Kind);
-                                messageLine += errKind + " Ошибка в свойстве ";
-                                string propertyPath = err.Path;
+                                    string errKind = TranslateErrorKindToRuss (err.Kind);
+                                    messageLine += errKind + " Ошибка в свойстве ";
+                                    string propertyPath = err.Path;
 
-                                propertyPath = TrimWaste (propertyPath);
+                                    propertyPath = TrimWaste (propertyPath);
 
-                                messageLine += propertyPath + " на строке номер ";
-                                string lineNumber = err.LineNumber.ToString ();
-                                messageLine += ( lineNumber );
+                                    messageLine += propertyPath + " на строке номер ";
+                                    string lineNumber = err.LineNumber.ToString ();
+                                    messageLine += ( lineNumber );
 
-                                message.Add (messageLine);
-                            }
+                                    message.Add (messageLine);
+                                }
 
-                            if ( !_jsonAndErrors.ContainsKey (jsonPath) )
-                            {
-                                _jsonAndErrors.Add (jsonPath, errors);
+                                if ( !_jsonAndErrors.ContainsKey (jsonPath) )
+                                {
+                                    _jsonAndErrors.Add (jsonPath, errors);
+                                }
                             }
                         }
 
@@ -522,10 +691,18 @@ namespace DataGateway
                     }
                 }
             }
+            else if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
+
+                return strValue;
+            }
 
             string result = GetterFromJson.GetSectionStrValue (keyPathInJson, jsonPath);
+            bool errorsAbsentButSectionNotFound = ( result == null );
 
-            if ( result == null ) 
+            if ( errorsAbsentButSectionNotFound ) 
             {
                 List<string> keyPathToDefault = GetKeyPathToDefault (keyPathInJson);
                 result = GetterFromJson.GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
@@ -551,14 +728,27 @@ namespace DataGateway
                         List<string> keyPathToDefault = BuildPathToDefaultValue (steps);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                        return Int32.Parse (strValue);
+                        try
+                        {
+                            return Int32.Parse (strValue);
+                        }
+                        catch ( Exception e ) 
+                        {}
                     }
                 }
             }
+            else if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
+
+                return Int32.Parse (strValue);
+            }
 
             int result = GetterFromJson.GetSectionIntValue (keyPathInJson, jsonPath);
+            bool errorsAbsentButSectionNotFound = ( result == -1 );
 
-            if ( result == -1 ) 
+            if ( errorsAbsentButSectionNotFound ) 
             {
                 List<string> keyPathToDefault = GetKeyPathToDefault (keyPathInJson);
                 result = GetterFromJson.GetSectionIntValue (keyPathToDefault, _schemeFile.FullName);
@@ -568,22 +758,10 @@ namespace DataGateway
         }
 
 
-        public List<string> GetKeyPathToDefault ( List<string> keyPathInJson )
-        {
-            string propertyPathRoot = keyPathInJson [0];
-            List<string> keyPathToDefault = new () { "properties", propertyPathRoot, "default" };
-
-            for ( int index = 1; index < keyPathInJson.Count; index++ )
-            {
-                keyPathToDefault.Add (keyPathInJson [index]);
-            }
-
-            return keyPathToDefault;
-        }
-
-
         private bool GetSectionBoolValueOrDefault ( List<string> keyPathInJson, string jsonPath )
         {
+            bool result = false;
+
             if ( _jsonAndErrors.ContainsKey (jsonPath) ) 
             {
 
@@ -601,8 +779,6 @@ namespace DataGateway
 
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                        bool result = false;
-
                         if ( strValue == "True" )
                         {
                             result = true;
@@ -612,8 +788,34 @@ namespace DataGateway
                     }
                 }
             }
+            else if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
+
+                if ( strValue == "True" )
+                {
+                    result = true;
+                }
+
+                return result;
+            }
 
             return GetterFromJson.GetSectionBoolValue (keyPathInJson, jsonPath);
+        }
+
+
+        private List<string> GetKeyPathToDefault ( List<string> keyPathInJson )
+        {
+            string propertyPathRoot = keyPathInJson [0];
+            List<string> keyPathToDefault = new () { "properties", propertyPathRoot, "default" };
+
+            for ( int index = 1; index < keyPathInJson.Count; index++ )
+            {
+                keyPathToDefault.Add (keyPathInJson [index]);
+            }
+
+            return keyPathToDefault;
         }
 
 
@@ -623,19 +825,23 @@ namespace DataGateway
             {
                 ICollection<ValidationError> errors = _jsonAndErrors [jsonPath];
 
-                foreach ( ValidationError err in errors )
+                foreach ( ValidationError err   in   errors )
                 {
-                    string propertyPath = TrimWaste (err.Path);
-                    string [] steps = propertyPath.Split ('.', 10);
-
-                    if ( steps.Last () == propertyName )
+                    if ( PathesEqual(section, err) )
                     {
-                        List<string> keyPathToDefault = BuildPathToDefaultValue (steps);
+                        List<string> keyPathToDefault = BuildPathToDefaultValue (section);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
                         return strValue;
                     }
                 }
+            }
+            else if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (section);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
+
+                return strValue;
             }
 
             return GetterFromJson.GetSectionValue (section);
@@ -644,23 +850,30 @@ namespace DataGateway
 
         private int GetSectionIntValueOrDefault ( IConfigurationSection section, string jsonPath, string propertyName )
         {
+            string sectionPath = section.Path;
+            string [] sectionSteps = sectionPath.Split (':');
+
             if ( _jsonAndErrors.ContainsKey (jsonPath) )
             {
-                ICollection <ValidationError> errors = _jsonAndErrors [jsonPath];
+                ICollection<ValidationError> errors = _jsonAndErrors [jsonPath];
 
-                foreach ( ValidationError err   in   errors )
+                foreach ( ValidationError err in errors )
                 {
-                    string propertyPath = TrimWaste (err.Path);
-                    string [] steps = propertyPath.Split ('.', 10);
-
-                    if ( steps.Last () == propertyName )
+                    if ( PathesEqual (section, err) )
                     {
-                        List<string> keyPathToDefault = BuildPathToDefaultValue (steps);
+                        List<string> keyPathToDefault = BuildPathToDefaultValue (section);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
                         return Int32.Parse (strValue);
                     }
                 }
+            }
+            else if ( _incorrectJsonAndError.ContainsKey(jsonPath) ) 
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (section);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
+
+                return Int32.Parse (strValue);
             }
 
             int result = 0;
@@ -671,7 +884,6 @@ namespace DataGateway
             }
             catch ( Exception ex )
             {
-
             }
 
             return result;
@@ -684,17 +896,13 @@ namespace DataGateway
 
             if ( _jsonAndErrors.ContainsKey (jsonPath) )
             {
-
                 ICollection <ValidationError> errors = _jsonAndErrors [jsonPath];
 
-                foreach ( ValidationError err in errors )
+                foreach ( ValidationError err   in   errors )
                 {
-                    string propertyPath = TrimWaste (err.Path);
-                    string [] steps = propertyPath.Split ('.', 10);
-
-                    if ( steps.Last () == propertyName )
+                    if ( PathesEqual(section, err) )
                     {
-                        List<string> keyPathToDefault = BuildPathToDefaultValue (steps);
+                        List<string> keyPathToDefault = BuildPathToDefaultValue (section);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
                         if ( strValue == "True" )
@@ -706,14 +914,115 @@ namespace DataGateway
                     }
                 }
             }
+            else if ( _incorrectJsonAndError.ContainsKey (jsonPath) )
+            {
+                List<string> keyPathToDefault = BuildPathToDefaultValue (section);
+                string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-            if ( ( GetterFromJson.GetSectionValue (section) == "true" ) ||
-                 ( GetterFromJson.GetSectionValue (section) == "True" ) )
+                if ( strValue == "True" )
+                {
+                    result = true;
+                }
+
+                return result;
+            }
+
+            bool sectionValueIsTrue = ( GetterFromJson.GetSectionValue (section) == "true" )
+                                      ||
+                                      ( GetterFromJson.GetSectionValue (section) == "True" );
+
+            if ( sectionValueIsTrue )
             {
                 result = true;
             }
 
             return result;
+        }
+
+
+        public bool PathesEqual ( IConfigurationSection section, ValidationError err )
+        {
+            string [] sectionSteps = section.Path.Split (':');
+
+            string propertyPath = TrimWaste (err.Path);
+            string [] impureSteps = propertyPath.Split ('.', 10);
+
+            bool metArrayIndexer = false;
+            string pureStep = string.Empty;
+            string indexator = string.Empty;
+
+            int indexatorNum = 0;
+            int counter = 0;
+
+            foreach ( string step   in   impureSteps )
+            {
+                bool stepInArray = ( step.Last () == ']' );
+
+                if ( stepInArray )
+                {
+                    int index = 0;
+
+                    for ( ;   index < step.Length;   index++ )
+                    {
+                        if ( step [index] == '[' )
+                        {
+                            break;
+                        }
+                    }
+
+                    pureStep = step.Substring (0, index);
+                    indexator = step.Substring ((index + 1), step.Length - index - 2);
+                    metArrayIndexer = true;
+                    indexatorNum = counter;
+                }
+
+                counter++;
+            }
+
+            string [] steps = impureSteps;
+
+            if ( metArrayIndexer ) 
+            {
+                steps = new string [impureSteps.Length + 1];
+
+                for ( int index = 0;   index < steps.Length;   index++ )
+                {
+                    if ( index < indexatorNum )
+                    {
+                        steps [index] = impureSteps [index];
+                    }
+                    else if ( index == indexatorNum )
+                    {
+                        steps [index] = pureStep;
+                    }
+                    else if ( index == ( indexatorNum + 1 ) )
+                    {
+                        steps [index] = indexator.ToString ();
+                    }
+                    else 
+                    {
+                        steps [index] = impureSteps [index - 1];
+                    }
+                }
+            }
+
+            bool equals = true;
+
+            if ( sectionSteps.Length != steps.Length ) 
+            {
+                return false;
+            }
+
+            for ( int index = 0;   index < sectionSteps.Length;   index++ )
+            {
+                if ( steps [index] != sectionSteps [index] ) 
+                {
+                    equals = false;
+                    break;
+                }
+            }
+
+            return equals;
         }
 
 
@@ -725,41 +1034,29 @@ namespace DataGateway
         }
 
 
-        private List<string> BuildPathToDefaultValue ( string[] keyPathInJson )
+        private List<string> BuildPathToDefaultValue ( IConfigurationSection section )
         {
-            List<string> keyPathInJsonScheme = new ();
+            List<string> keyPathInJsonScheme = new () { "default" };
 
-            foreach (string step   in   keyPathInJson) 
+            string [] keyPathInJson = section.Path.Split (':');
+
+            foreach ( string step   in   keyPathInJson )
             {
-                bool stepInArray = ( step.Last () == ']' );
-
-                if ( stepInArray )
-                {
-                    int index = 0;
-
-                    for ( ;  index < step.Length;   index++ )
-                    {
-                        if ( step [index] == '[' ) 
-                        {
-                            break;
-                        }
-                    }
-
-                    string correctStep = step.Substring (0, index);
-
-                    keyPathInJsonScheme.Add ("properties");
-                    keyPathInJsonScheme.Add (correctStep);
-                    keyPathInJsonScheme.Add ("items");
-                }
-
-                if ( ! stepInArray ) 
-                {
-                    keyPathInJsonScheme.Add ("properties");
-                    keyPathInJsonScheme.Add (step);
-                }
+                keyPathInJsonScheme.Add (step);
             }
 
-            keyPathInJsonScheme.Add ("default");
+            return keyPathInJsonScheme;
+        }
+
+
+        private List<string> BuildPathToDefaultValue ( ICollection<string> keyPathInJson )
+        {
+            List<string> keyPathInJsonScheme = new () { "default" };
+
+            foreach ( string step   in   keyPathInJson )
+            {
+                keyPathInJsonScheme.Add (step);
+            }
 
             return keyPathInJsonScheme;
         }

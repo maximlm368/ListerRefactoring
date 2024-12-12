@@ -136,6 +136,7 @@ namespace Lister.ViewModels
 
         internal void ZoomOn ( double scaleCoefficient ) 
         {
+            _heightConstraint *= scaleCoefficient;
             _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
             Height *= scaleCoefficient;
@@ -148,7 +149,8 @@ namespace Lister.ViewModels
 
 
         internal void ZoomOut ( double scaleCoefficient )
-        {
+        {  
+            _heightConstraint /= scaleCoefficient;
             _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
             Height /= scaleCoefficient;

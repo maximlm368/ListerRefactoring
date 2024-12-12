@@ -13,45 +13,21 @@ namespace Lister.Views;
 
 public partial class WaitingView : UserControl
 {
-    private static double _canvasHeight;
-    private static double _canvasWidth;
-    private static double _imageMarginTop;
-    private static double _imageMarginLeft;
-    private static double _thisMarginTop;
-
-    private WaitingViewModel _vm;
+    private WaitingViewModel _viewModel;
 
 
     public WaitingView()
     {
         InitializeComponent();
 
-        _vm = App.services.GetRequiredService <WaitingViewModel> ();
-        this.DataContext = _vm;
+        DataContext = App.services.GetRequiredService <WaitingViewModel> ();
+        _viewModel = (WaitingViewModel) DataContext;
     }
-
-
-    //internal void HandleDialogOpenig ()
-    //{
-    //    _vm.HandleDialogOpenig ();
-    //}
-
-
-    //internal void HandleDialogClosing ()
-    //{
-    //    _vm.HandleDialogClosing ();
-    //}
-
-
-    //private void PreventPasting ( object sender, TappedEventArgs args )
-    //{
-    //    args.Handled = true;
-    //}
 
 
     public void ChangeSize ( double heightDiff, double widthDiff )
     {
-        _vm.ChangeSize ( heightDiff, widthDiff );
+        _viewModel.ChangeSize ( heightDiff, widthDiff );
     }
 }
 

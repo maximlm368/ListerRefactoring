@@ -25,7 +25,7 @@ namespace Lister.ViewModels
     public partial class PrintDialogViewModel : ViewModelBase
     {
         private static string _warnImageName = "Icons/warning-alert.ico";
-        public static bool IsClosed { get; private set; }
+        //public static bool IsClosed { get; private set; }
 
         private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
         private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
@@ -48,7 +48,7 @@ namespace Lister.ViewModels
         private List<int> _currentRange;
         private ParserStates _state;
         private int _rangeStart;
-        private PrintDialog _view;
+        //private PrintDialog _view;
         private int _passedPagesAmount;
         private PrintAdjustingData _printingAdjusting;
         private List <int> _chosenPagesToPrint;
@@ -115,7 +115,7 @@ namespace Lister.ViewModels
         public string Pages
         {
             get { return _pages; }
-            private set
+            set
             {
                 PagesError = string.Empty;
                 value = RemoveUnacceptableGlyph (value, _pageNumsAcceptables);
@@ -129,8 +129,6 @@ namespace Lister.ViewModels
                 {
                     List<int> pageNumbers;
                     pageNumbers = GetPagesFromString (value);
-
-                    SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel> ();
 
                     for ( int index = 0;   index < pageNumbers.Count;   index++ )
                     {
@@ -148,7 +146,9 @@ namespace Lister.ViewModels
                 }
                 catch ( ParsingException ex )
                 {
-                    value = Pages;
+                    string changer = value;
+                    value = _pages;
+                    _pages = changer;
                 }
 
                 _pagesHinderPrinting = false;
@@ -203,7 +203,9 @@ namespace Lister.ViewModels
                 {
                     if ( (IsFirstDigitZero(value))   ||   ( Int32.Parse(value) > _copiesMaxCount ) ) 
                     {
-                        value = Copies;
+                        string changer = value;
+                        value = _copies;
+                        _copies = changer;
                     }
                 }
 
@@ -270,6 +272,21 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool _needClose;
+        public bool NeedClose
+        {
+            get { return _needClose; }
+            private set
+            {
+                if ( _needClose == value )
+                {
+                    _needClose = !_needClose;
+                }
+
+                this.RaiseAndSetIfChanged (ref _needClose, value, nameof (NeedClose));
+            }
+        }
+
 
         public PrintDialogViewModel ( )
         {
@@ -287,16 +304,16 @@ namespace Lister.ViewModels
 
         public void PagesLostFocus ( )
         {
-            //try
-            //{
-            //    GetPagesFromString (Pages);
-            //}
-            //catch (ParsingException ex) 
-            //{
-            //    PagesError = ex.Message;
-            //    _pagesListError = ex.Message;
-            //    _pagesHinderPrinting = true;
-            //}
+            try
+            {
+                GetPagesFromString (Pages);
+            }
+            catch ( ParsingException ex )
+            {
+                PagesError = ex.Message;
+                _pagesListError = ex.Message;
+                _pagesHinderPrinting = true;
+            }
 
             if ( string.IsNullOrEmpty (Pages) )
             {
@@ -330,7 +347,7 @@ namespace Lister.ViewModels
 
         public void Print ()
         {
-            //if ( _pagesHinderPrinting ) 
+            //if ( _pagesHinderPrinting )
             //{
             //    PagesError = _pagesListError;
             //    return;
@@ -374,8 +391,8 @@ namespace Lister.ViewModels
                 _printingAdjusting.PageNumbers = _chosenPagesToPrint;
                 _printingAdjusting.CopiesAmount = Int32.Parse (Copies);
                 _printingAdjusting.Cancelled = false;
-                IsClosed = true;
-                _view.Close ();
+                NeedClose = true;
+                //_view.Close ();
             }
             catch (ParsingException ex) 
             {
@@ -691,6 +708,11 @@ namespace Lister.ViewModels
 
         private string RemoveUnacceptableGlyph ( string value, List<char> acceptableGlyphs )
         {
+            if ( string.IsNullOrWhiteSpace(value) ) 
+            {
+                return string.Empty;
+            }
+
             bool glyphIsIncorrect = true;
 
             for ( int index = 0;   index < value.Length;   index++ )
@@ -731,18 +753,23 @@ namespace Lister.ViewModels
             PagesError = string.Empty;
 
             _printingAdjusting.Cancelled = true;
-            IsClosed = true;
-            SceneViewModel sceneVM = App.services.GetRequiredService<SceneViewModel> ();
-            sceneVM.HandleDialogClosing ();
+            
+            //HandleDialogClosing ();
+            NeedClose = true;
 
-            _view.Close ();
+            //_view.Close ();
         }
+
+
+        //private void HandleDialogClosing ()
+        //{
+        //    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+        //    waitingVM.HandleDialogClosing ();
+        //}
 
 
         public void Prepare ()
         {
-            IsClosed = false;
-
             ObservableCollection <PrinterPresentation> printersList = null;
 
             if ( App.OsName == "Windows" )
@@ -756,11 +783,6 @@ namespace Lister.ViewModels
 
             HandleEmptyPrinters (printersList);
             Printers = printersList;
-
-            //ObservableCollection<PrinterPresentation> mock = new ();
-            //HandleEmptyPrinters (mock);
-            //Printers = mock;
-
             Copies = "1";
         }
 
@@ -845,10 +867,10 @@ namespace Lister.ViewModels
         }
 
 
-        public void TakeView ( PrintDialog view )
-        {
-            _view = view;
-        }
+        //public void TakeView ( PrintDialog view )
+        //{
+        //    //_view = view;
+        //}
 
 
 
