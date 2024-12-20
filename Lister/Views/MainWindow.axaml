@@ -17,7 +17,7 @@
 		Height="460"
 		Width="830">
 
-	<views:ModernMainView
+	<views:MainView
 		Name="view"/>
   
 </Window>

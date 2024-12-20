@@ -11,12 +11,6 @@ namespace Lister.Views;
 public partial class PageNavigationZoomer : UserControl
 {
     private PageNavigationZoomerViewModel _viewModel;
-    private short _scalabilityDepth = 0;
-    private short _maxDepth = 5;
-    private short _minDepth = -5;
-    private readonly short _scalabilityStep = 25;
-    private ushort _maxScalability;
-    private ushort _minScalability;
     private SceneViewModel _sceneVM;
 
 

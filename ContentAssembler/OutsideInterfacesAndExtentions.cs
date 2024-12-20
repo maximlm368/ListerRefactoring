@@ -8,7 +8,7 @@
 
         public Dictionary <BadgeLayout, KeyValuePair <string, List<string>>> GetBadgeLayouts ( );
 
-        public string GetBadgeBackgroundPath ( string templateName );
+        public string GetBadgeImageUri ( string templateName );
     }
 
 

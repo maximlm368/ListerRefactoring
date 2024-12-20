@@ -51,7 +51,7 @@ namespace ContentAssembler
             }
 
             List<Badge> badges = new ();
-            string backgroundPath = _badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            string backgroundPath = _badgeAppearenceProvider.GetBadgeImageUri ( templateName );
             _badgeLayout = _badgeAppearenceProvider.GetBadgeLayout (templateName);
 
             foreach ( var person   in   _people ) 
@@ -75,7 +75,7 @@ namespace ContentAssembler
             }
 
             BadgeLayout badgeLayout = _badgeAppearenceProvider.GetBadgeLayout(templateName);
-            string backgroundPath = _badgeAppearenceProvider.GetBadgeBackgroundPath ( templateName );
+            string backgroundPath = _badgeAppearenceProvider.GetBadgeImageUri ( templateName );
             Badge badge = new Badge ( person, backgroundPath, badgeLayout );
 
             return badge;

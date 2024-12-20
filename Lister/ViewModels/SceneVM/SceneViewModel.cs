@@ -10,9 +10,8 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        private static readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
-        private static readonly int _badgeCountLimit = 3233;
-        private static readonly double _scalabilityCoefficient = 1.25;
+        private readonly int _badgeCountLimit;
+        private readonly double _scalabilityCoefficient = 1.25;
 
         public static bool EntireListBuildingIsChosen { get; private set; }
 
@@ -238,8 +237,14 @@ namespace Lister.ViewModels
         private BadgesBuildingViewModel _templateChoosingVM;
 
 
-        public SceneViewModel ( ) 
+        public SceneViewModel ( int badgeCountLimit, string extentionToolTip, string shrinkingToolTip
+                                                                            , string fileIsOpenMessage ) 
         {
+            _badgeCountLimit = badgeCountLimit;
+            _extentionToolTip = extentionToolTip;
+            _shrinkingToolTip = shrinkingToolTip;
+            _fileIsOpenMessage = fileIsOpenMessage;
+
             SetButtonBlock ();
 
             _docAssembler = App.services.GetService<IUniformDocumentAssembler> ();

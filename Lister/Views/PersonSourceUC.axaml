@@ -40,18 +40,16 @@
 
 		</Border>
 
-		<Button 
-			Name="chooseFile"
+		<Button
+			Classes="picture"
 			Grid.Column="2"
 			Width="50"
 			Height="32"
-			FontSize="16"
 			Padding="0,8"
 			HorizontalContentAlignment="Center"
 			HorizontalAlignment="Center"
             Command="{Binding ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
-			FontFamily="{StaticResource FA}"
 			Content="&#xF141;" />
 
 	</Grid>

@@ -26,14 +26,20 @@ using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
-    public class ModernMainViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject
     {
-        private static readonly string _suggestedFileNames = "Badge";
-        private static readonly string _saveTitle = "Сохранение документа";
+        //private readonly string _suggestedFileNames = "Badge";
+        //private readonly string _saveTitle = "Сохранение документа";
+        //private readonly string _incorrectXSLX = " - некорректный файл.";
+        //private readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
+        //private readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
 
-        private static readonly string _incorrectXSLX = " - некорректный файл.";
-        private static readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
-        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
+        private readonly string _suggestedFileNames;
+        private readonly string _saveTitle;
+        private readonly string _incorrectXSLX;
+        private readonly string _buildingLimitIsExhaustedMessage;
+        private readonly string _fileIsOpenMessage;
+
         public static bool MainViewIsWaiting { get; private set; }
         public static bool PrintingShouldStart { get; set; }
         internal string PdfFileName { get; private set; }
@@ -64,55 +70,21 @@ namespace Lister.ViewModels
         private PageNavigationZoomerViewModel _zoomNavigationViewModel;
         private SceneViewModel _sceneViewModel;
         private WaitingViewModel _waitingViewModel;
-        private ModernMainView _view;
+        private MainView _view;
 
         private bool _buildButtonIsTapped = false;
         private PrintAdjustingData _printAdjusting;
 
-        //private double _width;
-        //internal double Width
-        //{
-        //    get { return _width; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref _width, value, nameof (Width));
-        //    }
-        //}
 
-        //private double _height;
-        //internal double Height
-        //{
-        //    get { return _height; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref _height, value, nameof (Height));
-        //    }
-        //}
-
-        //private double _swidth;
-        //internal double sWidth
-        //{
-        //    get { return _swidth; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref _swidth, value, nameof (sWidth));
-        //    }
-        //}
-
-        //private double _sheight;
-        //internal double sHeight
-        //{
-        //    get { return _sheight; }
-        //    private set
-        //    {
-        //        this.RaiseAndSetIfChanged (ref _sheight, value, nameof (sHeight));
-        //    }
-        //}
-
-
-        public ModernMainViewModel ( string osName )
+        public MainViewModel ( string osName, string suggestedFileNames, string saveTitle, string incorrectXSLX
+                             , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage )
         {
             _osName = osName;
+            _suggestedFileNames = suggestedFileNames;
+            _saveTitle = saveTitle;
+            _incorrectXSLX = incorrectXSLX;
+            _buildingLimitIsExhaustedMessage = buildingLimitIsExhaustedMessage;
+            _fileIsOpenMessage = fileIsOpenMessage;
 
             _pdfPrinter = App.services.GetRequiredService<PdfPrinter> ();
             _printDialogViewModel = App.services.GetRequiredService<PrintDialogViewModel> ();
@@ -138,17 +110,28 @@ namespace Lister.ViewModels
             if ( args.PropertyName == "SourceFilePath" ) 
             {
                 PersonSourceViewModel personSource = ( PersonSourceViewModel ) sender;
-
                 _personChoosingViewModel.SetPersonsFromFile (personSource.SourceFilePath);
             }
             else if ( args.PropertyName == "FileIsDeclined" )
             {
                 string message = _personSourceViewModel.FilePath + _incorrectXSLX;
-                var messegeDialog = new MessageDialog (ModernMainView.Instance, message);
+                var messegeDialog = new MessageDialog (MainView.Instance, message);
 
                 WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                 waitingVM.Darken ();
                 messegeDialog.ShowDialog (App.MainWindow);
+            }
+            else if ( args.PropertyName == "FileIsOpen" )
+            {
+                if ( MainView.Instance == null ) 
+                {
+                    return;
+                }
+
+                var messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
+                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                waitingVM.Darken ();
+                messegeDialog.ShowDialog (MainWindow.Window);
             }
         }
 
@@ -168,20 +151,13 @@ namespace Lister.ViewModels
                     TemplateViewModel template = _personChoosingViewModel.ChosenTemplate;
 
                     var messegeDialog =
-                    new LargeMessageDialog (ModernMainView.Instance, template.CorrectnessMessage, template.SourcePath);
+                    new LargeMessageDialog (MainView.Instance, template.CorrectnessMessage, template.SourcePath);
 
                     _waitingViewModel.Darken ();
                     messegeDialog.ShowDialog (MainWindow.Window);
                     messegeDialog.Focusable = true;
                     messegeDialog.Focus ();
                 }
-            }
-            else if ( args.PropertyName == "PersonsFileIsOpen" )
-            {
-                var messegeDialog = new MessageDialog (ModernMainView.Instance, _fileIsOpenMessage);
-                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                waitingVM.Darken ();
-                messegeDialog.ShowDialog (MainWindow.Window);
             }
         }
 
@@ -200,10 +176,10 @@ namespace Lister.ViewModels
 
                 if ( shouldShowMessage )
                 {
-                    PersonChoosingViewModel pCh = _personChoosingViewModel;
+                    List<string> message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
+                    string path = _personChoosingViewModel.ChosenTemplate.SourcePath;
 
-                    var messegeDialog = new LargeMessageDialog (ModernMainView.Instance, pCh.ChosenTemplate.CorrectnessMessage
-                                                                                       , pCh.ChosenTemplate.SourcePath);
+                    var messegeDialog = new LargeMessageDialog (MainView.Instance, message, path);
 
                     _waitingViewModel.Darken ();
                     messegeDialog.ShowDialog (MainWindow.Window);
@@ -220,7 +196,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void SceneChanged ( object? sender, PropertyChangedEventArgs args )
+        private void SceneChanged ( object ? sender, PropertyChangedEventArgs args )
         {
             if ( args.PropertyName == "BadgesAreCleared" )
             {
@@ -239,7 +215,7 @@ namespace Lister.ViewModels
                 {
                     EndWaiting ();
 
-                    var messegeDialog = new MessageDialog (ModernMainView.Instance, _buildingLimitIsExhaustedMessage);
+                    var messegeDialog = new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage);
 
                     WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                     waitingVM.Darken ();
@@ -248,7 +224,7 @@ namespace Lister.ViewModels
             }
             else if ( args.PropertyName == "EditIncorrectsIsSelected" )
             {
-                ModernMainView mainView = ModernMainView.Instance;
+                MainView mainView = MainView.Instance;
                 mainView.EditIncorrectBadges (_sceneViewModel.IncorrectBadges, _sceneViewModel.PrintableBadges
                                                                                 , _sceneViewModel.AllPages [0]);
             }
@@ -337,7 +313,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void PassView ( ModernMainView view )
+        internal void PassView ( MainView view )
         {
             _view = view;
             WaitingView wv = _view. waiting;
@@ -359,8 +335,6 @@ namespace Lister.ViewModels
         }
 
 
-
-
         private async void PreparePdfGeneration ()
         {
             List <FilePickerFileType> fileExtentions = [];
@@ -370,6 +344,13 @@ namespace Lister.ViewModels
             options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
             options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
             IStorageFile chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync (FilePickerOptions);
+
+            bool savingCancelled = ( chosenFile == null );
+
+            if ( savingCancelled ) 
+            {
+                return;
+            }
 
             PdfFileName = chosenFile.Path.ToString ();
             int uriTypeLength = App.ResourceUriType.Length;
@@ -443,7 +424,7 @@ namespace Lister.ViewModels
             }
             else
             {
-                var messegeDialog = new MessageDialog (ModernMainView.Instance, _fileIsOpenMessage);
+                var messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
                 WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                 _waitingViewModel.Darken ();
                 messegeDialog.ShowDialog (MainWindow.Window);
@@ -505,7 +486,7 @@ namespace Lister.ViewModels
                 _pdfPrinter.PrintDuringWaiting (_sceneViewModel.GetPrintablePages (), _printAdjusting, _osName);
                 return;
             }
-            else if ( ModernMainView.TappedGoToEditorButton == 1 )
+            else if ( MainView.TappedGoToEditorButton == 1 )
             {
                 _view.SwitchToEditor ();
             }

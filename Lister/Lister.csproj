@@ -179,6 +179,9 @@
    <Compile Update="Views\LargeMessageDialog.axaml.cs">
      <DependentUpon>LargeMessageDialog.axaml</DependentUpon>
    </Compile>
+   <Compile Update="Views\MainView.axaml.cs">
+     <DependentUpon>MainView.axaml</DependentUpon>
+   </Compile>
  </ItemGroup>
   
 </Project>

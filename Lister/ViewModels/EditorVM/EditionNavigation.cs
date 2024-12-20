@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using Avalonia;
 
 namespace Lister.ViewModels
 {
@@ -8,60 +9,70 @@ namespace Lister.ViewModels
     {
         private int _numberAmongVisibleIcons = 1;
 
-        private bool udv;
+        private bool _upDownIsVisible;
         internal bool UpDownIsVisible
         {
-            get { return udv; }
+            get { return _upDownIsVisible; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref udv, value, nameof (UpDownIsVisible));
+                this.RaiseAndSetIfChanged (ref _upDownIsVisible, value, nameof (UpDownIsVisible));
             }
         }
 
-        private bool fE;
+        private Thickness _sliderMargin;
+        internal Thickness SliderMargin
+        {
+            get { return _sliderMargin; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _sliderMargin, value, nameof (SliderMargin));
+            }
+        }
+
+        private bool _firstIsEnable;
         internal bool FirstIsEnable
         {
-            get { return fE; }
+            get { return _firstIsEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fE, value, nameof (FirstIsEnable));
+                this.RaiseAndSetIfChanged (ref _firstIsEnable, value, nameof (FirstIsEnable));
             }
         }
 
-        private bool pE;
+        private bool _previousIsEnable;
         internal bool PreviousIsEnable
         {
-            get { return pE; }
+            get { return _previousIsEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref pE, value, nameof (PreviousIsEnable));
+                this.RaiseAndSetIfChanged (ref _previousIsEnable, value, nameof (PreviousIsEnable));
             }
         }
 
-        private bool nE;
+        private bool _nextIsEnable;
         internal bool NextIsEnable
         {
-            get { return nE; }
+            get { return _nextIsEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref nE, value, nameof (NextIsEnable));
+                this.RaiseAndSetIfChanged (ref _nextIsEnable, value, nameof (NextIsEnable));
             }
         }
 
-        private bool lE;
+        private bool _lastIsEnable;
         internal bool LastIsEnable
         {
-            get { return lE; }
+            get { return _lastIsEnable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref lE, value, nameof (LastIsEnable));
+                this.RaiseAndSetIfChanged (ref _lastIsEnable, value, nameof (LastIsEnable));
             }
         }
 
-        private int bpN;
+        private int _beingProcessedNumber;
         internal int BeingProcessedNumber
         {
-            get { return bpN; }
+            get { return _beingProcessedNumber; }
             private set
             {
                 if ( value < 1 )
@@ -73,17 +84,17 @@ namespace Lister.ViewModels
                     BeingProcessedNumberText = value.ToString ();
                 }
 
-                this.RaiseAndSetIfChanged (ref bpN, value, nameof (BeingProcessedNumber));
+                this.RaiseAndSetIfChanged (ref _beingProcessedNumber, value, nameof (BeingProcessedNumber));
             }
         }
 
-        private string bpNT;
+        private string _beingProcessedNumberText;
         internal string BeingProcessedNumberText
         {
-            get { return bpNT; }
+            get { return _beingProcessedNumberText; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bpNT, value, nameof (BeingProcessedNumberText));
+                this.RaiseAndSetIfChanged (ref _beingProcessedNumberText, value, nameof (BeingProcessedNumberText));
             }
         }
 
@@ -91,7 +102,6 @@ namespace Lister.ViewModels
         internal void ToFirst ()
         {
             ControlIncorrectCountValue ();
-            //BeingProcessedBadge.Hide ();
 
             int absoluteNumber = BeingProcessedNumber + 1;
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
@@ -150,7 +160,6 @@ namespace Lister.ViewModels
             }
 
             ControlIncorrectCountValue ();
-            //BeingProcessedBadge.Hide ();
             int possableRemovableNumber = BeingProcessedNumber;
             int possableRemovableAmongVisibleNumber = _numberAmongVisibleIcons;
             SetSliderToStationBeforeScrollingIfShould ();
@@ -219,7 +228,6 @@ namespace Lister.ViewModels
             }
 
             ControlIncorrectCountValue ();
-            //BeingProcessedBadge.Hide ();
             SetSliderToStationBeforeScrollingIfShould ();
             bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
             bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
@@ -282,7 +290,6 @@ namespace Lister.ViewModels
         internal void ToLast ()
         {
             ControlIncorrectCountValue ();
-            //BeingProcessedBadge.Hide ();
             BadgeViewModel newProcesseble = null;
             int oldNumber = BeingProcessedNumber;
 
@@ -376,8 +383,6 @@ namespace Lister.ViewModels
                 ControlIncorrectCountValue ();
 
                 int destinationNumber = int.Parse (destinationNumberAsText);
-
-                //BeingProcessedBadge.Hide ();
                 bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
                 int oldNumber = BeingProcessedNumber;
@@ -418,7 +423,6 @@ namespace Lister.ViewModels
                             else
                             {
                                 _numberAmongVisibleIcons--;
-                                //_scrollStepNumber--;
                                 newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
                             }
                         }
@@ -513,6 +517,22 @@ namespace Lister.ViewModels
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
             ReleaseCaptured ();
+            TryEnableSliderUpDown (_visibleRange);
+        }
+
+
+        private void TryEnableSliderUpDown ( int enablingRange )
+        {
+            if ( enablingRange < 2 )
+            {
+                UpDownIsVisible = false;
+                SliderMargin = new Thickness (7, 30);
+            }
+            else
+            {
+                UpDownIsVisible = true;
+                SliderMargin = new Thickness (7, 0);
+            }
         }
 
 

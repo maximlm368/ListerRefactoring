@@ -24,15 +24,14 @@ namespace Lister.ViewModels
 {
     public partial class PrintDialogViewModel : ViewModelBase
     {
-        private static string _warnImageName = "Icons/warning-alert.ico";
-        //public static bool IsClosed { get; private set; }
+        private readonly string _warnImagePath;
 
         private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
         private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
 
-        private readonly string _emptyCopies = "Количество копий не может быть пустым";
-        private readonly string _emptyPages = "Список страниц не может быть пустым";
-        private readonly string _emptyPrinters = "Список принтеров не может быть пустым";
+        private readonly string _emptyCopies;
+        private readonly string _emptyPages;
+        private readonly string _emptyPrinters;
 
         private readonly int _copiesMaxCount = 10;
         private readonly int _pagesStringMaxGlyphCount = 30;
@@ -42,13 +41,11 @@ namespace Lister.ViewModels
         private readonly List<char> _copiesCountAcceptables
                                    = new List<char> () { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        //private int _pagesStringGlyphCount;
         private List<char> _numAsChars;
         private List<int> _pageNumbers;
         private List<int> _currentRange;
         private ParserStates _state;
         private int _rangeStart;
-        //private PrintDialog _view;
         private int _passedPagesAmount;
         private PrintAdjustingData _printingAdjusting;
         private List <int> _chosenPagesToPrint;
@@ -141,9 +138,7 @@ namespace Lister.ViewModels
                         }
                     }
                 }
-                catch ( TransparentForTypingParsingException ex )
-                {
-                }
+                catch ( TransparentForTypingParsingException ex ){}
                 catch ( ParsingException ex )
                 {
                     string changer = value;
@@ -288,9 +283,14 @@ namespace Lister.ViewModels
         }
 
 
-        public PrintDialogViewModel ( )
+        public PrintDialogViewModel ( string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters )
         {
-            string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
+            _warnImagePath = warnImagePath;
+            _emptyCopies = emptyCopies;
+            _emptyPages = emptyPages;
+            _emptyPrinters = emptyPrinters;
+
+            string correctnessIcon = App.ResourceDirectoryUri + _warnImagePath;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
 
@@ -347,18 +347,6 @@ namespace Lister.ViewModels
 
         public void Print ()
         {
-            //if ( _pagesHinderPrinting )
-            //{
-            //    PagesError = _pagesListError;
-            //    return;
-            //}
-
-            //if ( _copiesHinderPrinting )
-            //{
-            //    CopiesError = _emptyCopies;
-            //    return;
-            //}
-
             try
             {
                 if ( string.IsNullOrEmpty (Copies) )
@@ -392,7 +380,6 @@ namespace Lister.ViewModels
                 _printingAdjusting.CopiesAmount = Int32.Parse (Copies);
                 _printingAdjusting.Cancelled = false;
                 NeedClose = true;
-                //_view.Close ();
             }
             catch (ParsingException ex) 
             {
@@ -408,14 +395,15 @@ namespace Lister.ViewModels
         }
 
 
-        private List <int> ? GetPagesFromString ( string pageNumbers )
+        private List <int> GetPagesFromString ( string pageNumbers )
         {
+            List<int> result = new ();
+
             if ( _printingAdjusting.Cancelled   ||   (pageNumbers == null) ) 
             {
-                return null;
+                return result;
             }
 
-            List <int> result = new ();
             _state = ParserStates.BeforeBetweenAfter;
             _numAsChars = new ();
             _pageNumbers = new ();

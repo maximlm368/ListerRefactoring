@@ -159,16 +159,22 @@ namespace Lister.Extentions
 
     public static class ImageHelper
     {
-        public static Bitmap LoadFromResource (Uri resourceUri)
+        public static Bitmap ? LoadFromResource (Uri resourceUri)
         {
-            using Stream stream = new FileStream ( resourceUri.AbsolutePath , FileMode.Open );
-            Bitmap bitmap = new Bitmap ( stream );
+            Bitmap bitmap = null;
+
+            try
+            {
+                using Stream stream = new FileStream (resourceUri.AbsolutePath, FileMode.Open);
+                bitmap = new Bitmap (stream);
+            }
+            catch (Exception ex) { }
 
             return bitmap;
         }
 
 
-        public static async Task <Bitmap ?> LoadFromWeb(Uri url)
+        public static async Task <Bitmap ?> LoadFromWeb (Uri url)
         {
             using var httpClient = new HttpClient();
             try

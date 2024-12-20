@@ -45,7 +45,7 @@ public partial class MainWindow : Window
 
     internal static double HeightfDifference { get; private set; }
 
-    private ModernMainView _mainView;
+    private MainView _mainView;
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
@@ -61,7 +61,7 @@ public partial class MainWindow : Window
         CommonStorageProvider = StorageProvider;
 
         this.Opened += OnOpened;
-        _mainView = ( ModernMainView ) Content;
+        _mainView = ( MainView ) Content;
 
         this.SizeChanged += OnSizeChanged;
         _currentWidth = Width;
@@ -111,7 +111,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            ModernMainView mainView = ( ModernMainView ) Content;
+            MainView mainView = ( MainView ) Content;
             double newWidth = args.NewSize.Width;
             double newHeight = args.NewSize.Height;
             double newWidthDifference = _currentWidth - newWidth;
@@ -154,7 +154,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            ModernMainView mainView = ( ModernMainView ) Content;
+            MainView mainView = ( MainView ) Content;
             mainView.CloseCustomCombobox ();
         }
         catch ( InvalidCastException ex )
@@ -167,7 +167,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            ModernMainView mainView = ( ModernMainView ) Content;
+            MainView mainView = ( MainView ) Content;
             mainView.ReleaseRunner ();
         }
         catch ( InvalidCastException ex ) 

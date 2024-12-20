@@ -27,17 +27,14 @@ namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
-        private static string _correctnessIcon = "Icons/GreenCheckMarker.jpg";
-        private static string _incorrectnessIcon = "Icons/RedCross.png";
-        private FilterChoosing _filterState = FilterChoosing.All;
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;
-        private readonly string _allLabel = "Все";
-        private readonly string _incorrectLabel = "С ошибками";
-        private readonly string _correctLabel = "Без ошибок";
-        private readonly string _allTip = "Все бейджи";
-        private readonly string _correctTip = "Бейджи без ошибок";
-        private readonly string _incorrectTip = "Бейджи с ошибками";
+        private readonly string _allLabel;
+        private readonly string _incorrectLabel;
+        private readonly string _correctLabel;
+        private readonly string _allTip;
+        private readonly string _correctTip;
+        private readonly string _incorrectTip;
 
         private readonly double _narrowCorrectnessWidthLimit = 155;
         private readonly int _narrowMinCorrectnessTextLength = 14;
@@ -47,6 +44,9 @@ namespace Lister.ViewModels
         private readonly int _wideMinCorrectnessTextLength = 17;
         private readonly int _wideMaxCorrectnessTextLength = 23;
 
+        private string _correctnessIcon;
+        private string _incorrectnessIcon;
+        private FilterChoosing _filterState = FilterChoosing.All;
         private double _correctnessWidthLimit;
         private int _minCorrectnessTextLength;
         private int _maxCorrectnessTextLength;

@@ -36,27 +36,22 @@
 					Grid.Column="1"
 					Classes="transparent"
 					Width="32"
-					Height="32"
-					FontSize="16"
 					Padding="7,7"
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowFirstPage}"
 					ToolTip.Tip="На первую страницу"
-					FontFamily="{StaticResource FA}"
 					Content="&#xf048;"/>
 
 				<Button
 					Name="previousPage"
 					Grid.Column="2"
-				    Classes="transparent"
+				    Classes="littlePicture"
 					Width="32"
-					Height="32"
 					FontSize="20"
 					Padding="5,5"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowPreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
-					FontFamily="{StaticResource FA}"
 					Content="&#xf0d9;" />
 
 				<TextBox
@@ -67,6 +62,8 @@
 					Height="32"
 					FontSize="16"
 					Background="White"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					TextChanged="StepOnPage"
@@ -76,29 +73,27 @@
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					FontSize="16"
+					Margin="0,7"
 					Grid.Column="4"
 					Content="из"/>
 
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					FontSize="16"
+					Margin="0,7"
 					Grid.Column="5"
 					Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
 
 				<Button
 					Name="nextPage"
 					Grid.Column="6"
-					Classes="transparent"
+					Classes="littlePicture"
 					Width="32"
-					Height="32"
 					FontSize="20"
 					Padding="8,5"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowNextPage}"
 					ToolTip.Tip="На следующую страницу"
-					FontFamily="{StaticResource FA}"
 					Content="&#xf0da;" />
 
 				<Button
@@ -106,13 +101,10 @@
 					Grid.Column="7"
 					Classes="transparent"
 					Width="32"
-					Height="32"
-					FontSize="16"
 					Padding="6,7"
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowLastPage}"
 					ToolTip.Tip="На последнюю страницу"
-					FontFamily="{StaticResource FA}"
 					Content="&#xf051;" />
 
 			</Grid>
@@ -132,23 +124,17 @@
 					Classes="transparent"
 					HorizontalAlignment="Center"
 					Width="32"
-					Height="32"
-					FontSize="16"
 					Padding="8,7"
 					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOut}"
 					ToolTip.Tip="Уменьшить масштаб"
-					FontFamily="{StaticResource FA}"
 					Content="&#xf068;" />
 
 				<Label
 					Name="scalabilityGrade"
 					Grid.Column="1"
 					Width="60"
-					Height="32"
-					FontSize="16"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Center"
+					Padding="7,5"
 					BorderBrush="black"
 					Background="White"
 					CornerRadius = "3"
@@ -162,13 +148,10 @@
 					Classes="transparent"
 					HorizontalAlignment="Center"
 					Width="32"
-					Height="32"
-					FontSize="16"
 					Padding="8,7"
 					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOn}"
 					ToolTip.Tip="Увеличить масштаб"
-					FontFamily="{StaticResource FA}"
 					Content="&#x2b;" />
 				
 			</Grid>

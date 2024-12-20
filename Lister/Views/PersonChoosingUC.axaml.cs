@@ -25,7 +25,7 @@ namespace Lister.Views
     {
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
 
-        private ModernMainView _parent;
+        private MainView _parent;
         private readonly int _inputLimit = 100;
         private string _previousText;
         private bool _buttonIsPressed = false;

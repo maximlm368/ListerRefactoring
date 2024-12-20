@@ -26,15 +26,16 @@ namespace Lister.ViewModels
 {
     public partial class SceneViewModel : ViewModelBase
     {
-        private static readonly double _buttonWidth = 32;
-        private static readonly double _countLabelWidth = 50;
-        private static readonly double _extention = 170;
-        private static readonly double _buttonBlockWidth = 50;
-        private static readonly double _workAreaLeftMargin = -61;
-        private static readonly string _extentionToolTip = "Развернуть панель";
-        private static readonly string _shrinkingToolTip = "Свернуть панель";
-        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении, закройте его.";
         public static int TappedPrintButton { get; set; }
+
+        private readonly double _buttonWidth = 32;
+        private readonly double _countLabelWidth = 50;
+        private readonly double _extention = 170;
+        private readonly double _buttonBlockWidth = 50;
+        private readonly double _workAreaLeftMargin = -61;
+        private readonly string _extentionToolTip;
+        private readonly string _shrinkingToolTip;
+        private readonly string _fileIsOpenMessage;
 
         private bool _blockIsExtended = false;
 

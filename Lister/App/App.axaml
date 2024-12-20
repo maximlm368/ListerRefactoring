@@ -2,45 +2,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Lister.App"
 			 
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-	<Application.Styles>
-		<FluentTheme />
-		
-		<Style Selector="Button.transparent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Foreground" Value="LightSlateGray"/>
-		</Style>
-
-		<Style Selector="Button.transparent:focus /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Foreground" Value="LightSlateGray"/>
-		</Style>
-
-		<Style Selector="Button.transparent /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="LightGray"/>
-		</Style>
-
-		<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="LightBlue"/>
-		</Style>
-
-		<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="BorderThickness" Value="1"/>
-		</Style>
-
-		<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="BorderBrush" Value="BlueViolet"/>
-		</Style>
-
-		<Style Selector="Button.mainButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="Background" Value="LightSeaGreen"/>
-		</Style>
-
-	</Application.Styles>
-	
 	<Application.Resources>
 		<FontFamily x:Key="FA">/Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
 	</Application.Resources>
+	
+	<Application.Styles>
+		<FluentTheme />
+		
+		<StyleInclude Source="/Styles/ButtonStyles.axaml"/>
+		<StyleInclude Source="/Styles/GeneralStyles.axaml"/>
+		
+	</Application.Styles>
 
 </Application>
 

@@ -39,7 +39,7 @@ namespace Lister.Views
         private bool _focusedExists;
         private bool _pointerIsPressed;
         private Point _pointerPosition;
-        private ModernMainView _back;
+        private MainView _back;
         private BadgeEditorViewModel _viewModel;
         private bool _isReleaseLocked;
         private Stopwatch _focusTime;
@@ -58,7 +58,8 @@ namespace Lister.Views
         {
             if ( newEditorIsNeeded   ||   _viewModel == null )
             {
-                BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount);
+                EditorViewModelArgs args = App.services.GetRequiredService <EditorViewModelArgs> ();
+                BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount, args);
                 this.DataContext = viewModel;
                 _viewModel = viewModel;
             }
@@ -149,7 +150,7 @@ namespace Lister.Views
         }
 
 
-        internal void PassBackPoint ( ModernMainView back )
+        internal void PassBackPoint ( MainView back )
         {
             _back = back;
             _viewModel.PassView (this);

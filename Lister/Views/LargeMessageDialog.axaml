@@ -22,11 +22,9 @@
 		
 	<StackPanel>
 
-		<Label 
-			Content ="Ошибка"
-			FontSize ="12"
-			Height="20"
-			Margin ="5,0,0,0"/>
+		<Label
+			Classes="modalLabel"
+			Content ="Ошибка"/>
 
 		<Grid
 			Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
@@ -144,15 +142,9 @@
 
 			<Button
 				Name="ok"
-				Width="80"
-				Height="24"
-				FontSize="11"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Center"
-				CornerRadius = "0"
+				Classes="modalButton"
+				Padding="31,4"
 				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-				BorderBrush = "gray"
-				BorderThickness = "1"
 				Canvas.Top="6"
 				Canvas.Left="{Binding  Path = ButtonCanvasLeft,  Mode=OneWay }"
 				Content="Ok"

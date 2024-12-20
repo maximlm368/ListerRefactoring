@@ -11,21 +11,21 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private static double _withScroll = 462;
-        private static double _withoutScroll = 477;
-        private static readonly double _minRunnerHeight = 10;
-        private static readonly double _upperHeight = 15;
-        private static readonly double _scrollingScratch = 32;
-        private static readonly string _placeHolder = "Весь список";
-        private static readonly int _maxVisibleCount = 4;
-        private static readonly double _oneHeight = 32;
-        private static readonly int _edge = 3;
+        private readonly string _placeHolder;
 
-        private static SolidColorBrush _entireListColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 182, 193));
-        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
-        private static SolidColorBrush _focusedBorderColor = new SolidColorBrush (MainWindow.black);
-        private static SolidColorBrush _focusedBackgroundColor =
-                                                         new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 200));
+        private double _withScroll = 462;
+        private double _withoutScroll = 477;
+        private readonly double _minRunnerHeight = 10;
+        private readonly double _upperHeight = 15;
+        private readonly double _scrollingScratch = 32;
+        private readonly int _maxVisibleCount = 4;
+        private readonly double _oneHeight = 32;
+        private readonly int _edge = 3;
+
+        private SolidColorBrush _entireListColor;
+        private SolidColorBrush _unfocusedColor;
+        private SolidColorBrush _focusedBorderColor;
+        private SolidColorBrush _focusedBackgroundColor;
         private Dictionary<BadgeLayout, KeyValuePair<string, List<string>>> _badgeLayouts;
         private bool _allListMustBe = false;
         private double _widthDelta;
@@ -185,21 +185,6 @@ namespace Lister.ViewModels
                 }
 
                 this.RaiseAndSetIfChanged (ref _sickTemplateIsSet, value, nameof (SickTemplateIsSet));
-            }
-        }
-
-        private bool _personsFileIsOpen;
-        public bool PersonsFileIsOpen
-        {
-            get { return _personsFileIsOpen; }
-            private set
-            {
-                if ( _personsFileIsOpen == value )
-                {
-                    _personsFileIsOpen = !_personsFileIsOpen;
-                }
-
-                this.RaiseAndSetIfChanged (ref _personsFileIsOpen, value, nameof (PersonsFileIsOpen));
             }
         }
 
@@ -432,6 +417,12 @@ namespace Lister.ViewModels
             {
                 this.RaiseAndSetIfChanged (ref _dropDownOpacity, value, nameof (DropDownOpacity));
             }
+        }
+
+
+        private void SetPropertiesByConfig ()
+        {
+
         }
     }
 }

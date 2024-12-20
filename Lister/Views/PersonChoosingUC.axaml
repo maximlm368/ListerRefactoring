@@ -23,7 +23,6 @@
 
 		<Label
 			Grid.Column="0"
-			FontSize="16"
 			Padding="10,8"
 			Content="ФИО:"/>
 
@@ -35,12 +34,11 @@
 				Name="personTextBox"
 				Width="446"
 				Height="32"
-				FontSize="16"
 				Padding="10,4"
 				Margin="0,2"
+				FontSize="16"
 				CornerRadius="3,0,0,3"
 				Background="White"
-
 				ScrollViewer.VerticalScrollBarVisibility="Disabled"
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
@@ -78,7 +76,6 @@
 
 						<Label
 							Name="allPersonsSign"
-							FontSize="16"
 							Padding="8,4"
 							FontWeight="Bold"
 							Background="LightPink"
@@ -101,7 +98,6 @@
 								<DataTemplate>
 
 										<Label
-											FontSize="16"
 											Padding="8,4"
 											Height="32"
 											Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
@@ -132,8 +128,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								PointerPressed="ScrollByTapping"
-								/>
+								PointerPressed="ScrollByTapping"/>
 
 							<Canvas
 								Name="topSpan"
@@ -171,8 +166,7 @@
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="15"
 								Background="LightGray"
-								PointerPressed="ScrollByTapping"
-								/>
+								PointerPressed="ScrollByTapping"/>
 
 						</Canvas>
 
@@ -183,18 +177,14 @@
 		</Canvas>
 		
 		<Button
-			Name="openListButton"
 			Grid.Column="2"
 			VerticalAlignment="Top"
 			Margin="-14,2"
 			Width="32"
-			Height="32"
-			FontSize="16"
 			CornerRadius="0,3,3,0"
 			BorderBrush="Gray"
 			BorderThickness="1"
-			VerticalContentAlignment="Center"
-			HorizontalContentAlignment="Center"
+			Padding="9,6"
 			Focusable="False"
 			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
 			Tapped="DropOrPickUpPersons"
@@ -202,12 +192,11 @@
 			Content="&#xf0d7;"/>
 
 		<Label
-			Name="template"
+			Classes="narrow"
 			Grid.Column="3"
 			Content="Шаблон:"
-			FontSize="16"
-			Margin="-10, 0"
-			Padding="10, 10"/>
+			Margin="-5, 0"
+			Padding="10, 0"/>
 
 		<ComboBox
 			Name="templateChoosing"
@@ -229,7 +218,8 @@
 			<ComboBox.ItemTemplate >
 				<DataTemplate >
 					<Label
-						FontSize="16"
+						Classes="narrow"
+						Padding="4,0"
 						Foreground="{Binding  Path=Color,  Mode=OneWay}"
 						Content="{Binding  Path=Name,  Mode=OneWay}"/>
 				</DataTemplate>

@@ -1,27 +1,8 @@
 ﻿using ContentAssembler;
 using ExtentionsAndAuxiliary;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.Text.Json;
-
 using NJsonSchema;
-using Newtonsoft.Json.Linq;
 using NJsonSchema.Validation;
-
-//using Newtonsoft.Json.Linq;
-//using Newtonsoft.Json.Schema;
-
-
-//using Json.Schema;
-
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Office2013.Word;
-using System.Linq;
-using System.Text.Json.Nodes;
-using System.ComponentModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using DocumentFormat.OpenXml.InkML;
-//using Newtonsoft.Json.Schema;
 
 
 namespace DataGateway
@@ -32,7 +13,6 @@ namespace DataGateway
         private string _resourceFolder;
         private FileInfo _schemeFile;
 
-        private readonly string _defaultColor = "150,150,150";
         private readonly string _defaultSplitability = "0";
         
         private Dictionary<string, string> _nameAndJson;
@@ -241,12 +221,12 @@ namespace DataGateway
         }
 
 
-        public string GetBadgeBackgroundPath ( string templateName )
+        public string GetBadgeImageUri ( string templateName )
         {
-            string jsonPath = _nameAndJson [ templateName ];
-            string backgroundPath = GetSectionStrValueOrDefault ( new List<string> { "BackgroundImagePath" } , jsonPath) ?? "";
-            backgroundPath = _resourceUri + backgroundPath;
-            return backgroundPath;
+            string fileName = _nameAndJson [ templateName ];
+            fileName = GetSectionStrValueOrDefault ( new List<string> { "BackgroundImagePath" }, fileName) ?? "";
+            string fileUri = _resourceUri + fileName;
+            return fileUri;
         }
 
 
@@ -285,11 +265,10 @@ namespace DataGateway
             List <TextualAtom> atoms = GetAtoms ( jsonPath );
             SetUnitingAtoms (atoms, jsonPath);
 
-            List <InsideImage> pictures = GetImages ( jsonPath );
+            List <InsideImage> images = GetImages ( jsonPath );
+            List <InsideShape> shapes = GetShapes (jsonPath);
 
-            BadgeLayout result = new BadgeLayout (badgeWidth, badgeHeight, templateName, spans, atoms, pictures);
-
-            //_badgeLayouts.Add (templateName, result);
+            BadgeLayout result = new BadgeLayout (badgeWidth, badgeHeight, templateName, spans, atoms, images, shapes);
 
             return result;
         }
@@ -357,18 +336,35 @@ namespace DataGateway
 
         private List <InsideImage> GetImages ( string jsonPath ) 
         {
-            List <InsideImage> pictures = new ();
+            List <InsideImage> images = new ();
 
-            IEnumerable <IConfigurationSection> images =
+            IEnumerable <IConfigurationSection> imageSections =
                               GetterFromJson.GetIncludedItemsOfSection (new List<string> { "InsideImages" }, jsonPath);
 
-            foreach ( IConfigurationSection image in images )
+            foreach ( IConfigurationSection imageSection   in   imageSections )
             {
-                InsideImage picture = BuildInsideImage (image);
-                pictures.Add (picture);
+                InsideImage image = BuildInsideImage (imageSection);
+                images.Add (image);
             }
 
-            return pictures;
+            return images;
+        }
+
+
+        private List <InsideShape> GetShapes ( string jsonPath )
+        {
+            List <InsideShape> shapes = new ();
+
+            IEnumerable <IConfigurationSection> shapeSections =
+                              GetterFromJson.GetIncludedItemsOfSection (new List<string> { "InsideShapes" }, jsonPath);
+
+            foreach ( IConfigurationSection shapeSection   in   shapeSections )
+            {
+                InsideShape shape = BuildInsideShape (shapeSection);
+                shapes.Add (shape);
+            }
+
+            return shapes;
         }
 
 
@@ -439,15 +435,15 @@ namespace DataGateway
             string fontName = GetSectionStrValueOrDefault (childSection, jsonPath, "FontName");
 
             childSection = section.GetSection ("Foreground");
-            childSection = section.GetSection ("Red");
+            childSection = childSection.GetSection ("Red");
             byte red = (byte) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
 
             childSection = section.GetSection ("Foreground");
-            childSection = section.GetSection ("Green");
+            childSection = childSection.GetSection ("Green");
             byte green = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Green");
 
             childSection = section.GetSection ("Foreground");
-            childSection = section.GetSection ("Blue");
+            childSection = childSection.GetSection ("Blue");
             byte blue = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Blue");
 
             List<byte> foreground = new List<byte> () { red, green, blue };
@@ -475,30 +471,91 @@ namespace DataGateway
 
         private InsideImage BuildInsideImage ( IConfigurationSection section )
         {
-            IConfigurationSection childSection = section.GetSection ( "Width" );
-            double width = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
-            
-            childSection = section.GetSection ( "Height" );
-            double height = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
-            
-            childSection = section.GetSection ( "TopOffset" );
-            double topOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
+            List<double> commonData = GetCommonData (section);
 
-            childSection = section.GetSection ( "LeftOffset" );
-            double leftOffset = GetterFromJson.GetSectionValue ( childSection ).TranslateToDoubleOrZeroIfNot ( );
+            IConfigurationSection childSection = section.GetSection ( "Path" );
+            string fileName = GetterFromJson.GetSectionValue ( childSection) ?? "";
+            string fileUri = _resourceUri + fileName;
 
-            childSection = section.GetSection ( "ImagePath" );
-            string path = GetterFromJson.GetSectionValue ( childSection) ?? "";
+            childSection = section.GetSection ("AboveScratchName");
+            string aboveScratchName = GetterFromJson.GetSectionValue (childSection) ?? "";
 
-            childSection = section.GetSection ( "Color" );
-            string color = GetterFromJson.GetSectionValue ( childSection) ?? "";
-            
-            childSection = section.GetSection ( "GeometricElementName" );
-            string geometricElement = GetterFromJson.GetSectionValue ( childSection) ?? "";
-
-            InsideImage image = 
-                       new InsideImage ( path, width , height, color, geometricElement, topOffset, leftOffset );
+            InsideImage image = new InsideImage (fileUri, commonData [0], commonData [1]
+                                               , commonData [2], commonData [3], aboveScratchName);
             return image;
+        }
+
+
+        private InsideShape BuildInsideShape ( IConfigurationSection section )
+        {
+            List<double> commonData = GetCommonData (section);
+
+            IConfigurationSection childSection = section.GetSection ("Kind");
+            string kind = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            childSection = section.GetSection ("OutLineColor");
+            List<byte> outLineColor = GetRGB (childSection);
+
+            childSection = section.GetSection ("OutLineThickness");
+
+            int outlineThickness = 0;
+
+            try
+            {
+                outlineThickness = int.Parse (GetterFromJson.GetSectionValue (childSection));
+            }
+            catch ( Exception e ) { }
+
+            childSection = section.GetSection ("FillColor");
+            List<byte> fillColor = GetRGB (childSection);
+
+            childSection = section.GetSection ("AboveScratchName");
+            string aboveScratchName = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            InsideShape shape = new InsideShape (commonData [0], commonData [1], commonData [2], commonData [3]
+                                                 , outLineColor, outlineThickness, fillColor, kind, aboveScratchName);
+            return shape;
+        }
+
+
+        private List<double> GetCommonData ( IConfigurationSection section )
+        {
+            List<double> result = new ();
+
+            IConfigurationSection childSection = section.GetSection ("Width");
+            double width = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+            result.Add ( width );
+
+            childSection = section.GetSection ("Height");
+            double height = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+            result.Add (height);
+
+            childSection = section.GetSection ("TopOffset");
+            double topOffset = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+            result.Add ( topOffset );
+
+            childSection = section.GetSection ("LeftOffset");
+            double leftOffset = GetterFromJson.GetSectionValue (childSection).TranslateToDoubleOrZeroIfNot ();
+            result.Add (leftOffset);
+
+            return result;
+        }
+
+
+        private List<byte> GetRGB ( IConfigurationSection section )
+        {
+            IConfigurationSection childSection = section.GetSection ("Red");
+            byte red = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+
+            childSection = section.GetSection ("Green");
+            byte green = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+
+            childSection = section.GetSection ("Blue");
+            byte blue = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+
+            List<byte> rgb = new List<byte> () { red, green, blue };
+
+            return rgb;
         }
 
 

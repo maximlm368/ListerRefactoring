@@ -5,8 +5,8 @@
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="460"
-             x:Class="Lister.Views.ModernMainView"
-			 x:DataType="vm:ModernMainViewModel"
+             x:Class="Lister.Views.MainView"
+			 x:DataType="vm:MainViewModel"
 			 Height="460"
 			 Width="830" >
 		

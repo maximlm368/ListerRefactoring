@@ -1,0 +1,73 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Add Styles Here -->
+
+
+	<Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="16"/>
+	</Style>
+	<Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="32"/>
+	</Style>
+	
+	
+	<Style Selector="Label.picture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+	<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="16"/>
+	</Style>
+	<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="32"/>
+	</Style>
+	<Style Selector="Label.height_40 /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="40"/>
+	</Style>
+	<Style Selector="Label.narrow /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="22"/>
+	</Style>
+	<Style Selector="Label.narrow /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Padding" Value="3,0"/>
+	</Style>
+	
+	
+	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="20"/>
+	</Style>
+	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="12"/>
+	</Style>
+	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Margin" Value="5,0,0,0"/>
+	</Style>
+
+
+
+
+	<Style
+		Selector="Border.rotatable">
+	
+	
+	
+	
+	</Style>
+	
+</Styles>
+
+
+<!--
+
+	<Style Selector="TextBlock /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="26"/>
+	</Style>
+	<Style Selector="TextBox /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="12"/>
+	</Style>
+
+-->

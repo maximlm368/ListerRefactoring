@@ -28,6 +28,7 @@ using Avalonia.Threading;
 using ExCSS;
 using static QuestPDF.Helpers.Colors;
 using HarfBuzzSharp;
+using System.Text;
 
 
 namespace Lister.ViewModels;
@@ -182,8 +183,8 @@ public class ConverterToPdf
                                .FitArea ();
 
                                RenderTextLines (layers, beingRendered.TextLines, beingRendered);
-                               RenderInsideImages (layers, beingRendered.InsideImages);
-                               RenderInsideShapes (layers, beingRendered.InsideShapes);
+                               //RenderInsideImages (layers, beingRendered.InsideImages);
+                               //RenderInsideShapes (layers, beingRendered.InsideShapes);
                            }
                        );
     }
@@ -248,20 +249,38 @@ public class ConverterToPdf
     }
 
 
-    private void RenderInsideShapes ( LayersDescriptor layers, IEnumerable <ImageViewModel> insideImages )
+    private void RenderInsideShapes ( LayersDescriptor layers, IEnumerable <RectangleViewModel> insideShapes )
     {
-        //foreach ( ImageViewModel image   in   insideImages )
-        //{
-        //    float paddingLeft = ( float ) image.LeftOffset;
-        //    float paddingTop = ( float ) image.TopOffset;
-            
-        //    layers
-        //        .Layer ()
-        //        .PaddingLeft (paddingLeft)
-        //        .PaddingTop (paddingTop)
-        //        .Canvas (DrawGeometryElement);
-                
-        //}
+        foreach ( RectangleViewModel shape   in   insideShapes )
+        {
+            float paddingLeft = ( float ) shape.LeftOffset;
+            float paddingTop = ( float ) shape.TopOffset;
+
+            layers
+                .Layer ()
+                .PaddingLeft (paddingLeft)
+                .PaddingTop (paddingTop)
+                .SkiaSharpCanvas 
+                (
+                    ( canvas, size ) =>
+                    {
+                        using SKPaint paint = new SKPaint
+                        {
+                            Color = SKColors.Red,
+                            StrokeWidth = 10,
+                            IsStroke = true
+                        };
+
+                        // move origin to the center of the available space
+                        canvas.Translate (size.Width / 2, size.Height / 2);
+
+                        // draw a circle
+                        canvas.DrawCircle (50, 50, 50, paint);
+                    }
+                );
+
+
+        }
     }
 
 
@@ -273,6 +292,9 @@ public class ConverterToPdf
         rect.Size = new SKSize (size.Width, size.Height);
         canvas.DrawRect (rect, paint);
     }
+
+
+
 
 
     //private string GetImagePath ( string relativePath )
@@ -295,5 +317,24 @@ public class ConverterToPdf
         return resultPath;
     }
 
+}
+
+
+
+public static class IContainerExtentions 
+{
+    public static void SkiaSharpCanvas ( this IContainer container, Action<SKCanvas, Pdf.Size> drawOnCanvas )
+    {
+        container.Svg (size =>
+        {
+            using var stream = new MemoryStream ();
+
+            using ( var canvas = SKSvgCanvas.Create (new SKRect (0, 0, size.Width, size.Height), stream) )
+                drawOnCanvas (canvas, size);
+
+            var svgData = stream.ToArray ();
+            return Encoding.UTF8.GetString (svgData);
+        });
+    }
 }
 

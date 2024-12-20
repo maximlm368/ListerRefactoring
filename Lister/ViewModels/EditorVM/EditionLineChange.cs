@@ -23,11 +23,10 @@ namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
-        private readonly SolidColorBrush _focusedFontSizeColor = new SolidColorBrush(new Color(255, 255, 255, 255));
-        private readonly SolidColorBrush _releasedFontSizeColor = new SolidColorBrush (new Color (255, 175, 175, 175));
-
-        private readonly SolidColorBrush _focusedFontSizeBorderColor = new SolidColorBrush (new Color (255, 50, 50, 50));
-        private readonly SolidColorBrush _releasedFontSizeBorderColor = new SolidColorBrush (new Color (255, 150, 150, 150));
+        private readonly SolidColorBrush _focusedFontSizeColor;
+        private readonly SolidColorBrush _releasedFontSizeColor;
+        private readonly SolidColorBrush _focusedFontSizeBorderColor;
+        private readonly SolidColorBrush _releasedFontSizeBorderColor;
 
         private SolidColorBrush ffsc;
         internal SolidColorBrush FocusedFontSizeColor

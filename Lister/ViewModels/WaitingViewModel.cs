@@ -174,7 +174,7 @@ namespace Lister.ViewModels
 
             _canvasShownVerticalMargin += heightDiff;
 
-            if ( ModernMainViewModel.MainViewIsWaiting ) 
+            if ( MainViewModel.MainViewIsWaiting ) 
             {
                 Margin = new Thickness (0, _canvasShownVerticalMargin);
             }

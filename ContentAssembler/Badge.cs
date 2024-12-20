@@ -49,10 +49,12 @@ namespace ContentAssembler
         public double BottomSpan { get; private set; }
         public List <TextualAtom> TextualFields { get; private set; }
         public List <InsideImage> InsideImages { get; private set; }
+        public List <InsideShape> InsideShapes { get; private set; }
 
 
         public BadgeLayout ( double outlineWidth, double outlineHeight, string templateName, List<double> ? spans
-                           , List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages )
+                           , List <TextualAtom> ? textualFields, List <InsideImage> ? insideImages
+                           , List <InsideShape> ? insideShapes )
         {
             OutlineWidth = outlineWidth;
             OutlineHeight = outlineHeight;
@@ -76,12 +78,13 @@ namespace ContentAssembler
 
             TextualFields = textualFields ?? new List <TextualAtom> ();
             InsideImages = insideImages ?? new List <InsideImage> ();
+            InsideShapes = insideShapes ?? new List <InsideShape> ();
         }
 
 
         internal BadgeLayout Clone ( ) 
         {
-            List<TextualAtom> atoms = new List<TextualAtom> ();
+            List <TextualAtom> atoms = new List <TextualAtom> ();
             
             foreach ( var atom   in   TextualFields ) 
             {
@@ -89,7 +92,7 @@ namespace ContentAssembler
             }
 
             BadgeLayout clone = 
-                         new BadgeLayout (OutlineWidth, OutlineHeight, TemplateName, _spans, atoms, InsideImages);
+                        new BadgeLayout (OutlineWidth, OutlineHeight, TemplateName, _spans, atoms, InsideImages, InsideShapes);
             return clone;
         }
 
@@ -184,67 +187,83 @@ namespace ContentAssembler
 
 
 
-    public class InsideImage
+    public class InsideImage : BindableToAnother
     {
-        private readonly List<string> _geometryNames;
         public string Path { get; private set; }
-        public double OutlineWidth { get; private set; }
-        public double OutlineHeight { get; private set; }
-        public string Color { get; private set; }
-        public string GeometryElementName { get; private set; }
-        public double TopOffset { get; private set; }
-        public double LeftOffset { get; private set; }
-        public ImageType ImageKind { get; private set; }
 
-        public InsideImage ( string path, double outlineWidth, double outlineHeight, string color,
-                           string geometryElementName, double topShiftOnBackground, double leftShiftOnBackground )
+        public InsideImage ( string path, double outlineWidth, double outlineHeight
+                           , double topShiftOnBackground, double leftShiftOnBackground, string ? bindingName )
         {
-            _geometryNames = SetGeometryNames ();
             Path = path;
-            OutlineWidth = outlineWidth;
-            OutlineHeight = outlineHeight;
-            Color = color;
-            GeometryElementName = geometryElementName;
+            Width = outlineWidth;
+            Height = outlineHeight;
             TopOffset = topShiftOnBackground;
             LeftOffset = leftShiftOnBackground;
-
-            bool isImageAbsent = string.IsNullOrWhiteSpace (Path);
-
-            if ( isImageAbsent )
-            {
-                ImageKind = ImageType.geometricElement;
-                bool areColorOrGeometryNameAbsent = string.IsNullOrWhiteSpace (Color)
-                                                 || string.IsNullOrWhiteSpace (GeometryElementName);
-
-                if ( areColorOrGeometryNameAbsent )
-                {
-                    ImageKind = ImageType.nothing;
-                }
-                else if ( ! _geometryNames.Contains (GeometryElementName) )
-                {
-                    ImageKind = ImageType.nothing;
-                }
-            }
-        }
-
-
-        private List<string> SetGeometryNames ()
-        {
-            List<string> result = new List<string> () { "Rectangle" };
-            return result;
+            BindingName = bindingName;
         }
     }
 
 
 
-    public class TextualAtom
+    public class InsideShape : BindableToAnother
+    {
+        public List<byte> OutlineRGB { get; private set; }
+        public int OutlineThickness { get; private set; }
+        public List<byte> FillRGB { get; private set; }
+        public ShapeKind Kind { get; private set; }
+
+        public InsideShape ( double outlineWidth, double outlineHeight
+                           , double topShiftOnBackground, double leftShiftOnBackground, List<byte> outlineRGB
+                           , int outlineThickness, List<byte> fillRGB, string kind, string ? bindingName )
+        {
+            Width = outlineWidth;
+            Height = outlineHeight;
+            TopOffset = topShiftOnBackground;
+            LeftOffset = leftShiftOnBackground;
+            OutlineRGB = outlineRGB;
+            OutlineThickness = outlineThickness;
+            FillRGB = fillRGB;
+            BindingName = bindingName;
+
+            Kind = TranslateStrToShapeKind (kind);
+
+            if ( Kind == ShapeKind.nothing ) Trash ();
+        }
+
+
+        private void Trash ( )
+        {
+            Width = 0;
+            Height = 0;
+        }
+
+
+        private ShapeKind TranslateStrToShapeKind ( string kind ) 
+        {
+            if ( string.IsNullOrWhiteSpace(kind) ) 
+            {
+                return ShapeKind.nothing;
+            }
+
+            if ( (kind == "rectangle")   ||   ( kind == "Rectangle" ) ) 
+            {
+                return ShapeKind.rectangle;
+            }
+            else if ( ( kind == "ellipse" ) || ( kind == "Ellipse" ) )
+            {
+                return ShapeKind.ellipse;
+            }
+
+            return ShapeKind.nothing;
+        }
+    }
+
+
+
+    public class TextualAtom : LayoutMember
     {
         public string Name { get; private set; }
         public int NumberToLocate { get; private set; }
-        public double Width { get; private set; }
-        public double Height { get; private set; }
-        public double TopOffset { get; set; }
-        public double LeftOffset { get; private set; }
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontFile { get; private set; }
@@ -347,6 +366,23 @@ namespace ContentAssembler
 
 
 
+    public abstract class LayoutMember 
+    {
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double TopOffset { get; set; }
+        public double LeftOffset { get; set; }
+    }
+
+
+
+    public abstract class BindableToAnother : LayoutMember
+    {
+        public string ? BindingName { get; set; }
+    }
+
+
+
     public class TextualAtomComparer <T> : IComparer <T> where T : TextualAtom
     {
         public int Compare ( T first, T second )
@@ -366,10 +402,10 @@ namespace ContentAssembler
 
 
 
-    public enum ImageType
+    public enum ShapeKind
     {
-        image = 0,
-        geometricElement = 1,
+        rectangle = 0,
+        ellipse = 1,
         nothing = 2
     }
 }

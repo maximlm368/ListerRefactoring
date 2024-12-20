@@ -44,11 +44,10 @@
 
 			<StackPanel Orientation="Horizontal">
 				<Label
-					FontFamily="{StaticResource FA}"
+					Classes="picture"
 					Content="&#xE2CA;"
 					Width="30"
 					Height="32"
-					FontSize="16"
 					Padding="3,8"/>
 				<Label
 					Content="Построить макет"

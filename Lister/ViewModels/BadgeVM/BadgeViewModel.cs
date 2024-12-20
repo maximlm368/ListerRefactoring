@@ -21,13 +21,14 @@ using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Fluent;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using System.Drawing;
 
 namespace Lister.ViewModels;
 
 
 public class BadgeViewModel : ViewModelBase
 {
-    private static Dictionary<string, Bitmap> _pathToImage;
+    private static Dictionary<string, Avalonia.Media.Imaging.Bitmap> _pathToImage;
 
     private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
     private readonly double _interLineAddition = 1;
@@ -42,9 +43,9 @@ public class BadgeViewModel : ViewModelBase
     internal double BottomSpan { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
-    private Bitmap _bitMap = null;
-    private Bitmap _imageBitmap;
-    internal Bitmap ImageBitmap
+    private Avalonia.Media.Imaging.Bitmap _bitMap = null;
+    private Avalonia.Media.Imaging.Bitmap _imageBitmap;
+    internal Avalonia.Media.Imaging.Bitmap ImageBitmap
     {
         get { return _imageBitmap; }
         private set
@@ -76,26 +77,6 @@ public class BadgeViewModel : ViewModelBase
             this.RaiseAndSetIfChanged (ref _badgeHeight, value, nameof (BadgeHeight));
         }
     }
-
-    //private double hC;
-    //internal double HeightCrutch
-    //{
-    //    get { return hC; }
-    //    set
-    //    {
-    //        this.RaiseAndSetIfChanged (ref hC, value, nameof (HeightCrutch));
-    //    }
-    //}
-
-    //private double bHC;
-    //internal double BorderHeightCrutch
-    //{
-    //    get { return bHC; }
-    //    set
-    //    {
-    //        this.RaiseAndSetIfChanged (ref bHC, value, nameof (BorderHeightCrutch));
-    //    }
-    //}
 
     private double _borderWidth;
     internal double BorderWidth
@@ -178,13 +159,23 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    private ObservableCollection <ImageViewModel> _insideShapes;
-    internal ObservableCollection <ImageViewModel> InsideShapes
+    private ObservableCollection <RectangleViewModel> _insideRectangles;
+    internal ObservableCollection <RectangleViewModel> InsideRectangles
     {
-        get { return _insideShapes; }
+        get { return _insideRectangles; }
         private set
         {
-            this.RaiseAndSetIfChanged (ref _insideShapes, value, nameof (InsideShapes));
+            this.RaiseAndSetIfChanged (ref _insideRectangles, value, nameof (InsideRectangles));
+        }
+    }
+
+    private ObservableCollection <EllipseViewModel> _insideEllipses;
+    internal ObservableCollection <EllipseViewModel> InsideEllipses
+    {
+        get { return _insideEllipses; }
+        private set
+        {
+            this.RaiseAndSetIfChanged (ref _insideEllipses, value, nameof (InsideEllipses));
         }
     }
 
@@ -224,7 +215,7 @@ public class BadgeViewModel : ViewModelBase
 
     static BadgeViewModel ( )
     {
-        _pathToImage = new Dictionary<string , Bitmap> ( );
+        _pathToImage = new Dictionary<string , Avalonia.Media.Imaging.Bitmap> ( );
     }
 
 
@@ -250,7 +241,8 @@ public class BadgeViewModel : ViewModelBase
         BorderViolentLines = new List <TextLineViewModel> ( );
         OverlayViolentLines = new List <TextLineViewModel> ();
         InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideShapes = new ObservableCollection <ImageViewModel> ();
+        InsideRectangles = new ObservableCollection <RectangleViewModel> ();
+        InsideEllipses = new ObservableCollection <EllipseViewModel> ();
         IsCorrect = true;
         IsChanged = false;
         _borderThickness = 1;
@@ -271,8 +263,15 @@ public class BadgeViewModel : ViewModelBase
         SetUpTextLines (atoms);
         GatherIncorrectLines ();
 
-        List <InsideImage> images = layout.InsideImages;
-        SetUpImagesAndGeometryElements (images);
+        Dispatcher.UIThread.Invoke
+        (() =>
+        {
+            List<InsideImage> images = layout.InsideImages;
+            SetUpImages (images);
+
+            List<InsideShape> shapes = layout.InsideShapes;
+            SetUpShapes (shapes);
+        });
     }
 
 
@@ -296,7 +295,8 @@ public class BadgeViewModel : ViewModelBase
         BorderViolentLines = new List <TextLineViewModel> ();
         OverlayViolentLines = new List <TextLineViewModel> ();
         InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideShapes = new ObservableCollection <ImageViewModel> ();
+        InsideRectangles = new ObservableCollection <RectangleViewModel> ();
+        InsideEllipses = new ObservableCollection <EllipseViewModel> ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         Scale = badge.Scale;
@@ -378,7 +378,8 @@ public class BadgeViewModel : ViewModelBase
         }
 
         InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideShapes = new ObservableCollection <ImageViewModel> ();
+        InsideRectangles = new ObservableCollection<RectangleViewModel> ();
+        InsideEllipses = new ObservableCollection<EllipseViewModel> ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         _borderThickness = 1;
@@ -510,15 +511,20 @@ public class BadgeViewModel : ViewModelBase
             line.ZoomOn (coefficient);
         }
 
-        //foreach ( ImageViewModel image   in   InsideImages )
-        //{
-        //    image.ZoomOn (coefficient);
-        //}
+        foreach ( ImageViewModel image   in   InsideImages )
+        {
+            image.ZoomOn (coefficient);
+        }
 
-        //foreach ( ImageViewModel shape   in   InsideShapes )
-        //{
-        //    shape.ZoomOn (coefficient);
-        //}
+        foreach ( RectangleViewModel rect   in   InsideRectangles )
+        {
+            rect.ZoomOn (coefficient);
+        }
+
+        foreach ( EllipseViewModel ellipse   in   InsideEllipses )
+        {
+            ellipse.ZoomOn (coefficient);
+        }
     }
 
 
@@ -542,15 +548,20 @@ public class BadgeViewModel : ViewModelBase
             line.ZoomOut (coefficient);
         }
 
-        //foreach ( ImageViewModel image   in   InsideImages )
-        //{
-        //    image.ZoomOut (coefficient);
-        //}
+        foreach ( ImageViewModel image in InsideImages )
+        {
+            image.ZoomOut (coefficient);
+        }
 
-        //foreach ( ImageViewModel shape   in   InsideShapes )
-        //{
-        //    shape.ZoomOut (coefficient);
-        //}
+        foreach ( RectangleViewModel rect in InsideRectangles )
+        {
+            rect.ZoomOut (coefficient);
+        }
+
+        foreach ( EllipseViewModel ellipse in InsideEllipses )
+        {
+            ellipse.ZoomOut (coefficient);
+        }
     }
 
 
@@ -635,7 +646,7 @@ public class BadgeViewModel : ViewModelBase
             {
                 double usefulTextBlockWidth;
 
-                if ( ModernMainViewModel.MainViewIsWaiting )
+                if ( MainViewModel.MainViewIsWaiting )
                 {
                     var result1 = Dispatcher.UIThread.Invoke<double>
                     (() =>
@@ -671,7 +682,7 @@ public class BadgeViewModel : ViewModelBase
 
                     TextLineViewModel textLine;
 
-                    if ( ModernMainViewModel.MainViewIsWaiting )
+                    if ( MainViewModel.MainViewIsWaiting )
                     {
                         var result2 = Dispatcher.UIThread.Invoke<TextLineViewModel>
                         (() =>
@@ -716,7 +727,7 @@ public class BadgeViewModel : ViewModelBase
 
                     TextLineViewModel textLine;
 
-                    if ( ModernMainViewModel.MainViewIsWaiting )
+                    if ( MainViewModel.MainViewIsWaiting )
                     {
                         var result3 = Dispatcher.UIThread.Invoke<TextLineViewModel>
                         (() =>
@@ -760,21 +771,65 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    private void SetUpImagesAndGeometryElements ( List <InsideImage> insideImages ) 
+    private void SetUpImages ( List <InsideImage> insideImages ) 
     {
         for ( int index = 0;   index < insideImages.Count;   index++ )
         {
             InsideImage image = insideImages [index];
-            ImageViewModel imageVM = new ImageViewModel (image);
+            ImageViewModel imageViewModel = new ImageViewModel (image);
 
-            if (image.ImageKind == ImageType.image)
+            InsideImages.Add (imageViewModel);
+
+            ShiftUnderliningsIfShould ( imageViewModel );
+        }
+    }
+
+
+    private void SetUpShapes ( List <InsideShape> insideShapes )
+    {
+        for ( int index = 0;   index < insideShapes.Count;   index++ )
+        {
+            InsideShape shape = insideShapes [index];
+
+            if ( shape.Kind == ShapeKind.rectangle )
             {
-                InsideImages.Add (imageVM);
+                RectangleViewModel rectangle = new RectangleViewModel (shape);
+                InsideRectangles.Add (rectangle);
+                ShiftUnderliningsIfShould( rectangle );
+            }
+            else if ( shape.Kind == ShapeKind.ellipse ) 
+            {
+                EllipseViewModel ellipse = new EllipseViewModel (shape);
+                InsideEllipses.Add (ellipse);
+                ShiftUnderliningsIfShould( ellipse );
+            }
+        }
+    }
+
+
+    private void ShiftUnderliningsIfShould ( BoundToMember member )
+    {
+        if ( ! string.IsNullOrWhiteSpace(member.Binding) ) 
+        {
+            int scratch = 0;
+
+            for ( int index = 0;   index < TextLines.Count;   index++ )
+            {
+                TextLineViewModel line = TextLines [index];
+
+                if ( member.Binding == line.DataSource.Name )
+                {
+                    scratch = index + 1;
+                    member.TopOffset += ( line.TopOffset + line.FontSize );
+                    
+                    break;
+                }
             }
 
-            if ( image.ImageKind == ImageType.geometricElement )
+            for ( int index = scratch;   index < TextLines.Count;   index++ )
             {
-                InsideShapes.Add (imageVM);
+                TextLineViewModel line = TextLines [index];
+                line.TopOffset += member.Height;
             }
         }
     }
@@ -916,19 +971,19 @@ public class BadgeViewModel : ViewModelBase
 
                 IBrush brush;
 
-                if ( ModernMainViewModel.MainViewIsWaiting )
+                if ( MainViewModel.MainViewIsWaiting )
                 {
                     var result = Dispatcher.UIThread.Invoke<IBrush>
                     (() => 
                     { 
-                        return new SolidColorBrush (new Color (255, r, g, b)); 
+                        return new SolidColorBrush (new Avalonia.Media.Color (255, r, g, b)); 
                     });
 
                     brush = result;
                 }
                 else 
                 {
-                    brush = new SolidColorBrush (new Color (255, r, g, b));
+                    brush = new SolidColorBrush (new Avalonia.Media.Color (255, r, g, b));
                 }
 
                 setable.Background = brush;

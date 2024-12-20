@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace Lister.Views
 {
-    public partial class ModernMainView : ShowingDialog
+    public partial class MainView : ShowingDialog
     {
         //private static double _widthDelta;
         //private static double _heightDelta;
@@ -22,10 +22,10 @@ namespace Lister.Views
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
 
-        private ModernMainViewModel _viewModel;
+        private MainViewModel _viewModel;
 
         internal static bool pathIsSet;
-        internal static ModernMainView Instance { get; private set; }
+        internal static MainView Instance { get; private set; }
         internal static int TappedGoToEditorButton { get; private set; }
 
         internal static double ProperWidth { get; private set; }
@@ -37,7 +37,7 @@ namespace Lister.Views
         private PageViewModel _firstPage;
 
 
-        public ModernMainView ()
+        public MainView ()
         {
             InitializeComponent ();
             Instance = this;
@@ -45,8 +45,8 @@ namespace Lister.Views
             ProperWidth = Width;
             ProperHeight = Height;
 
-            DataContext = App.services.GetRequiredService<ModernMainViewModel> ();
-            _viewModel = ( ModernMainViewModel ) DataContext;
+            DataContext = App.services.GetRequiredService<MainViewModel> ();
+            _viewModel = ( MainViewModel ) DataContext;
             _viewModel.PassView (this);
 
             Loaded += OnLoaded;
@@ -161,13 +161,13 @@ namespace Lister.Views
             _incorrectBadges = incorrectBadges;
             _allPrintableBadges = allPrintableBadges;
             _firstPage = firstPage;
-            ModernMainView mainView = this;
+            MainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
             if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
             {
                 EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, incorrectBadges.Count );
-                EditorView.SetProperSize (ModernMainView.ProperWidth, ModernMainView.ProperHeight);
+                EditorView.SetProperSize (MainView.ProperWidth, MainView.ProperHeight);
                 window.CancelSizeDifference ();
                 TappedGoToEditorButton = 1;
 

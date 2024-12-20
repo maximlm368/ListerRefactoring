@@ -32,252 +32,245 @@ namespace Lister.ViewModels
 {
     public partial class BadgeEditorViewModel : ViewModelBase
     {
-        private static readonly double _minRunnerHeight = 10;
-        private static readonly double _upDownButtonHeightWigth = 15;
-        private static readonly double _scrollingScratch = 25;
+        private readonly double _minRunnerHeight = 10;
+        private readonly double _upDownButtonHeightWigth = 15;
+        private readonly double _scrollingScratch = 25;
+
+        //private readonly double _collectionFilterWidth = 250;
+        private readonly double _sliderWidth = 50;
+        private readonly double _namesFilterWidth = 200;
+        private readonly double _collectionFilterMarginLeft = 220;
+
+        private readonly double _normalOpacity = 0.4;
+        private readonly double _chosenOpacity = 1;
+
         private int _maxVisibleCount;
-        
-        //private Stopwatch _scrollTimer;
-        //private int _timesCommandCalled;
-        
         private double _scrollValue;
         private double _runnerStep;
         private double _runnerHasWalked;
         private double _runnerHasWalkedStorage;
-
-        //private double _scrollHeight = 204;
         private double _itemHeight = 28;
-
-        private readonly double _collectionFilterWidth = 250;
-        private readonly double _sliderWidth = 50;
-        private readonly double _namesFilterWidth = 200;
-        private readonly double _collectionFilterMarginLeft = 220;
         private double _entireBlockHeight = 380;
         private double _scrollHeight = 252;
         private double _iconWidth = 220;
         private double _iconWidthIncreasing = 20;
-        
-        private readonly double _normalOpacity = 0.4;
-        private readonly double _chosenOpacity = 1;
         private bool _filterIsOpen;
-
         private double _doubleRest;
         private int _visibleRange;
         private int _scrollStepNumberStorage;
         private int _scrollStepIndex;
 
-
-        private SolidColorBrush sB;
+        private SolidColorBrush _switcherBackground;
         internal SolidColorBrush SwitcherBackground
         {
-            get { return sB; }
+            get { return _switcherBackground; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sB, value, nameof (SwitcherBackground));
+                this.RaiseAndSetIfChanged (ref _switcherBackground, value, nameof (SwitcherBackground));
             }
         }
 
-        private ObservableCollection <string> fN;
+        private ObservableCollection <string> _filterNames;
         internal ObservableCollection <string> FilterNames
         {
-            get { return fN; }
+            get { return _filterNames; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fN, value, nameof (FilterNames));
+                this.RaiseAndSetIfChanged (ref _filterNames, value, nameof (FilterNames));
             }
         }
 
-        private Thickness cFM;
+        private Thickness _collectionFilterMargin;
         internal Thickness CollectionFilterMargin
         {
-            get { return cFM; }
+            get { return _collectionFilterMargin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cFM, value, nameof (CollectionFilterMargin));
+                this.RaiseAndSetIfChanged (ref _collectionFilterMargin, value, nameof (CollectionFilterMargin));
             }
         }
 
-        private double cMW;
+        private double _collectionFilterWidth;
         internal double CollectionFilterWidth
         {
-            get { return cMW; }
+            get { return _collectionFilterWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cMW, value, nameof (CollectionFilterWidth));
+                this.RaiseAndSetIfChanged (ref _collectionFilterWidth, value, nameof (CollectionFilterWidth));
             }
         }
 
-        private double nFW;
+        private double _namesFilterWidt;
         internal double NamesFilterWidth
         {
-            get { return nFW; }
+            get { return _namesFilterWidt; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref nFW, value, nameof (NamesFilterWidth));
+                this.RaiseAndSetIfChanged (ref _namesFilterWidt, value, nameof (NamesFilterWidth));
             }
         }
 
-        private double cO;
+        private double _correctnessOpacity;
         internal double CorrectnessOpacity
         {
-            get { return cO; }
+            get { return _correctnessOpacity; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cO, value, nameof (CorrectnessOpacity));
+                this.RaiseAndSetIfChanged (ref _correctnessOpacity, value, nameof (CorrectnessOpacity));
             }
         }
 
-        private double iO;
+        private double _incorrectnessOpacity;
         internal double IncorrectnessOpacity
         {
-            get { return iO; }
+            get { return _incorrectnessOpacity; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref iO, value, nameof (IncorrectnessOpacity));
+                this.RaiseAndSetIfChanged (ref _incorrectnessOpacity, value, nameof (IncorrectnessOpacity));
             }
         }
 
-        private Bitmap cR;
+        private Bitmap _filterStatePicture;
         internal Bitmap FilterState
         {
-            get { return cR; }
+            get { return _filterStatePicture; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref cR, value, nameof (FilterState));
+                this.RaiseAndSetIfChanged (ref _filterStatePicture, value, nameof (FilterState));
             }
         }
 
-        private Bitmap iC;
+        private Bitmap _incorrectnessIconBmp;
         internal Bitmap IncorrectnessIcon
         {
-            get { return iC; }
+            get { return _incorrectnessIconBmp; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref iC, value, nameof (IncorrectnessIcon));
+                this.RaiseAndSetIfChanged (ref _incorrectnessIconBmp, value, nameof (IncorrectnessIcon));
             }
         }
 
         private ObservableCollection <BadgeCorrectnessViewModel> _visibleIconsStorage;
-        private ObservableCollection <BadgeCorrectnessViewModel> vI;
+        private ObservableCollection <BadgeCorrectnessViewModel> _visibleIcons;
         internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
         {
-            get { return vI; }
+            get { return _visibleIcons; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref vI, value, nameof (VisibleIcons));
+                this.RaiseAndSetIfChanged (ref _visibleIcons, value, nameof (VisibleIcons));
             }
         }
 
-        private BadgeCorrectnessViewModel bpI;
+        private BadgeCorrectnessViewModel _activeIcon;
         internal BadgeCorrectnessViewModel ActiveIcon
         {
-            get { return bpI; }
+            get { return _activeIcon; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bpI, value, nameof (ActiveIcon));
+                this.RaiseAndSetIfChanged (ref _activeIcon, value, nameof (ActiveIcon));
             }
         }
 
-        private double eBH;
+        private double _blockHeight;
         internal double EntireBlockHeight
         {
-            get { return eBH; }
+            get { return _blockHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eBH, value, nameof (EntireBlockHeight));
+                this.RaiseAndSetIfChanged (ref _blockHeight, value, nameof (EntireBlockHeight));
             }
         }
 
-        private double sH;
+        private double _scrollHeigt;
         internal double ScrollHeight
         {
-            get { return sH; }
+            get { return _scrollHeigt; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sH, value, nameof (ScrollHeight));
+                this.RaiseAndSetIfChanged (ref _scrollHeigt, value, nameof (ScrollHeight));
             }
         }
 
-        private double sW;
+        private double _scrollWidth;
         internal double ScrollWidth
         {
-            get { return sW; }
+            get { return _scrollWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sW, value, nameof (ScrollWidth));
+                this.RaiseAndSetIfChanged (ref _scrollWidth, value, nameof (ScrollWidth));
             }
         }
 
-        private double iW;
+        private double _iconWidt;
         internal double IconWidth
         {
-            get { return iW; }
+            get { return _iconWidt; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref iW, value, nameof (IconWidth));
+                this.RaiseAndSetIfChanged (ref _iconWidt, value, nameof (IconWidth));
             }
         }
 
-        private double rBWS;
+        private double _runnerBruttoWalkSpace;
         internal double RunnerBruttoWalkSpace
         {
-            get { return rBWS; }
+            get { return _runnerBruttoWalkSpace; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref rBWS, value, nameof (RunnerBruttoWalkSpace));
+                this.RaiseAndSetIfChanged (ref _runnerBruttoWalkSpace, value, nameof (RunnerBruttoWalkSpace));
             }
         }
 
         private double _scrollOffsetStorage;
-        private double sO;
+        private double _scrollOffset;
         internal double ScrollOffset
         {
-            get { return sO; }
+            get { return _scrollOffset; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sO, value, nameof (ScrollOffset));
+                this.RaiseAndSetIfChanged (ref _scrollOffset, value, nameof (ScrollOffset));
             }
         }
 
         internal double RealRunnerHeight { get; private set; }
-        private double rH;
+        private double _runnerHeight;
         internal double RunnerHeight
         {
-            get { return rH; }
+            get { return _runnerHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref rH, value, nameof (RunnerHeight));
+                this.RaiseAndSetIfChanged (ref _runnerHeight, value, nameof (RunnerHeight));
             }
         }
 
-        private double rWS;
+        private double _runnerWalkSpace;
         internal double RunnerWalkSpace
         {
-            get { return rWS; }
+            get { return _runnerWalkSpace; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref rWS, value, nameof (RunnerWalkSpace));
+                this.RaiseAndSetIfChanged (ref _runnerWalkSpace, value, nameof (RunnerWalkSpace));
             }
         }
 
         private double _upDownWidth = 20;
-        private double uDW;
+        private double _upDownSpace;
         internal double UpDownWidth
         {
-            get { return uDW; }
+            get { return _upDownSpace; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref uDW, value, nameof (UpDownWidth));
+                this.RaiseAndSetIfChanged (ref _upDownSpace, value, nameof (UpDownWidth));
             }
         }
 
-        private bool uDF;
+        private bool _upDownIsFocusable;
         internal bool UpDownIsFocusable
         {
-            get { return uDF; }
+            get { return _upDownIsFocusable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref uDF, value, nameof (UpDownIsFocusable));
+                this.RaiseAndSetIfChanged (ref _upDownIsFocusable, value, nameof (UpDownIsFocusable));
             }
         }
 

@@ -80,7 +80,6 @@ namespace DataGateway
             }
             catch ( JsonException ex )
             {
-                int dff = 0;
             }
 
             try 
@@ -199,6 +198,39 @@ namespace DataGateway
                 return targetChildren;
             }
             catch ( Exception ex ) 
+            {
+                return Enumerable.Empty<IConfigurationSection> ();
+            }
+        }
+
+
+        public static IEnumerable <IConfigurationSection> GetChildren ( List<string> keyPathInJson, string jsonPath )
+        {
+            if ( ( keyPathInJson == null )   ||   ( keyPathInJson.Count < 1 ) )
+            {
+                return Enumerable.Empty<IConfigurationSection> ();
+            }
+
+            try
+            {
+                IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
+                string sectionName = keyPathInJson [0];
+                IConfigurationSection section = configRoot.GetSection (sectionName);
+
+                if ( keyPathInJson.Count > 1 )
+                {
+                    for ( int step = 1; step < keyPathInJson.Count; step++ )
+                    {
+                        sectionName = keyPathInJson [step];
+                        section = section.GetSection (sectionName);
+                    }
+                }
+
+                IEnumerable <IConfigurationSection> targetChildren = section.GetChildren ();
+
+                return targetChildren;
+            }
+            catch ( Exception ex )
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }

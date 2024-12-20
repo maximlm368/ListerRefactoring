@@ -29,13 +29,11 @@ namespace Lister.ViewModels
 {
     public class PersonSourceViewModel : ReactiveObject
     {
-        private static readonly string _sourcePathKeeper = "keeper.txt";
-        private static readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
-        private static readonly string _incorrectXSLX = " - некорректный файл.";
-        private static readonly string _fileIsAbsentMessage = "Файл не найден.";
-        private static readonly string _filePickerTitle = "Выбор файла";
-        private static readonly List<string> _xslxHeaders = new List<string> () { "№", "Фамилия", "Имя", "Отчество"
-                                                                                , "Отделение", "Должность" };
+        private IReadOnlyList<string> _patterns;
+        private readonly string _pickerTitle;
+        private readonly string _sourcePathKeeper;
+        private readonly string _filePickerTitle;
+        private IReadOnlyList<string> _xslxHeaders;
 
         private IUniformDocumentAssembler _uniformAssembler;
         private bool _isFirstTimeLoading = true;
@@ -48,9 +46,9 @@ namespace Lister.ViewModels
             AllowMultiple = false,
             FileTypeFilter =
             [
-                new FilePickerFileType ("Источники данных")
+                new FilePickerFileType (_pickerTitle)
                 {
-                    Patterns = ["*.csv", "*.xlsx"]
+                    Patterns = _patterns
                 }
             ]
         };
@@ -62,6 +60,21 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof(SourceFilePath));
+            }
+        }
+
+        private bool _personsFileIsOpen;
+        public bool FileIsOpen
+        {
+            get { return _personsFileIsOpen; }
+            private set
+            {
+                if ( _personsFileIsOpen == value )
+                {
+                    _personsFileIsOpen = !_personsFileIsOpen;
+                }
+
+                this.RaiseAndSetIfChanged (ref _personsFileIsOpen, value, nameof (FileIsOpen));
             }
         }
 
@@ -83,8 +96,15 @@ namespace Lister.ViewModels
         internal string FilePath { get; private set; }
 
 
-        public PersonSourceViewModel ( )
+        public PersonSourceViewModel ( List<string> args, List<string> patterns, List<string> xslxHeaders )
         {
+            _pickerTitle = args [0];
+            _sourcePathKeeper = args [1];
+            _filePickerTitle = args [2];
+
+            _patterns = patterns;
+            _xslxHeaders = xslxHeaders;
+
             _uniformAssembler = App.services.GetRequiredService<IUniformDocumentAssembler> ();
         }
 
@@ -131,34 +151,7 @@ namespace Lister.ViewModels
 
             if ( pathExists )
             {
-                FileInfo fileInfo = new FileInfo (path);
-
-                if ( fileInfo.Exists )
-                {
-                    try
-                    {
-                        FileStream stream = fileInfo.OpenRead ();
-                        stream.Close ();
-                    }
-                    catch ( IOException ex )
-                    {
-                        SourceFilePath = null;
-
-                        return;
-                    }
-                }
-
-                bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
-
-                if ( ! fileIsCorrect )
-                {
-                    _declinedFilePath = path;
-                    SourceFilePath = _sourceFilePath;
-
-                    return;
-                }
-
-                SourceFilePath = path;
+                CheckIfOpenOrIncorrectAndSave (path, false);
             }
             else
             {
@@ -176,18 +169,49 @@ namespace Lister.ViewModels
             {
                 string path = files [0].Path. LocalPath;
 
-                bool fileIsCorrect = CheckWhetherCorrectIfXSLX (path);
+                CheckIfOpenOrIncorrectAndSave (path, true);
+            }
+        }
 
-                if ( ! fileIsCorrect )
+
+        private void CheckIfOpenOrIncorrectAndSave ( string path, bool shouldSave )
+        {
+            FileInfo fileInfo = new FileInfo (path);
+
+            if ( fileInfo.Exists )
+            {
+                try
                 {
-                    DeclineChosenFile (path);
-                    SourceFilePath = _sourceFilePath;
-
+                    FileStream stream = fileInfo.OpenRead ();
+                    stream.Close ();
+                }
+                catch ( IOException ex )
+                {
+                    FileIsOpen = true;
                     return;
                 }
+            }
 
+            XlsxFileState fileState = CheckWhetherCorrectIfXSLX (path);
+
+            if ( fileState == XlsxFileState.IsIncorrect )
+            {
+                DeclineIncorrectFile (path);
+                return;
+            }
+            else if ( fileState == XlsxFileState.IsOpen )
+            {
+                FileIsOpen = true;
+                return;
+            }
+            else if ( fileState == XlsxFileState.NotXlsxFile )
+            {
                 SourceFilePath = path;
-                SavePath ();
+
+                if ( shouldSave ) 
+                {
+                    SavePath ();
+                }
             }
         }
 
@@ -209,33 +233,40 @@ namespace Lister.ViewModels
         }
 
 
-        private bool CheckWhetherCorrectIfXSLX ( string path )
+        private XlsxFileState CheckWhetherCorrectIfXSLX ( string path )
         {
-            bool isOk = true;
+            XlsxFileState fileState = XlsxFileState.NotXlsxFile;
 
             if ( path.Last () == 'x' )
             {
-                IRowSource headersSource = App.services.GetService<IRowSource> ();
-                List<string> headers = headersSource.GetRow (path, 0);
-
-                for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
+                try 
                 {
-                    bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
+                    IRowSource headersSource = App.services.GetService<IRowSource> ();
+                    List<string> headers = headersSource.GetRow (path, 0);
 
-                    if ( isNotCoincident )
+                    for ( int index = 0; index < _xslxHeaders.Count; index++ )
                     {
-                        isOk = false;
+                        bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
 
-                        break;
+                        if ( isNotCoincident )
+                        {
+                            fileState = XlsxFileState.IsIncorrect;
+
+                            break;
+                        }
                     }
+                }
+                catch ( IOException ex )
+                {
+                    fileState = XlsxFileState.IsOpen;
                 }
             }
 
-            return isOk;
+            return fileState;
         }
 
 
-        private void DeclineChosenFile ( string filePath )
+        private void DeclineIncorrectFile ( string filePath )
         {
             FilePath = filePath;
             FileIsDeclined = true;
@@ -249,7 +280,15 @@ namespace Lister.ViewModels
                 return;
             }
 
-            DeclineChosenFile (_declinedFilePath);
+            DeclineIncorrectFile (_declinedFilePath);
+        }
+
+
+        private enum XlsxFileState 
+        {
+            NotXlsxFile = 0,
+            IsOpen = 1,
+            IsIncorrect = 2
         }
     }
 }

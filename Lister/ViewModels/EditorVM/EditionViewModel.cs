@@ -1,32 +1,10 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ContentAssembler;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.ObjectModel;
+﻿using Avalonia;
 using Avalonia.Media;
-using System.Globalization;
-using System.Reflection.Metadata;
-using ExtentionsAndAuxiliary;
-using Microsoft.VisualBasic;
-using Avalonia.Media.Imaging;
-using Lister.Extentions;
-using System.Linq.Expressions;
-using Lister.Views;
-using System.Windows.Input;
-using Avalonia.Platform.Storage;
-using System.Reactive.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Avalonia.Threading;
-using System.Reflection;
-using static QuestPDF.Helpers.Colors;
-using DynamicData;
+using Lister.Views;
+using ReactiveUI;
+using System.Reactive.Linq;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
@@ -34,11 +12,11 @@ namespace Lister.ViewModels
     {
         public static event BackingToMainViewHandler BackingToMainViewEvent;
 
-        private static readonly string _extentionToolTip = "Развернуть панель";
-        private static readonly string _shrinkingToolTip = "Свернуть панель";
+        private readonly string _extentionToolTip;
+        private readonly string _shrinkingToolTip;
 
-        internal static readonly double _startScale = 1.5624;
-        internal static double _scale = 1.5624;
+        internal readonly double _startScale = 1.5624;
+        internal double _scale = 1.5624;
 
         private double _viewWidth = 800;
         private double _viewHeight = 460;
@@ -117,14 +95,14 @@ namespace Lister.ViewModels
             get { return _currentVisibleCollection; }
 
             set 
-            { 
-                if ( ( value == null ) || ( value.Count < 1 ) )
+            {
+                if ( value != null )
                 {
-                    UpDownIsVisible = false;
+                    TryEnableSliderUpDown (value.Count);
                 }
                 else 
                 {
-                    UpDownIsVisible = true;
+                    TryEnableSliderUpDown (0);
                 }
 
                 _currentVisibleCollection = value;
@@ -229,9 +207,25 @@ namespace Lister.ViewModels
         }
 
 
-        public BadgeEditorViewModel ( int incorrectBadgesAmmount )
+        public BadgeEditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
         {
-            _scaleStorage = new ();
+            _extentionToolTip = settingArgs.extentionToolTip;
+            _shrinkingToolTip = settingArgs.shrinkingToolTip;
+            _correctnessIcon = settingArgs.correctnessIcon;
+            _incorrectnessIcon = settingArgs.incorrectnessIcon;
+            _allLabel = settingArgs.allLabel;
+            _correctLabel = settingArgs.correctLabel;
+            _incorrectLabel = settingArgs.incorrectLabel;
+            _allTip = settingArgs.allTip;
+            _correctTip = settingArgs.correctTip;
+            _incorrectTip = settingArgs.incorrectTip;
+
+            _focusedFontSizeColor = settingArgs.focusedFontSizeColor;
+            _releasedFontSizeColor = settingArgs.releasedFontSizeColor;
+            _focusedFontSizeBorderColor = settingArgs.focusedFontSizeBorderColor;
+            _releasedFontSizeBorderColor = settingArgs.releasedFontSizeBorderColor;
+
+        _scaleStorage = new ();
 
             ViewWidth = _viewWidth;
             ViewHeight = _viewHeight;
@@ -289,8 +283,6 @@ namespace Lister.ViewModels
             MoversAreEnable = false;
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
-            //_view.zoomOn.IsEnabled = false;
-            //_view.zoomOut.IsEnabled = false;
 
             BeingProcessedBadge.CopyFrom (BackupNumbered [BeingProcessedBadge. Id]);
 
@@ -451,6 +443,26 @@ namespace Lister.ViewModels
         }
     }
 
+
+
+    public class EditorViewModelArgs 
+    {
+        public string extentionToolTip;
+        public string shrinkingToolTip;
+        public string correctnessIcon;
+        public string incorrectnessIcon;
+        public string allLabel;
+        public string incorrectLabel;
+        public string correctLabel;
+        public string allTip;
+        public string correctTip;
+        public string incorrectTip;
+
+        public SolidColorBrush focusedFontSizeColor;
+        public SolidColorBrush releasedFontSizeColor;
+        public SolidColorBrush focusedFontSizeBorderColor;
+        public SolidColorBrush releasedFontSizeBorderColor;
+    }
 }
 
 

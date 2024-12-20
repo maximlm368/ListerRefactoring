@@ -6,6 +6,7 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:SceneViewModel"
              x:Class="Lister.Views.SceneUserControl">
+	
 
 	<StackPanel 
 		ZIndex="1"
@@ -17,7 +18,7 @@
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top"
 			Width="{Binding   Path = ButtonBlockWidth,   Mode=OneWay}"
-			Height="258"
+			Height="248"
 			ZIndex="2"
 			CornerRadius="0,5,5,0">
 		
@@ -35,7 +36,6 @@
 					Padding="0,5"
 					Command="{Binding  Path=ExtendButtons}"
 					ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
-					FontFamily="{StaticResource FA}"
 					Content="{Binding  Path=ExtenderContent,  Mode=OneWay}"/>
 				
 				<Grid
@@ -46,10 +46,14 @@
 						<ColumnDefinition Width="170" ></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 
+					<Grid.RowDefinitions>
+						<RowDefinition Height="30"></RowDefinition>
+						<RowDefinition Height="30" ></RowDefinition>
+					</Grid.RowDefinitions>
+
 					<Label
 						Grid.Column="0"
-						FontSize="16"
-						Margin="0,0,0,0"
+						Grid.Row="0"
 						Padding="5,5"
 						Width="50"
 						ToolTip.Tip="Всего бейджей"
@@ -57,25 +61,14 @@
 
 					<Label
 						Grid.Column="1"
-						FontSize="16"
-						Margin="0,0,0,0"
+						Grid.Row="0"
 						Padding="2,5"
 						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
 						Content="Всего бейджей"/>
-					
-				</Grid>
-
-				<Grid
-					Name="incorrectsCount">
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="50"></ColumnDefinition>
-						<ColumnDefinition Width="170" ></ColumnDefinition>
-					</Grid.ColumnDefinitions>
 
 					<Label
 						Grid.Column="0"
-						FontSize="16"
+						Grid.Row="1"
 						Padding="5,0"
 						Margin="0,0,0,5"
 						Width="50"
@@ -85,7 +78,7 @@
 
 					<Label
 						Grid.Column="1"
-						FontSize="16"
+						Grid.Row="1"
 						Padding="2,0"
 						Margin="0,0,0,5"
 						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
@@ -95,8 +88,7 @@
 
 				<Button
 					Name="edit"
-					Margin="0,5"
-					Height="32"
+					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
@@ -107,18 +99,14 @@
 
 					<StackPanel Orientation="Horizontal">
 						<Label
-							FontFamily="{StaticResource FA}"
+							Classes="picture"
 							Content="&#xf303;"
 							Width="30"
-							Height="32"
-							FontSize="16"
 							Padding="6,7"/>
 						
 						<Label 
 							Content="Редактировать"
-							Height="32"
 							Width="170"
-							FontSize="16"
 							Padding="13,7"/>
 					</StackPanel>
 
@@ -126,10 +114,9 @@
 			
 				<Button
 					Name="clearBadges"
-					Margin="0,5"
+					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
-					Height="32"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
@@ -138,18 +125,14 @@
 
 					<StackPanel Orientation="Horizontal">
 						<Label
-							FontFamily="{StaticResource FA}"
+							Classes="picture"
 							Content="&#xf51a;"
 							Width="30"
-							Height="32"
-							FontSize="16"
 							Padding="6,7"/>
 
 						<Label 
 							Content="Очистить"
-							Height="32"
 							Width="170"
-							FontSize="16"
 							Padding="33,7"/>
 					</StackPanel>
 
@@ -157,10 +140,9 @@
 
 				<Button
 					Name="save"
-					Margin="0, 5"
+					Margin="0, 3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
-					Height="32"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
@@ -169,18 +151,14 @@
 
 					<StackPanel Orientation="Horizontal">
 						<Label
-							FontFamily="{StaticResource FA}"
+							Classes="picture"
 							Content="&#xf1c1;"
 							Width="30"
-							Height="32"
-							FontSize="16"
 							Padding="6,7"/>
 
 						<Label 
 							Content="Сохранить"
-							Height="32"
 							Width="170"
-							FontSize="16"
 							Padding="30,7"/>
 					</StackPanel>
 					
@@ -188,10 +166,9 @@
 
 				<Button
 					Name="print"
-					Margin="0,5"
+					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
-					Height="32"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
@@ -200,17 +177,13 @@
 
 					<StackPanel Orientation="Horizontal">
 						<Label
-							FontFamily="{StaticResource FA}"
+							Classes="picture"
 							Content="&#xf02f;"
 							Width="30"
-							Height="32"
-							FontSize="16"
 							Padding="6,7"/>
 						<Label 
 							Content="Печатать"
-							Height="32"
 							Width="170"
-							FontSize="16"
 							Padding="35,7"/>
 					</StackPanel>
 
@@ -327,8 +300,7 @@
 																				FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 																				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 																				Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
-																				Text="{Binding   Path = Content,  Mode=OneWay }"
-																			/>
+																				Text="{Binding   Path = Content,  Mode=OneWay }"/>
 
 																		</Border>
 
@@ -337,8 +309,104 @@
 
 															</ItemsControl>
 
-														</Canvas>
+															
+															<ItemsControl
+																Name="images"
+																ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }" >
 
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+																		<Image
+																			Source = "{Binding   Path = BitMap,  Mode=OneWay }"/>
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+
+															</ItemsControl>
+
+															<ItemsControl
+																Name="rectangles"
+																ItemsSource="{Binding  Path = InsideRectangles,  Mode=OneWay}" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Height" Value="{Binding Height}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+
+																		<Rectangle
+																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+																			Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>
+																			
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+															</ItemsControl>
+
+															<ItemsControl
+																Name="ellipses"
+																ItemsSource="{Binding  Path = InsideEllipses,  Mode=OneWay}" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Height" Value="{Binding Height}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+
+																		<Ellipse
+																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+																			Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>
+
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+															</ItemsControl>
+															
+															
+														</Canvas>
 													</Border>
 
 												</DataTemplate>
@@ -363,6 +431,31 @@
 
 
 <!--
+
+		<Rectangle
+			Width="{Binding  Path = Width,  Mode=OneWay}"
+			Height="{Binding  Path = Height,  Mode=OneWay}"
+			Canvas.Left="{Binding  Path = LeftOffset,  Mode=OneWay}"
+			Canvas.Top="{Binding  Path = TopOffset,  Mode=OneWay}"
+			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+			Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>														
+
+
+
+
+			<Rectangle
+																			
+				ZIndex="22"
+				Width="{Binding  Path = Width,  Mode=OneWay}"
+				Height="{Binding  Path = Height,  Mode=OneWay}"
+				Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+				StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+				Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>
+
+
+
+
 
 				<StackPanel
 					Name="amounts"

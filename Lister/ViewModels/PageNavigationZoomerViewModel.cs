@@ -14,9 +14,9 @@ namespace Lister.ViewModels
     public class PageNavigationZoomerViewModel : ViewModelBase
     {
         private readonly double _scalabilityCoefficient = 1.25;
-        private readonly string _procentSymbol = "%";
-        private readonly short _maxDepth = 5;
-        private readonly short _minDepth = -5;
+        private readonly string _procentSymbol;
+        private readonly short _maxDepth;
+        private readonly short _minDepth;
 
         private short _scalabilityDepth = 0;
 
@@ -139,8 +139,12 @@ namespace Lister.ViewModels
         }
 
 
-        public PageNavigationZoomerViewModel ( )
+        public PageNavigationZoomerViewModel ( string procentSymbol, short maxDepth, short minDepth )
         {
+            _procentSymbol = procentSymbol;
+            _maxDepth = maxDepth;
+            _minDepth = minDepth;
+
             ToZeroState ();
         }
 

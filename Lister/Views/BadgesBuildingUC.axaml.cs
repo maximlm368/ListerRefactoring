@@ -21,7 +21,7 @@ namespace Lister.Views
 
         private static TemplateViewModel _chosen;
 
-        private ModernMainView _parent;
+        private MainView _parent;
         private BadgesBuildingViewModel _viewModel;
         private string _theme;
 

@@ -1,0 +1,99 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Add Styles Here -->
+
+	<Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="16"/>
+	</Style>
+	<Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="32"/>
+	</Style>
+
+	
+	<Style Selector="Button.transparent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.transparent:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.transparent /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="LightGray"/>
+	</Style>
+	<Style Selector="Button.transparent /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+
+	
+	<Style Selector="Button.littlePicture:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="LightGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="20"/>
+	</Style>
+
+	
+	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="9"/>
+	</Style>
+	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="15"/>
+	</Style>
+	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+
+	
+	<Style Selector="Button.picture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+
+	
+	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="LightBlue"/>
+	</Style>
+	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BorderThickness" Value="1"/>
+	</Style>
+	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BorderBrush" Value="BlueViolet"/>
+	</Style>
+	<Style Selector="Button.mainButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="LightSeaGreen"/>
+	</Style>
+
+
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Width" Value="80"/>
+	</Style>
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Height" Value="24"/>
+	</Style>
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="11"/>
+	</Style>
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BorderThickness" Value="1"/>
+	</Style>
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="BorderBrush" Value="Gray"/>
+	</Style>
+	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="CornerRadius" Value="0"/>
+	</Style>
+	
+</Styles>

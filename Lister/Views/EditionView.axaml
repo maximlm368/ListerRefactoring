@@ -49,17 +49,13 @@
 
 				<StackPanel Orientation="Horizontal">
 					<Label
-						FontFamily="{StaticResource FA}"
+						Classes="picture"
 						Content="&#xf52b;"
 						Width="25"
-						Height="32"
-						FontSize="16"
 						Padding="3,8"/>
 					<Label
 						Content="Вернуться к макету"
-						Height="32"
 						Width="175"
-						FontSize="16"
 						Padding="0,6"/>
 				</StackPanel>
 				
@@ -119,7 +115,7 @@
 				<Border
 					Name="editionButtonsBlock"
 					Width="220"
-					Height="321"
+					Height="323"
 					Margin="0,20"
 					CornerRadius="0,5,5,0"
 					Background="LightGray"
@@ -136,74 +132,56 @@
 								<ColumnDefinition Width="170" ></ColumnDefinition>
 							</Grid.ColumnDefinitions>
 
+							<Grid.RowDefinitions>
+								<RowDefinition Height="26"></RowDefinition>
+								<RowDefinition Height="26" ></RowDefinition>
+							</Grid.RowDefinitions>
+
 							<Label
 								Grid.Column="0"
-								FontSize="16"
-								Margin="0,0,0,0"
-								Padding="5,5"
-								Width="50"
+								Grid.Row="0"
+								Padding="5,6"
 								ToolTip.Tip="Всего бейджей"
 								Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"/>
 
 							<Label
 								Grid.Column="1"
-								FontSize="16"
-								Margin="0,0,0,0"
-								Padding="2,5"
-								Width="170"
+								Grid.Row="0"
+								VerticalContentAlignment="Center"
 								Content="Всего бейджей"/>
-
-						</Grid>
-
-						<Grid
-							Name="incorrectsCount"
-							Margin="0,-5">
-
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="50"></ColumnDefinition>
-								<ColumnDefinition Width="170" ></ColumnDefinition>
-							</Grid.ColumnDefinitions>
 
 							<Label
 								Grid.Column="0"
-								FontSize="16"
-								Padding="5,0"
-								Margin="0,0,0,5"
-								Width="50"
+								Grid.Row="1"
+								Padding="5,6"
 								Foreground="Red"
 								ToolTip.Tip="Из них с ошибками"
 								Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"/>
 
 							<Label
 								Grid.Column="1"
-								FontSize="16"
-								Padding="2,0"
-								Margin="0,0,0,5"
-								Width="170"
+								Grid.Row="1"
+								VerticalContentAlignment="Center"
 								Content="Из них с ошибками"/>
 
 						</Grid>
 
 						<Label
-							FontSize="16"
-							Margin="0,0"
-							Height="40"
-							Padding="5,10"
+							Classes="height_40"
+							Margin="0,-5"
+							Padding="5,7"
 							Content="Размер шрифта"/>
 						
 						<StackPanel
 							Name="textSize"
-							Margin="0,-5"
+							Margin="0,-2"
 							Orientation="Horizontal">
 
 							<Button
 								Name="zoomOut"
 								Margin="5,0"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
+								Padding="8,7"
 								Width="32"
-								Height="32"
-								FontSize="16"
 								FontFamily="{StaticResource FA}"
 								Content="&#xf068;"
 								ToolTip.Tip="Уменьшить шрифт"
@@ -214,8 +192,6 @@
 							<Label
 								Name="scalabilityGrade"
 								Width="140"
-								Height="32"
-								FontSize="16"
 								Background="{Binding  Path = FocusedFontSizeColor,  Mode=OneWay}"
 								BorderBrush="{Binding  Path = FocusedFontSizeBorderColor,  Mode=OneWay}"
 								Margin="-2,0"
@@ -233,11 +209,8 @@
 							<Button
 								Name="zoomOn"
 								Margin="5,0"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
+								Padding="8,7"
 								Width="32"
-								Height="32"
-								FontSize="16"
 								FontFamily="{StaticResource FA}"
 								Content="&#x2b;"
 								ToolTip.Tip="Увеличить шрифт"
@@ -247,9 +220,9 @@
 						</StackPanel>
 
 						<Label
+							Classes="height_40"
 							FontSize="16"
 							Margin="0,5"
-							Height="40"
 							Padding="5,10"
 							Content="Текст"/>
 						
@@ -274,7 +247,6 @@
 							HorizontalAlignment="Center"
 							Width="210"
 							Height="32"
-							FontSize="16"
 							Margin="0,17"
 							Command="{Binding   Path = Split}"
 							KeyDown="ToParticularBadge"
@@ -282,18 +254,14 @@
 
 							<StackPanel Orientation="Horizontal">
 								<Label
-									FontFamily="{StaticResource FA}"
+									Classes="picture"
 									Content="&#xf529;"
 									Width="20"
-									Height="32"
-									FontSize="16"
 									Padding="0,8"/>
 
 								<Label
 									Content="Разделить"
-									Height="32"
 									Width="190"
-									FontSize="16"
 									Padding="40,6"/>
 							</StackPanel>
 							
@@ -304,7 +272,6 @@
 							ToolTip.Tip="Отменить все изменения"
 							Width="210"
 							Height="32"
-							FontSize="16"
 							HorizontalAlignment="Center"
 							Margin="0,-11"
 							IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
@@ -316,15 +283,11 @@
 									FontFamily="{StaticResource FA}"
 									Content="&#xf2ea;"
 									Width="20"
-									Height="32"
-									FontSize="16"
 									Padding="0,8"/>
 
 								<Label
 									Content="Отмена"
-									Height="32"
 									Width="190"
-									FontSize="16"
 									Padding="50,6"/>
 							</StackPanel>
 							
@@ -459,7 +422,6 @@
 						Height="30"
 						Margin="4,0"
 						Padding="0,5"
-						FontFamily="{StaticResource FA}"
 						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
 						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
 						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}" />
@@ -476,9 +438,8 @@
 							<Button
 								Name="switcher"
 								Width="{Binding  Path=SwitcherWidth,  Mode=OneWay}"
-								Height="32"
 								Margin="2,0"
-								Padding="7,9"
+								Padding="7,7"
 								FontFamily="{StaticResource FA}"
 								Content="&#xf0b0;"
 								Background="{Binding  Path=SwitcherBackground,  Mode=OneWay}"
@@ -488,17 +449,14 @@
 							
 							<Label
 								Name="filterLabel"
-								FontSize="16"
-								Height="32"
 								Width="{Binding  Path=FilterLabelWidth,  Mode=OneWay}"
 								Margin="-2,4"
-								Padding="0, 0"
+								Padding="0, 5"
 								Content="Фильтры"/>
 
 							<ComboBox
 								Name="filterChoosing"
 								Background="White"
-								FontSize="16"
 								Height="32"
 								Width="150"
 								Margin="10,-4"
@@ -512,8 +470,8 @@
 								<ComboBox.ItemTemplate >
 									<DataTemplate >
 										<Label
-											FontSize="16"
-											Padding="0,0"
+											Classes="narrow"
+											Padding="0,2"
 											Content="{Binding,  Mode=OneWay}"/>
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
@@ -525,14 +483,12 @@
 
 					<Button
 						Name="up"
-						Classes="transparent"
+						Classes="littlePicture"
 						Width="30"
 						Height="20"
-						Padding="3,1"
+						Padding="3,7"
 						Margin ="15,5"
-						FontSize="20"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						FontFamily="{StaticResource FA}"
 						Command="{Binding   Path = ToPrevious}"
 						ToolTip.Tip="К предыдущему бейджу"
 						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
@@ -543,7 +499,7 @@
 						Name="slider"
 						Width="240"
 						Height="{Binding  Path=ScrollHeight,  Mode=OneWay}"
-						Margin ="7,0"
+						Margin ="{Binding  Path=SliderMargin,  Mode=OneWay}"
 						CornerRadius="0,0,0,5"
 						KeyDown="ToParticularBadge">
 						
@@ -587,9 +543,9 @@
 										</Border>
 
 										<Label 
+											Classes="narrow"
 											Grid.Column="1"
 											Padding="5,2"
-											FontSize="16"
 											FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
 											Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"/>
 												
@@ -613,14 +569,11 @@
 
 							<Button
 								Name="upper"
-								Classes="transparent"
+								Classes="scrollButton"
 								Grid.Row="0"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-								Height="15"
 								Padding="2,2"
-								FontFamily="{StaticResource FA}"
 								Content="&#xF077;"
-								FontSize="9"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Command="{Binding Path=ScrollUp}"
 								PointerPressed=""/>
@@ -649,13 +602,10 @@
 
 							<Button
 								Name="downer"
-								Classes="transparent"
+								Classes="scrollButton"
 								Grid.Row="2"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-								Height="15"
 								Padding="2,2"
-								FontSize="9"
-								FontFamily="{StaticResource FA}"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Content="&#xF078;"
 								Command="{Binding Path=ScrollDown}"/>
@@ -668,14 +618,12 @@
 				
 				    <Button
 						Name="down"
-						Classes="transparent"
+						Classes="littlePicture"
 						Width="30"
 						Height="20"
-						Padding="3,-2"
+						Padding="3,3"
 						Margin ="15,5"
-						FontSize="20"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						FontFamily="{StaticResource FA}"
 						Command="{Binding   Path = ToNext}"
 						ToolTip.Tip="К следующему бейджу"
 						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
@@ -722,28 +670,20 @@
 				Classes="transparent"
 				ToolTip.Tip="К первому бейджу"
 				Grid.Column="1"
-				HorizontalContentAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="16"
 				Padding="7,7"
 				Command="{Binding   Path = ToFirst}"
-				FontFamily="{StaticResource FA}"
 				Content="&#xf048;"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
 			<Button
 				Name="previousBadge"
-				Classes="transparent"
+				Classes="littlePicture"
 				ToolTip.Tip="К предыдущему бейджу"
 				Grid.Column="2"
-				HorizontalContentAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="20"
 				Padding="5,5"
 				Command="{Binding   Path = ToPrevious}"
-				FontFamily="{StaticResource FA}"
 				Content="&#xf0d9;"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
@@ -751,8 +691,6 @@
 				Name="visibleBadgeNumber"
 				Width="60"
 				Grid.Column="3"
-				Height="32"
-				FontSize="16"
 				Margin="0,3"
 				Padding="10,5"
 				BorderBrush="black"
@@ -762,33 +700,27 @@
 				Content="{Binding   Path = BeingProcessedNumberText,   Mode=OneWay}"/>
 			
 			<Label
-				Content="Из"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				FontSize="16"
-				Height="32"
+				Margin="0,6"
+				Content="из"
 				Grid.Column="4"/>
 
 			<Label
-				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				FontSize="16"
-				Height="32"
+				Margin="0,7"
+				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
 				Grid.Column="5"/>
 
 			<Button
 				Name="nextBadge"
-				Classes="transparent"
+				Classes="littlePicture"
 				ToolTip.Tip="К следующему бейджу"
 				Grid.Column="6"
-				HorizontalContentAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="20"
 				Padding="8,5"
 				Command="{Binding   Path = ToNext}"
-				FontFamily="{StaticResource FA}"
 				Content="&#xf0da;"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
@@ -797,13 +729,9 @@
 				Classes="transparent"
 				ToolTip.Tip="К последнему бейджу"
 				Grid.Column="7"
-				HorizontalContentAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="16"
 				Padding="6,7"
 				Command="{Binding   Path = ToLast}"
-				FontFamily="{StaticResource FA}"
 				Content="&#xf051;"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
@@ -813,23 +741,17 @@
 				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="16"
 				Padding="8,7"
 				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOut}"
 				ToolTip.Tip="Уменьшить масштаб"
-				FontFamily="{StaticResource FA}"
 				Content="&#xf068;"/>
 
 			<Label
 				Name="badgeScalabilityGrade"
 				Grid.Column="10"
 				Width="60"
-				Height="32"
-				FontSize="16"
-				HorizontalContentAlignment="Center"
-				VerticalContentAlignment="Center"
+				Padding="7,5"
 				BorderBrush="black"
 				CornerRadius = "3"
 				BorderThickness="1"
@@ -843,13 +765,10 @@
 				Margin="0,3"
 				HorizontalAlignment="Center"
 				Width="32"
-				Height="32"
-				FontSize="16"
 				Padding="8,7"
 				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOn}"
 				ToolTip.Tip="Увеличить масштаб"
-				FontFamily="{StaticResource FA}"
 				Content="&#x2b;" />
 
 

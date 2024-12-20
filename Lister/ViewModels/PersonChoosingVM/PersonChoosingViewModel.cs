@@ -37,8 +37,16 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        public PersonChoosingViewModel ()
+        public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor
+                                        , SolidColorBrush focusedBackgroundColor, SolidColorBrush unfocusedColor
+                                        , SolidColorBrush focusedBorderColor )
         {
+            _placeHolder = placeHolder;
+            _entireListColor = entireListColor;
+            _focusedBackgroundColor = focusedBackgroundColor;
+            _focusedBorderColor = focusedBorderColor;
+            _unfocusedColor = unfocusedColor;
+
             VisiblePeople = new ObservableCollection<VisiblePerson> ();
             ScrollerCanvasLeft = _withScroll;
             PersonsScrollValue = _oneHeight;
@@ -77,17 +85,10 @@ namespace Lister.ViewModels
 
             if ( valueIsSuitable )
             {
-                try
-                {
-                    IUniformDocumentAssembler documentAssembler = App.services.GetService<IUniformDocumentAssembler> ();
-                    List <Person> persons = documentAssembler.GetPersons (path);
-                    SetPersons (persons);
-                    SwitchPersonChoosingEnabling (true);
-                }
-                catch ( IOException ex )
-                {
-                    PersonsFileIsOpen = true;
-                }
+                IUniformDocumentAssembler documentAssembler = App.services.GetService<IUniformDocumentAssembler> ();
+                List<Person> persons = documentAssembler.GetPersons (path);
+                SetPersons (persons);
+                SwitchPersonChoosingEnabling (true);
             }
             else
             {
@@ -360,7 +361,7 @@ namespace Lister.ViewModels
             _focusedEdge = _edge;
 
             EntirePersonListIsSelected = true;
-            EntireListColor = new SolidColorBrush (MainWindow.black);
+            EntireListColor = new SolidColorBrush (_focusedBorderColor.Color);
 
             TextboxIsReadOnly = false;
             TextboxIsFocusable = true;
@@ -505,12 +506,12 @@ namespace Lister.ViewModels
 
         internal void SetUp ( string theme )
         {
-            SolidColorBrush correctColor = new SolidColorBrush (MainWindow.black);
+            SolidColorBrush correctColor = new SolidColorBrush (_focusedBorderColor.Color);
             SolidColorBrush uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 0, 0, 0));
 
             if ( theme == "Dark" )
             {
-                correctColor = new SolidColorBrush (MainWindow.white);
+                correctColor = new SolidColorBrush (_unfocusedColor.Color);
                 uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
             }
 

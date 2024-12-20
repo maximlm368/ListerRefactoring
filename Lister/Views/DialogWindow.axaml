@@ -17,19 +17,16 @@
 		ExtendClientAreaChromeHints = "NoChrome"
 		ExtendClientAreaTitleBarHeightHint = "0" >
 
-
-		
+	
 		<StackPanel
 			Width="350"
 			Height="130">
 
 			<Label
-				Content ="Сохранение изменений"
-				FontSize ="12"
-				Margin ="5,5,0,0"/>
+				Classes="modalLabel"
+				Content ="Сохранение изменений"/>
 
-			<Grid Height="70"  
-				  Margin ="0,-5,0,0">
+			<Grid Height="70">
 
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition  Width="30"></ColumnDefinition>
@@ -67,15 +64,9 @@
 
 				<Button
 					Name="Yes"
-					Width="80"
-					Height="24"
-					FontSize="10"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Top"
-					CornerRadius = "0"
+					Classes="modalButton"
+					Padding="31,4"
 					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-					BorderBrush = "gray"
-					BorderThickness = "1"
 					Canvas.Top="8"
 					Canvas.Left="170"
 					Content="Да"
@@ -83,15 +74,9 @@
 
 				<Button
 					Name="No"
-					Width="80"
-					Height="24"
-					FontSize="10"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Top"
-					CornerRadius = "0"
+					Classes="modalButton"
+					Padding="28,4"
 					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-					BorderBrush = "gray"
-					BorderThickness = "1"
 					Canvas.Top="8"
 					Canvas.Left="260"
 					Content="Нет"
