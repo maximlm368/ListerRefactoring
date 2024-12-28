@@ -79,6 +79,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private string _message;
+        internal string Message
+        {
+            get { return _message; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _message, value, nameof (Message));
+            }
+        }
+
         private string _errorsSource;
         internal string ErrorsSource
         {
@@ -216,6 +226,15 @@ namespace Lister.ViewModels
         {
             ErrorsSource = errorsSource;
             MessageLines = message;
+
+            Message = string.Empty;
+
+            foreach ( string line in MessageLines ) 
+            {
+                Message += line + "\n";
+            }
+
+
             MessageHeight = message.Count * _lineHeight + 20;
 
             double errorsContainerHeight = message.Count * _lineHeight;

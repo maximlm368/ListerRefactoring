@@ -58,6 +58,20 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        //var children = this.chil;
+
+        //foreach ( var child   in   children ) 
+        //{
+        //    Button button = child as Button;
+
+        //    if ( button != null ) 
+        //    {
+        //        button.FocusAdorner = null;
+        //    }
+        //}
+
+
+
         CommonStorageProvider = StorageProvider;
 
         this.Opened += OnOpened;

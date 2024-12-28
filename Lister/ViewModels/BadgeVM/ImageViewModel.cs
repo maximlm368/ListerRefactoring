@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using ContentAssembler;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class ImageViewModel : BoundToMember
+    public class ImageViewModel : BoundToTextLine
     {
         public static Dictionary <string, Bitmap> NameToImage = new ();
 
@@ -29,7 +30,7 @@ namespace Lister.ViewModels
         }
 
 
-        public ImageViewModel ( InsideImage image )
+        public ImageViewModel ( int id, InsideImage image )
         {
             Path = image.Path;
 
@@ -40,10 +41,28 @@ namespace Lister.ViewModels
                 NameToImage [image.Path] = ImageHelper.LoadFromResource (uri);
             }
 
+            Id = id;
             BitMap = NameToImage [image.Path];
             Binding = image.BindingName;
+            IsAboveOfBinding = image.IsAboveOfBinding;
 
-            SetYourself (image.Width, image.Height, image.TopOffset, image.LeftOffset);
+            Color color = new Color (255, image.OutlineRGB [0], image.OutlineRGB [1], image.OutlineRGB [2]);
+            SolidColorBrush brush = new SolidColorBrush (color);
+
+            SetYourself (image.Width, image.Height, image.TopOffset, image.LeftOffset, brush);
+        }
+
+
+        public ImageViewModel ( ImageViewModel prototype )
+        {
+            Path = prototype.Path;
+            Id = prototype.Id;
+            BitMap = NameToImage [Path];
+            Binding = prototype.Binding;
+            IsAboveOfBinding = prototype.IsAboveOfBinding;
+
+            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset
+                                                                               , prototype.outlineColorStorage);
         }
 
 
@@ -58,12 +77,19 @@ namespace Lister.ViewModels
             base.ZoomOut (coefficient);
         }
 
+
+        internal ImageViewModel Clone ( )
+        {
+            return new ImageViewModel ( this );
+        }
     }
 
 
 
-    public abstract class BoundToMember : BadgeMember
+    public abstract class BoundToTextLine : BadgeMember
     {
+        public int Id { get; protected set; }
+
         private string _binding;
         public string Binding
         {
@@ -71,6 +97,16 @@ namespace Lister.ViewModels
             protected set
             {
                 this.RaiseAndSetIfChanged (ref _binding, value, nameof (Binding));
+            }
+        }
+
+        private bool _isAboveOfBinding;
+        public bool IsAboveOfBinding
+        {
+            get { return _isAboveOfBinding; }
+            protected set
+            {
+                this.RaiseAndSetIfChanged (ref _isAboveOfBinding, value, nameof (IsAboveOfBinding));
             }
         }
     }

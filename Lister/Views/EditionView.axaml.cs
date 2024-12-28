@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Avalonia.Animation.Easings;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using Avalonia.Controls.Presenters;
 
 namespace Lister.Views
 {
@@ -34,9 +35,12 @@ namespace Lister.Views
         private double _capturingY;
         private bool _runnerIsCaptured = false;
         private Image _currentIcon;
-        private TextBlock _focused;
-        private bool _capturedExists;
-        private bool _focusedExists;
+        private TextBlock _focusedText;
+        private Image _focusedImage;
+        private Shape _focusedShape;
+        private bool _capturedTextExists;
+        private bool _capturedImageExists;
+        private bool _capturedShapeExists;
         private bool _pointerIsPressed;
         private Point _pointerPosition;
         private MainView _back;
@@ -197,7 +201,7 @@ namespace Lister.Views
         {
             string edited = editorTextBox.Text;
 
-            bool actionWasJustNavigation = ((edited == null)   ||   (_focused == null));
+            bool actionWasJustNavigation = ((edited == null)   ||   (_focusedText == null));
 
             if ( actionWasJustNavigation )
             {
@@ -221,7 +225,7 @@ namespace Lister.Views
         }
 
 
-        #region CapturingAndMovingByMouse
+        #region CapturingAndMoving
 
         internal void HandleGettingFocus ( object sender, GotFocusEventArgs args )
         {
@@ -231,23 +235,47 @@ namespace Lister.Views
 
         internal void Focus ( object sender, TappedEventArgs args ) 
         {
-            scalabilityGrade.IsEnabled = true;
-            editorTextBox.IsEnabled = true;
-            _focusedExists = true;
-
             TextBlock textBlock = sender as TextBlock;
+
+            if ( textBlock != null ) 
+            {
+                scalabilityGrade.IsEnabled = true;
+                editorTextBox.IsEnabled = true;
+
+                FocusTextLine (textBlock);
+                return;
+            }
+
+            Image image = sender as Image;
+
+            if ( image != null )
+            {
+                FocusImage (image);
+                return;
+            }
+
+            Shape shape = sender as Shape;
+
+            if ( shape != null ) 
+            {
+                FocusShape (shape);
+                return;
+            }
+        }
+
+
+        internal void FocusTextLine ( TextBlock line )
+        {
             Border container;
 
-            if ( _focused != null )
+            if ( _focusedText != null )
             {
-                container = _focused.Parent as Border;
+                container = _focusedText.Parent as Border;
                 container.BorderBrush = null;
             }
 
-            _focused = textBlock;
-            zoomOn.IsEnabled = true;
-            zoomOut.IsEnabled = true;
-            string content = ( string ) _focused.Text;
+            _focusedText = line;
+            string content = ( string ) _focusedText.Text;
 
             int lineNumber = 0;
             int counter = 0;
@@ -255,7 +283,7 @@ namespace Lister.Views
 
             var children = textLines.GetLogicalChildren ();
 
-            foreach ( var child   in   children )
+            foreach ( var child in children )
             {
                 var ch = child.GetLogicalChildren ();
 
@@ -265,7 +293,7 @@ namespace Lister.Views
 
                     foreach ( var textBl   in   textBlocks )
                     {
-                        if ( _focused.Equals(textBl) ) 
+                        if ( _focusedText.Equals (textBl) )
                         {
                             lineNumber = counter;
                             shouldBreak = true;
@@ -273,7 +301,7 @@ namespace Lister.Views
                         }
                     }
 
-                    if ( shouldBreak ) 
+                    if ( shouldBreak )
                     {
                         break;
                     }
@@ -287,10 +315,42 @@ namespace Lister.Views
                 counter++;
             }
 
-            container = textBlock.Parent as Border;
-            container.BorderBrush = new SolidColorBrush (new Color(255, 0, 0, 255));
+            container = line.Parent as Border;
+            container.BorderBrush = new SolidColorBrush (new Color (255, 0, 0, 255));
 
-            _viewModel.Focus (content, lineNumber);
+            _viewModel.FocusTextLine (content, lineNumber);
+            Cursor = new Cursor (StandardCursorType.SizeAll);
+            _isReleaseLocked = true;
+            _focusTime = Stopwatch.StartNew ();
+        }
+
+
+        internal void FocusShape ( Shape shape )
+        {
+            ShapeViewModel shapeViewModel = shape.DataContext as ShapeViewModel;
+
+            if ( shapeViewModel != null )
+            {
+                _viewModel.FocusShape (shapeViewModel.Kind, shapeViewModel.Id);
+            }
+
+            _focusedShape = shape;
+            Cursor = new Cursor (StandardCursorType.SizeAll);
+            _isReleaseLocked = true;
+            _focusTime = Stopwatch.StartNew ();
+        }
+
+
+        internal void FocusImage ( Image image )
+        {
+            ImageViewModel imageViewModel = image.DataContext as ImageViewModel;
+
+            if ( imageViewModel != null )
+            {
+                _viewModel.FocusImage (imageViewModel.Id);
+            }
+
+            _focusedImage = image;
             Cursor = new Cursor (StandardCursorType.SizeAll);
             _isReleaseLocked = true;
             _focusTime = Stopwatch.StartNew ();
@@ -299,12 +359,25 @@ namespace Lister.Views
 
         internal void Move ( object sender, PointerEventArgs args )
         {
-            TextBlock textBlock = sender as TextBlock;
+            bool shouldMove = ( ( _capturedTextExists )  ||  ( _capturedImageExists )  ||  ( _capturedShapeExists ) );
 
-            if ( _capturedExists )
+            if ( shouldMove ) 
             {
-                textBlock.Text = textBlock.Text;
-                Point newPosition = args.GetPosition (_focused);
+                Point newPosition = _pointerPosition;
+
+                if ( _capturedTextExists )
+                {
+                    newPosition = args.GetPosition (_focusedText);
+                }
+                else if ( _capturedImageExists )
+                {
+                    newPosition = args.GetPosition (_focusedImage);
+                }
+                else if ( _capturedShapeExists )
+                {
+                    newPosition = args.GetPosition (_focusedShape);
+                }
+
                 double verticalDelta = _pointerPosition.Y - newPosition.Y;
                 double horizontalDelta = _pointerPosition.X - newPosition.X;
                 Point delta = new Point (horizontalDelta, verticalDelta);
@@ -313,27 +386,50 @@ namespace Lister.Views
         }
 
 
+        internal void ToSide ( object sender, KeyEventArgs args )
+        {
+            string key = args.Key.ToString ();
+            _viewModel.FocusedToSide (key);
+        }
+
+
         internal void Capture ( object sender, PointerPressedEventArgs args )
         {
             TextBlock textBlock = sender as TextBlock;
 
-            if ( textBlock != _focused )
+            if ( (_focusedText != null)   &&   (textBlock == _focusedText) )
             {
-                return;
+                _pointerPosition = args.GetPosition (textBlock);
+                _capturedTextExists = true;
             }
 
-            _pointerPosition = args.GetPosition (textBlock);
-            _capturedExists = true;
+            Image image = sender as Image;
+
+            if ( ( _focusedImage != null ) && ( image == _focusedImage ) )
+            {
+                _pointerPosition = args.GetPosition (image);
+                _capturedImageExists = true;
+            }
+
+            Shape shape = sender as Shape;
+
+            if ( ( _focusedShape != null ) && ( shape == _focusedShape ) )
+            {
+                _pointerPosition = args.GetPosition (shape);
+                _capturedShapeExists = true;
+            }
         }
 
 
         internal void ReleaseCaptured ( )
         {
-            if ( _capturedExists )
+            bool focusedExists = ( ( _focusedText != null ) || ( _focusedImage != null ) || ( _focusedShape != null ) );
+
+            if ( _capturedTextExists  ||  _capturedImageExists  ||  _capturedShapeExists )
             {
                 Release ();
             }
-            else if ( (_focused != null)   &&   (_focusTime != null) )
+            else if ( focusedExists   &&   (_focusTime != null) )
             {
                 if ( ! _isReleaseLocked )
                 {
@@ -357,21 +453,24 @@ namespace Lister.Views
 
         private void Release ( )
         {
-            _capturedExists = false;
-            scalabilityGrade.IsEnabled = false;
-            editorTextBox.IsEnabled = false;
-            _focusedExists = false;
-
-            if ( _focused != null )
+            if ( _focusedText != null )
             {
-                Border container = _focused.Parent as Border;
+                Border container = _focusedText.Parent as Border;
                 container.BorderBrush = null;
-                _focused = null;
+                _focusedText = null;
+                _capturedTextExists = false;
+            }
+            else if ( _focusedImage != null )
+            {
+                _focusedImage = null;
+                _capturedImageExists = false;
+            }
+            else if ( _focusedShape != null ) 
+            {
+                _focusedShape = null;
+                _capturedShapeExists = false;
             }
 
-            zoomOn.IsEnabled = false;
-            zoomOut.IsEnabled = false;
-            spliter.IsEnabled = false;
             Cursor = new Cursor (StandardCursorType.Arrow);
             _viewModel.ReleaseCaptured ();
         }
@@ -383,41 +482,32 @@ namespace Lister.Views
         {
             TextBlock textBlock = sender as TextBlock;
 
-            if ( textBlock != _focused )
+            if ( (_focusedText != null)   &&   (_focusedText == textBlock) )
             {
-                return;
+                Cursor = new Cursor (StandardCursorType.SizeAll);
             }
 
-            Cursor = new Cursor (StandardCursorType.SizeAll);
+            Shape shape = sender as Shape;
+
+            if ( ( _focusedShape != null )   &&   ( shape == _focusedShape) )
+            {
+                Cursor = new Cursor (StandardCursorType.SizeAll);
+            }
+
+            Image image = sender as Image;
+
+            if ( ( _focusedImage != null )   &&   ( image == _focusedImage) )
+            {
+                Cursor = new Cursor (StandardCursorType.SizeAll);
+            }
         }
 
 
         internal void SetArrowCursor ( object sender, PointerEventArgs args )
         {
-            TextBlock textBlock = sender as TextBlock;
-
-            if ( textBlock != _focused )
-            {
-                return;
-            }
-
             Cursor = new Cursor (StandardCursorType.Arrow);
         }
 
-        #endregion
-
-        #region MovingByButtons
-
-        internal void ToSide ( object sender, KeyEventArgs args )
-        {
-            if ( _focused == null )
-            {
-                return;
-            }
-
-            string key = args.Key.ToString ();
-            _viewModel.ToSide (key);
-        }
         #endregion
 
         #region Navigation

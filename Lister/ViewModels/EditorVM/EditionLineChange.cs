@@ -28,23 +28,23 @@ namespace Lister.ViewModels
         private readonly SolidColorBrush _focusedFontSizeBorderColor;
         private readonly SolidColorBrush _releasedFontSizeBorderColor;
 
-        private SolidColorBrush ffsc;
+        private SolidColorBrush _focusedFontsizeColor;
         internal SolidColorBrush FocusedFontSizeColor
         {
-            get { return ffsc; }
+            get { return _focusedFontsizeColor; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ffsc, value, nameof (FocusedFontSizeColor));
+                this.RaiseAndSetIfChanged (ref _focusedFontsizeColor, value, nameof (FocusedFontSizeColor));
             }
         }
 
-        private SolidColorBrush ffsbc;
+        private SolidColorBrush _focusedFontsizeBorderColor;
         internal SolidColorBrush FocusedFontSizeBorderColor
         {
-            get { return ffsbc; }
+            get { return _focusedFontsizeBorderColor; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ffsbc, value, nameof (FocusedFontSizeBorderColor));
+                this.RaiseAndSetIfChanged (ref _focusedFontsizeBorderColor, value, nameof (FocusedFontSizeBorderColor));
             }
         }
 
@@ -64,24 +64,20 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ToSide ( string direction )
+        internal void FocusedToSide ( string direction )
         {
-            BeingProcessedBadge.ToSide (direction, _scale);
+            BeingProcessedBadge.FocusedToSide (direction, _scale);
             ResetActiveIcon ();
         }
 
         #endregion
 
-        internal void Focus ( string focusedContent, int elementNumber )
+        internal void FocusTextLine ( string focusedContent, int elementNumber )
         {
-            FocusedFontSizeColor = _focusedFontSizeColor;
-            FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
+            //FocusedFontSizeColor = _focusedFontSizeColor;
+            //FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
 
-            if ( ! BeingProcessedBadge. IsChanged    &&   ( BackupNumbered [BeingProcessedBadge. Id] == null ) ) 
-            {
-                BackupNumbered [BeingProcessedBadge. Id] = BeingProcessedBadge.Clone ();
-            }
-
+            MakeBackUp ();
             BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
 
             if ( BeingProcessedBadge. FocusedLine != null )
@@ -93,31 +89,63 @@ namespace Lister.ViewModels
         }
 
 
+        internal void FocusShape ( ShapeKind kindName, int shapeId )
+        {
+            MakeBackUp ();
+
+            if ( kindName == ShapeKind.rectangle )
+            {
+                BeingProcessedBadge.SetFocusedRectangle (shapeId);
+            }
+            else if ( kindName == ShapeKind.ellipse ) 
+            {
+                BeingProcessedBadge.SetFocusedEllipse (shapeId);
+            }
+        }
+
+
+        internal void FocusImage ( int id )
+        {
+            MakeBackUp ();
+            BeingProcessedBadge.SetFocusedImage (id);
+        }
+
+
+        private void MakeBackUp ()
+        {
+            if ( ! BeingProcessedBadge.IsChanged   &&   ( BackupNumbered [BeingProcessedBadge.Id] == null ) )
+            {
+                BackupNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge.Clone ();
+            }
+        }
+
+
         internal void ReleaseCaptured ()
         {
-            FocusedFontSizeColor = _releasedFontSizeColor;
-            FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
-            ZoommerIsEnable = false;
-            MoversAreEnable = false;
-            SplitterIsEnable = false;
-
             if ( BeingProcessedBadge == null ) 
             {
                 return;
             }
 
-            if ( BeingProcessedBadge. FocusedLine != null )
+            if ( BeingProcessedBadge.FocusedLine != null )
             {
+                //FocusedFontSizeColor = _releasedFontSizeColor;
+                //FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
+
+                FocusedFontSizeBorderColor = null;
+
+                DisableTextLineEdition ();
+
                 BeingProcessedBadge.CheckFocusedLineCorrectness ();
-                
                 BeingProcessedBadge.FocusedFontSize = string.Empty;
 
-                BadgeViewModel printable = Printable [BeingProcessedBadge. Id];
-                printable.CopyFrom ( BeingProcessedBadge );
-
-                BeingProcessedBadge.FocusedLine = null;
                 ResetActiveIcon ();
             }
+
+            BadgeViewModel result = Printable [BeingProcessedBadge.Id];
+            result.CopyFrom (BeingProcessedBadge);
+
+            BeingProcessedBadge.ReleaseFocused ();
         }
 
 
@@ -153,10 +181,17 @@ namespace Lister.ViewModels
         {
             BeingProcessedBadge.Split (_scale);
             ResetActiveIcon ();
+            DisableTextLineEdition ();
+        }
+
+
+        private void DisableTextLineEdition ()
+        {
             SplitterIsEnable = false;
             MoversAreEnable = false;
             ZoommerIsEnable = false;
         }
+
 
         #region FontSizeChange
 

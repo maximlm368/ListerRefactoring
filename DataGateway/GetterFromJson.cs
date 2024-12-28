@@ -164,8 +164,8 @@ namespace DataGateway
                 return null; 
             }
 
-            string templateName = section.Value;
-            return templateName;
+            string result = section.Value;
+            return result;
         }
 
 

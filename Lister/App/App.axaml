@@ -23,7 +23,16 @@
 
 
 <!--
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/FontsResourceDictionary.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
 
+
+
+
+<FontFamily x:Key="FA">/Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
 
     <Application.Styles>
         <FluentTheme />

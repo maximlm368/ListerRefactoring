@@ -10,7 +10,7 @@
 
 
 	<Grid Name="personChoosingBlock"
-		  Background="LightGray"
+		  Background="#EEEEEE"
 		  Height="40"
 		  ZIndex="0">
 		<Grid.ColumnDefinitions>

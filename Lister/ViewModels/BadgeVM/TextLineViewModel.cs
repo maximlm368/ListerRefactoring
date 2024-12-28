@@ -22,6 +22,8 @@ using Avalonia.Media.Fonts;
 using Avalonia.Platform;
 using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Web.Services.Description;
 
 namespace Lister.ViewModels
 {
@@ -42,116 +44,119 @@ namespace Lister.ViewModels
 
         internal TextualAtom DataSource { get; private set; }
 
-        private HorizontalAlignment al;
+        private HorizontalAlignment _alignment;
         internal HorizontalAlignment Alignment
         {
-            get { return al; }
+            get { return _alignment; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref al, value, nameof (Alignment));
+                this.RaiseAndSetIfChanged (ref _alignment, value, nameof (Alignment));
             }
         }
 
-        private Thickness pd;
+        private Thickness _padding;
         internal Thickness Padding
         {
-            get { return pd; }
+            get { return _padding; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref pd, value, nameof (Padding));
+                this.RaiseAndSetIfChanged (ref _padding, value, nameof (Padding));
             }
         }
 
-        private double fs;
+        private double _fontSize;
         internal double FontSize
         {
-            get { return fs; }
+            get { return _fontSize; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fs, value, nameof (FontSize));
+                this.RaiseAndSetIfChanged (ref _fontSize, value, nameof (FontSize));
             }
         }
 
-        private FontFamily ff;
-        internal FontFamily FontFamily
+        private Avalonia.Media.FontFamily _fontFamily;
+        internal Avalonia.Media.FontFamily FontFamily
         {
-            get { return ff; }
+            get { return _fontFamily; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ff, value, nameof (FontFamily));
+                this.RaiseAndSetIfChanged (ref _fontFamily, value, nameof (FontFamily));
             }
         }
 
-        private Avalonia.Media.FontWeight fW;
+        private Avalonia.Media.FontWeight _fontWeight;
         internal Avalonia.Media.FontWeight FontWeight
         {
-            get { return fW; }
+            get { return _fontWeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fW, value, nameof (FontWeight));
+                this.RaiseAndSetIfChanged (ref _fontWeight, value, nameof (FontWeight));
             }
         }
 
-        private string cn;
+        private string _content;
         internal string Content
         {
-            get { return cn; }
+            get { return _content; }
             set
             {
-                this.RaiseAndSetIfChanged (ref cn, value, nameof (Content));
-
-                //Typeface face = new Typeface (FontFamily, FontStyle.Normal, FontWeight);
-                //FormattedText formatted = new FormattedText (Content, CultureInfo.CurrentCulture
-                //                                                    , FlowDirection.LeftToRight, face, FontSize, null);
-                //UsefullWidth = formatted.WidthIncludingTrailingWhitespace;
-
+                this.RaiseAndSetIfChanged (ref _content, value, nameof (Content));
                 SetUsefullWidth ();
             }
         }
 
-        private IBrush fG;
+        private IBrush _foreground;
         internal IBrush Foreground
         {
-            get { return fG; }
+            get { return _foreground; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref fG, value, nameof (Foreground));
+                this.RaiseAndSetIfChanged (ref _foreground, value, nameof (Foreground));
             }
         }
 
-        private IBrush bG;
+        private IBrush _background;
         internal IBrush Background
         {
-            get { return bG; }
+            get { return _background; }
             set
             {
-                this.RaiseAndSetIfChanged (ref bG, value, nameof (Background));
+                this.RaiseAndSetIfChanged (ref _background, value, nameof (Background));
             }
         }
 
-        private bool ish;
+        private bool _isSplitable;
         internal bool IsSplitable
         {
-            get { return ish; }
+            get { return _isSplitable; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref ish, value, nameof (IsSplitable));
+                this.RaiseAndSetIfChanged (ref _isSplitable, value, nameof (IsSplitable));
             }
         }
 
-        private double uW;
+        private double _usefullWidth;
         internal double UsefullWidth
         {
-            get { return uW; }
+            get { return _usefullWidth; }
             set
             {
-                this.RaiseAndSetIfChanged (ref uW, value, nameof (UsefullWidth));
+                this.RaiseAndSetIfChanged (ref _usefullWidth, value, nameof (UsefullWidth));
+            }
+        }
+
+        private double _usefullHeight;
+        internal double UsefullHeight
+        {
+            get { return _usefullHeight; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _usefullHeight, value, nameof (UsefullHeight));
             }
         }
 
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
-
 
         public TextLineViewModel ( TextualAtom text )
         {
@@ -170,14 +175,14 @@ namespace Lister.ViewModels
 
             FontWeight = GetFontWeight (text.FontWeight);
             string fontName = text.FontName;
-            FontFamily = new FontFamily (fontName);
+            FontFamily = new Avalonia.Media.FontFamily (fontName);
 
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
-            byte red = text.Foreground [0];
-            byte green = text.Foreground [1];
-            byte blue = text.Foreground [2];
+            byte red = text.ForegroundRGB [0];
+            byte green = text.ForegroundRGB [1];
+            byte blue = text.ForegroundRGB [2];
             Red = red;
             Green = green;
             Blue = blue;
@@ -188,10 +193,15 @@ namespace Lister.ViewModels
             double correctHeight = FontSize * _parentToChildCoeff;
 
             SetUsefullWidth ();
-            SetYourself (text.Width, correctHeight, text.TopOffset, text.LeftOffset);
+
+            Avalonia.Media.Color color = 
+                               new Avalonia.Media.Color (255, text.OutlineRGB [0], text.OutlineRGB [1], text.OutlineRGB [2]);
+            SolidColorBrush brush = new SolidColorBrush (color);
+
+            SetYourself (text.Width, FontSize, text.TopOffset, text.LeftOffset, brush);
             SetAlignment (text.Alignment);
 
-            Padding = SetPadding ();
+            Padding = GetPadding ();
         }
 
 
@@ -207,15 +217,16 @@ namespace Lister.ViewModels
             IsSplitable = source.IsSplitable;
             Padding = new Thickness (0, -FontSize / _divider);
             UsefullWidth = source.UsefullWidth;
+            UsefullHeight = source.UsefullHeight;
             Foreground = source.Foreground;
             Red = source.Red;
             Green = source.Green;
             Blue = source.Blue;
             Background = source.Background;
 
-            SetYourself (source.Width, source.Height, source.TopOffset, source.LeftOffset);
-
-            Padding = SetPadding ();
+            SetYourself (source.UsefullWidth, source.Height, source.TopOffset
+                                                                  , source.LeftOffset, source.outlineColorStorage);
+            Padding = GetPadding ();
         }
 
 
@@ -228,20 +239,18 @@ namespace Lister.ViewModels
 
             formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
             formatted.SetFontSize (demensions.FontSize);
-            formatted.SetFontFamily (new FontFamily(demensions.FontName));
+            formatted.SetFontFamily (new Avalonia.Media.FontFamily (demensions.FontName));
 
             return formatted.Width;
         }
 
 
-        private Thickness SetPadding ()
+        private Thickness GetPadding ()
         {
-            Thickness padding;
-            double verticalPadding = ( FontSize - Height ) / 2;
+            //Thickness padding;
+            //double paddingTop = ( UsefullHeight - FontSize ) / 2;
             
-            padding = new Thickness (0, verticalPadding);
-
-            return padding;
+            return new Thickness (0, 1);
         }
 
 
@@ -264,8 +273,15 @@ namespace Lister.ViewModels
 
         private static Avalonia.Media.FontFamily GetFontFamilyByName ( string fontName )
         {
-            return new FontFamily (fontName);
+            return new Avalonia.Media.FontFamily (fontName);
         }
+
+
+        //private void SetUsefullWidth ()
+        //{
+        //    UsefullWidth = CalculateWidth (Content, DataSource);
+        //    UsefullHeight = FontSize;
+        //}
 
 
         private void SetUsefullWidth ()
@@ -280,6 +296,7 @@ namespace Lister.ViewModels
             formatted.SetFontFamily (FontFamily);
 
             UsefullWidth = formatted.Width;
+            UsefullHeight = HeightWithBorder;
         }
 
 
@@ -295,6 +312,8 @@ namespace Lister.ViewModels
             base.ZoomOn (coefficient);
             FontSize *= coefficient;
             UsefullWidth *= coefficient;
+            UsefullHeight *= coefficient;
+            Padding = new Thickness (Padding.Left * coefficient, Padding.Top * coefficient);
         }
 
 
@@ -303,6 +322,8 @@ namespace Lister.ViewModels
             base.ZoomOut (coefficient);
             FontSize /= coefficient;
             UsefullWidth /= coefficient;
+            UsefullHeight /= coefficient;
+            Padding = new Thickness (Padding.Left / coefficient, Padding.Top / coefficient);
         }
 
 
@@ -320,7 +341,7 @@ namespace Lister.ViewModels
             SetUsefullWidth ();
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
-            Padding = SetPadding ();
+            Padding = GetPadding ();
         }
 
 
@@ -338,7 +359,7 @@ namespace Lister.ViewModels
             SetUsefullWidth ();
             double proportion = oldFontSize / FontSize;
             Height /= proportion;
-            Padding = SetPadding ();
+            Padding = GetPadding ();
         }
 
 

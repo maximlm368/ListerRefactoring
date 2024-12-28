@@ -1,5 +1,7 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ExtentionsAndAuxiliary;
@@ -12,6 +14,8 @@ namespace Lister.Views
     {
         private LargeMessageViewModel _viewModel;
         public ShowingDialog Caller { get; private set; }
+
+        private bool _messageIsSelected;
 
         private string _message;
         internal string Message 
@@ -50,6 +54,12 @@ namespace Lister.Views
         public LargeMessageDialog ()
         {
             InitializeComponent ();
+
+            //ScrollViewer scroll = new ScrollViewer ();
+
+            //SelectableTextBlock block = new SelectableTextBlock ();
+
+            
         }
 
 
@@ -103,6 +113,21 @@ namespace Lister.Views
         {
             Caller.HandleDialogClosing ();
             this.Close ();
+        }
+
+
+        internal void TappedForWholeSelection ( object sender, TappedEventArgs args )
+        {
+            if ( !_messageIsSelected )
+            {
+                _messageIsSelected = true;
+                SelectableTextBlock textBlock = sender as SelectableTextBlock;
+                textBlock.SelectAll ();
+            }
+            else 
+            {
+                _messageIsSelected = false;
+            }
         }
     }
 }

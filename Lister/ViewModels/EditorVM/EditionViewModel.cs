@@ -39,53 +39,53 @@ namespace Lister.ViewModels
         internal double WidthDelta { get; set; }
         internal double HeightDelta { get; set; }
 
-        private double wAW;
+        private double _workAreaWidt;
         internal double WorkAreaWidth
         {
-            get { return wAW; }
+            get { return _workAreaWidt; }
             set
             {
-                this.RaiseAndSetIfChanged (ref wAW, value, nameof (WorkAreaWidth));
+                this.RaiseAndSetIfChanged (ref _workAreaWidt, value, nameof (WorkAreaWidth));
             }
         }
 
-        private double wAH;
+        private double _workAreaHeightt;
         internal double WorkAreaHeight
         {
-            get { return wAH; }
+            get { return _workAreaHeightt; }
             set
             {
-                this.RaiseAndSetIfChanged (ref wAH, value, nameof (WorkAreaHeight));
+                this.RaiseAndSetIfChanged (ref _workAreaHeightt, value, nameof (WorkAreaHeight));
             }
         }
 
-        private double vW;
+        private double _viewWidthh;
         internal double ViewWidth
         {
-            get { return vW; }
+            get { return _viewWidthh; }
             set
             {
-                this.RaiseAndSetIfChanged (ref vW, value, nameof (ViewWidth));
+                this.RaiseAndSetIfChanged (ref _viewWidthh, value, nameof (ViewWidth));
             }
         }
 
-        private double vH;
+        private double _viewHeightt;
         internal double ViewHeight
         {
-            get { return vH; }
+            get { return _viewHeightt; }
             set
             {
-                this.RaiseAndSetIfChanged (ref vH, value, nameof (ViewHeight));
+                this.RaiseAndSetIfChanged (ref _viewHeightt, value, nameof (ViewHeight));
             }
         }
 
-        private Thickness mg;
+        private Thickness _margin;
         public Thickness Margin
         {
-            get { return mg; }
+            get { return _margin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref mg, value, nameof (Margin));
+                this.RaiseAndSetIfChanged (ref _margin, value, nameof (Margin));
             }
         }
 
@@ -115,83 +115,83 @@ namespace Lister.ViewModels
         internal Dictionary <int, BadgeViewModel> BackupNumbered { get; private set; }
         internal List <BadgeViewModel> Printable { get; private set; }
 
-        private int incBC;
+        private int _incorrectBadgesCount;
         internal int IncorrectBadgesCount
         {
-            get { return incBC; }
+            get { return _incorrectBadgesCount; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref incBC, value, nameof (IncorrectBadgesCount));
+                this.RaiseAndSetIfChanged (ref _incorrectBadgesCount, value, nameof (IncorrectBadgesCount));
             }
         }
 
-        private BadgeViewModel bpB;
+        private BadgeViewModel _processableBadge;
         internal BadgeViewModel BeingProcessedBadge
         {
-            get { return bpB; }
+            get { return _processableBadge; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref bpB, value, nameof (BeingProcessedBadge));
+                this.RaiseAndSetIfChanged (ref _processableBadge, value, nameof (BeingProcessedBadge));
             }
         }
 
-        private string fT;
+        private string _focusedText;
         internal string FocusedText
         {
-            get { return fT; }
+            get { return _focusedText; }
             set
             {
-                this.RaiseAndSetIfChanged (ref fT, value, nameof (FocusedText));
+                this.RaiseAndSetIfChanged (ref _focusedText, value, nameof (FocusedText));
             }
         }
 
-        private int pC;
+        private int _processableCount;
         internal int ProcessableCount
         {
-            get { return pC; }
+            get { return _processableCount; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref pC, value, nameof (ProcessableCount));
+                this.RaiseAndSetIfChanged (ref _processableCount, value, nameof (ProcessableCount));
             }
         }
 
-        private bool mE;
+        private bool _moversEnabled;
         internal bool MoversAreEnable
         {
-            get { return mE; }
+            get { return _moversEnabled; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref mE, value, nameof (MoversAreEnable));
+                this.RaiseAndSetIfChanged (ref _moversEnabled, value, nameof (MoversAreEnable));
             }
         }
 
-        private bool sE;
+        private bool _splitterEnabled;
         internal bool SplitterIsEnable
         {
-            get { return sE; }
+            get { return _splitterEnabled; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sE, value, nameof (SplitterIsEnable));
+                this.RaiseAndSetIfChanged (ref _splitterEnabled, value, nameof (SplitterIsEnable));
             }
         }
 
-        private string eC;
+        private string _extenderContent;
         internal string ExtenderContent
         {
-            get { return eC; }
+            get { return _extenderContent; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eC, value, nameof (ExtenderContent));
+                this.RaiseAndSetIfChanged (ref _extenderContent, value, nameof (ExtenderContent));
             }
         }
 
-        private string eT;
+        private string _extentionTip;
         internal string ExtentionTip
         {
-            get { return eT; }
+            get { return _extentionTip; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref eT, value, nameof (ExtentionTip));
+                this.RaiseAndSetIfChanged (ref _extentionTip, value, nameof (ExtentionTip));
             }
         }
 
@@ -316,10 +316,21 @@ namespace Lister.ViewModels
             {
                 _scaleStorage.Add (badge, badge.Scale);
 
-                AllNumbered.Add (badge.Id, badge);
-                IncorrectNumbered.Add (badge.Id, badge);
-                BackupNumbered.Add (badge.Id, null);
+                if ( ! AllNumbered.ContainsKey(badge.Id) ) 
+                {
+                    AllNumbered.Add (badge.Id, badge);
+                }
 
+                if ( ! IncorrectNumbered.ContainsKey(badge.Id) ) 
+                {
+                    IncorrectNumbered.Add (badge.Id, badge);
+                }
+
+                if ( ! BackupNumbered.ContainsKey(badge.Id) ) 
+                {
+                    BackupNumbered.Add (badge.Id, null);
+                }
+                
                 counter++;
             }
 

@@ -20,7 +20,7 @@
 		<Grid
 			Name="backBlock"
 			Height="40"
-			Background="LightGray"
+			Background="#EEEEEE"
 			Margin="0,0">
 
 			<Grid.ColumnDefinitions>
@@ -66,32 +66,28 @@
 				Grid.Row="1"
 				Height="20"
 				CornerRadius="0,5,0,0"
-				Background="White"
-				/>
+				Background="White"/>
 
 			<Border
 				Grid.Column="2"
 				Grid.Row="1"
 				Height="20"
 				CornerRadius="5,0,0,0"
-				Background="White"
-				/>
+				Background="White"/>
 
 			<Border
 				Grid.Column="1"
 				Grid.Row="1"
 				Height="20"
 				CornerRadius="0,0,0,0"
-				Background="White"
-				/>
+				Background="White"/>
 
 			<Border
 				Grid.Column="1"
 				Grid.Row="1"
 				Height="20"
 				CornerRadius="0,0,5,5"
-				Background="LightGray"
-				/>
+				Background="#EEEEEE"/>
 			
 		</Grid>
 		
@@ -118,7 +114,7 @@
 					Height="323"
 					Margin="0,20"
 					CornerRadius="0,5,5,0"
-					Background="LightGray"
+					Background="#EEEEEE"
 					ZIndex="2">
 					
 					<StackPanel>
@@ -350,8 +346,8 @@
 
 									<ItemsControl.Styles>
 										<Style Selector="ItemsControl ContentPresenter">
-											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffset,  Mode=TwoWay}" />
-											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffset,  Mode=TwoWay}" />
+											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
 										</Style>
 									</ItemsControl.Styles>
 
@@ -361,12 +357,12 @@
 											<Border
 												Background="{Binding   Path = Background,  Mode=OneWay }"
 												BorderThickness="1"
-												Height="{Binding Path = FontSize,  Mode=OneWay}">
+												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}"
+												Height="{Binding Path = HeightWithBorder,  Mode=OneWay}">
 
 												<TextBlock
 													Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
-													VerticalAlignment="Bottom"
-													TextAlignment="Center"
+													Padding="{Binding  Path = Padding,  Mode=OneWay}"
 													Height="{Binding  Path = FontSize,  Mode=OneWay}"
 													FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 													FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
@@ -387,6 +383,129 @@
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
 
+								<ItemsControl
+									Name="images"
+									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideImages,  Mode=OneWay }">
+
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<Canvas
+												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.Styles>
+										<Style Selector="ItemsControl ContentPresenter">
+											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Width" Value="{Binding Path = Width,  Mode=OneWay}" />
+										</Style>
+									</ItemsControl.Styles>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border
+												BorderThickness="1"
+												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+												
+												<Image
+													Source = "{Binding   Path = BitMap,  Mode=OneWay }"
+													DoubleTapped="Focus"
+													PointerPressed="Capture"
+													PointerMoved="Move"
+													PointerEntered="SetCrossCursor"
+													PointerExited="SetArrowCursor"
+													KeyDown="ToSide"/>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+
+								<ItemsControl
+									Name="rects"
+									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideRectangles,  Mode=OneWay }">
+
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<Canvas
+												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.Styles>
+										<Style Selector="ItemsControl ContentPresenter">
+											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+										</Style>
+									</ItemsControl.Styles>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border
+												Width="{Binding  Path = WidthWithBorder,  Mode=OneWay}"
+												Height="{Binding  Path = HeightWithBorder,  Mode=OneWay}"
+												BorderThickness="1"
+												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+											
+												<Rectangle
+													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
+													DoubleTapped="Focus"
+													PointerPressed="Capture"
+													PointerMoved="Move"
+													PointerEntered="SetCrossCursor"
+													PointerExited="SetArrowCursor"
+													KeyDown="ToSide"/>
+												</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+
+								<ItemsControl
+									Name="ellipses"
+									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideEllipses,  Mode=OneWay }">
+
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<Canvas
+												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.Styles>
+										<Style Selector="ItemsControl ContentPresenter">
+											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+											<Setter Property="Width" Value="{Binding Path = Width,  Mode=OneWay}" />
+											<Setter Property="Height" Value="{Binding Path = Height,  Mode=OneWay}" />
+										</Style>
+									</ItemsControl.Styles>
+
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Border
+												BorderThickness="1"
+												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+											
+												<Ellipse
+													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
+													DoubleTapped="Focus"
+													PointerPressed="Capture"
+													PointerMoved="Move"
+													PointerEntered="SetCrossCursor"
+													PointerExited="SetArrowCursor"
+													KeyDown="ToSide"/>
+												</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+								
 							</Canvas>
 						</Border>
 
@@ -404,7 +523,7 @@
 				Height="380"
 				CornerRadius="5,0,0,5"
 				PointerWheelChanged="ScrollByWheel"
-				Background="LightGray">
+				Background="#EEEEEE">
 						
 				<StackPanel
 					Name="sliderPanel"
@@ -640,7 +759,7 @@
 		<Grid
 			Name="navigation"
 			Height="40"
-			Background="LightGray"
+			Background="#EEEEEE"
 			Margin="0,0">
 
 			<Grid.ColumnDefinitions>
@@ -795,6 +914,9 @@
 
 
 <!-- 
+
+
+BorderBrush="{Binding   Path = FocusedFontSizeBorderColor,  Mode=OneWay }"
 
 Margin="{Binding  Path=Margin,  Mode=OneWay}"
 

@@ -163,12 +163,11 @@ namespace Lister.Extentions
         {
             Bitmap bitmap = null;
 
-            try
+            if ( File.Exists (resourceUri.AbsolutePath) ) 
             {
                 using Stream stream = new FileStream (resourceUri.AbsolutePath, FileMode.Open);
                 bitmap = new Bitmap (stream);
             }
-            catch (Exception ex) { }
 
             return bitmap;
         }

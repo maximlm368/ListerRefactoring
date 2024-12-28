@@ -14,7 +14,7 @@
 
 		<Border
 			Name="buttonBlock"
-			Background="LightGray"
+			Background="#EEEEEE"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top"
 			Width="{Binding   Path = ButtonBlockWidth,   Mode=OneWay}"
@@ -88,6 +88,7 @@
 
 				<Button
 					Name="edit"
+					Classes="Primary"
 					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
@@ -107,6 +108,7 @@
 						<Label 
 							Content="Редактировать"
 							Width="170"
+							Foreground="#DBCAAE"
 							Padding="13,7"/>
 					</StackPanel>
 
@@ -114,6 +116,7 @@
 			
 				<Button
 					Name="clearBadges"
+					Classes="Primary"
 					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
@@ -133,6 +136,7 @@
 						<Label 
 							Content="Очистить"
 							Width="170"
+							Foreground="#DBCAAE"
 							Padding="33,7"/>
 					</StackPanel>
 
@@ -140,6 +144,7 @@
 
 				<Button
 					Name="save"
+					Classes="Primary"
 					Margin="0, 3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
@@ -159,6 +164,7 @@
 						<Label 
 							Content="Сохранить"
 							Width="170"
+							Foreground="#DBCAAE"
 							Padding="30,7"/>
 					</StackPanel>
 					
@@ -166,6 +172,7 @@
 
 				<Button
 					Name="print"
+					Classes="Primary"
 					Margin="0,3"
 					HorizontalAlignment="Center"
 					Padding="0,0"
@@ -181,7 +188,7 @@
 							Content="&#xf02f;"
 							Width="30"
 							Padding="6,7"/>
-						<Label 
+						<Label
 							Content="Печатать"
 							Width="170"
 							Padding="35,7"/>
@@ -268,6 +275,7 @@
 																Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
 
 															<ItemsControl
+																Name="textLines"
 																ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }" >
 
 																<ItemsControl.ItemsPanel>
@@ -288,28 +296,21 @@
 																<ItemsControl.ItemTemplate>
 																	<DataTemplate>
 
-																		<Border
-																			BorderThickness="1"
-																			Height="{Binding  Path = FontSize,  Mode=OneWay}">
-
-																			<TextBlock
-																				VerticalAlignment="Bottom"
-																				Height="{Binding  Path = FontSize,  Mode=OneWay}"
-																				FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-																				TextAlignment="Center"
-																				FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
-																				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
-																				Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
-																				Text="{Binding   Path = Content,  Mode=OneWay }"/>
-
-																		</Border>
+																		<TextBlock
+																			Padding="{Binding  Path = Padding,  Mode=OneWay}"
+																			Height="{Binding  Path = FontSize,  Mode=OneWay}"
+																			FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+																			TextAlignment="Center"
+																			FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+																			FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+																			Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+																			Text="{Binding   Path = Content,  Mode=OneWay }"/>
 
 																	</DataTemplate>
 																</ItemsControl.ItemTemplate>
 
 															</ItemsControl>
 
-															
 															<ItemsControl
 																Name="images"
 																ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }" >
@@ -331,7 +332,7 @@
 																</ItemsControl.Styles>
 
 																<ItemsControl.ItemTemplate>
-																	<DataTemplate>
+																	<DataTemplate>	
 																		<Image
 																			Source = "{Binding   Path = BitMap,  Mode=OneWay }"/>
 																	</DataTemplate>
@@ -362,11 +363,11 @@
 
 																<ItemsControl.ItemTemplate>
 																	<DataTemplate>
-
+																		
 																		<Rectangle
 																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
 																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
-																			Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>
+																			Fill="{Binding  Path = FillColor,  Mode=OneWay}"/>
 																			
 																	</DataTemplate>
 																</ItemsControl.ItemTemplate>
@@ -395,12 +396,13 @@
 
 																<ItemsControl.ItemTemplate>
 																	<DataTemplate>
-
+																		
 																		<Ellipse
+																			RenderTransform=""
 																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
 																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
-																			Fill="{Binding  Path = FillRGB,  Mode=OneWay}"/>
-
+																			Fill="{Binding  Path = FillColor,  Mode=OneWay}"/>
+																			
 																	</DataTemplate>
 																</ItemsControl.ItemTemplate>
 															</ItemsControl>

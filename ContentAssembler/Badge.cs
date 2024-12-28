@@ -191,15 +191,17 @@ namespace ContentAssembler
     {
         public string Path { get; private set; }
 
-        public InsideImage ( string path, double outlineWidth, double outlineHeight
-                           , double topShiftOnBackground, double leftShiftOnBackground, string ? bindingName )
+        public InsideImage ( string path, double Width, double Height , double topShiftOnBackground
+                          , double leftShiftOnBackground, string ? bindingName, bool isAboveOfBinding, List<byte> outlineRGB )
         {
             Path = path;
-            Width = outlineWidth;
-            Height = outlineHeight;
+            this.Width = Width;
+            this.Height = Height;
             TopOffset = topShiftOnBackground;
             LeftOffset = leftShiftOnBackground;
             BindingName = bindingName;
+            IsAboveOfBinding = isAboveOfBinding;
+            OutlineRGB = outlineRGB;
         }
     }
 
@@ -207,23 +209,24 @@ namespace ContentAssembler
 
     public class InsideShape : BindableToAnother
     {
-        public List<byte> OutlineRGB { get; private set; }
-        public int OutlineThickness { get; private set; }
+        public int StrokeThickness { get; private set; }
         public List<byte> FillRGB { get; private set; }
         public ShapeKind Kind { get; private set; }
 
         public InsideShape ( double outlineWidth, double outlineHeight
-                           , double topShiftOnBackground, double leftShiftOnBackground, List<byte> outlineRGB
-                           , int outlineThickness, List<byte> fillRGB, string kind, string ? bindingName )
+                           , double topShiftOnBackground, double leftShiftOnBackground
+                           , int outlineThickness, List<byte> fillRGB, string kind
+                           , string ? bindingName, bool isAboveOfBinding, List<byte> outlineRGB )
         {
             Width = outlineWidth;
             Height = outlineHeight;
             TopOffset = topShiftOnBackground;
             LeftOffset = leftShiftOnBackground;
             OutlineRGB = outlineRGB;
-            OutlineThickness = outlineThickness;
+            StrokeThickness = outlineThickness;
             FillRGB = fillRGB;
             BindingName = bindingName;
+            IsAboveOfBinding = isAboveOfBinding;
 
             Kind = TranslateStrToShapeKind (kind);
 
@@ -268,7 +271,7 @@ namespace ContentAssembler
         public double FontSize { get; private set; }
         public string FontFile { get; private set; }
         public string FontName { get; private set; }
-        public List<byte> Foreground { get; private set; }
+        public List<byte> ForegroundRGB { get; private set; }
         public string FontWeight { get; private set; }
         private string _content;
         public string Content
@@ -294,7 +297,8 @@ namespace ContentAssembler
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
                            , double fontSize, string fontFile, string fontName, List<byte> foreground
-                           , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate )
+                           , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate
+                           , List<byte> outLineRGB )
         {
             _content = "";
             ContentIsSet = false;
@@ -313,7 +317,15 @@ namespace ContentAssembler
                 foreground = new List<byte> { 0,0,0 };
             }
 
-            Foreground = foreground;
+            ForegroundRGB = foreground;
+
+            if ( outLineRGB.Count < 3   ||   outLineRGB.Count > 3 )
+            {
+                outLineRGB = new List<byte> { 100, 100, 100 };
+            }
+
+            OutlineRGB = outLineRGB;
+
             FontWeight = fontWeight;
             IncludedAtoms = includedAtoms ?? new List<string> ();
             IsSplitable = isSplitable;
@@ -335,7 +347,8 @@ namespace ContentAssembler
             FontSize = source.FontSize;
             FontFile = source.FontFile;
             FontName = source.FontName;
-            Foreground = source.Foreground;
+            ForegroundRGB = source.ForegroundRGB;
+            OutlineRGB = source.OutlineRGB;
             FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
             IsSplitable = source.IsSplitable;
@@ -346,8 +359,9 @@ namespace ContentAssembler
 
         internal TextualAtom Clone () 
         {
-            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile,
-                                                 FontName, Foreground, FontWeight, IncludedAtoms, IsSplitable, NumberToLocate);
+            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile
+                                                 , FontName, ForegroundRGB, FontWeight, IncludedAtoms, IsSplitable
+                                                 , NumberToLocate, OutlineRGB);
             return clone;
         }
 
@@ -368,10 +382,11 @@ namespace ContentAssembler
 
     public abstract class LayoutMember 
     {
-        public double Width { get; set; }
-        public double Height { get; set; }
+        public double Width { get; protected set; }
+        public double Height { get; protected set; }
         public double TopOffset { get; set; }
         public double LeftOffset { get; set; }
+        public List<byte> OutlineRGB { get; protected set; }
     }
 
 
@@ -379,6 +394,7 @@ namespace ContentAssembler
     public abstract class BindableToAnother : LayoutMember
     {
         public string ? BindingName { get; set; }
+        public bool IsAboveOfBinding { get; set; }
     }
 
 

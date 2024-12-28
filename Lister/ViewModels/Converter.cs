@@ -35,11 +35,9 @@ namespace Lister.ViewModels;
 
 public class ConverterToPdf 
 {
-    private string ? currentImagePath = null;
-    private Pdf.Image? image = null;
-    private int step = 0;
-    public IEnumerable<byte []> bytes = null;
-    public List<string> intermidiateFiles = new ();
+    private Dictionary <string, Pdf.Image> pathToInsideImage = new ();
+    public IEnumerable <byte []> bytes = null;
+    public List <string> intermidiateFiles = new ();
 
 
     internal bool ConvertToExtention ( List <PageViewModel> pages, string ? filePathToSave
@@ -120,7 +118,8 @@ public class ConverterToPdf
               (
                   table =>
                   {
-                      table.ColumnsDefinition (
+                      table.ColumnsDefinition 
+                      (
                           columns =>
                           {
                                for ( int badgeNumber = 0;   badgeNumber < line.Badges. Count;   badgeNumber++ )
@@ -130,7 +129,8 @@ public class ConverterToPdf
                                    columns.ConstantColumn (badgeWidth, Unit.Point);
                                    RenderBadge (table, beingRendered, badgeNumber);
                                }
-                          });
+                          }
+                      );
                   }
               );
     }
@@ -139,54 +139,39 @@ public class ConverterToPdf
     private void RenderBadge ( TableDescriptor tableForLine, BadgeViewModel beingRendered, int badgeIndex )
     {
         if ( beingRendered == null ) return;
-
-        step++;
         float badgeWidth = 0;
 
         try
         {
             badgeWidth = ( float ) beingRendered.BadgeWidth;
         }
-        catch ( Exception ex )
-        {
-            int stp = step;
-        }
+        catch ( Exception ex ){ }
 
         float badgeHeight = ( float ) beingRendered.BadgeHeight;
         string imagePath = beingRendered.BadgeModel. BackgroundImagePath;
-        bool firstTime = ( currentImagePath == null );
-        bool itsTimeToSetNewImage = firstTime || ( currentImagePath != imagePath );
 
-        if ( itsTimeToSetNewImage )
-        {
-            currentImagePath = imagePath;
-            string complitedImagePath = GetImagePath (imagePath);
-
-            if ( App.OsName == "Linux" ) 
-            {
-                complitedImagePath = "/" + complitedImagePath;
-            }
-
-            image = Pdf.Image.FromFile (complitedImagePath);
-        }
+        Pdf.Image image = GetImageByPath (imagePath);
 
         tableForLine.Cell ().Row (1).Column (( uint ) badgeIndex + 1)
             .Width (badgeWidth, Unit.Point).Height (badgeHeight, Unit.Point)
             .Layers
-                        (
-                           layers =>
-                           {
-                               layers.PrimaryLayer ()
-                               .Border (0.5f, Unit.Point)
-                               .BorderColor (QuestPDF.Helpers.Colors.Grey.Medium)
-                               .Image (image)
-                               .FitArea ();
+            (
+                layers =>
+                {
+                    IContainer container = layers.PrimaryLayer ().Border (0.5f, Unit.Point)
+                                          .BorderColor (QuestPDF.Helpers.Colors.Grey.Medium);
 
-                               RenderTextLines (layers, beingRendered.TextLines, beingRendered);
-                               //RenderInsideImages (layers, beingRendered.InsideImages);
-                               //RenderInsideShapes (layers, beingRendered.InsideShapes);
-                           }
-                       );
+                    if ( image != null )
+                    {
+                        container.Image (image).FitArea ();
+                    }
+
+                    RenderTextLines (layers, beingRendered.TextLines, beingRendered);
+                    RenderInsideImages (layers, beingRendered.InsideImages);
+                    RenderInsideShapes (layers, beingRendered.InsideRectangles);
+                    RenderInsideShapes (layers, beingRendered.InsideEllipses);
+                }
+            );
     }
 
 
@@ -196,8 +181,12 @@ public class ConverterToPdf
         foreach ( TextLineViewModel textLine   in   textLines )
         {
             string text = textLine.Content;
-            float paddingLeft = ( float ) textLine.LeftOffset; //+ ( float ) ( renderable.Scale );
-            float paddingTop = ( float ) textLine.TopOffset; // - ( float ) ( renderable.Scale * 2 );
+
+            float paddingLeft = ( float ) textLine.LeftOffset;
+            float paddingTop = ( float ) (textLine.TopOffset - 1);
+
+            //float paddingLeft = ( float ) textLine.LeftOffset + ( float ) textLine.Padding.Left;
+            //float paddingTop = ( float ) textLine.TopOffset + ( float ) textLine.Padding.Top/2;
             string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
@@ -237,91 +226,95 @@ public class ConverterToPdf
         {
             float paddingLeft = ( float ) image.LeftOffset;
             float paddingTop = ( float ) image.TopOffset;
-            string imagePath = image.Path;
-            Pdf.Image img = Pdf.Image.FromFile (imagePath);
+            float imageWidth = (float) image.Width;
+            float imageHeight = (float) image.Height;
+            Pdf.Image img = GetImageByPath (image.Path);
+
+            if ( img == null ) continue;
 
             layers
                 .Layer ()
                 .PaddingLeft (paddingLeft)
                 .PaddingTop (paddingTop)
-                .Image (img);
+                .Container()
+                .Width (imageWidth)
+                .Image (img)
+                .FitArea ();
         }
     }
 
 
-    private void RenderInsideShapes ( LayersDescriptor layers, IEnumerable <RectangleViewModel> insideShapes )
+    private void RenderInsideShapes ( LayersDescriptor layers, IEnumerable <ShapeViewModel> insideShapes )
     {
-        foreach ( RectangleViewModel shape   in   insideShapes )
+        foreach ( ShapeViewModel shape   in   insideShapes )
         {
             float paddingLeft = ( float ) shape.LeftOffset;
             float paddingTop = ( float ) shape.TopOffset;
 
             layers
                 .Layer ()
-                .PaddingLeft (paddingLeft)
-                .PaddingTop (paddingTop)
                 .SkiaSharpCanvas 
                 (
                     ( canvas, size ) =>
                     {
-                        using SKPaint paint = new SKPaint
+                        using SKPaint paint = new SKPaint ();
+                        paint.Color = new SKColor (shape.Red, shape.Green, shape.Blue, 255);
+
+                        if ( shape.Kind == ShapeKind.rectangle )
                         {
-                            Color = SKColors.Red,
-                            StrokeWidth = 10,
-                            IsStroke = true
-                        };
+                            canvas.DrawRect (( float ) shape.LeftOffset, ( float ) shape.TopOffset
+                                            , ( float ) shape.Width, ( float ) shape.Height, paint);
+                        }
+                        else if ( shape.Kind == ShapeKind.ellipse ) 
+                        {
+                            float centerVerticalCoordinate = ( float ) ( shape.TopOffset + shape.Height / 2 );
+                            float centerHorizontalCoordinate = ( float ) ( shape.LeftOffset + shape.Width / 2 );
 
-                        // move origin to the center of the available space
-                        canvas.Translate (size.Width / 2, size.Height / 2);
-
-                        // draw a circle
-                        canvas.DrawCircle (50, 50, 50, paint);
+                            canvas.DrawOval (centerHorizontalCoordinate, centerVerticalCoordinate
+                                             , ( float ) shape.Width / 2, ( float ) shape.Height / 2, paint);
+                        }
                     }
                 );
-
-
         }
     }
 
 
-    private void DrawGeometryElement ( SKCanvas canvas, QuestPDF.Infrastructure.Size size ) 
+    private Pdf.Image ? GetImageByPath ( string uri )
     {
-        SKPaint paint = new SKPaint ();
-        paint.Color = new SKColor (877);
-        SKRect rect = new SKRect ();
-        rect.Size = new SKSize (size.Width, size.Height);
-        canvas.DrawRect (rect, paint);
-    }
+        string imagePath = string.Empty;
 
+        if ( uri.Length <= 8 ) 
+        {
+            return null;
+        }
 
+        imagePath = uri.Remove (0, 8);
 
+        if ( App.OsName == "Linux" )
+        {
+            imagePath = "/" + imagePath;
+        }
 
+        if ( ! pathToInsideImage.ContainsKey (imagePath) )
+        {
+            if ( File.Exists (imagePath) )
+            {
+                pathToInsideImage.Add (imagePath, Pdf.Image.FromFile (imagePath));
+            }
+            else 
+            {
+                return null;
+            }
+        }
 
-    //private string GetImagePath ( string relativePath )
-    //{
-    //    var containingDirectory = AppDomain.CurrentDomain. BaseDirectory;
-
-    //    for ( int ancestorDirectoryCounter = 0;   ancestorDirectoryCounter < 5;   ancestorDirectoryCounter++ )
-    //    {
-    //        containingDirectory = Directory.GetParent (containingDirectory).FullName;
-    //    }
-
-    //    string resultPath = containingDirectory + relativePath.Remove (0, 7);
-    //    return resultPath;
-    //}
-
-
-    private string GetImagePath ( string relativePath )
-    {
-        string resultPath = relativePath.Remove (0, 8);
-        return resultPath;
+        return pathToInsideImage [imagePath];
     }
 
 }
 
 
 
-public static class IContainerExtentions 
+public static class IContainerExtentions
 {
     public static void SkiaSharpCanvas ( this IContainer container, Action<SKCanvas, Pdf.Size> drawOnCanvas )
     {

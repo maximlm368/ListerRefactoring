@@ -23,6 +23,8 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
+using System.Drawing;
+using System.Drawing.Text;
 
 namespace Lister;
 
@@ -275,6 +277,22 @@ public partial class App : Avalonia.Application
         }
 
         return userFontStorageFile;
+    }
+
+
+    private bool FontIsInstalled ( string fontName ) 
+    {
+        var installedFonts = new InstalledFontCollection ();
+
+        foreach ( var font   in   installedFonts.Families )
+        {
+            if ( font.Name == fontName ) 
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

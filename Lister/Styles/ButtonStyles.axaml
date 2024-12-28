@@ -10,41 +10,90 @@
 
 	<Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontSize" Value="16"/>
-	</Style>
-	<Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="32"/>
 	</Style>
 
-	
-	<Style Selector="Button.transparent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Foreground" Value="LightSlateGray"/>
-	</Style>
-	<Style Selector="Button.transparent:focus /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Foreground" Value="LightSlateGray"/>
-	</Style>
-	<Style Selector="Button.transparent /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="LightGray"/>
-	</Style>
+
+
+
 	<Style Selector="Button.transparent /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.transparent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.transparent:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.transparent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.transparent:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
 	</Style>
 
 	
-	<Style Selector="Button.littlePicture:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Foreground" Value="LightSlateGray"/>
-	</Style>
-	<Style Selector="Button.littlePicture:focus /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Foreground" Value="LightSlateGray"/>
-	</Style>
-	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="LightGray"/>
-	</Style>
 	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
-	</Style>
-	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
 		<Setter Property="FontSize" Value="20"/>
 	</Style>
+	<Style Selector="Button.littlePicture:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.littlePicture:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.littlePicture:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+		<Setter Property="Padding" Value="10,6"/>
+	</Style>
+	<Style Selector="Button.littlePicture:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+
+	
+
+
+	<Style Selector="Button.Primary /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#1C547D"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+	<Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="Background" Value="#1C547D"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+	</Style>
+	<Style Selector="Button.Primary:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="Background" Value="#2570A7"/>
+	</Style>
+	<Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="Background" Value="#94BEE6"/>
+	</Style>
+	<Style Selector="Button.Primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+		<Setter Property="Background" Value="#FCF2E3"/>
+	</Style>
+
+	
+	
+
 
 	
 	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">
@@ -63,20 +112,38 @@
 	</Style>
 
 	
+	
+	
+	
 	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="LightBlue"/>
-	</Style>
-	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="BorderThickness" Value="1"/>
-	</Style>
-	<Style Selector="Button.mainButton /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="BorderBrush" Value="BlueViolet"/>
+		<Setter Property="Background" Value="#4AACFE"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
 	</Style>
 	<Style Selector="Button.mainButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="Background" Value="LightSeaGreen"/>
+		<Setter Property="Background" Value="#4AACFE"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="BorderBrush" Value="#2570A7"/>
 	</Style>
-
-
+	<Style Selector="Button.mainButton:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#94BEE6"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="BorderThickness" Value="0"/>
+	</Style>
+	<Style Selector="Button.mainButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#D5E8F6"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="BorderThickness" Value="0"/>
+	</Style>
+	<Style Selector="Button.mainButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#FCF2E3"/>
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+		<Setter Property="BorderThickness" Value="0"/>
+	</Style>
+	
+	
+	
 	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Width" Value="80"/>
 	</Style>
@@ -97,3 +164,30 @@
 	</Style>
 	
 </Styles>
+
+
+<!--
+
+
+<Setter Property="Background" Value="#EEEEEE"/>
+
+
+
+
+	<Style Selector="Button.littlePicture:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="LightSlateGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="LightGray"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+	</Style>
+	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="20"/>
+	</Style>
+
+-->

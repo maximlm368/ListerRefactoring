@@ -102,25 +102,14 @@
 					BorderThickness="5"
 					Grid.Row="2">
 
-					<ItemsControl
+					<SelectableTextBlock
 						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
 						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
-						HorizontalAlignment="Left"
-						ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+						LineHeight="16"
+						FontSize="12"
+						Tapped="TappedForWholeSelection"
+						Text ="{Binding  Path = Message,  Mode=OneWay}"/>
 
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-
-								<TextBlock
-									Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
-									Height="16"
-									FontSize="12"
-									Text ="{Binding,  Mode=OneWay}"
-									MaxLines="1000"/>
-
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
 				</ScrollViewer>
 				
 			</Grid>
@@ -158,6 +147,30 @@
 </Window>
 
 <!--
+
+					<ItemsControl
+						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
+						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
+						HorizontalAlignment="Left"
+						ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+
+								<SelectableTextBlock
+									Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
+									Height="16"
+									FontSize="12"
+									Text ="{Binding,  Mode=OneWay}"/>
+
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+
+
+
+
 
 				Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
 				HorizontalAlignment="Left"

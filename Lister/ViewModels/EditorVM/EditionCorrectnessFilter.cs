@@ -53,63 +53,63 @@ namespace Lister.ViewModels
 
         private ScrollWideness _scrollWideness = ScrollWideness.Wide;
 
-        private bool dO;
+        private bool _isDropOpen;
         internal bool IsDropDownOpen
         {
-            get { return dO; }
+            get { return _isDropOpen; }
             set
             {
-                this.RaiseAndSetIfChanged (ref dO, value, nameof (IsDropDownOpen));
+                this.RaiseAndSetIfChanged (ref _isDropOpen, value, nameof (IsDropDownOpen));
             }
         }
 
-        private bool cE;
+        private bool _isComboboxEnabled;
         internal bool IsComboboxEnabled
         {
-            get { return cE; }
+            get { return _isComboboxEnabled; }
             set
             {
-                this.RaiseAndSetIfChanged (ref cE, value, nameof (IsComboboxEnabled));
+                this.RaiseAndSetIfChanged (ref _isComboboxEnabled, value, nameof (IsComboboxEnabled));
             }
         }
 
-        private double swW;
+        private double _switcherWidt;
         internal double SwitcherWidth
         {
-            get { return swW; }
+            get { return _switcherWidt; }
             set
             {
-                this.RaiseAndSetIfChanged (ref swW, value, nameof (SwitcherWidth));
+                this.RaiseAndSetIfChanged (ref _switcherWidt, value, nameof (SwitcherWidth));
             }
         }
 
-        private double fLW;
+        private double _filterLableWidth;
         internal double FilterLabelWidth
         {
-            get { return fLW; }
+            get { return _filterLableWidth; }
             set
             {
-                this.RaiseAndSetIfChanged (ref fLW, value, nameof (FilterLabelWidth));
+                this.RaiseAndSetIfChanged (ref _filterLableWidth, value, nameof (FilterLabelWidth));
             }
         }
 
-        private int cSI;
+        private int _comboboxSelectedIndex;
         internal int ComboboxSelectedIndex
         {
-            get { return cSI; }
+            get { return _comboboxSelectedIndex; }
             set
             {
-                this.RaiseAndSetIfChanged (ref cSI, value, nameof (ComboboxSelectedIndex));
+                this.RaiseAndSetIfChanged (ref _comboboxSelectedIndex, value, nameof (ComboboxSelectedIndex));
             }
         }
 
-        private string sT;
+        private string _switcherTip;
         internal string SwitcherTip
         {
-            get { return sT; }
+            get { return _switcherTip; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref sT, value, nameof (SwitcherTip));
+                this.RaiseAndSetIfChanged (ref _switcherTip, value, nameof (SwitcherTip));
             }
         }
 

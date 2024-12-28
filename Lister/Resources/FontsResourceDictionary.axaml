@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Add Resources Here -->
+
+
+	<ResourceDictionary x:Key="FA">
+		<FontFamily x:Key="FA">/Assets/Font Awesome 6 Free-Solid-900.otf#Font Awesome 6 Free Solid</FontFamily>
+	</ResourceDictionary>
+	
+	
+</ResourceDictionary>

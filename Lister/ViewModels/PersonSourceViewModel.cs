@@ -284,6 +284,12 @@ namespace Lister.ViewModels
         }
 
 
+        internal void EmptySourcePath ()
+        {
+            SourceFilePath = string.Empty;
+        }
+
+
         private enum XlsxFileState 
         {
             NotXlsxFile = 0,

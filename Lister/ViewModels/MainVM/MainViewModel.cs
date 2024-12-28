@@ -159,6 +159,10 @@ namespace Lister.ViewModels
                     messegeDialog.Focus ();
                 }
             }
+            else if ( args.PropertyName == "FileNotFound" )
+            {
+                _personSourceViewModel.EmptySourcePath ();
+            }
         }
 
 
@@ -477,7 +481,8 @@ namespace Lister.ViewModels
             else if ( PdfGenerationShouldStart )
             {
                 PdfGenerationShouldStart = false;
-                _pdfPrinter.GeneratePdfDuringWaiting (PdfFileName, _sceneViewModel.GetPrintablePages());
+                List <PageViewModel> printables = _sceneViewModel.GetPrintablePages ();
+                _pdfPrinter.GeneratePdfDuringWaiting (PdfFileName, printables);
                 return;
             }
             else if ( PrintingShouldStart )

@@ -26,7 +26,7 @@ namespace Lister.Views
         private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
 
         private MainView _parent;
-        private readonly int _inputLimit = 100;
+        private readonly int _inputLimit = 40;
         private string _previousText;
         private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
@@ -198,6 +198,29 @@ namespace Lister.Views
                 return;
             }
 
+            TextBox textBox = ( TextBox ) sender;
+            string input = textBox.Text;
+
+            if ( input == null ) 
+            {
+                return;
+            }
+
+            _personListIsDropped = true;
+            _viewModel.ReductPersonList ( input );
+        }
+
+
+        internal void HandlePersonListReductio ( object sender, KeyEventArgs args )
+        {
+            string key = args.Key.ToString ();
+            bool keyIsUnimpacting = IsKeyUnimpacting (key);
+
+            if ( keyIsUnimpacting )
+            {
+                return;
+            }
+
             _viewModel.ToZeroPersonSelection ();
             TextBox textBox = ( TextBox ) sender;
             string input = textBox.Text;
@@ -213,12 +236,12 @@ namespace Lister.Views
                     return;
                 }
 
-                List <VisiblePerson> foundVisiblePeople = new List <VisiblePerson> ();
+                List<VisiblePerson> foundVisiblePeople = new List<VisiblePerson> ();
 
-                foreach ( VisiblePerson person   in   _viewModel.PeopleStorage )
+                foreach ( VisiblePerson person in _viewModel.PeopleStorage )
                 {
                     person.BorderBrushColor = _unfocusedColor;
-                    string entireName = person.Person. StringPresentation;
+                    string entireName = person.Person.StringPresentation;
 
                     if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
                     {
@@ -239,7 +262,7 @@ namespace Lister.Views
                 personTextBox.Text = _previousText;
                 input = _previousText;
             }
-            else 
+            else
             {
                 _previousText = input;
             }

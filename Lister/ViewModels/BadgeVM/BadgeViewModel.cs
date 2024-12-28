@@ -22,6 +22,9 @@ using QuestPDF.Fluent;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using System.Drawing;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Reflection;
 
 namespace Lister.ViewModels;
 
@@ -98,8 +101,8 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    private Thickness _margin;
-    internal Thickness Margin
+    private Avalonia.Thickness _margin;
+    internal Avalonia.Thickness Margin
     {
         get { return _margin; }
         set
@@ -112,11 +115,20 @@ public class BadgeViewModel : ViewModelBase
     internal TextLineViewModel FocusedLine 
     {
         get { return _focusedLine; }
-        set 
+        private set 
         {
-            _focusedLine = value;
+            if ( ( value == null ) && ( _focusedLine != null ) )
+            {
+                _focusedLine.BecomeUnFocused ();
+                _focusedLine = value;
+            }
+            else if ( value != null ) 
+            {
+                _focusedLine = value;
+                _focusedLine.BecomeFocused ();
+            }
 
-            if ( (_focusedLine == null)   ||   (_focusedLine.Content == null) )
+            if ( (_focusedLine == null)   ||   (string.IsNullOrWhiteSpace(_focusedLine.Content)) )
             {
                 FocusedText = string.Empty;
             }
@@ -149,6 +161,24 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
+    private ImageViewModel _focusedImage;
+    internal ImageViewModel FocusedImage 
+    {
+        get { return _focusedImage; }
+        private set 
+        {
+            if ( ( _focusedImage != null ) && ( value == null ) )
+            {
+                _focusedImage.BecomeUnFocused ();
+                _focusedImage = null;
+            }
+            else if ( value != null )
+            {
+                _focusedImage = value;
+                _focusedImage.BecomeFocused ();
+            }
+        }
+    }
     private ObservableCollection <ImageViewModel> _insideImages;
     internal ObservableCollection <ImageViewModel> InsideImages
     {
@@ -159,8 +189,26 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    private ObservableCollection <RectangleViewModel> _insideRectangles;
-    internal ObservableCollection <RectangleViewModel> InsideRectangles
+    private ShapeViewModel _focusedRect;
+    internal ShapeViewModel FocusedRect 
+    {
+        get { return _focusedRect; }
+        private set
+        {
+            if ( ( _focusedRect != null ) && ( value == null ) )
+            {
+                _focusedRect.BecomeUnFocused ();
+                _focusedRect = null;
+            }
+            else if ( value != null )
+            {
+                _focusedRect = value;
+                _focusedRect.BecomeFocused ();
+            }
+        }
+    }
+    private ObservableCollection <ShapeViewModel> _insideRectangles;
+    internal ObservableCollection <ShapeViewModel> InsideRectangles
     {
         get { return _insideRectangles; }
         private set
@@ -169,8 +217,26 @@ public class BadgeViewModel : ViewModelBase
         }
     }
 
-    private ObservableCollection <EllipseViewModel> _insideEllipses;
-    internal ObservableCollection <EllipseViewModel> InsideEllipses
+    private ShapeViewModel _focusedEllipse;
+    internal ShapeViewModel FocusedEllipse 
+    {
+        get { return _focusedEllipse; }
+        private set
+        {
+            if ( (_focusedEllipse != null)   &&   (value == null) ) 
+            {
+                _focusedEllipse.BecomeUnFocused ();
+                _focusedEllipse = null;
+            }
+            else if ( value != null )
+            {
+                _focusedEllipse = value;
+                _focusedEllipse.BecomeFocused ();
+            }
+        }
+    }
+    private ObservableCollection <ShapeViewModel> _insideEllipses;
+    internal ObservableCollection <ShapeViewModel> InsideEllipses
     {
         get { return _insideEllipses; }
         private set
@@ -241,8 +307,8 @@ public class BadgeViewModel : ViewModelBase
         BorderViolentLines = new List <TextLineViewModel> ( );
         OverlayViolentLines = new List <TextLineViewModel> ();
         InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideRectangles = new ObservableCollection <RectangleViewModel> ();
-        InsideEllipses = new ObservableCollection <EllipseViewModel> ();
+        InsideRectangles = new ObservableCollection <ShapeViewModel> ();
+        InsideEllipses = new ObservableCollection <ShapeViewModel> ();
         IsCorrect = true;
         IsChanged = false;
         _borderThickness = 1;
@@ -275,7 +341,7 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal BadgeViewModel ( BadgeViewModel badge )
+    private BadgeViewModel ( BadgeViewModel badge )
     {
         Id = badge.Id;
 
@@ -295,8 +361,8 @@ public class BadgeViewModel : ViewModelBase
         BorderViolentLines = new List <TextLineViewModel> ();
         OverlayViolentLines = new List <TextLineViewModel> ();
         InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideRectangles = new ObservableCollection <RectangleViewModel> ();
-        InsideEllipses = new ObservableCollection <EllipseViewModel> ();
+        InsideRectangles = new ObservableCollection <ShapeViewModel> ();
+        InsideEllipses = new ObservableCollection <ShapeViewModel> ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         Scale = badge.Scale;
@@ -323,32 +389,31 @@ public class BadgeViewModel : ViewModelBase
             }
         }
 
+        foreach ( ImageViewModel prototype   in   badge.InsideImages )
+        {
+            ImageViewModel image = prototype.Clone ();
+            InsideImages.Add (image);
+        }
+
+        foreach ( ShapeViewModel prototype   in   badge.InsideRectangles )
+        {
+            ShapeViewModel rect = prototype.Clone ();
+            InsideRectangles.Add (rect);
+        }
+
+        foreach ( ShapeViewModel prototype   in   badge.InsideEllipses )
+        {
+            ShapeViewModel ellipse = prototype.Clone ();
+            InsideEllipses.Add (ellipse);
+        }
+
         Scale = badge.Scale;
-
-        //foreach ( TextLineViewModel line in badge.TextLines )
-        //{
-        //    TextLineViewModel original = line.GetDimensionalOriginal ();
-        //    TextLines.Add (line);
-        //}
-
-
-        //foreach ( ImageViewModel image in badge.InsideImages )
-        //{
-        //    TextLineViewModel original = image.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
-
-        //foreach ( ImageViewModel shape in badge.InsideShapes )
-        //{
-        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
     }
 
 
     internal BadgeViewModel GetDimensionalOriginal () 
     {
-        BadgeViewModel original = new BadgeViewModel (this);
+        BadgeViewModel original = this.Clone();
 
         if ( original.Scale > 1 )
         {
@@ -365,7 +430,14 @@ public class BadgeViewModel : ViewModelBase
 
     internal BadgeViewModel Clone ()
     {
-        BadgeViewModel clone = new BadgeViewModel (this);
+        BadgeViewModel clone = null;
+
+        Dispatcher.UIThread.Invoke 
+        (() => 
+        {
+            clone = new BadgeViewModel (this);
+        });
+
         return clone;
     }
 
@@ -377,9 +449,9 @@ public class BadgeViewModel : ViewModelBase
             FocusedLine = null;
         }
 
-        InsideImages = new ObservableCollection <ImageViewModel> ();
-        InsideRectangles = new ObservableCollection<RectangleViewModel> ();
-        InsideEllipses = new ObservableCollection<EllipseViewModel> ();
+        InsideImages = new ();
+        InsideRectangles = new ();
+        InsideEllipses = new ();
         IsCorrect = badge.IsCorrect;
         IsChanged = badge.IsChanged;
         _borderThickness = 1;
@@ -387,7 +459,7 @@ public class BadgeViewModel : ViewModelBase
         FocusedFontSize = string.Empty;
         _badLineColor = badge._badLineColor;
 
-        TextLines = new ObservableCollection <TextLineViewModel> ();
+        TextLines = new ();
         BorderViolentLines = new List <TextLineViewModel> ();
         OverlayViolentLines = new List <TextLineViewModel> ();
 
@@ -413,17 +485,29 @@ public class BadgeViewModel : ViewModelBase
             }
         }
 
-        //foreach ( ImageViewModel image in badge.InsideImages )
-        //{
-        //    TextLineViewModel original = image.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
+        foreach ( ImageViewModel image   in   badge.InsideImages )
+        {
+            ImageViewModel clone = image.Clone ();
+            clone.ZoomOut (badge.Scale);
+            clone.ZoomOn (Scale);
+            InsideImages.Add (clone);
+        }
 
-        //foreach ( ImageViewModel shape in badge.InsideShapes )
-        //{
-        //    TextLineViewModel original = shape.GetDimensionalOriginal ();
-        //    TextLines.Add (original);
-        //}
+        foreach ( ShapeViewModel rect   in   badge.InsideRectangles )
+        {
+            ShapeViewModel clone = rect.Clone ();
+            clone.ZoomOut (badge.Scale);
+            clone.ZoomOn (Scale);
+            InsideRectangles.Add (clone);
+        }
+
+        foreach ( ShapeViewModel ellipse   in   badge.InsideEllipses )
+        {
+            ShapeViewModel clone = ellipse.Clone ();
+            clone.ZoomOut (badge.Scale);
+            clone.ZoomOn (Scale);
+            InsideEllipses.Add (clone);
+        }
     }
 
 
@@ -458,6 +542,82 @@ public class BadgeViewModel : ViewModelBase
         {
             int visibleFontSize = ( int ) Math.Round (FocusedLine. FontSize / Scale);
             FocusedFontSize = visibleFontSize.ToString ();
+        }
+    }
+
+
+    internal void SetFocusedImage ( int id )
+    {
+        foreach ( ImageViewModel image   in   InsideImages )
+        {
+            if ( id == image.Id )
+            {
+                FocusedImage = image;
+                break;
+            }
+        }
+    }
+
+
+    internal void SetFocusedRectangle ( int rectId )
+    {
+        foreach ( ShapeViewModel rect   in   InsideRectangles )
+        {
+            if ( rectId == rect.Id )
+            {
+                FocusedRect = rect;
+                break;
+            }
+        }
+    }
+
+
+    internal void SetFocusedEllipse ( int ellipseId )
+    {
+        foreach ( ShapeViewModel ellipse   in   InsideEllipses )
+        {
+            if ( ellipseId == ellipse.Id )
+            {
+                FocusedEllipse = ellipse;
+                break;
+            }
+        }
+    }
+
+
+    internal void SetFocusedMember <T> ( int id, ICollection <T> members ) where T : BoundToTextLine
+    {
+        foreach ( BoundToTextLine member   in   members )
+        {
+            if ( id == member.Id )
+            {
+                ShapeViewModel shape = member as ShapeViewModel;
+
+                if ( shape != null )
+                {
+                    if ( shape.Kind == ShapeKind.rectangle )
+                    {
+                        FocusedEllipse = shape;
+                        FocusedEllipse.BecomeFocused ();
+                        break;
+                    }
+                    else if ( shape.Kind == ShapeKind.ellipse )
+                    {
+                        FocusedRect = shape;
+                        FocusedRect.BecomeFocused ();
+                        break;
+                    }
+                }
+
+                ImageViewModel image = member as ImageViewModel;
+
+                if ( image != null ) 
+                {
+                    
+                }
+
+
+            }
         }
     }
 
@@ -516,12 +676,12 @@ public class BadgeViewModel : ViewModelBase
             image.ZoomOn (coefficient);
         }
 
-        foreach ( RectangleViewModel rect   in   InsideRectangles )
+        foreach ( ShapeViewModel rect   in   InsideRectangles )
         {
             rect.ZoomOn (coefficient);
         }
 
-        foreach ( EllipseViewModel ellipse   in   InsideEllipses )
+        foreach ( ShapeViewModel ellipse   in   InsideEllipses )
         {
             ellipse.ZoomOn (coefficient);
         }
@@ -548,17 +708,17 @@ public class BadgeViewModel : ViewModelBase
             line.ZoomOut (coefficient);
         }
 
-        foreach ( ImageViewModel image in InsideImages )
+        foreach ( ImageViewModel image   in   InsideImages )
         {
             image.ZoomOut (coefficient);
         }
 
-        foreach ( RectangleViewModel rect in InsideRectangles )
+        foreach ( ShapeViewModel rect   in   InsideRectangles )
         {
             rect.ZoomOut (coefficient);
         }
 
-        foreach ( EllipseViewModel ellipse in InsideEllipses )
+        foreach ( ShapeViewModel ellipse   in   InsideEllipses )
         {
             ellipse.ZoomOut (coefficient);
         }
@@ -776,131 +936,121 @@ public class BadgeViewModel : ViewModelBase
         for ( int index = 0;   index < insideImages.Count;   index++ )
         {
             InsideImage image = insideImages [index];
-            ImageViewModel imageViewModel = new ImageViewModel (image);
+            ImageViewModel imageViewModel = new ImageViewModel (index, image);
 
             InsideImages.Add (imageViewModel);
 
-            ShiftUnderliningsIfShould ( imageViewModel );
+            ShiftDownBelowMembersIfShould ( imageViewModel );
         }
     }
 
 
     private void SetUpShapes ( List <InsideShape> insideShapes )
     {
+        int rectId = 0;
+        int ellipseId = 0;
+
         for ( int index = 0;   index < insideShapes.Count;   index++ )
         {
             InsideShape shape = insideShapes [index];
 
             if ( shape.Kind == ShapeKind.rectangle )
             {
-                RectangleViewModel rectangle = new RectangleViewModel (shape);
+                ShapeViewModel rectangle = new ShapeViewModel (rectId, shape);
+                rectId++;
                 InsideRectangles.Add (rectangle);
-                ShiftUnderliningsIfShould( rectangle );
+                ShiftDownBelowMembersIfShould( rectangle );
             }
             else if ( shape.Kind == ShapeKind.ellipse ) 
             {
-                EllipseViewModel ellipse = new EllipseViewModel (shape);
+                ShapeViewModel ellipse = new ShapeViewModel (ellipseId, shape);
+                ellipseId++;
                 InsideEllipses.Add (ellipse);
-                ShiftUnderliningsIfShould( ellipse );
+                ShiftDownBelowMembersIfShould( ellipse );
             }
         }
     }
 
 
-    private void ShiftUnderliningsIfShould ( BoundToMember member )
+    private void ShiftDownBelowMembersIfShould ( BoundToTextLine member )
     {
         if ( ! string.IsNullOrWhiteSpace(member.Binding) ) 
         {
+            double startMemberTopOffset = member.TopOffset;
             int scratch = 0;
+            int boundPartsCount = 0;
+            bool boundIsFound = false;
+            double delta = 0;
+            int index = 0;
 
-            for ( int index = 0;   index < TextLines.Count;   index++ )
+            for ( ;  index < TextLines.Count;   index++ )
             {
                 TextLineViewModel line = TextLines [index];
 
                 if ( member.Binding == line.DataSource.Name )
                 {
-                    scratch = index + 1;
-                    member.TopOffset += ( line.TopOffset + line.FontSize );
-                    
+                    if ( ! boundIsFound ) 
+                    {
+                        delta += line.TopOffset;
+                    }
+
+                    boundIsFound = true;
+                    boundPartsCount++;
+
+                    if ( member.IsAboveOfBinding )
+                    {
+                        delta -= member.TopOffset;
+                        delta -= member.HeightWithBorder;
+                        //index--;
+                    }
+                    else 
+                    {
+                        delta += line.FontSize;
+                        delta += _interLineAddition;
+                    }
+                }
+                else if ( boundIsFound ) 
+                {
                     break;
                 }
             }
 
-            for ( int index = scratch;   index < TextLines.Count;   index++ )
+            if ( boundIsFound ) 
             {
-                TextLineViewModel line = TextLines [index];
-                line.TopOffset += member.Height;
+                scratch = index;
+                delta -= _interLineAddition;
+                member.TopOffset += delta;
+                ShiftBelowMembers ( member, index, startMemberTopOffset );
             }
         }
     }
 
 
-    internal void CheckFocusedLineCorrectness ( )
+    private void ShiftBelowMembers ( BoundToTextLine member, int startIndex, double memberRelativeTopOffset ) 
     {
-        if ( FocusedLine == null ) 
+        for ( int ind = startIndex;   ind < TextLines.Count;   ind++ )
         {
-            return;
+            TextLineViewModel line = TextLines [ind];
+            line.TopOffset += ( member.Height + memberRelativeTopOffset );
         }
 
-        CheckLineCorrectness (FocusedLine);
-
-        bool borderViolentsExist = (BorderViolentLines. Count > 0);
-        bool overlayingExist = (OverlayViolentLines. Count > 0);
-
-        if ( OverlayViolentLines.Count > 0 ) 
-        {
-            TextLineViewModel line = OverlayViolentLines [0];
-        }
-
-        IsCorrect = ! (borderViolentsExist   ||   overlayingExist);
+        ShiftBelowBounds (InsideImages, member, startIndex, memberRelativeTopOffset);
+        ShiftBelowBounds (InsideRectangles, member, startIndex, memberRelativeTopOffset);
+        ShiftBelowBounds (InsideEllipses, member, startIndex, memberRelativeTopOffset);
     }
 
 
-    private void CheckLineCorrectness ( TextLineViewModel checkable )
+    private void ShiftBelowBounds <T> ( ObservableCollection <T> bounds, BoundToTextLine member, int startIndex
+                                                                   , double memberRelativeTopOffset ) where T : BoundToTextLine
     {
-        bool isBorderViolent = CheckInsideSpansViolation (checkable);
+        for ( int index = 0;   index < bounds.Count;   index++ )
+        {
+            BoundToTextLine bound = bounds [index];
 
-        if ( ! isBorderViolent )
-        {
-            if ( checkable.isBorderViolent )
+            if ((! string.IsNullOrWhiteSpace (bound.Binding))   &&   (bound.TopOffset > member.TopOffset))
             {
-                BorderViolentLines.Remove (checkable);
-                checkable.isBorderViolent = false;
+                bound.TopOffset += ( member.Height + memberRelativeTopOffset );
             }
-        }
-        else
-        {
-            if ( ! checkable.isBorderViolent )
-            {
-                BorderViolentLines.Add (checkable);
-                checkable.isBorderViolent = true;
-                SetBadColor ( checkable );
-            }
-        }
-
-        bool isOverlayViolent = CheckSingleOverlayViolation (0, checkable);
-
-        if ( ! isOverlayViolent )
-        {
-            if ( checkable.isOverLayViolent )
-            {
-                OverlayViolentLines.Remove (checkable);
-                checkable.isOverLayViolent = false;
-            }
-        }
-        else
-        {
-            if ( ! checkable.isOverLayViolent )
-            {
-                OverlayViolentLines.Add (checkable);
-                checkable.isOverLayViolent = true;
-                SetBadColor ( checkable );
-            }
-        }
-
-        if ( ! checkable.isBorderViolent   &&   ! checkable.isOverLayViolent )
-        {
-            DeleteBadColor (checkable);
         }
     }
 
@@ -924,35 +1074,76 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    //private void GatherIncorrectLinesqq ()
-    //{
-    //    foreach ( TextLineViewModel line in TextLines )
-    //    {
-    //        bool isViolent = CheckInsideSpansViolation (line);
+    #region CheckLineCorrectness
 
-    //        if ( isViolent )
-    //        {
-    //            BorderViolentLines.Add (line);
-    //            line.isBorderViolent = true;
+    internal void CheckFocusedLineCorrectness ()
+    {
+        if ( FocusedLine == null )
+        {
+            return;
+        }
 
-    //            Task task = new Task
-    //                (
-    //                   () =>
-    //                   {
-    //                       SetBadColor (line);
-    //                   }
+        CheckLineCorrectness (FocusedLine);
 
-    //                );
+        bool borderViolentsExist = ( BorderViolentLines.Count > 0 );
+        bool overlayingExist = ( OverlayViolentLines.Count > 0 );
 
-    //            task.Start (TemplateChoosingViewModel.TaskScheduler);
-    //            task.Wait ();
+        if ( OverlayViolentLines.Count > 0 )
+        {
+            TextLineViewModel line = OverlayViolentLines [0];
+        }
 
-    //            IsCorrect = false;
-    //        }
-    //    }
+        IsCorrect = !( borderViolentsExist || overlayingExist );
+    }
 
-    //    CheckOverlayViolation ();
-    //}
+
+    private void CheckLineCorrectness ( TextLineViewModel checkable )
+    {
+        bool isBorderViolent = CheckInsideSpansViolation (checkable);
+
+        if ( !isBorderViolent )
+        {
+            if ( checkable.isBorderViolent )
+            {
+                BorderViolentLines.Remove (checkable);
+                checkable.isBorderViolent = false;
+            }
+        }
+        else
+        {
+            if ( !checkable.isBorderViolent )
+            {
+                BorderViolentLines.Add (checkable);
+                checkable.isBorderViolent = true;
+                SetBadColor (checkable);
+            }
+        }
+
+        bool isOverlayViolent = CheckSingleOverlayViolation (0, checkable);
+
+        if ( !isOverlayViolent )
+        {
+            if ( checkable.isOverLayViolent )
+            {
+                OverlayViolentLines.Remove (checkable);
+                checkable.isOverLayViolent = false;
+            }
+        }
+        else
+        {
+            if ( !checkable.isOverLayViolent )
+            {
+                OverlayViolentLines.Add (checkable);
+                checkable.isOverLayViolent = true;
+                SetBadColor (checkable);
+            }
+        }
+
+        if ( !checkable.isBorderViolent && !checkable.isOverLayViolent )
+        {
+            DeleteBadColor (checkable);
+        }
+    }
 
 
     private void SetBadColor ( TextLineViewModel setable )
@@ -1075,6 +1266,7 @@ public class BadgeViewModel : ViewModelBase
         return isViolent;
     }
 
+    #endregion
 
     #region FontSizeChange
 
@@ -1117,52 +1309,88 @@ public class BadgeViewModel : ViewModelBase
 
     internal void MoveCaptured ( Avalonia.Point delta )
     {
-        if ( FocusedLine == null )
+        if ( FocusedLine != null )
         {
-            return;
+            FocusedLine.Shift (delta);
+            PreventTextLineHiding (FocusedLine);
+            IsChanged = true;
         }
-
-        FocusedLine. TopOffset -= delta.Y;
-        FocusedLine. LeftOffset -= delta.X;
-        PreventHiding (FocusedLine);
-        IsChanged = true;
+        else if ( FocusedImage != null )
+        {
+            FocusedImage.Shift (delta);
+            PreventImageOrShapeHiding (FocusedImage);
+            IsChanged = true;
+        }
+        else if ( FocusedRect != null )
+        {
+            FocusedRect.Shift (delta);
+            PreventImageOrShapeHiding (FocusedRect);
+            IsChanged = true;
+        }
+        else if ( FocusedEllipse != null ) 
+        {
+            FocusedEllipse.Shift (delta);
+            PreventImageOrShapeHiding (FocusedEllipse);
+            IsChanged = true;
+        }
     }
 
 
-    internal void ToSide ( string direction, double shift )
+    internal void FocusedToSide ( string direction, double shift )
     {
-        if ( FocusedLine == null )
+        if ( FocusedLine != null )
         {
-            return;
+            FocusedMemberToSide (direction, Scale, FocusedLine);
+            PreventTextLineHiding (FocusedLine);
+            CheckFocusedLineCorrectness ();
+            IsChanged = true;
         }
+        else if ( FocusedImage != null )
+        {
+            FocusedMemberToSide (direction, shift, FocusedImage);
+            PreventImageOrShapeHiding (FocusedImage);
+            IsChanged = true;
+        }
+        else if ( FocusedEllipse != null )
+        {
+            FocusedMemberToSide (direction, shift, FocusedEllipse);
+            PreventImageOrShapeHiding (FocusedEllipse);
+            IsChanged = true;
+        }
+        else if ( FocusedRect != null )
+        {
+            FocusedMemberToSide (direction, shift, FocusedRect);
+            PreventImageOrShapeHiding (FocusedRect);
+            IsChanged = true;
+        }
+    }
 
+
+    private void FocusedMemberToSide ( string direction, double shift, BadgeMember shiftable )
+    {
         if ( direction == "Left" )
         {
-            FocusedLine. LeftOffset -= Scale;
+            shiftable.LeftOffset -= Scale;
         }
 
         if ( direction == "Right" )
         {
-            FocusedLine. LeftOffset += Scale;
+            shiftable.LeftOffset += Scale;
         }
 
         if ( direction == "Up" )
         {
-            FocusedLine. TopOffset -= Scale;
+            shiftable.TopOffset -= Scale;
         }
 
         if ( direction == "Down" )
         {
-            FocusedLine. TopOffset += Scale;
+            shiftable.TopOffset += Scale;
         }
-
-        IsChanged = true;
-        PreventHiding (FocusedLine);
-        CheckFocusedLineCorrectness ();
     }
 
 
-    private void PreventHiding ( TextLineViewModel preventable )
+    private void PreventTextLineHiding ( TextLineViewModel preventable )
     {
         bool isHidedBeyondRight = ( preventable.LeftOffset > (BadgeWidth - RightSpan) );
 
@@ -1194,56 +1422,36 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    //internal void Left ( double shift )
-    //{
-    //    if ( FocusedLine == null )
-    //    {
-    //        return;
-    //    }
+    private void PreventImageOrShapeHiding ( BoundToTextLine preventable ) 
+    {
+        bool isPreventableBeyondRight = ( preventable.LeftOffset > (BadgeWidth - preventable.WidthWithBorder/2) );
 
-    //    FocusedLine. LeftOffset -= shift;
-    //    IsChanged = true;
-    //    CheckFocusedLineCorrectness ();
-    //}
+        if ( isPreventableBeyondRight )
+        {
+            preventable.LeftOffset = BadgeWidth - preventable.Width/2;
+        }
 
+        bool isPreventableBeyondLeft = (preventable.LeftOffset < ((preventable.Width/2) * ( -1 )));
 
-    //internal void Right ( double shift )
-    //{
-    //    if ( FocusedLine == null )
-    //    {
-    //        return;
-    //    }
+        if ( isPreventableBeyondLeft )
+        {
+            preventable.LeftOffset = ( preventable.Width/2) * ( -1 );
+        }
 
-    //    FocusedLine. LeftOffset += shift;
-    //    IsChanged = true;
-    //    CheckFocusedLineCorrectness ();
-    //}
+        bool isPreventableBeyondBottom = ( preventable.TopOffset > (BadgeHeight - preventable.HeightWithBorder) );
 
+        if ( isPreventableBeyondBottom )
+        {
+            preventable.TopOffset = BadgeHeight - preventable.HeightWithBorder;
+        }
 
-    //internal void Up ( double shift )
-    //{
-    //    if ( FocusedLine == null )
-    //    {
-    //        return;
-    //    }
+        bool isPreventableBeyondTop = ( preventable.TopOffset < 0 );
 
-    //    FocusedLine. TopOffset -= shift;
-    //    IsChanged = true;
-    //    CheckFocusedLineCorrectness ();
-    //}
-
-
-    //internal void Down ( double shift )
-    //{
-    //    if ( FocusedLine == null )
-    //    {
-    //        return;
-    //    }
-
-    //    FocusedLine. TopOffset += shift;
-    //    IsChanged = true;
-    //    CheckFocusedLineCorrectness ();
-    //}
+        if ( isPreventableBeyondTop )
+        {
+            preventable.TopOffset = 0;
+        }
+    }
 
     #endregion
 
@@ -1261,7 +1469,30 @@ public class BadgeViewModel : ViewModelBase
         }
 
         FocusedLine. Content = newText;
-        PreventHiding (FocusedLine);
+        PreventTextLineHiding (FocusedLine);
         CheckFocusedLineCorrectness ();
+    }
+
+
+    internal void ReleaseFocused ( )
+    {
+        if ( FocusedLine != null )
+        {
+            CheckFocusedLineCorrectness ();
+            FocusedFontSize = string.Empty;
+            FocusedLine = null;
+        }
+        else if ( FocusedEllipse != null ) 
+        {
+            FocusedEllipse = null;
+        }
+        else if ( FocusedRect != null )
+        {   
+            FocusedRect = null;
+        }
+        else if ( FocusedImage != null )
+        {
+            FocusedImage = null;
+        }
     }
 }

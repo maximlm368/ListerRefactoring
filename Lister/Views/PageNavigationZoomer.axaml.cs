@@ -21,11 +21,22 @@ public partial class PageNavigationZoomer : UserControl
         _viewModel = ( PageNavigationZoomerViewModel ) DataContext;
 
         firstPage.FocusAdorner = null;
+        //firstPage.Background = null;
+        
         previousPage.FocusAdorner = null;
+        //previousPage.Background = null;
+        
         nextPage.FocusAdorner = null;
+        //nextPage.Background = null;
+        
         lastPage.FocusAdorner = null;
+        //lastPage.Background = null;
+        
         zoomOn.FocusAdorner = null;
+        //zoomOn.Background = null;
+
         zoomOut.FocusAdorner = null;
+        //zoomOut.Background = null;
 
         visiblePageNumber.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
     }

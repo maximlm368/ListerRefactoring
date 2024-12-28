@@ -393,12 +393,26 @@ namespace DataGateway
                 (byte) GetSectionIntValueOrDefault (new List<string> { atomName, "Foreground", "Blue" }, jsonPath);
             foreground.Add (foregroundBlue);
 
+            List<byte> outlineRGB = new List<byte> ();
+
+            //byte outlineRed =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
+            //outlineRGB.Add (outlineRed);
+
+            //byte outlineGreen =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Green" }, jsonPath);
+            //outlineRGB.Add (outlineGreen);
+
+            //byte outlineBlue =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Blue" }, jsonPath);
+            //outlineRGB.Add (outlineBlue);
+
             string fontWeight = GetSectionStrValueOrDefault (new List<string> { atomName, "FontWeight" }, jsonPath) ?? "";
             bool isShiftable = GetSectionBoolValueOrDefault (new List<string> { atomName, "IsSplitable" }, jsonPath);
 
             TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
                                                , alignment, fontSize, fontFile, fontName, foreground
-                                             , fontWeight, null, isShiftable, numberToLocate);
+                                             , fontWeight, null, isShiftable, numberToLocate, outlineRGB);
 
             return atom;
         }
@@ -434,9 +448,11 @@ namespace DataGateway
             childSection = section.GetSection ("FontName");
             string fontName = GetSectionStrValueOrDefault (childSection, jsonPath, "FontName");
 
+
+
             childSection = section.GetSection ("Foreground");
             childSection = childSection.GetSection ("Red");
-            byte red = (byte) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
+            byte red = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
 
             childSection = section.GetSection ("Foreground");
             childSection = childSection.GetSection ("Green");
@@ -447,6 +463,23 @@ namespace DataGateway
             byte blue = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Blue");
 
             List<byte> foreground = new List<byte> () { red, green, blue };
+
+
+
+            List<byte> outlineRGB = new List<byte> ();
+
+            //byte outlineRed =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
+            //outlineRGB.Add (outlineRed);
+
+            //byte outlineGreen =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Green" }, jsonPath);
+            //outlineRGB.Add (outlineGreen);
+
+            //byte outlineBlue =
+            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Blue" }, jsonPath);
+            //outlineRGB.Add (outlineBlue);
+
 
             childSection = section.GetSection ("FontWeight");
             string fontWeight = GetSectionStrValueOrDefault (childSection, jsonPath, "FontWeight");
@@ -464,9 +497,28 @@ namespace DataGateway
 
 
             TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset , alignment, fontSize
-                                          , fontFile, fontName, foreground, fontWeight, united, isShiftable, numberToLocate );
+                                          , fontFile, fontName, foreground, fontWeight, united, isShiftable, numberToLocate
+                                          , outlineRGB);
             return atom;
         }
+
+
+        //private List<byte> GetRGB ( string sectionName, IConfigurationSection section )
+        //{
+        //    IConfigurationSection childSection = section.GetSection ("Foreground");
+        //    childSection = childSection.GetSection ("Red");
+        //    byte red = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
+
+        //    childSection = section.GetSection ("Foreground");
+        //    childSection = childSection.GetSection ("Green");
+        //    byte green = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Green");
+
+        //    childSection = section.GetSection ("Foreground");
+        //    childSection = childSection.GetSection ("Blue");
+        //    byte blue = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Blue");
+
+        //    return new List<byte> () { red, green, blue };
+        //}
 
 
         private InsideImage BuildInsideImage ( IConfigurationSection section )
@@ -477,11 +529,25 @@ namespace DataGateway
             string fileName = GetterFromJson.GetSectionValue ( childSection) ?? "";
             string fileUri = _resourceUri + fileName;
 
-            childSection = section.GetSection ("AboveScratchName");
-            string aboveScratchName = GetterFromJson.GetSectionValue (childSection) ?? "";
+            childSection = section.GetSection ("BindingObject");
+            string bindingObjectName = GetterFromJson.GetSectionValue (childSection) ?? "";
 
-            InsideImage image = new InsideImage (fileUri, commonData [0], commonData [1]
-                                               , commonData [2], commonData [3], aboveScratchName);
+            childSection = section.GetSection ("IsAboveOfBinding");
+            string isAbove = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            bool isAboveOfBinding = false;
+
+            if ( isAbove == "yes" ) 
+            {
+                isAboveOfBinding = true;
+            }
+
+            childSection = section.GetSection ("OutLineColor");
+            List<byte> outLineColor = GetRGB (childSection);
+
+
+            InsideImage image = new InsideImage (fileUri, commonData [0], commonData [1], commonData [2], commonData [3]
+                                               , bindingObjectName, isAboveOfBinding, outLineColor);
             return image;
         }
 
@@ -492,9 +558,6 @@ namespace DataGateway
 
             IConfigurationSection childSection = section.GetSection ("Kind");
             string kind = GetterFromJson.GetSectionValue (childSection) ?? "";
-
-            childSection = section.GetSection ("OutLineColor");
-            List<byte> outLineColor = GetRGB (childSection);
 
             childSection = section.GetSection ("OutLineThickness");
 
@@ -509,11 +572,25 @@ namespace DataGateway
             childSection = section.GetSection ("FillColor");
             List<byte> fillColor = GetRGB (childSection);
 
-            childSection = section.GetSection ("AboveScratchName");
-            string aboveScratchName = GetterFromJson.GetSectionValue (childSection) ?? "";
+            childSection = section.GetSection ("BindingObject");
+            string bindingObjectName = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            childSection = section.GetSection ("IsAboveOfBinding");
+            string isAbove = GetterFromJson.GetSectionValue (childSection) ?? "";
+
+            bool isAboveOfBinding = false;
+
+            if ( isAbove == "yes" )
+            {
+                isAboveOfBinding = true;
+            }
+
+            childSection = section.GetSection ("OutLineColor");
+            List<byte> outLineColor = GetRGB (childSection);
 
             InsideShape shape = new InsideShape (commonData [0], commonData [1], commonData [2], commonData [3]
-                                                 , outLineColor, outlineThickness, fillColor, kind, aboveScratchName);
+                                               , outlineThickness, fillColor, kind
+                                               , bindingObjectName, isAboveOfBinding, outLineColor);
             return shape;
         }
 
@@ -545,13 +622,14 @@ namespace DataGateway
         private List<byte> GetRGB ( IConfigurationSection section )
         {
             IConfigurationSection childSection = section.GetSection ("Red");
-            byte red = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+            string redStr = GetterFromJson.GetSectionValue (childSection) ?? "100";
+            byte red = byte.Parse (redStr);
 
             childSection = section.GetSection ("Green");
-            byte green = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+            byte green = byte.Parse (GetterFromJson.GetSectionValue (childSection) ?? "100");
 
             childSection = section.GetSection ("Blue");
-            byte blue = byte.Parse (GetterFromJson.GetSectionValue (childSection));
+            byte blue = byte.Parse (GetterFromJson.GetSectionValue (childSection) ?? "100");
 
             List<byte> rgb = new List<byte> () { red, green, blue };
 

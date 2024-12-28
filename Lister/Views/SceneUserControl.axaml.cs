@@ -25,11 +25,10 @@ namespace Lister.Views
             InitializeComponent ();
             DataContext = App.services.GetRequiredService<SceneViewModel> ();
             extender.FocusAdorner = null;
-
-            Rectangle rect = new Rectangle ();
-
-            rect.Stroke = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 200, 200));
-
+            edit.FocusAdorner = null;
+            clearBadges.FocusAdorner = null;
+            save.FocusAdorner = null;
+            print.FocusAdorner = null;
         }
     }
 }

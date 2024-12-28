@@ -10,33 +10,9 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class RectangleViewModel : ShapeViewModel
-    {
-        public RectangleViewModel ( InsideShape image ) : base (image) { }
-    }
-
-
-
-    public class EllipseViewModel : ShapeViewModel
-    {
-        public EllipseViewModel ( InsideShape image ) : base (image) { }
-    }
-
-
-
-    public class ShapeViewModel : BoundToMember
+    public class ShapeViewModel : BoundToTextLine
     {
         internal ShapeKind Kind { get; private set; }
-
-        private SolidColorBrush _outlineRGB;
-        internal SolidColorBrush OutlineRGB
-        {
-            get { return _outlineRGB; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _outlineRGB, value, nameof (OutlineRGB));
-            }
-        }
 
         private Thickness _outlineThickness;
         internal Thickness OutlineThickness
@@ -48,26 +24,72 @@ namespace Lister.ViewModels
             }
         }
 
-        private SolidColorBrush _fillRGB;
-        internal SolidColorBrush FillRGB
+        private SolidColorBrush _fillColor;
+        internal SolidColorBrush FillColor
         {
-            get { return _fillRGB; }
+            get { return _fillColor; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _fillRGB, value, nameof (FillRGB));
+                if ( value != null )
+                {
+                    Red = value.Color.R;
+                    Green = value.Color.G;
+                    Blue = value.Color.B;
+                }
+
+                this.RaiseAndSetIfChanged (ref _fillColor, value, nameof (FillColor));
             }
         }
 
-
-        public ShapeViewModel ( InsideShape shape )
+        private byte _red;
+        internal byte Red
         {
-            Kind = shape.Kind;
-            OutlineThickness = new Thickness (shape.OutlineThickness, shape.OutlineThickness);
-            OutlineRGB = new SolidColorBrush(new Color(255, shape.OutlineRGB [0], shape.OutlineRGB [1], shape.OutlineRGB [2]));
-            FillRGB = new SolidColorBrush (new Color (255, shape.FillRGB [0], shape.FillRGB [1], shape.FillRGB [2]));
-            Binding = shape.BindingName;
+            get { return _red; }
+            private set { _red = value; }
+        }
 
-            SetYourself (shape.Width, shape.Height, shape.TopOffset, shape.LeftOffset);
+        private byte _green;
+        internal byte Green
+        {
+            get { return _green; }
+            private set { _green = value; }
+        }
+
+        private byte _blue;
+        internal byte Blue
+        {
+            get { return _blue; }
+            private set { _blue = value; }
+        }
+
+
+        public ShapeViewModel ( int id, InsideShape shape )
+        {
+            Id = id;
+            Kind = shape.Kind;
+            OutlineThickness = new Thickness (shape.StrokeThickness, shape.StrokeThickness);
+            FillColor = new SolidColorBrush (new Color (255, shape.FillRGB [0], shape.FillRGB [1], shape.FillRGB [2]));
+            Binding = shape.BindingName;
+            IsAboveOfBinding = shape.IsAboveOfBinding;
+
+            Color color = new Color (255, shape.OutlineRGB [0], shape.OutlineRGB [1], shape.OutlineRGB [2]);
+            SolidColorBrush brush = new SolidColorBrush (color);
+
+            SetYourself (shape.Width, shape.Height, shape.TopOffset, shape.LeftOffset, brush);
+        }
+
+
+        public ShapeViewModel ( ShapeViewModel prototype )
+        {
+            Id = prototype.Id;
+            Kind = prototype.Kind;
+            OutlineThickness = prototype.OutlineThickness;
+            FillColor = new SolidColorBrush (new Color (255, prototype.Red, prototype.Blue, prototype.Green));
+            Binding = prototype.Binding;
+            IsAboveOfBinding = prototype.IsAboveOfBinding;
+
+            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset
+                                                                        , prototype.outlineColorStorage);
         }
 
 
@@ -80,6 +102,12 @@ namespace Lister.ViewModels
         internal void ZoomOut ( double coefficient )
         {
             base.ZoomOut (coefficient);
+        }
+
+
+        internal ShapeViewModel Clone ( )
+        {
+            return new ShapeViewModel ( this );
         }
 
     }

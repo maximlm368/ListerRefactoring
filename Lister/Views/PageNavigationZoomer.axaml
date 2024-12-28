@@ -10,8 +10,7 @@
 	<StackPanel>
 
 		<Grid
-			Height="42"
-			>
+			Height="42">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
 				<ColumnDefinition  Width="135"></ColumnDefinition>
@@ -36,7 +35,7 @@
 					Grid.Column="1"
 					Classes="transparent"
 					Width="32"
-					Padding="7,7"
+					Padding="10,7"
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowFirstPage}"
 					ToolTip.Tip="На первую страницу"
@@ -48,7 +47,7 @@
 				    Classes="littlePicture"
 					Width="32"
 					FontSize="20"
-					Padding="5,5"
+					Padding="10,5"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowPreviousPage}"
 					ToolTip.Tip="На предыдущую страницу"
@@ -90,7 +89,7 @@
 					Classes="littlePicture"
 					Width="32"
 					FontSize="20"
-					Padding="8,5"
+					Padding="10,5"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowNextPage}"
 					ToolTip.Tip="На следующую страницу"
@@ -101,7 +100,7 @@
 					Grid.Column="7"
 					Classes="transparent"
 					Width="32"
-					Padding="6,7"
+					Padding="10,7"
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowLastPage}"
 					ToolTip.Tip="На последнюю страницу"

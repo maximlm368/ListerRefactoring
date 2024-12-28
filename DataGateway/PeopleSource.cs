@@ -143,11 +143,11 @@ namespace DataGateway
             Encoding encoding = Encoding.GetEncoding (1251);
             using StreamReader reader = new StreamReader (filePath, encoding, true);
             string line = string.Empty;
-            char seperator = ';';
+            char separator = ';';
 
             while ( ( line = reader.ReadLine () ) != null )
             {
-                string [] parts = line.Split (seperator, StringSplitOptions.TrimEntries);
+                string [] parts = line.Split (separator, StringSplitOptions.TrimEntries);
 
                 try
                 {

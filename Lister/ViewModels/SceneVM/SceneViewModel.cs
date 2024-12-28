@@ -368,7 +368,7 @@ namespace Lister.ViewModels
                     BadgeViewModel badge = new BadgeViewModel (requiredBadges [index], BadgeCount);
                     allBadges.Add (badge);
 
-                    BadgeViewModel printableBadge = new BadgeViewModel (badge);
+                    BadgeViewModel printableBadge = badge.Clone();
                     allPrintableBadges.Add (printableBadge);
 
                     if ( ! badge.IsCorrect )
@@ -431,7 +431,7 @@ namespace Lister.ViewModels
 
             Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, _chosenPerson);
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
-            BadgeViewModel printableBadge = new BadgeViewModel (goalVMBadge);
+            BadgeViewModel printableBadge = goalVMBadge.Clone();
 
             if ( ! goalVMBadge.IsCorrect )
             {
@@ -486,7 +486,7 @@ namespace Lister.ViewModels
             _lastPage = VisiblePage;
             AllPages.Add (_lastPage);
 
-            _printablePages = new List<PageViewModel> ();
+            _printablePages = new List <PageViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
             _lastPrintablePage = new PageViewModel (_documentScale);
             _printablePages.Add (_lastPrintablePage);

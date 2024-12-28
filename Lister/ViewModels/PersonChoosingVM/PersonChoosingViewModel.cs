@@ -37,6 +37,19 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
+        private readonly int _inputLimit = 50;
+
+        private bool _fileNotFound;
+        public bool FileNotFound
+        {
+            get { return _fileNotFound; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _fileNotFound, value, nameof (FileNotFound));
+            }
+        }
+
+
         public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor
                                         , SolidColorBrush focusedBackgroundColor, SolidColorBrush unfocusedColor
                                         , SolidColorBrush focusedBorderColor )
@@ -86,14 +99,24 @@ namespace Lister.ViewModels
             if ( valueIsSuitable )
             {
                 IUniformDocumentAssembler documentAssembler = App.services.GetService<IUniformDocumentAssembler> ();
-                List<Person> persons = documentAssembler.GetPersons (path);
-                SetPersons (persons);
-                SwitchPersonChoosingEnabling (true);
+
+                try
+                {
+                    List <Person> persons = documentAssembler.GetPersons (path);
+                    SetPersons (persons);
+                    SwitchPersonChoosingEnabling (true);
+                }
+                catch ( Exception ex ) 
+                {
+                    FileNotFound = true;
+                    SetPersons (null);
+                    SwitchPersonChoosingEnabling (false);
+                }
             }
             else
             {
                 SetPersons (null);
-                SwitchPersonChoosingEnabling (true);
+                SwitchPersonChoosingEnabling (false);
             }
         }
 
@@ -474,6 +497,49 @@ namespace Lister.ViewModels
             EntirePersonListIsSelected = false;
 
             AllAreReady = false;
+        }
+
+
+        internal void ReductPersonList ( string input )
+        {
+            ToZeroPersonSelection ();
+            RestrictInput (input);
+
+            if ( ( input == string.Empty ) )
+            {
+                RecoverVisiblePeople ();
+                return;
+            }
+
+            List <VisiblePerson> foundVisiblePeople = new List <VisiblePerson> ();
+
+            foreach ( VisiblePerson person   in   PeopleStorage )
+            {
+                person.BorderBrushColor = _unfocusedColor;
+                string entireName = person.Person.StringPresentation;
+
+                if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
+                {
+                    foundVisiblePeople.Add (person);
+                }
+            }
+
+            SetInvolvedPeople (foundVisiblePeople);
+        }
+
+
+        private void RestrictInput ( string input )
+        {
+            if ( input.Length > _inputLimit )
+            {
+                string ph = PlaceHolder;
+                PlaceHolder = "";
+                PlaceHolder = ph;
+            }
+            else
+            {
+                PlaceHolder = input;
+            }
         }
 
 

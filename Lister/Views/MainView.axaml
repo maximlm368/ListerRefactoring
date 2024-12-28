@@ -31,7 +31,7 @@
 
 		<uc:PageNavigationZoomer
 			Name="navigatorZoomer"
-			Background="LightGray"
+			Background="#EEEEEE"
 			Margin="0,-4"/>
 
 		<uc:WaitingView
