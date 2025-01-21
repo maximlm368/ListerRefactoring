@@ -5,16 +5,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
-        mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="460"
+        mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="480"
         x:Class="Lister.Views.MainWindow"
         Icon="/Assets/badge.ico"
         Title="Lister"
 		x:DataType="vm:MainWindowViewModel"
 		WindowStartupLocation="CenterScreen"
 		
-		MinHeight="460"
+		MinHeight="480"
         MinWidth="830"
-		Height="460"
+		Height="480"
 		Width="830">
 
 	<views:MainView

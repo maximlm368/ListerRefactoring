@@ -8,22 +8,22 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:PersonChoosingViewModel">
 
-
 	<Grid Name="personChoosingBlock"
 		  Background="#EEEEEE"
-		  Height="40"
+		  Height="36"
 		  ZIndex="0">
+		
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition  Width="70" ></ColumnDefinition>
-			<ColumnDefinition ></ColumnDefinition>
-			<ColumnDefinition  Width="30" ></ColumnDefinition>
+			<ColumnDefinition  ></ColumnDefinition>
+			<ColumnDefinition  Width="33" ></ColumnDefinition>
 			<ColumnDefinition  Width="90" ></ColumnDefinition>
-			<ColumnDefinition  Width="180" ></ColumnDefinition>
+			<ColumnDefinition  Width="195" ></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 
 		<Label
 			Grid.Column="0"
-			Padding="10,8"
+			Padding="10,5"
 			Content="ФИО:"/>
 
 		<Canvas
@@ -33,21 +33,22 @@
 			<TextBox
 				Name="personTextBox"
 				Width="446"
-				Height="32"
 				Padding="10,4"
 				Margin="0,2"
-				FontSize="16"
+				BorderThickness="1,1,0,1"
+				BorderBrush="Gray"
 				CornerRadius="3,0,0,3"
-				Background="White"
 				ScrollViewer.VerticalScrollBarVisibility="Disabled"
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
 				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
-				FontWeight="{Binding   Path = FontWeight,  Mode=OneWay}"
 				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
 				SelectionForegroundBrush="White"
+				Tapped=""
 				GotFocus="CustomComboboxGotFocus"
 				LostFocus="CustomComboboxLostFocus"
+				PointerEntered="CustomComboboxPointerOver"
+				PointerExited="CustomComboboxPointerExited"
 				KeyUp="HandlePersonListReduction"
 				KeyDown="DropOrPickUpPersonsOrScroll"/>
 
@@ -63,29 +64,32 @@
 
 					<uc:CustomViewbox
 						Name="visiblePersons"
-						Width="475"
+						Width="472"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						PointerWheelChanged="ScrollByWheel"
 						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}">
 					
 					<Canvas
 						Name="listFrame"
-						Width="477"
+						Width="472"
 						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 						Background="AliceBlue" >
 
 						<Label
 							Name="allPersonsSign"
 							Padding="8,4"
-							FontWeight="Bold"
-							Background="LightPink"
-							Foreground="Black"
-							BorderBrush="{Binding   Path = EntireListColor,  Mode=OneWay }"
+							FontStyle="Italic"
+							Background="{Binding   Path = EntireBackgroundColor,  Mode=OneWay }"
+							Foreground="{Binding   Path = EntireForegroundColor,  Mode=OneWay }"
+							BorderBrush="{Binding   Path = EntireBorderColor,  Mode=OneWay }"
+							FontWeight="{Binding   Path = EntireFontWeight,  Mode=OneWay }"
 							BorderThickness="2"
 							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
 							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
 							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
-							Tapped="AcceptEntirePersonList"
+							PointerPressed="AcceptEntirePersonList"
+							PointerEntered="HoverComboboxItem"
+							PointerExited="ExitComboboxItem"
 							Content="Весь список"/>
 						
 						<ItemsControl
@@ -100,12 +104,15 @@
 										<Label
 											Padding="8,4"
 											Height="32"
-											Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
-										    Foreground="Black"
-											BorderBrush="{Binding   Path = BorderBrushColor,  Mode=OneWay }"
-											BorderThickness="2"
+											BorderThickness="1"
+											Background="{Binding   Path = BackgroundColor,  Mode=OneWay }"
+											Foreground="{Binding   Path = ForegroundColor,  Mode=OneWay }"
+											BorderBrush="{Binding   Path = BorderColor,  Mode=OneWay }"
+											FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 											Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
-											Tapped="HandleChoosingByTapping"
+											PointerPressed="HandleChoosingByTapping"
+											PointerEntered="HoverComboboxItem"
+											PointerExited="ExitComboboxItem"
 											Content="{Binding   Path = Person.StringPresentation,  Mode=OneWay }"/>
 
 								</DataTemplate>
@@ -119,6 +126,7 @@
 							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 							Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
 							ZIndex="5"
+							PointerPressed="ScrollerPressed"
 							Background="White">
 
 							<Canvas
@@ -136,18 +144,21 @@
 								Canvas.Top="15"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
-								Background="White"
+								Background="#EEEEEE"
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
 								Name="runner"
+								Classes="Runner"
 								Canvas.Left="0"
 								Canvas.Top="{Binding   Path = RunnerTopCoordinate,  Mode=OneWay}"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
 								ZIndex="3"
-								Background="Red"
+								Background="#817974"
 								PointerPressed="CaptureRunner"
+								PointerEntered="OverRunner"
+								PointerExited="ExitedRunner"
 								PointerMoved="MoveRunner"/>
 
 							<Canvas
@@ -156,7 +167,7 @@
 								Canvas.Bottom="15"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
-								Background="White"
+								Background="#EEEEEE"
 								PointerPressed="ShiftRunner"/>
 
 							<Canvas
@@ -176,26 +187,37 @@
 
 		</Canvas>
 		
-		<Button
+		<Border
+			Name="builtInBorder"
+			Classes="builtIn"
 			Grid.Column="2"
-			VerticalAlignment="Top"
-			Margin="-14,2"
-			Width="32"
-			CornerRadius="0,3,3,0"
-			BorderBrush="Gray"
-			BorderThickness="1"
-			Padding="9,6"
-			Focusable="False"
-			IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
-			Tapped="DropOrPickUpPersons"
-			FontFamily="{StaticResource FA}"
-			Content="&#xf0d7;"/>
+			Width="30"
+			Height="32"
+			BorderThickness="0,1,1,1"
+			Background="White"
+			CornerRadius="0,3,3,0">
+		
+			<Label
+				Name="builtInButton"
+				Classes="inBuiltIn"
+				VerticalAlignment="Top"
+				Width="28"
+				CornerRadius="0,4,4,0"
+				Padding="6,7"
+				PointerPressed="ButtonPressed"
+				PointerReleased="ButtonReleased"
+				FontFamily="{StaticResource FA}"
+				FontWeight="Thin"
+				Foreground="Gray"
+				Content="&#xf107;"/>
 
+		</Border>
+			
 		<Label
 			Classes="narrow"
 			Grid.Column="3"
 			Content="Шаблон:"
-			Margin="-5, 0"
+			Margin="10, 0"
 			Padding="10, 0"/>
 
 		<ComboBox
@@ -203,11 +225,10 @@
 			Grid.Column="4"
 			PlaceholderForeground="{Binding  Path=ChosenTemplateColor,  Mode=OneWay}"
 			PlaceholderText="{Binding  Path=ChosenTemplate.Name,  Mode=OneWay}"
-			Background="White"
 			FontSize="16"
 			Height="32"
 			Width="184"
-			Margin="-15,2"
+			Margin="0,2"
 			Padding="4,0"
 			MaxDropDownHeight="100"
 			SelectedItem="{Binding  Path=ChosenTemplate,  Mode=OneWay}"
@@ -224,16 +245,63 @@
 						Content="{Binding  Path=Name,  Mode=OneWay}"/>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
-
 		</ComboBox>
-
 	</Grid>
-	
 	
 </UserControl>
 
 
 <!--   
+IsEnabled="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
+
+
+
+
+		<ComboBox
+			Name="templateChoosing"
+			Grid.Column="4"
+			PlaceholderForeground="{Binding  Path=ChosenTemplateColor,  Mode=OneWay}"
+			PlaceholderText="{Binding  Path=ChosenTemplate.Name,  Mode=OneWay}"
+			FontSize="16"
+			Height="32"
+			Width="184"
+			Margin="-15,2"
+			Padding="-50,0"
+			MaxDropDownHeight="100"
+			SelectedItem="{Binding  Path=ChosenTemplate,  Mode=OneWay}"
+			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
+			DropDownClosed="HandleClosing"
+		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
+
+			<ComboBox.ItemTemplate >
+				<DataTemplate >
+					<Label
+						Classes="narrow"
+						Height="32"
+						Width="184"
+						Padding="4,0"
+						Margin="-10,-10"
+						BorderThickness="1"
+						Foreground="{Binding  Path=Color,  Mode=OneWay}"
+						PointerEntered="HoverComboboxItem"
+						PointerExited="ExitComboboxItem"
+						Content="{Binding  Path=Name,  Mode=OneWay}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+
+
+
+
+				Padding="8,4"
+				Height="32"
+				BorderThickness="2"
+				Background="{Binding   Path = BackgroundBrushColor,  Mode=OneWay }"
+				Foreground="Black"
+				BorderBrush="{Binding   Path = BorderBrushColor,  Mode=OneWay }"
+
+
 
 
 				SelectionStart="{Binding   Path = SelectionStart,  Mode=OneWay}"

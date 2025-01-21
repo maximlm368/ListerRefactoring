@@ -716,7 +716,7 @@ namespace DataGateway
 
                                     messageLine += propertyPath + " на строке номер ";
                                     string lineNumber = err.LineNumber.ToString ();
-                                    messageLine += ( lineNumber );
+                                    messageLine += ( lineNumber + ";");
 
                                     message.Add (messageLine);
                                 }

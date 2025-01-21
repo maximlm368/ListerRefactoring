@@ -7,7 +7,7 @@
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:PageNavigationZoomerViewModel">
 
-	<StackPanel>
+	<Border>
 
 		<Grid
 			Height="42">
@@ -17,6 +17,7 @@
 			</Grid.ColumnDefinitions>
 
 			<Grid
+				Name="navigation"
 				Grid.Column="0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition ></ColumnDefinition>
@@ -35,10 +36,12 @@
 					Grid.Column="1"
 					Classes="transparent"
 					Width="32"
-					Padding="10,7"
+					Padding="8,6"
 					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowFirstPage}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На первую страницу"
+					ToolTip.HorizontalOffset="20"
 					Content="&#xf048;"/>
 
 				<Button
@@ -47,10 +50,12 @@
 				    Classes="littlePicture"
 					Width="32"
 					FontSize="20"
-					Padding="10,5"
+					Padding="8,4"
 					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowPreviousPage}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На предыдущую страницу"
+					ToolTip.HorizontalOffset="20"
 					Content="&#xf0d9;" />
 
 				<TextBox
@@ -72,14 +77,14 @@
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					Margin="0,7"
+					Margin="0,9"
 					Grid.Column="4"
 					Content="из"/>
 
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
-					Margin="0,7"
+					Margin="0,9"
 					Grid.Column="5"
 					Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
 
@@ -89,10 +94,12 @@
 					Classes="littlePicture"
 					Width="32"
 					FontSize="20"
-					Padding="10,5"
+					Padding="8,4"
 					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowNextPage}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На следующую страницу"
+					ToolTip.HorizontalOffset="20"
 					Content="&#xf0da;" />
 
 				<Button
@@ -100,15 +107,18 @@
 					Grid.Column="7"
 					Classes="transparent"
 					Width="32"
-					Padding="10,7"
+					Padding="8,6"
 					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ShowLastPage}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На последнюю страницу"
+					ToolTip.HorizontalOffset="20"
 					Content="&#xf051;" />
 
 			</Grid>
 
 			<Grid
+				Name="zoom"
 				Grid.Column="1" >
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="34"></ColumnDefinition>
@@ -123,10 +133,12 @@
 					Classes="transparent"
 					HorizontalAlignment="Center"
 					Width="32"
-					Padding="8,7"
+					Padding="8,6"
 					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOut}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="Уменьшить масштаб"
+					ToolTip.VerticalOffset="-40"
 					Content="&#xf068;" />
 
 				<Label
@@ -147,10 +159,12 @@
 					Classes="transparent"
 					HorizontalAlignment="Center"
 					Width="32"
-					Padding="8,7"
+					Padding="7,6"
 					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
 					Command="{Binding   Path = ZoomOn}"
+					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="Увеличить масштаб"
+					ToolTip.VerticalOffset="-40"
 					Content="&#x2b;" />
 				
 			</Grid>
@@ -158,7 +172,7 @@
 		</Grid>
 		
 		
-	</StackPanel>
+	</Border>
   
 </UserControl>
 

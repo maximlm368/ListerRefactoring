@@ -32,6 +32,7 @@ using Avalonia.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using DataGateway;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Lister.ViewModels
 {
@@ -51,22 +52,30 @@ namespace Lister.ViewModels
 
 
         public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor
-                                        , SolidColorBrush focusedBackgroundColor, SolidColorBrush unfocusedColor
-                                        , SolidColorBrush focusedBorderColor )
+                                        , SolidColorBrush incorrectTemplateColor, List <SolidColorBrush> defaultColors
+                                        , List <SolidColorBrush> focusedColors, List <SolidColorBrush> selectedColors )
         {
             _placeHolder = placeHolder;
             _entireListColor = entireListColor;
-            _focusedBackgroundColor = focusedBackgroundColor;
-            _focusedBorderColor = focusedBorderColor;
-            _unfocusedColor = unfocusedColor;
+            _incorrectTemplateForeground = incorrectTemplateColor;
+
+            _defaultBackgroundColor = defaultColors [0];
+            _defaultBorderColor = defaultColors [1];
+            _defaultForegroundColor = defaultColors [2];
+
+            _selectedBackgroundColor = selectedColors [0];
+            _selectedBorderColor = selectedColors [1];
+            _selectedForegroundColor = selectedColors [2];
+
+            _focusedBackgroundColor = focusedColors [0];
+            _focusedBorderColor = focusedColors [1];
 
             VisiblePeople = new ObservableCollection<VisiblePerson> ();
             ScrollerCanvasLeft = _withScroll;
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = true;
             TextboxIsFocusable = false;
-            FontWeight = FontWeight.Bold;
-            EntireListColor = _entireListColor;
+
             _focusedEdge = _edge;
 
             IBadgeAppearenceProvider badgeAppearenceProvider = App.services.GetRequiredService<IBadgeAppearenceProvider> ();
@@ -103,19 +112,19 @@ namespace Lister.ViewModels
                 try
                 {
                     List <Person> persons = documentAssembler.GetPersons (path);
-                    SetPersons (persons);
+                    SetPersonsFromNewSource (persons);
                     SwitchPersonChoosingEnabling (true);
                 }
                 catch ( Exception ex ) 
                 {
                     FileNotFound = true;
-                    SetPersons (null);
+                    SetPersonsFromNewSource (null);
                     SwitchPersonChoosingEnabling (false);
                 }
             }
             else
             {
-                SetPersons (null);
+                SetPersonsFromNewSource (null);
                 SwitchPersonChoosingEnabling (false);
             }
         }
@@ -132,6 +141,12 @@ namespace Lister.ViewModels
 
         internal void HideDropListWithChange ()
         {
+            if ( _selected != null )
+            {
+                _selected.IsSelected = false;
+                _selected = null;
+            }
+
             if ( _focused == null )
             {
                 if ( !_chosenPersonIsSetInSetter )
@@ -143,13 +158,17 @@ namespace Lister.ViewModels
             }
             else
             {
-                if ( !_chosenPersonIsSetInSetter )
-                {
-                    ChosenPerson = _focused.Person;
-                }
-
+                //if ( !_chosenPersonIsSetInSetter )
+                //{
+                //    ChosenPerson = _focused.Person;
+                //}
+                
                 ChosenPerson = _focused.Person;
                 PlaceHolder = ChosenPerson.StringPresentation;
+
+                _selected = _focused;
+                _selected.IsSelected = true;
+                _focused.IsFocused = true;
             }
 
             _chosenPersonIsSetInSetter = false;
@@ -160,11 +179,12 @@ namespace Lister.ViewModels
 
         internal void HideDropListWithoutChange ()
         {
-            if ( ( InvolvedPeople.Count == 0 )   &&   ( PeopleStorage.Count > 0 ) )
+            if ( ( InvolvedPeople. Count == 0 )   &&   ( PeopleStorage. Count > 0 ) )
             {
                 RecoverVisiblePeople ();
-                FontWeight = FontWeight.Bold;
+                EntireFontWeight = FontWeight.Bold;
                 PlaceHolder = _placeHolder;
+                ChosenPerson = null;
             }
 
             DropDownOpacity = 0;
@@ -188,7 +208,7 @@ namespace Lister.ViewModels
         #endregion
 
 
-        private void SetPersons ( List <Person> ? persons )
+        private void SetPersonsFromNewSource ( List <Person> ? persons )
         {
             if ( persons == null )
             {
@@ -212,7 +232,6 @@ namespace Lister.ViewModels
 
             PeopleStorage = peopleStorage;
             InvolvedPeople = involvedPeople;
-            EntirePersonListIsSelected = true;
             SinglePersonIsSelected = false;
             ChosenPerson = null;
         }
@@ -244,22 +263,20 @@ namespace Lister.ViewModels
                 {
                     if ( _focused != null )
                     {
-                        _focused.BorderBrushColor = _unfocusedColor;
-                        _focused.BackgroundBrushColor = _unfocusedColor;
+                        _focused.IsFocused = false;
+                        _focused.IsSelected = false;
                     }
                     else
                     {
-                        EntireListColor = _entireListColor;
+                        _entireIsSelected = false;
                     }
 
-                    SetTappedNull ();
-                    _tapped = foundPerson;
+                    SetSelectedToNull ();
                     _focused = foundPerson;
-                    _focused.BorderBrushColor = _focusedBorderColor;
-                    _focused.BackgroundBrushColor = _focusedBackgroundColor;
+                    
                     _focusedNumber = index;
                     PlaceHolder = personName;
-                    FontWeight = FontWeight.Normal;
+                    EntireFontWeight = FontWeight.Normal;
                     HideDropListWithChange ();
                     break;
                 }
@@ -271,13 +288,17 @@ namespace Lister.ViewModels
         {
             if ( _focused != null )
             {
-                _focused.BorderBrushColor = _unfocusedColor;
+                _focused.IsFocused = false;
                 _focused = null;
             }
 
-            PlaceHolder = _placeHolder;
-            EntireListColor = _focusedBorderColor;
-            FontWeight = FontWeight.Bold;
+            if ( _selected != null )
+            {
+                _selected.IsSelected = false;
+                _selected = null;
+            }
+
+            EntirePersonListIsSelected = true;
             HideDropListWithChange ();
             _focusedNumber = _focusedEdge - _maxVisibleCount;
         }
@@ -287,7 +308,6 @@ namespace Lister.ViewModels
         {
             EntirePersonListIsSelected = false;
             SinglePersonIsSelected = true;
-            FontWeight = FontWeight.Normal;
         }
 
 
@@ -295,7 +315,6 @@ namespace Lister.ViewModels
         {
             EntirePersonListIsSelected = true;
             SinglePersonIsSelected = false;
-            FontWeight = FontWeight.Bold;
         }
 
 
@@ -344,7 +363,7 @@ namespace Lister.ViewModels
 
                 if ( listIsWhole )
                 {
-                    SetEntireList (count);
+                    SetWholeList (count);
                 }
                 else
                 {
@@ -370,7 +389,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetEntireList ( int personCount )
+        private void SetWholeList ( int personCount )
         {
             _visibleHeightStorage = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
             FirstIsVisible = true;
@@ -378,20 +397,23 @@ namespace Lister.ViewModels
             FirstItemHeight = _scrollingScratch;
             PersonsScrollValue = _scrollingScratch;
 
-            _focused = null;
-            EntireListColor = _focusedBorderColor;
+            if ( _focused != null ) 
+            {
+                _focused.IsFocused = false;
+                _focused.IsSelected = false;
+                _focused = null;
+            }
+
+            _entireIsSelected = true;
             _focusedNumber = -1;
             _focusedEdge = _edge;
-
-            EntirePersonListIsSelected = true;
-            EntireListColor = new SolidColorBrush (_focusedBorderColor.Color);
 
             TextboxIsReadOnly = false;
             TextboxIsFocusable = true;
 
             PlaceHolder = _placeHolder;
 
-            FontWeight = FontWeight.Bold;
+            EntireFontWeight = FontWeight.Bold;
 
             SetVisiblePeople (0);
         }
@@ -409,7 +431,9 @@ namespace Lister.ViewModels
 
             _focusedNumber = 0;
             _focused = InvolvedPeople [_focusedNumber];
-            _focused.BorderBrushColor = _focusedBorderColor;
+
+            _focused.IsFocused = true;
+
             _focusedEdge = _edge;
 
             SetVisiblePeople (0);
@@ -431,7 +455,7 @@ namespace Lister.ViewModels
 
         internal void SetInvolvedPeople ( List<VisiblePerson> involvedPeople )
         {
-            SetTappedNull ();
+            SetSelectedToNull ();
             InvolvedPeople = involvedPeople;
             _scrollValue = 0;
             ShowDropDown ();
@@ -515,7 +539,8 @@ namespace Lister.ViewModels
 
             foreach ( VisiblePerson person   in   PeopleStorage )
             {
-                person.BorderBrushColor = _unfocusedColor;
+                person.IsFocused = false;
+
                 string entireName = person.Person.StringPresentation;
 
                 if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
@@ -545,13 +570,13 @@ namespace Lister.ViewModels
 
         internal void RecoverVisiblePeople ()
         {
-            SetTappedNull ();
+            SetSelectedToNull ();
             _scrollValue = _scrollingScratch;
             List<VisiblePerson> recovered = new List<VisiblePerson> ();
 
             foreach ( VisiblePerson person   in   PeopleStorage )
             {
-                person.BorderBrushColor = _unfocusedColor;
+                person.IsFocused = false;
                 recovered.Add (person);
             }
 
@@ -560,50 +585,38 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetTappedNull ()
+        private void SetSelectedToNull ()
         {
-            if ( _tapped != null )
+            if ( _selected != null )
             {
-                _tapped.BackgroundBrushColor = _unfocusedColor;
-                _tapped = null;
+                _selected.IsSelected = false;
+                _selected = null;
             }
         }
 
 
         internal void SetUp ( string theme )
         {
-            SolidColorBrush correctColor = new SolidColorBrush (_focusedBorderColor.Color);
-            SolidColorBrush uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 0, 0, 0));
+            SolidColorBrush correctColor = _defaultForegroundColor;
+            SolidColorBrush incorrectColor = _incorrectTemplateForeground;
 
             if ( theme == "Dark" )
             {
-                correctColor = new SolidColorBrush (_unfocusedColor.Color);
-                uncorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
+                correctColor = _defaultBackgroundColor;
+                incorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
             }
 
-            ObservableCollection<TemplateViewModel> templates = new ();
+            ObservableCollection <TemplateViewModel> templates = new ();
 
             foreach ( KeyValuePair<BadgeLayout, KeyValuePair<string, List<string>>> layout   in   _badgeLayouts )
             {
                 KeyValuePair<string, List<string>> sourceAndErrors = layout.Value;
-
-                SolidColorBrush brush;
                 bool correctLayoutHasEmptyMessage = ( sourceAndErrors.Value.Count < 1 );
-
-                if ( correctLayoutHasEmptyMessage )
-                {
-                    brush = correctColor;
-                }
-                else
-                {
-                    brush = uncorrectColor;
-                }
-
                 List<string> errors = layout.Value.Value;
                 string source = layout.Value.Key;
 
                 templates.Add (new TemplateViewModel (new TemplateName (layout.Key.TemplateName, correctLayoutHasEmptyMessage)
-                                                      , brush, errors, source));
+                                                      , correctColor, incorrectColor, errors, source));
             }
 
             Templates = templates;
@@ -672,14 +685,24 @@ namespace Lister.ViewModels
         }
 
 
-        public TemplateViewModel ( TemplateName templateName, SolidColorBrush color
+        public TemplateViewModel ( TemplateName templateName, SolidColorBrush colorIfCorrect, SolidColorBrush colorIfIncorrect
                                   , List<string> correctnessMessage, string sourcePath )
         {
             TemplateName = templateName;
             Name = templateName.Name;
-            Color = color;
             CorrectnessMessage = correctnessMessage;
             SourcePath = sourcePath;
+
+            bool isCorrect = ( correctnessMessage.Count == 0 );
+
+            if ( isCorrect )
+            {
+                Color = colorIfCorrect;
+            }
+            else 
+            {
+                Color = colorIfIncorrect;
+            }
         }
     }
 }

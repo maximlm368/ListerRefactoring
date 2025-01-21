@@ -17,13 +17,39 @@
 		BorderBrush="Gray"
 		BorderThickness="1">
 	
-		<TextBlock 
-			Text="Lister"
-			FontSize="60"
-			Foreground="Gray"
-			FontWeight="Bold"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"/>
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="200"></RowDefinition>
+				<RowDefinition Height="5"></RowDefinition>
+				<RowDefinition ></RowDefinition>
+			</Grid.RowDefinitions>
+			
+			<TextBlock
+				Grid.Row="0"
+				Text="Lister"
+				Width="170"
+				Height="60"
+				FontSize="60"
+				Foreground="Gray"
+				FontWeight="Bold"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Bottom"/>
+
+			<TextBlock
+				Grid.Row="2"
+				Text="Приложение загружается, подождите"
+				Width="390"
+				Height="30"
+				FontSize="20"
+				Foreground="Gray"
+				
+				HorizontalAlignment="Center"
+				VerticalAlignment="Top"/>
+			
+		</Grid>
+		
+
 	
 	</Border>
 		

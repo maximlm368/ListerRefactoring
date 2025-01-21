@@ -6,8 +6,8 @@
         x:Class="Lister.Views.MessageDialog"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
-		MaxWidth="360"
-		MaxHeight="130"
+		MaxWidth="368"
+		MaxHeight="138"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:MessageViewModel"
 		
@@ -18,8 +18,8 @@
 		ExtendClientAreaTitleBarHeightHint = "0">
 
 	<UserControl
-		Width="360"
-		Height="130"
+		Width="368"
+		Height="138"
 		BorderBrush = "gray"
         BorderThickness = "1">
 
@@ -47,7 +47,7 @@
 					Name="messageLines"
 					Grid.Column="1"
 					Width="330"
-					Margin ="{Binding  Path=messageMargin,  Mode=OneWay}"
+					Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
 					HorizontalAlignment="Left"
 					ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
 
@@ -64,28 +64,26 @@
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-
-
 			</Grid>
 
 			<Canvas
 				Name ="Line"
-				Width="358"
+				Width="366"
 				Height="1"
 				Margin ="0,-5,0,0"
-				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+				Background ="#ececec"/>
 
 			<Canvas
-				Width="358"
-				Height="39"
+				Width="366"
+				Height="47"
 				Margin ="0,-2,0,0"
-				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">
+				Background ="#f6f6f6">
 
 				<Button
 					Name="ok"
-					Classes="modalButton"
+					Classes="Primary"
 					Padding="31,4"
-					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
+					Background ="#ececec"
 					Canvas.Top="8"
 					Canvas.Left="270"
 					Content="Ok"

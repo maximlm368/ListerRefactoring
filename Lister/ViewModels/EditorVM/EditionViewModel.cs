@@ -1,8 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Lister.Extentions;
 using Lister.Views;
 using ReactiveUI;
+using System.Collections.Immutable;
 using System.Reactive.Linq;
 using static SkiaSharp.HarfBuzz.SKShaper;
 
@@ -15,14 +17,16 @@ namespace Lister.ViewModels
         private readonly string _extentionToolTip;
         private readonly string _shrinkingToolTip;
 
+        private readonly BadgeComparer _comparer;
+
         internal readonly double _startScale = 1.5624;
         internal double _scale = 1.5624;
 
         private double _viewWidth = 800;
-        private double _viewHeight = 460;
+        private double _viewHeight = 480;
 
         private double _workAreaWidth = 550;
-        private double _workAreaHeight = 380;
+        private double _workAreaHeight = 392;
 
         private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
@@ -32,7 +36,6 @@ namespace Lister.ViewModels
 
         private bool _incorrectsAreSet = false;
         private BadgeEditorView _view;
-        private int _incorrectsAmmount;
         private int _visibleRangeStart = 0;
         private int _visibleRangeEnd;
 
@@ -89,8 +92,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Dictionary<int, BadgeViewModel> _currentVisibleCollection;
-        private Dictionary<int, BadgeViewModel> CurrentVisibleCollection 
+        private List <BadgeViewModel> _currentVisibleCollection;
+        private List <BadgeViewModel> CurrentVisibleCollection 
         {
             get { return _currentVisibleCollection; }
 
@@ -109,9 +112,9 @@ namespace Lister.ViewModels
             }
         }
 
-        internal Dictionary <int, BadgeViewModel> AllNumbered { get; private set; }
-        internal Dictionary <int, BadgeViewModel> IncorrectNumbered { get; private set; }
-        internal Dictionary <int, BadgeViewModel> CorrectNumbered { get; private set; }
+        internal List <BadgeViewModel> AllNumbered { get; private set; }
+        internal List <BadgeViewModel> IncorrectNumbered { get; private set; }
+        internal List <BadgeViewModel> CorrectNumbered { get; private set; }
         internal Dictionary <int, BadgeViewModel> BackupNumbered { get; private set; }
         internal List <BadgeViewModel> Printable { get; private set; }
 
@@ -209,6 +212,8 @@ namespace Lister.ViewModels
 
         public BadgeEditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
         {
+            _comparer = new BadgeComparer ();
+
             _extentionToolTip = settingArgs.extentionToolTip;
             _shrinkingToolTip = settingArgs.shrinkingToolTip;
             _correctnessIcon = settingArgs.correctnessIcon;
@@ -225,7 +230,7 @@ namespace Lister.ViewModels
             _focusedFontSizeBorderColor = settingArgs.focusedFontSizeBorderColor;
             _releasedFontSizeBorderColor = settingArgs.releasedFontSizeBorderColor;
 
-        _scaleStorage = new ();
+            _scaleStorage = new ();
 
             ViewWidth = _viewWidth;
             ViewHeight = _viewHeight;
@@ -235,7 +240,6 @@ namespace Lister.ViewModels
             WorkAreaHeight = _workAreaHeight;
             SetUpSliderBlock ( incorrectBadgesAmmount );
 
-            ChangeScrollHeight (0);
             SetUpZoommer ();
 
             SplitterIsEnable = false;
@@ -261,8 +265,6 @@ namespace Lister.ViewModels
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
-            ChangeScrollHeight (heightDifference);
-
             ViewWidth -= widthDifference;
             ViewHeight -= heightDifference;
             
@@ -290,10 +292,10 @@ namespace Lister.ViewModels
         }
 
 
-        internal void PassIncorrects ( List <BadgeViewModel> incorrects
+        internal void SetProcessables ( List <BadgeViewModel> processables
                                      , List <BadgeViewModel> allPrintable, PageViewModel firstPage )
         {
-            bool isNullOrEmpty = ( incorrects == null )   ||   ( incorrects.Count == 0 );
+            bool isNullOrEmpty = ( processables == null )   ||   ( processables.Count == 0 );
 
             if ( isNullOrEmpty )
             {
@@ -308,32 +310,36 @@ namespace Lister.ViewModels
             Printable = allPrintable;
             _scaleStorage = new ();
 
-            _incorrectsAmmount = incorrects.Count;
-
             int counter = 0;
 
-            foreach ( BadgeViewModel badge   in   incorrects )
+            foreach ( BadgeViewModel badge   in   processables )
             {
                 _scaleStorage.Add (badge, badge.Scale);
+                
+                AllNumbered.Add (badge);
 
-                if ( ! AllNumbered.ContainsKey(badge.Id) ) 
+                if ( ! badge.IsCorrect )
                 {
-                    AllNumbered.Add (badge.Id, badge);
+                    IncorrectNumbered.Add (badge);
+
                 }
 
-                if ( ! IncorrectNumbered.ContainsKey(badge.Id) ) 
+                if ( badge.IsCorrect  )
                 {
-                    IncorrectNumbered.Add (badge.Id, badge);
+                    CorrectNumbered.Add (badge);
                 }
 
-                if ( ! BackupNumbered.ContainsKey(badge.Id) ) 
+                if ( ! BackupNumbered.ContainsKey (badge.Id) )
                 {
                     BackupNumbered.Add (badge.Id, null);
                 }
-                
+
                 counter++;
             }
 
+            AllNumbered.Sort (_comparer);
+            IncorrectNumbered.Sort (_comparer);
+            CorrectNumbered.Sort (_comparer);
             CurrentVisibleCollection = AllNumbered;
             SetSliderWideness ();
 
@@ -341,12 +347,12 @@ namespace Lister.ViewModels
             (
                 () =>
                 {
-                    SetBeingProcessed (AllNumbered.ElementAt(0).Value);
+                    SetBeingProcessed (AllNumbered.ElementAt (0));
                     EnableNavigation ();
                     SetVisibleIcons ();
                     ScrollOffset = 0;
                     ProcessableCount = _scaleStorage.Count;
-                    IncorrectBadgesCount = _scaleStorage.Count;
+                    IncorrectBadgesCount = IncorrectNumbered.Count;
                 }
             );
         }
@@ -362,9 +368,9 @@ namespace Lister.ViewModels
         {
             bool exist = false;
 
-            foreach ( KeyValuePair <int, BadgeViewModel> badgeNumber   in   AllNumbered )
+            foreach ( BadgeViewModel badge   in   AllNumbered )
             {
-                if ( badgeNumber.Value. IsChanged )
+                if ( badge.IsChanged )
                 {
                     exist = true;
                     return exist;

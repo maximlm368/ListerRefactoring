@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="302"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="310"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:SceneViewModel"
              x:Class="Lister.Views.SceneUserControl">
@@ -15,34 +15,37 @@
 		<Border
 			Name="buttonBlock"
 			Background="#EEEEEE"
+			BoxShadow="3 3 10 0 #817974"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top"
 			Width="{Binding   Path = ButtonBlockWidth,   Mode=OneWay}"
-			Height="248"
+			Height="264"
 			ZIndex="2"
 			CornerRadius="0,5,5,0">
 		
 		    <StackPanel>
 
-				<Button
-					Name="extender"
-					Classes="transparent"
-					CornerRadius="0,5,0,0"
-					HorizontalAlignment="Right"
-					HorizontalContentAlignment="Left"
-					VerticalContentAlignment="Center"
-					Width="20"
-					Height="30"
-					Padding="0,5"
-					Command="{Binding  Path=ExtendButtons}"
-					ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
-					Content="{Binding  Path=ExtenderContent,  Mode=OneWay}"/>
-				
+				<Border
+					Margin="{Binding   Path = ExtenderMargin,   Mode=OneWay}"
+					Width="26"
+					Height="26">
+					
+					<Button
+						Name="extender"
+						Classes="extender"
+						CornerRadius="3,5,3,3"
+						Padding="4,3"
+						Command="{Binding  Path=ExtendButtons}"
+						PointerPressed="SomeButtonPressed"
+						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
+						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}"/>
+				</Border>
+
 				<Grid
 					Name="entireCount">
 
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="50"></ColumnDefinition>
+						<ColumnDefinition Width="62"></ColumnDefinition>
 						<ColumnDefinition Width="170" ></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 
@@ -54,8 +57,8 @@
 					<Label
 						Grid.Column="0"
 						Grid.Row="0"
-						Padding="5,5"
-						Width="50"
+						Padding="12,5"
+						Width="62"
 						ToolTip.Tip="Всего бейджей"
 						Content="{Binding  Path = BadgeCount,  Mode=OneWay}"/>
 
@@ -69,9 +72,9 @@
 					<Label
 						Grid.Column="0"
 						Grid.Row="1"
-						Padding="5,0"
+						Padding="12,0"
 						Margin="0,0,0,5"
-						Width="50"
+						Width="62"
 						Foreground="Red"
 						ToolTip.Tip="Из них с ошибками"
 						Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"/>
@@ -89,14 +92,15 @@
 				<Button
 					Name="edit"
 					Classes="Primary"
-					Margin="0,3"
-					HorizontalAlignment="Center"
+					Margin="12,3"
 					Padding="0,0"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
 					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Command="{Binding   Path = EditIncorrectBadges}"
-					ToolTip.Tip="Редактировать макет">
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Редактировать макет"
+					ToolTip.HorizontalOffset="30">
 
 					<StackPanel Orientation="Horizontal">
 						<Label
@@ -108,8 +112,7 @@
 						<Label 
 							Content="Редактировать"
 							Width="170"
-							Foreground="#DBCAAE"
-							Padding="13,7"/>
+							Padding="13,6"/>
 					</StackPanel>
 
 				</Button>
@@ -117,14 +120,15 @@
 				<Button
 					Name="clearBadges"
 					Classes="Primary"
-					Margin="0,3"
-					HorizontalAlignment="Center"
+					Margin="12,3"
 					Padding="0,0"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=ClearBadges}"
-					ToolTip.Tip="Очистить макет">
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Очистить макет"
+					ToolTip.HorizontalOffset="30">
 
 					<StackPanel Orientation="Horizontal">
 						<Label
@@ -136,8 +140,7 @@
 						<Label 
 							Content="Очистить"
 							Width="170"
-							Foreground="#DBCAAE"
-							Padding="33,7"/>
+							Padding="33,6"/>
 					</StackPanel>
 
 				</Button>
@@ -145,14 +148,15 @@
 				<Button
 					Name="save"
 					Classes="Primary"
-					Margin="0, 3"
-					HorizontalAlignment="Center"
+					Margin="12,3"
 					Padding="0,0"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=GeneratePdf}"
-					ToolTip.Tip="Сохранить макет в pdf-файл">
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Сохранить макет в pdf-файл"
+					ToolTip.HorizontalOffset="30">
 
 					<StackPanel Orientation="Horizontal">
 						<Label
@@ -164,8 +168,7 @@
 						<Label 
 							Content="Сохранить"
 							Width="170"
-							Foreground="#DBCAAE"
-							Padding="30,7"/>
+							Padding="30,6"/>
 					</StackPanel>
 					
 				</Button>
@@ -173,14 +176,15 @@
 				<Button
 					Name="print"
 					Classes="Primary"
-					Margin="0,3"
-					HorizontalAlignment="Center"
+					Margin="12,3"
 					Padding="0,0"
 					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
 					IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
 					Command="{Binding  Path=Print}"
-					ToolTip.Tip="Печатать макет">
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Печатать макет"
+					ToolTip.HorizontalOffset="30">
 
 					<StackPanel Orientation="Horizontal">
 						<Label
@@ -191,7 +195,7 @@
 						<Label
 							Content="Печатать"
 							Width="170"
-							Padding="35,7"/>
+							Padding="35,6"/>
 					</StackPanel>
 
 				</Button>
@@ -204,7 +208,7 @@
 			Name="workArea"
 			HorizontalAlignment="Left"
 			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
-			Height="302"
+			Height="311"
 			Width="850" >
 
 			<ScrollViewer
@@ -213,12 +217,12 @@
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"
 				AllowAutoHide="False"
-				Background="AliceBlue">
+				Background="#FAFAFA">
 
 					<Border
 						Name="pageBorder"
 						Margin="5,20"
-						BorderBrush="LightBlue"
+						BorderBrush="#A0A0A0"
 						BorderThickness="1"
 						Width="{Binding  Path = BorderWidth,  Mode=OneWay}"
 						Height="{Binding  Path = BorderHeight,  Mode=OneWay}"
@@ -297,7 +301,7 @@
 																	<DataTemplate>
 
 																		<TextBlock
-																			Padding="{Binding  Path = Padding,  Mode=OneWay}"
+																			VerticalAlignment="Center"
 																			Height="{Binding  Path = FontSize,  Mode=OneWay}"
 																			FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																			TextAlignment="Center"

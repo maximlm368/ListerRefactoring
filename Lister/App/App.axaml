@@ -23,6 +23,34 @@
 
 
 <!--
+
+											<Border
+												Grid.Column="0"
+												HorizontalAlignment="Left"
+												Width="24"
+												Height="24"
+												BorderBrush="{Binding  Path = IconBorderColor,  Mode=OneWay }"
+												BorderThickness="1">
+
+
+
+
+					<Border
+						Width="240"
+						Height="{Binding  Path=ScrollHeight,  Mode=OneWay}"
+						Margin="{Binding  Path=SliderMargin,  Mode=OneWay}"
+						KeyDown="ToParticularBadge">
+
+
+
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="219"></ColumnDefinition>
+								<ColumnDefinition Width="15"></ColumnDefinition>
+							</Grid.ColumnDefinitions>
+
+
+
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="/Resources/FontsResourceDictionary.axaml"/>

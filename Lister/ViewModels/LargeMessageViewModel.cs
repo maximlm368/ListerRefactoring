@@ -29,33 +29,9 @@ namespace Lister.ViewModels
     {
         private static string _warnImageName = "Icons/warning-alert.ico";
 
+        private readonly int _maxHeight = 200;
         private readonly int _lineHeight = 16;
-        private int _topMargin = 54;
-        private int _topMarginForLarge = 0;
         private LargeMessageDialog _view;
-
-        private readonly int _minHeight = 70;
-        private readonly int _maxHeight = 270;
-
-        private SolidColorBrush _lineBackground;
-        internal SolidColorBrush LineBackground
-        {
-            get { return _lineBackground; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _lineBackground, value, nameof (LineBackground));
-            }
-        }
-
-        private SolidColorBrush _canvasBackground;
-        internal SolidColorBrush CanvasBackground
-        {
-            get { return _canvasBackground; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _canvasBackground, value, nameof (CanvasBackground));
-            }
-        }
 
         private Bitmap _warnImage;
         internal Bitmap WarnImage
@@ -139,16 +115,6 @@ namespace Lister.ViewModels
             }
         }
 
-        private double _buttonCanvasLeft;
-        internal double ButtonCanvasLeft
-        {
-            get { return _buttonCanvasLeft; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _buttonCanvasLeft, value, nameof (ButtonCanvasLeft));
-            }
-        }
-
         private double _messageWidth;
         internal double MessageWidth
         {
@@ -205,8 +171,6 @@ namespace Lister.ViewModels
             string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
-            CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
-            LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
         }
 
 
@@ -235,28 +199,27 @@ namespace Lister.ViewModels
             }
 
 
-            MessageHeight = message.Count * _lineHeight + 20;
+            MessageHeight = message.Count * _lineHeight;
 
             double errorsContainerHeight = message.Count * _lineHeight;
 
-            if ( errorsContainerHeight > _maxHeight )
+            if (errorsContainerHeight > _maxHeight)
             {
                 errorsContainerHeight = _maxHeight;
             }
-            else if ( errorsContainerHeight < _minHeight ) 
+            else if (errorsContainerHeight < _lineHeight) 
             {
-                errorsContainerHeight = _minHeight;
+                errorsContainerHeight = _lineHeight;
             }
 
-            ErrorsContainerHeight = errorsContainerHeight;
-            MessageContainerHeight = ErrorsContainerHeight + 35 + 35;
-            WindowHeight = 20 + MessageContainerHeight + 39;
+            ErrorsContainerHeight = errorsContainerHeight + 20;
+            MessageContainerHeight = ErrorsContainerHeight + 49 + 35;
+            WindowHeight = 20 + MessageContainerHeight + 51;
 
             LineWidth = 658;
             WindowWidth = 660;
-            ButtonCanvasLeft = 570;
             MessageWidth = GetLongest (message) + 20;
-            MessageContainerWidth = 600;
+            MessageContainerWidth = 592;
         }
 
 

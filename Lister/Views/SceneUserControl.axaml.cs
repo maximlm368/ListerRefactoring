@@ -30,5 +30,11 @@ namespace Lister.Views
             save.FocusAdorner = null;
             print.FocusAdorner = null;
         }
+
+
+        internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
+        {
+            MainView.SomeControlPressed = true;
+        }
     }
 }

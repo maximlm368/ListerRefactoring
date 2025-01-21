@@ -44,7 +44,7 @@ namespace DataGateway
 
         public List <Person> GetPersons (string ? filePath)
         {
-            List<Person> result = [];
+            List <Person> result = [];
 
             if ( string.IsNullOrWhiteSpace (filePath) )
             {

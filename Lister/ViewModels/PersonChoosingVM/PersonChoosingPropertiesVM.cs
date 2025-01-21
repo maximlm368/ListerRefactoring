@@ -13,8 +13,8 @@ namespace Lister.ViewModels
     {
         private readonly string _placeHolder;
 
-        private double _withScroll = 462;
-        private double _withoutScroll = 477;
+        private double _withScroll = 457;
+        private double _withoutScroll = 472;
         private readonly double _minRunnerHeight = 10;
         private readonly double _upperHeight = 15;
         private readonly double _scrollingScratch = 32;
@@ -23,22 +23,32 @@ namespace Lister.ViewModels
         private readonly int _edge = 3;
 
         private SolidColorBrush _entireListColor;
-        private SolidColorBrush _unfocusedColor;
-        private SolidColorBrush _focusedBorderColor;
-        private SolidColorBrush _focusedBackgroundColor;
+        private SolidColorBrush _incorrectTemplateForeground;
+
+        private static SolidColorBrush _defaultBorderColor;
+        private static SolidColorBrush _defaultBackgroundColor;
+        private static SolidColorBrush _defaultForegroundColor;
+
+        private static SolidColorBrush _selectedBorderColor;
+        private static SolidColorBrush _selectedBackgroundColor;
+        private static SolidColorBrush _selectedForegroundColor;
+
+        private static SolidColorBrush _focusedBorderColor;
+        private static SolidColorBrush _focusedBackgroundColor;
+
+
         private Dictionary<BadgeLayout, KeyValuePair<string, List<string>>> _badgeLayouts;
         private bool _allListMustBe = false;
         private double _widthDelta;
         private Timer _timer;
         private VisiblePerson _focused;
-        private VisiblePerson _tapped;
+        private VisiblePerson _selected;
         private int _focusedNumber;
         private int _focusedEdge;
         private int _topLimit;
         private bool _chosenPersonIsSetInSetter;
         internal bool ScrollingIsOccured { get; set; }
         internal bool SinglePersonIsSelected { get; private set; }
-        internal bool EntirePersonListIsSelected { get; private set; }
         internal bool BuildingIsPossible { get; private set; }
         internal List <VisiblePerson> PeopleStorage { get; set; }
 
@@ -118,7 +128,9 @@ namespace Lister.ViewModels
 
                             this.RaiseAndSetIfChanged (ref _chosenTemplate, value, nameof (ChosenTemplate));
 
-                            SickTemplateIsSet = ( value.Color.Color.A == 100 );
+                            SickTemplateIsSet = ( value.Color.Color.R != 0 )
+                                                 || ( value.Color.Color.G != 0 )
+                                                 || ( value.Color.Color.B != 0 );
                             SetReadiness ();
                         }
                     }
@@ -228,16 +240,6 @@ namespace Lister.ViewModels
             }
         }
 
-        private FontWeight _fontWeight;
-        internal FontWeight FontWeight
-        {
-            get { return _fontWeight; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _fontWeight, value, nameof (FontWeight));
-            }
-        }
-
         private double _visibleHeightStorage;
         private double _visibleHeight;
         internal double VisibleHeight
@@ -250,12 +252,42 @@ namespace Lister.ViewModels
         }
 
         private SolidColorBrush _colorForEntireList;
-        internal SolidColorBrush EntireListColor
+        internal SolidColorBrush EntireBorderColor
         {
             get { return _colorForEntireList; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _colorForEntireList, value, nameof (EntireListColor));
+                this.RaiseAndSetIfChanged (ref _colorForEntireList, value, nameof (EntireBorderColor));
+            }
+        }
+
+        private SolidColorBrush _entireForegroundColor;
+        internal SolidColorBrush EntireForegroundColor
+        {
+            get { return _entireForegroundColor; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _entireForegroundColor, value, nameof (EntireForegroundColor));
+            }
+        }
+
+        private SolidColorBrush _entireBackgroundColor;
+        internal SolidColorBrush EntireBackgroundColor
+        {
+            get { return _entireBackgroundColor; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _entireBackgroundColor, value, nameof (EntireBackgroundColor));
+            }
+        }
+
+        private FontWeight _entireFontWeight;
+        internal FontWeight EntireFontWeight
+        {
+            get { return _entireFontWeight; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _entireFontWeight, value, nameof (EntireFontWeight));
             }
         }
 

@@ -16,11 +16,9 @@ namespace Lister.Views
 {
     public partial class MainView : ShowingDialog
     {
-        //private static double _widthDelta;
-        //private static double _heightDelta;
-
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
+        public static bool SomeControlPressed;
 
         private MainViewModel _viewModel;
 
@@ -32,7 +30,7 @@ namespace Lister.Views
         internal static double ProperHeight { get; private set; }
 
         internal BadgeEditorView EditorView { get; private set; }
-        private List <BadgeViewModel> _incorrectBadges;
+        private List <BadgeViewModel> _processableBadges;
         private List <BadgeViewModel> _allPrintableBadges;
         private PageViewModel _firstPage;
 
@@ -49,8 +47,11 @@ namespace Lister.Views
             _viewModel = ( MainViewModel ) DataContext;
             _viewModel.PassView (this);
 
+            FocusAdorner = null;
+
             Loaded += OnLoaded;
             LayoutUpdated += LayoutUpdatedHandler;
+            PointerPressed += PointerIsPressed;
 
             this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
         }
@@ -74,6 +75,35 @@ namespace Lister.Views
         }
 
 
+        private void PointerIsPressed ( object sender, PointerPressedEventArgs args )
+        {
+            var point = args.GetCurrentPoint (sender as Control);
+
+            if ( point.Properties.IsRightButtonPressed )
+            {
+                if ( ! SomeControlPressed ) 
+                {
+                    Focusable = true;
+                    this.Focus ();
+                }
+
+                SomeControlPressed = false;
+            }
+            else if ( point.Properties.IsLeftButtonPressed ) 
+            {
+                if ( ! SomeControlPressed )
+                {
+                    Focusable = true;
+                    this.Focus ();
+                }
+
+                SomeControlPressed = false;
+            }
+
+            Focusable = false;
+        }
+
+
         internal void OnLoaded ( object sender, RoutedEventArgs args )
         {
             _viewModel.OnLoaded ();
@@ -83,12 +113,6 @@ namespace Lister.Views
         internal void ReleaseRunner () 
         {
             personChoosing.ReleaseScrollingLeverage ();
-        }
-
-
-        internal void CloseCustomCombobox ()
-        {
-            personChoosing.CloseCustomCombobox ();
         }
 
 
@@ -149,24 +173,24 @@ namespace Lister.Views
         }
 
 
-        internal void ResetIncorrects ( )
+        internal void RefreshTempateAppearences ( )
         {
-            _viewModel.ResetIncorrects ();
+            _viewModel.RefreshTemplateAppearences ();
         }
 
 
-        internal void EditIncorrectBadges ( List <BadgeViewModel> incorrectBadges
+        internal void EditIncorrectBadges ( List <BadgeViewModel> processableBadges
                                           , List <BadgeViewModel> allPrintableBadges, PageViewModel firstPage )
         {
-            _incorrectBadges = incorrectBadges;
+            _processableBadges = processableBadges;
             _allPrintableBadges = allPrintableBadges;
             _firstPage = firstPage;
             MainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
 
-            if ( ( window != null )   &&   ( incorrectBadges.Count > 0 ) )
+            if ( ( window != null )   &&   ( processableBadges.Count > 0 ) )
             {
-                EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, incorrectBadges.Count );
+                EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, processableBadges.Count );
                 EditorView.SetProperSize (MainView.ProperWidth, MainView.ProperHeight);
                 window.CancelSizeDifference ();
                 TappedGoToEditorButton = 1;
@@ -184,7 +208,7 @@ namespace Lister.Views
             (
                 () =>
                 {
-                    EditorView.PassIncorrectBadges (_incorrectBadges, _allPrintableBadges, _firstPage);
+                    EditorView.PassIncorrectBadges (_processableBadges, _allPrintableBadges, _firstPage);
                     EditorView.PassBackPoint (this);
 
                     Dispatcher.UIThread.Invoke

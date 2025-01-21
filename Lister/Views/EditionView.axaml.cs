@@ -28,9 +28,11 @@ namespace Lister.Views
     public partial class BadgeEditorView : ShowingDialog
     {
         private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
+        private static readonly string _startFilter = "Все";
 
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
+        public static bool SomeControlPressed;
 
         private double _capturingY;
         private bool _runnerIsCaptured = false;
@@ -72,6 +74,15 @@ namespace Lister.Views
                 this.DataContext = _viewModel;
             }
 
+            DisableFocusAdorner ();
+            filterChoosing.SelectedValue = _startFilter;
+            PointerPressed += PointerIsPressed;
+        }
+
+
+        private void DisableFocusAdorner ()
+        {
+            FocusAdorner = null;
             firstBadge.FocusAdorner = null;
             previousBadge.FocusAdorner = null;
             nextBadge.FocusAdorner = null;
@@ -80,12 +91,53 @@ namespace Lister.Views
             zoomOutBadge.FocusAdorner = null;
             editionPanel.FocusAdorner = null;
             extender.FocusAdorner = null;
+            switcher.FocusAdorner = null;
             up.FocusAdorner = null;
             down.FocusAdorner = null;
             upper.FocusAdorner = null;
             downer.FocusAdorner = null;
 
-            filterChoosing.SelectedValue = "Все";
+            zoomOn.FocusAdorner = null;
+            zoomOut.FocusAdorner = null;
+            spliter.FocusAdorner = null;
+            cancel.FocusAdorner = null;
+
+            Back.FocusAdorner = null;
+        }
+
+
+        private void PointerIsPressed ( object sender, PointerPressedEventArgs args )
+        {
+            var point = args.GetCurrentPoint (sender as Control);
+
+            if ( point.Properties.IsRightButtonPressed )
+            {
+                if ( ! SomeControlPressed )
+                {
+                    Focusable = true;
+                    this.Focus ();
+                }
+
+                SomeControlPressed = false;
+            }
+            else if ( point.Properties.IsLeftButtonPressed )
+            {
+                if ( ! SomeControlPressed )
+                {
+                    Focusable = true;
+                    this.Focus ();
+                }
+
+                SomeControlPressed = false;
+            }
+
+            Focusable = false;
+        }
+
+
+        internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
+        {
+            SomeControlPressed = true;
         }
 
 
@@ -101,7 +153,7 @@ namespace Lister.Views
             _back.SetProperSize ( _viewModel.ViewWidth, _viewModel.ViewHeight );
 
             mainWindow.CancelSizeDifference ();
-            _back.ResetIncorrects ();
+            _back.RefreshTempateAppearences ();
             mainWindow.Content = _back;
         }
 
@@ -150,7 +202,7 @@ namespace Lister.Views
         internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects
                                           , List <BadgeViewModel> allPrintable, PageViewModel firstPage ) 
         {
-            _viewModel.PassIncorrects (incorrects, allPrintable, firstPage);
+            _viewModel.SetProcessables (incorrects, allPrintable, firstPage);
         }
 
 
@@ -222,6 +274,22 @@ namespace Lister.Views
             ComboBox comboBox = sender as ComboBox;
             string selected = comboBox.SelectedValue as string;
             _viewModel.Filter (selected);
+        }
+
+
+        internal void SliderItemPointerEntered ( object sender, PointerEventArgs args )
+        {
+            Border border = sender as Border;
+
+            border.BorderBrush = new SolidColorBrush (new Color (255, 37, 112, 167));
+        }
+
+
+        internal void SliderItemPointerExited ( object sender, PointerEventArgs args )
+        {
+            Border border = sender as Border;
+
+            border.BorderBrush = null;
         }
 
 
@@ -510,12 +578,20 @@ namespace Lister.Views
 
         #endregion
 
-        #region Navigation
+        #region NavigationAndScrolling
+
+        //internal void UpDownPointerPressed ( object sender, PointerPressedEventArgs args )
+        //{
+        //    Button button = sender as Button;
+
+        //    button.Padding = new Thickness (5, 3);
+        //}
+
 
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
-            Avalonia.Controls.Grid image = sender   as   Avalonia.Controls.Grid;
-            BadgeCorrectnessViewModel context = image.DataContext as BadgeCorrectnessViewModel;
+            Border border = sender   as   Border;
+            BadgeCorrectnessViewModel context = border.DataContext as BadgeCorrectnessViewModel;
             _viewModel.ToParticularBadge (context);
         }
 
@@ -530,12 +606,41 @@ namespace Lister.Views
 
         internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
         {
+            Canvas runner = sender as Canvas;
+
+            byte red = 0x51;
+            byte green = 0x4c;
+            byte blue = 0x48;
+
+            runner.Background = new SolidColorBrush (new Color (255, red, green, blue));
+
             _runnerIsCaptured = true;
             Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
             _capturingY = inRunnerRelativePosition.Y;
+        }
 
 
-            TextBox tb = new TextBox ();
+        internal void OverRunner ( object sender, PointerEventArgs args )
+        {
+            Canvas runner = sender as Canvas;
+
+            byte red = 0xd1;
+            byte green = 0xd1;
+            byte blue = 0xd1;
+
+            runner.Background = new SolidColorBrush (new Color (255, red, green, blue));
+        }
+
+
+        internal void ExitedRunner ( object sender, PointerEventArgs args )
+        {
+            Canvas runner = sender as Canvas;
+
+            byte red = 0x81;
+            byte green = 0x79;
+            byte blue = 0x74;
+
+            runner.Background = new SolidColorBrush (new Color (255, red, green, blue));
         }
 
 
@@ -554,6 +659,14 @@ namespace Lister.Views
         {
             if ( _runnerIsCaptured )
             {
+                Canvas runner = sender as Canvas;
+
+                byte red = 0x81;
+                byte green = 0x79;
+                byte blue = 0x74;
+
+                runner.Background = new SolidColorBrush (new Color (255, red, green, blue));
+
                 _runnerIsCaptured = false;
             }
         }
@@ -578,23 +691,6 @@ namespace Lister.Views
             {
                 _viewModel.ToNext ();
             }
-        }
-
-
-        internal void HandleScrollChange ( object sender, ScrollChangedEventArgs args )
-        {
-            double arg = args.OffsetDelta.Y;
-
-            //double scroll = _vm.SliderOffset.Y;
-
-            //int ddf = 0;
-
-            //if ( _vm.ScrollChangedByNavigation ) 
-            //{
-            //    return;
-            //}
-
-            //_vm.SetOldOffset ();
         }
 
         #endregion

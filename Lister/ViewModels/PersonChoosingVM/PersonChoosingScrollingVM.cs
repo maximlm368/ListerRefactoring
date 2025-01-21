@@ -1,4 +1,6 @@
-﻿namespace Lister.ViewModels
+﻿using Avalonia.Media;
+
+namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
@@ -7,6 +9,64 @@
         private double _scrollValue;
         private double _runnerStep;
         private double _scrollingLength;
+
+        private bool _entireIsFocused;
+        internal bool EntireIsFocused 
+        {
+            get { return _entireIsFocused; }
+            private set 
+            {
+                _entireIsFocused = value;
+
+                if ( value )
+                {
+                    EntireBackgroundColor = _focusedBackgroundColor;
+                    EntireBorderColor = _focusedBorderColor;
+                }
+                else 
+                {
+                    if ( EntirePersonListIsSelected )
+                    {
+                        EntireBackgroundColor = _selectedBackgroundColor;
+                        EntireBorderColor = _selectedBorderColor;
+                        EntireForegroundColor = _selectedForegroundColor;
+                    }
+                    else 
+                    {
+                        EntireBackgroundColor = _defaultBackgroundColor;
+                        EntireBorderColor = _defaultBorderColor;
+                        EntireForegroundColor = _defaultForegroundColor;
+                    }
+                }
+
+            }
+        }
+
+        private bool _entireIsSelected;
+        internal bool EntirePersonListIsSelected
+        {
+            get { return _entireIsSelected; }
+            private set
+            {
+                _entireIsSelected = value;
+
+                if ( value )
+                {
+                    PlaceHolder = _placeHolder;
+                    EntireBackgroundColor = _selectedBackgroundColor;
+                    EntireBorderColor = _selectedBorderColor;
+                    EntireForegroundColor = _selectedForegroundColor;
+                    EntireFontWeight = Avalonia.Media.FontWeight.Bold;
+                }
+                else 
+                {
+                    EntireBackgroundColor = _defaultBackgroundColor;
+                    EntireBorderColor = _defaultBorderColor;
+                    EntireForegroundColor= _defaultForegroundColor;
+                    EntireFontWeight = Avalonia.Media.FontWeight.Normal;
+                }
+            }
+        }
 
 
         internal void ScrollByWheel ( bool isDirectionUp )
@@ -168,7 +228,7 @@
             {
                 if ( _focused != null )
                 {
-                    _focused.BorderBrushColor = _unfocusedColor;
+                    _focused.IsFocused = false;
                 }
 
                 if ( _allListMustBe )
@@ -181,7 +241,7 @@
 
                         if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 1 ) )
                         {
-                            EntireListColor = _focusedBorderColor;
+                            EntireIsFocused = true;
                             _focused = null;
 
                             if ( _focusedNumber < ( _focusedEdge - _maxVisibleCount + 0 ) )
@@ -236,7 +296,7 @@
                 if ( ( _focusedNumber > -1 ) && ( _focused != null ) )
                 {
                     _focused = InvolvedPeople [_focusedNumber];
-                    _focused.BorderBrushColor = _focusedBorderColor;
+                    _focused.IsFocused = true;
                 }
             }
             else
@@ -246,16 +306,15 @@
                 if ( focusedIsInRange )
                 {
                     _focusedNumber++;
-                    EntireListColor = _entireListColor;
+                    EntireIsFocused = false;
 
                     if ( _focused != null )
                     {
-                        _focused.BorderBrushColor = _unfocusedColor;
+                        _focused.IsFocused = false;
                     }
 
                     _focused = InvolvedPeople [_focusedNumber];
-                    _focused.BorderBrushColor = _focusedBorderColor;
-
+                    _focused.IsFocused = true;
 
                     if ( _focusedNumber > _focusedEdge )
                     {
@@ -263,15 +322,6 @@
 
                         double itemHeight = _oneHeight;
                         currentScrollValue -= step;
-
-                        //double listHeight = itemHeight * (InvolvedPeople. Count);
-                        //double maxScroll = VisibleHeight - listHeight;
-                        //bool scrollExceeds = ( currentScrollValue < maxScroll );
-
-                        //if ( scrollExceeds )
-                        //{
-                        //    currentScrollValue = maxScroll;
-                        //}
 
                         if ( scrollerIsInvolved )
                         {
@@ -330,12 +380,12 @@
 
                     if ( _focused != null )
                     {
-                        _focused.BorderBrushColor = _unfocusedColor;
+                        _focused.IsFocused = false;
                     }
 
                     if ( _allListMustBe && ( _focusedNumber < ( _focusedEdge - visibleCount + 1 ) ) )
                     {
-                        EntireListColor = _focusedBorderColor;
+                        EntireIsFocused = true;
                         _focused = null;
                     }
 
@@ -361,14 +411,14 @@
                 if ( ( _focusedNumber > -1 ) && ( _focused != null ) )
                 {
                     _focused = InvolvedPeople [_focusedNumber];
-                    _focused.BorderBrushColor = _focusedBorderColor;
+                    _focused.IsFocused = true;
                 }
             }
             else
             {
                 if ( _allListMustBe )
                 {
-                    EntireListColor = _entireListColor;
+                    EntireIsFocused = false;
                 }
 
                 double stepLoss = 0;
@@ -399,11 +449,13 @@
 
                     if ( _focused != null )
                     {
-                        _focused.BorderBrushColor = _unfocusedColor;
+                        //_focused.BorderColor = _unfocusedBorderColor;
+                        _focused.IsFocused = false;
                     }
 
                     _focused = InvolvedPeople [_focusedNumber];
-                    _focused.BorderBrushColor = _focusedBorderColor;
+                    //_focused.BorderColor = _focusedBorderColor;
+                    _focused.IsFocused = true;
 
                     if ( _focusedNumber > _focusedEdge )
                     {
@@ -515,9 +567,5 @@
         }
 
         #endregion Scrolling
-
-
-
-
     }
 }

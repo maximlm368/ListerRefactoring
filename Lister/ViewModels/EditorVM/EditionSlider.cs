@@ -36,23 +36,20 @@ namespace Lister.ViewModels
         private readonly double _upDownButtonHeightWigth = 15;
         private readonly double _scrollingScratch = 25;
 
-        //private readonly double _collectionFilterWidth = 250;
         private readonly double _sliderWidth = 50;
         private readonly double _namesFilterWidth = 200;
-        private readonly double _collectionFilterMarginLeft = 220;
-
-        private readonly double _normalOpacity = 0.4;
-        private readonly double _chosenOpacity = 1;
+        private readonly double _collectionFilterMarginLeft = 232;
 
         private int _maxVisibleCount;
         private double _scrollValue;
         private double _runnerStep;
         private double _runnerHasWalked;
         private double _runnerHasWalkedStorage;
-        private double _itemHeight = 28;
+        private double _itemHeightWithMargin = 28;
         private double _entireBlockHeight = 380;
-        private double _scrollHeight = 252;
-        private double _iconWidth = 220;
+        private double _scrollerHeight = 224;
+        private double _extendedIconWidth = 219;
+        private double _shrinkedIconWidth = 24;
         private double _iconWidthIncreasing = 20;
         private bool _filterIsOpen;
         private double _doubleRest;
@@ -140,16 +137,6 @@ namespace Lister.ViewModels
             }
         }
 
-        private Bitmap _incorrectnessIconBmp;
-        internal Bitmap IncorrectnessIcon
-        {
-            get { return _incorrectnessIconBmp; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _incorrectnessIconBmp, value, nameof (IncorrectnessIcon));
-            }
-        }
-
         private ObservableCollection <BadgeCorrectnessViewModel> _visibleIconsStorage;
         private ObservableCollection <BadgeCorrectnessViewModel> _visibleIcons;
         internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
@@ -181,13 +168,13 @@ namespace Lister.ViewModels
             }
         }
 
-        private double _scrollHeigt;
+        private double _scrollHeight = 234;
         internal double ScrollHeight
         {
-            get { return _scrollHeigt; }
+            get { return _scrollHeight; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _scrollHeigt, value, nameof (ScrollHeight));
+                this.RaiseAndSetIfChanged (ref _scrollHeight, value, nameof (ScrollHeight));
             }
         }
 
@@ -201,13 +188,13 @@ namespace Lister.ViewModels
             }
         }
 
-        private double _iconWidt;
-        internal double IconWidth
+        private double _sliderCollectionWidth;
+        internal double SliderCollectionWidth
         {
-            get { return _iconWidt; }
+            get { return _sliderCollectionWidth; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _iconWidt, value, nameof (IconWidth));
+                this.RaiseAndSetIfChanged (ref _sliderCollectionWidth, value, nameof (SliderCollectionWidth));
             }
         }
 
@@ -274,6 +261,34 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool _previousOnSliderIsEnable;
+        internal bool PreviousOnSliderIsEnable
+        {
+            get { return _previousOnSliderIsEnable; }
+            private set
+            {
+                if ( UpDownIsVisible ) 
+                {
+                    _previousOnSliderIsEnable = value;
+                    this.RaisePropertyChanged (nameof (PreviousOnSliderIsEnable));
+                }
+            }
+        }
+
+        private bool _nextOnSliderIsEnable;
+        internal bool NextOnSliderIsEnable
+        {
+            get { return _nextOnSliderIsEnable; }
+            private set
+            {
+                if ( UpDownIsVisible )
+                {
+                    _nextOnSliderIsEnable = value;
+                    this.RaisePropertyChanged (nameof (NextOnSliderIsEnable));
+                }
+            }
+        }
+
 
         private void SetUpSliderBlock ( int incorrectBadgesAmmount )
         {
@@ -286,9 +301,6 @@ namespace Lister.ViewModels
             CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
 
             SwitcherWidth = _switcherWidth;
-
-            _scrollHeight -= MainWindow.HeightfDifference;
-            _entireBlockHeight -= MainWindow.HeightfDifference;
 
             ScrollHeight = _scrollHeight;
             EntireBlockHeight = _entireBlockHeight;
@@ -305,7 +317,7 @@ namespace Lister.ViewModels
 
         private void CalcVisibleRange ( int countInCollection )
         {
-            _visibleRange = ( int ) ( _scrollHeight / _itemHeight );
+            _visibleRange = ( int ) ( _scrollHeight / _itemHeightWithMargin );
             _maxVisibleCount = _visibleRange;
             _visibleRange = Math.Min ( _visibleRange, countInCollection );
             _visibleRangeEnd = _visibleRange - 1;
@@ -318,23 +330,22 @@ namespace Lister.ViewModels
             {
                 ScrollWidth = 0;
                 UpDownWidth = 0;
-                IconWidth = _iconWidth + _iconWidthIncreasing;
+                SliderCollectionWidth = _extendedIconWidth + _iconWidthIncreasing;
                 UpDownIsFocusable = false;
                 return;
             }
 
-            if ( badgesAmount < _scrollHeight/_itemHeight ) 
+            if ( badgesAmount < _scrollHeight/_itemHeightWithMargin ) 
             {
                 ScrollWidth = 0;
-                IconWidth = _iconWidth + _iconWidthIncreasing;
+                SliderCollectionWidth = _extendedIconWidth + _iconWidthIncreasing;
                 UpDownWidth = _upDownWidth;
                 return;
             }
 
             UpDownIsFocusable = true;
             UpDownWidth = _upDownWidth;
-            IconWidth = _iconWidth;
-
+            SliderCollectionWidth = _extendedIconWidth;
             CalcRunner (badgesAmount);
             FilterState = null;
         }
@@ -364,8 +375,8 @@ namespace Lister.ViewModels
 
         private void CalcRunnerHeightAndStep ( int badgesAmount )
         {
-            RunnerBruttoWalkSpace = _scrollHeight - ( _upDownButtonHeightWigth * 2 );
-            double proportion = ( _itemHeight * badgesAmount ) / RunnerBruttoWalkSpace;
+            RunnerBruttoWalkSpace = _scrollerHeight - ( _upDownButtonHeightWigth * 2 );
+            double proportion = ( _itemHeightWithMargin * badgesAmount ) / RunnerBruttoWalkSpace;
             RunnerHeight = _scrollHeight / proportion;
 
             RealRunnerHeight = RunnerHeight;
@@ -377,34 +388,6 @@ namespace Lister.ViewModels
 
             RunnerWalkSpace = RunnerBruttoWalkSpace - RunnerHeight;
             _runnerStep = RunnerWalkSpace / ( badgesAmount - _maxVisibleCount );
-        }
-
-
-        internal void ChangeScrollHeight ( double delta )
-        {
-            try
-            {
-                //_scrollHeight -= delta;
-                //_entireBlockHeight -= delta;
-                //EntireBlockHeight -= delta;
-                //ScrollHeight -= delta;
-                //int newVisibleRange = ( int ) ( _scrollHeight / _itemHeight );
-                //int diff = newVisibleRange - _visibleRange;
-                //_visibleRange = newVisibleRange;
-                //_visibleRangeEnd += diff;
-                //RunnerBruttoWalkSpace -= delta;
-
-                //VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
-
-                //for ( int index = 0;   index < _visibleRange;   index++ )
-                //{
-                //    VisibleIcons.Add (new BadgeCorrectnessViewModel (false, _allReadonlyBadges [_scrollStepNumber + index]));
-                //}
-
-                //ActiveIcon = VisibleIcons [BeingProcessedNumber - _scrollStepNumber - 1];
-                //HighLightChosenIcon (ActiveIcon);
-            }
-            catch ( Exception ex ) {}
         }
 
 
@@ -433,7 +416,7 @@ namespace Lister.ViewModels
 
             iconsCopy.Add (firstIcon);
 
-            for ( ; index < ( _visibleRange - 1 );   index++ )
+            for ( ;   index < ( _visibleRange - 1 );   index++ )
             {
                 iconsCopy.Add (VisibleIcons [index]);
             }
@@ -484,10 +467,10 @@ namespace Lister.ViewModels
 
         internal void MoveRunner ( double runnerStep )
         {
-            double usefullWay = (_itemHeight * CurrentVisibleCollection. Count) - RunnerBruttoWalkSpace;
+            double usefullWay = (_itemHeightWithMargin * CurrentVisibleCollection. Count) - RunnerBruttoWalkSpace;
             double proportion = usefullWay / ( RunnerBruttoWalkSpace - RealRunnerHeight );
             double step = runnerStep * proportion;
-            int steps = (int) (Math.Round (step / _itemHeight));
+            int steps = (int) (Math.Round (step / _itemHeightWithMargin));
 
             if ( step > 0 )
             {
@@ -564,15 +547,17 @@ namespace Lister.ViewModels
         {
             if ( _filterState == FilterChoosing.Corrects )
             {
-                BadgeViewModel badge = CorrectNumbered.ElementAt (removableIndex).Value;
-                IncorrectNumbered.Add (badge.Id, badge);
-                CorrectNumbered.Remove (badge.Id);
+                BadgeViewModel badge = CorrectNumbered.ElementAt (removableIndex);
+                IncorrectNumbered.Add (badge);
+                CorrectNumbered.Remove (badge);
+                IncorrectNumbered.Sort (_comparer);
             }
             else if ( _filterState == FilterChoosing.Incorrects )
             {
-                BadgeViewModel badge = IncorrectNumbered.ElementAt (removableIndex).Value;
-                CorrectNumbered.Add (badge.Id, badge);
-                IncorrectNumbered.Remove (badge.Id);
+                BadgeViewModel badge = IncorrectNumbered.ElementAt (removableIndex);
+                CorrectNumbered.Add (badge);
+                IncorrectNumbered.Remove (badge);
+                CorrectNumbered.Sort (_comparer);
             }
 
             if ( _filterState != FilterChoosing.All )
@@ -585,37 +570,21 @@ namespace Lister.ViewModels
         private BadgeCorrectnessViewModel ? GetCorrespondingIcon ( int badgeIndex )
         {
             BadgeCorrectnessViewModel result = null;
-            bool isCorrect = false;
             BadgeViewModel goalBadge = null;
-
-            //if ( _filterState == FilterChoosing.All )
-            //{
-            //    goalBadge = AllNumbered [badgeIndex];
-            //    isCorrect = goalBadge.IsCorrect;
-            //}
-            //else 
-            //{
-            //    bool indexIsWithinCollection = ((_currentVisibleCollection.Count ) > badgeIndex)   &&   (badgeIndex >= 0);
-
-            //    if ( indexIsWithinCollection ) 
-            //    {
-            //        goalBadge = _currentVisibleCollection.ElementAt (badgeIndex).Value;
-            //        isCorrect = goalBadge.IsCorrect;
-            //    }
-            //}
 
             bool indexIsWithinCollection = ((CurrentVisibleCollection. Count) > badgeIndex)   &&   (badgeIndex >= 0);
 
             if ( indexIsWithinCollection )
             {
-                goalBadge = CurrentVisibleCollection.ElementAt (badgeIndex).Value;
-                isCorrect = goalBadge.IsCorrect;
+                goalBadge = CurrentVisibleCollection.ElementAt (badgeIndex);
             }
 
             if ( goalBadge != null ) 
             {
-                result = new BadgeCorrectnessViewModel (isCorrect, goalBadge, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+                result = new BadgeCorrectnessViewModel (goalBadge
+                                                        , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen);
             }
 
             return result;
@@ -695,6 +664,9 @@ namespace Lister.ViewModels
             if ( ! _visibleIconsStorage.Equals (VisibleIcons) )
             {
                 VisibleIcons = _visibleIconsStorage;
+
+                ExtendOrShrinkSlider (_filterIsOpen);
+
                 _scrollStepIndex = _scrollStepNumberStorage;
                 _runnerHasWalked = _runnerHasWalkedStorage;
                 ScrollOffset = _scrollOffsetStorage;
@@ -725,7 +697,6 @@ namespace Lister.ViewModels
             icon.BoundFontWeight = FontWeight.Bold;
             icon.CalcStringPresentation ( _correctnessWidthLimit
                                         , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
-            icon.IconOpacity = _chosenOpacity;
         }
 
 
@@ -734,7 +705,6 @@ namespace Lister.ViewModels
             icon.BoundFontWeight = FontWeight.Normal;
             icon.CalcStringPresentation ( _correctnessWidthLimit
                                         , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
-            icon.IconOpacity = _normalOpacity;
         }
 
 
@@ -750,8 +720,8 @@ namespace Lister.ViewModels
                     {
                         try
                         {
-                            CorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
-                            IncorrectNumbered.Remove (BeingProcessedBadge. Id);
+                            CorrectNumbered.Add (BeingProcessedBadge);
+                            IncorrectNumbered.Remove (BeingProcessedBadge);
                         }
                         catch ( Exception ex ) { }
                     }
@@ -769,8 +739,8 @@ namespace Lister.ViewModels
                     {
                         try
                         {
-                            IncorrectNumbered.Add (BeingProcessedBadge. Id, BeingProcessedBadge);
-                            CorrectNumbered.Remove (BeingProcessedBadge. Id);
+                            IncorrectNumbered.Add (BeingProcessedBadge);
+                            CorrectNumbered.Remove (BeingProcessedBadge);
                         }
                         catch ( Exception ex ) { }
                     }
@@ -790,10 +760,11 @@ namespace Lister.ViewModels
             {
                 for ( int index = 0;   index < _visibleRange;   index++ )
                 {
-                    BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel (false, boundBadge
-                                                                                   , _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+                    BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge
+                                                  , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen);
                     VisibleIcons.Add (icon);
                     _visibleIconsStorage.Add (icon);
                     FadeIcon (icon);
@@ -807,4 +778,5 @@ namespace Lister.ViewModels
             }
         }
     }
+
 }

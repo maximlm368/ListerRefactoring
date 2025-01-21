@@ -310,7 +310,6 @@ public class BadgeViewModel : ViewModelBase
         InsideRectangles = new ObservableCollection <ShapeViewModel> ();
         InsideEllipses = new ObservableCollection <ShapeViewModel> ();
         IsCorrect = true;
-        IsChanged = false;
         _borderThickness = 1;
         Scale = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
@@ -1340,53 +1339,55 @@ public class BadgeViewModel : ViewModelBase
     {
         if ( FocusedLine != null )
         {
-            FocusedMemberToSide (direction, Scale, FocusedLine);
+            IsChanged = ShiftFocusedIfShould (direction, Scale, FocusedLine);
             PreventTextLineHiding (FocusedLine);
             CheckFocusedLineCorrectness ();
-            IsChanged = true;
         }
         else if ( FocusedImage != null )
         {
-            FocusedMemberToSide (direction, shift, FocusedImage);
+            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedImage);
             PreventImageOrShapeHiding (FocusedImage);
-            IsChanged = true;
         }
         else if ( FocusedEllipse != null )
         {
-            FocusedMemberToSide (direction, shift, FocusedEllipse);
+            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedEllipse);
             PreventImageOrShapeHiding (FocusedEllipse);
-            IsChanged = true;
         }
         else if ( FocusedRect != null )
         {
-            FocusedMemberToSide (direction, shift, FocusedRect);
+            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedRect);
             PreventImageOrShapeHiding (FocusedRect);
-            IsChanged = true;
         }
     }
 
 
-    private void FocusedMemberToSide ( string direction, double shift, BadgeMember shiftable )
+    private bool ShiftFocusedIfShould ( string direction, double shift, BadgeMember shiftable )
     {
         if ( direction == "Left" )
         {
             shiftable.LeftOffset -= Scale;
+            return true;
         }
 
         if ( direction == "Right" )
         {
             shiftable.LeftOffset += Scale;
+            return true;
         }
 
         if ( direction == "Up" )
         {
             shiftable.TopOffset -= Scale;
+            return true;
         }
 
         if ( direction == "Down" )
         {
             shiftable.TopOffset += Scale;
+            return true;
         }
+
+        return IsChanged;
     }
 
 

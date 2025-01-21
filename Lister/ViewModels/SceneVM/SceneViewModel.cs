@@ -2,6 +2,7 @@
 using Avalonia.Threading;
 using ContentAssembler;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using Lister.Extentions;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -93,7 +94,7 @@ namespace Lister.ViewModels
             }
         }
 
-        internal List <BadgeViewModel> IncorrectBadges { get; private set; }
+        internal List <BadgeViewModel> ProcessableBadges { get; private set; }
         internal List <BadgeViewModel> PrintableBadges { get; private set; }
 
         private string _zoomDegreeInView;
@@ -259,7 +260,7 @@ namespace Lister.ViewModels
             _lastPrintablePage = new PageViewModel (_documentScale);
             _printablePages.Add (_lastPrintablePage);
             VisiblePageNumber = 1;
-            IncorrectBadges = new List <BadgeViewModel> ();
+            ProcessableBadges = new List <BadgeViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
             PageCount = 1;
@@ -371,9 +372,10 @@ namespace Lister.ViewModels
                     BadgeViewModel printableBadge = badge.Clone();
                     allPrintableBadges.Add (printableBadge);
 
+                    ProcessableBadges.Add (badge);
+
                     if ( ! badge.IsCorrect )
                     {
-                        IncorrectBadges.Add (badge);
                         IncorrectBadgeCount++;
                     }
 
@@ -408,6 +410,8 @@ namespace Lister.ViewModels
                     PageCount = AllPages.Count;
                     VisiblePage.Show ();
                 });
+
+                //IncorrectBadges.Sort (new KeyComparer ());
             }
 
             return true;
@@ -433,9 +437,10 @@ namespace Lister.ViewModels
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
             BadgeViewModel printableBadge = goalVMBadge.Clone();
 
+            ProcessableBadges.Add (goalVMBadge);
+
             if ( ! goalVMBadge.IsCorrect )
             {
-                IncorrectBadges.Add (goalVMBadge);
                 IncorrectBadgeCount++;
             }
 
@@ -497,7 +502,7 @@ namespace Lister.ViewModels
             IncorrectBadgeCount = 0;
 
             EditionMustEnable = false;
-            IncorrectBadges = new List <BadgeViewModel> ();
+            ProcessableBadges = new List <BadgeViewModel> ();
 
             if ( _documentScale > 1 )
             {
@@ -597,39 +602,72 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ResetIncorrects ()
+        //internal void ResetIncorrects ()
+        //{
+        //    List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
+
+        //    foreach ( BadgeViewModel badge   in   ProcessableBadges )
+        //    {
+        //        if ( badge.IsCorrect )
+        //        {
+        //            corrects.Add (badge);
+        //        }
+        //    }
+
+        //    foreach ( BadgeViewModel correctBadge   in   corrects )
+        //    {
+        //        ProcessableBadges.Remove (correctBadge);
+        //    }
+
+        //    int counter = 0;
+
+        //    foreach ( BadgeViewModel badge   in   ProcessableBadges )
+        //    {
+        //        badge.Id = counter;
+        //        counter++;
+        //    }
+
+        //    IncorrectBadgeCount = ProcessableBadges. Count;
+
+        //    if ( IncorrectBadgeCount < 1 ) 
+        //    {
+        //        EditionMustEnable = false;
+        //    }
+        //}
+
+
+        internal void ResetIncorrectss ()
         {
             List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
 
-            foreach ( BadgeViewModel badge   in   IncorrectBadges )
+            foreach ( BadgeViewModel badge   in   ProcessableBadges )
             {
                 if ( badge.IsCorrect )
                 {
-                    corrects.Add (badge);
+                    IncorrectBadgeCount--;
                 }
             }
 
-            foreach ( BadgeViewModel correctBadge   in   corrects )
-            {
-                IncorrectBadges.Remove (correctBadge);
-            }
+            //foreach ( BadgeViewModel correctBadge   in   corrects )
+            //{
+            //    IncorrectBadges.Remove (correctBadge);
+            //}
 
-            int counter = 0;
+            //int counter = 0;
 
-            foreach ( BadgeViewModel badge   in   IncorrectBadges )
-            {
-                badge.Id = counter;
-                counter++;
-            }
+            //foreach ( BadgeViewModel badge   in   IncorrectBadges )
+            //{
+            //    badge.Id = counter;
+            //    counter++;
+            //}
 
-            IncorrectBadgeCount = IncorrectBadges. Count;
+            //IncorrectBadgeCount = IncorrectBadges.Count;
 
-            if ( IncorrectBadgeCount < 1 ) 
+            if ( IncorrectBadgeCount < 1 )
             {
                 EditionMustEnable = false;
             }
         }
-
 
         private void DisableButtons ()
         {

@@ -17,9 +17,13 @@ namespace Lister.ViewModels
     {
         private static string _correctnessIconPath = "Icons/GreenCheckMarker.jpg";
         private static string _incorrectnessIconPath = "Icons/RedCross.png";
-        private static readonly Bitmap _correctIcon;
-        private static readonly Bitmap _incorrectIcon;
+        private static readonly string _correctIcon;
+        private static readonly string _incorrectIcon;
+        private static SolidColorBrush _focusedBackground;
+        private static SolidColorBrush _defaultBackground;
 
+        private double _extendedMaxIconWidth;
+        private double _shrinkedIconWidth;
 
         private bool _correctness;
         internal bool Correctness
@@ -31,23 +35,40 @@ namespace Lister.ViewModels
             }
         }
 
-        private Bitmap _correctnessIcon;
-        internal Bitmap CorrectnessIcon
+        private string _correctnessIcon;
+        internal string CorrectnessIcon
         {
             get { return _correctnessIcon; }
             private set
             {
+                if ( value == _correctIcon )
+                {
+                    byte red = 0x3a;
+                    byte green = 0x81;
+                    byte blue = 0x3A;
+
+                    CorrectnessColor = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
+                }
+                else 
+                {
+                    byte red = 0xd2;
+                    byte green = 0x36;
+                    byte blue = 0x50;
+
+                    CorrectnessColor = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
+                }
+
                 this.RaiseAndSetIfChanged (ref _correctnessIcon, value, nameof (CorrectnessIcon));
             }
         }
 
-        private IBrush _borderColor;
-        internal IBrush BorderColor
+        private SolidColorBrush _background;
+        internal SolidColorBrush Background
         {
-            get { return _borderColor; }
-            set
+            get { return _background; }
+            private set
             {
-                this.RaiseAndSetIfChanged (ref _borderColor, value, nameof (BorderColor));
+                this.RaiseAndSetIfChanged (ref _background, value, nameof (Background));
             }
         }
 
@@ -71,53 +92,77 @@ namespace Lister.ViewModels
             }
         }
 
+        private double _width;
+        internal double Width
+        {
+            get { return _width; }
+            set
+            {
+                InsideBorderWidth = value - 2;
+                this.RaiseAndSetIfChanged (ref _width, value, nameof (Width));
+            }
+        }
+
+        private double _insideBorderWidth;
+        internal double InsideBorderWidth
+        {
+            get { return _insideBorderWidth; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _insideBorderWidth, value, nameof (InsideBorderWidth));
+            }
+        }
+
         private Avalonia.Media.FontWeight _boundFontWeight;
         internal Avalonia.Media.FontWeight BoundFontWeight
         {
             get { return _boundFontWeight; }
             set
             {
+                if ( value == Avalonia.Media.FontWeight.Bold )
+                {
+                    Background = _focusedBackground;
+                }
+                else 
+                {
+                    Background = _defaultBackground;
+                }
+
                 this.RaiseAndSetIfChanged (ref _boundFontWeight, value, nameof (BoundFontWeight));
             }
         }
 
-        private double _iconOpacity;
-        internal double IconOpacity
+        private SolidColorBrush _correctnessColor;
+        internal SolidColorBrush CorrectnessColor
         {
-            get { return _iconOpacity; }
-            set
+            get { return _correctnessColor; }
+            private set
             {
-                this.RaiseAndSetIfChanged (ref _iconOpacity, value, nameof (IconOpacity));
+                this.RaiseAndSetIfChanged (ref _correctnessColor, value, nameof (CorrectnessColor));
             }
         }
 
         internal BadgeViewModel BoundBadge { get; private set; }
 
 
-        static BadgeCorrectnessViewModel ( )
+        static BadgeCorrectnessViewModel ()
         {
-            string correctUriString = App.ResourceDirectoryUri + _correctnessIconPath;
-            string incorrectUriString = App.ResourceDirectoryUri + _incorrectnessIconPath;
-
-            Uri correctUri = new Uri (correctUriString);
-            Uri incorrectUri = new Uri (incorrectUriString);
-
-            _correctIcon = ImageHelper.LoadFromResource (correctUri);
-            _incorrectIcon = ImageHelper.LoadFromResource (incorrectUri);
+            _correctIcon = "\uf00c";
+            _incorrectIcon = "\uf00d";
+            _focusedBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 186, 220, 248));
+            _defaultBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 238, 238, 238));
         }
 
 
-        internal BadgeCorrectnessViewModel ( bool isCorrect, BadgeViewModel boundBadge
-                                           , double widthLimit, int [] remotableGlyphRange ) 
+        internal BadgeCorrectnessViewModel ( BadgeViewModel boundBadge, double extendedWidth, double shortWidth
+                                           , double widthLimit, int [] remotableGlyphRange, bool isExtended ) 
         {
             BoundBadge = boundBadge;
             BoundFontWeight = Avalonia.Media.FontWeight.Normal;
 
             CalcStringPresentation ( widthLimit, remotableGlyphRange );
-            
-            IconOpacity = 0.5;
 
-            if ( isCorrect )
+            if ( boundBadge.IsCorrect )
             {
                 Correctness = true;
                 CorrectnessIcon = _correctIcon;
@@ -127,8 +172,18 @@ namespace Lister.ViewModels
                 Correctness = false;
                 CorrectnessIcon = _incorrectIcon;
             }
-            
-            BorderColor = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 255, 255));
+
+            _extendedMaxIconWidth = extendedWidth;
+            _shrinkedIconWidth = shortWidth;
+
+            if ( isExtended )
+            {
+                Width = _extendedMaxIconWidth;
+            }
+            else 
+            {
+                Width = _shrinkedIconWidth;
+            }
         }
 
 

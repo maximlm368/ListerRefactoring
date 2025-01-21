@@ -74,9 +74,6 @@ namespace Lister.ViewModels
 
         internal void FocusTextLine ( string focusedContent, int elementNumber )
         {
-            //FocusedFontSizeColor = _focusedFontSizeColor;
-            //FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
-
             MakeBackUp ();
             BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
 
@@ -129,9 +126,6 @@ namespace Lister.ViewModels
 
             if ( BeingProcessedBadge.FocusedLine != null )
             {
-                //FocusedFontSizeColor = _releasedFontSizeColor;
-                //FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
-
                 FocusedFontSizeBorderColor = null;
 
                 DisableTextLineEdition ();

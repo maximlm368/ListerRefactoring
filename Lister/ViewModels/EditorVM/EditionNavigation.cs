@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using Avalonia;
+using Lister.Extentions;
 
 namespace Lister.ViewModels
 {
@@ -46,6 +47,7 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref _previousIsEnable, value, nameof (PreviousIsEnable));
+                PreviousOnSliderIsEnable = value;
             }
         }
 
@@ -56,6 +58,7 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref _nextIsEnable, value, nameof (NextIsEnable));
+                NextOnSliderIsEnable = value;
             }
         }
 
@@ -124,10 +127,12 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < _visibleRange;   index++ )
             {
-                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
+                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
+                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen));
 
                 if ( index == 0 ) 
                 {
@@ -314,9 +319,11 @@ namespace Lister.ViewModels
 
             for ( int index = visibleCountBeforeEnd;   index < CurrentVisibleCollection.Count;   index++ )
             {
-                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index).Value;
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (boundBadge.IsCorrect, boundBadge, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
+                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
+                                                             , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen));
             }
 
             _numberAmongVisibleIcons = VisibleIcons. Count;
@@ -365,7 +372,7 @@ namespace Lister.ViewModels
 
             for ( int index = 0;   index < CurrentVisibleCollection.Count;   index++ )
             {
-                if ( destinationBadge.Equals (CurrentVisibleCollection.ElementAt (index).Value) )
+                if ( destinationBadge.Equals (CurrentVisibleCollection.ElementAt (index)) )
                 {
                     destinationNumberText = ( index + 1 ).ToString ();
                     break;
@@ -526,12 +533,22 @@ namespace Lister.ViewModels
             if ( enablingRange < 2 )
             {
                 UpDownIsVisible = false;
-                SliderMargin = new Thickness (7, 30);
+                SliderMargin = new Thickness (12, 40);
             }
             else
             {
-                UpDownIsVisible = true;
-                SliderMargin = new Thickness (7, 0);
+                if ( _filterIsOpen )
+                {
+                    UpDownIsVisible = false;
+                    SliderMargin = new Thickness (12, 40);
+                }
+                else
+                {
+                    UpDownIsVisible = true;
+                    SliderMargin = new Thickness (12, 0);
+                    NextOnSliderIsEnable = NextIsEnable;
+                    PreviousOnSliderIsEnable= PreviousIsEnable;
+                }
             }
         }
 
@@ -547,7 +564,7 @@ namespace Lister.ViewModels
         private BadgeViewModel ? GetAppropriateDraft ( int number )
         {
             BadgeViewModel goalBadge = null;
-            goalBadge = CurrentVisibleCollection.ElementAt (number - 1).Value;
+            goalBadge = CurrentVisibleCollection.ElementAt (number - 1);
 
             return goalBadge;
         }

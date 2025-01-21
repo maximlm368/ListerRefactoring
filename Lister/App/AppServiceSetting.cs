@@ -161,18 +161,44 @@ public static class ServiceCollectionExtensions
         GetterFromJson.GetSectionStrValue (new List<string> { "PersonChoosingViewModel", "placeHolder" }, App.ConfigPath);
 
         SolidColorBrush entireListColor = GetColor ("PersonChoosingViewModel", "entireListColor");
+
+        SolidColorBrush incorrectTemplateColor = GetColor ("PersonChoosingViewModel", "incorrectTemplateColor");
+
+        SolidColorBrush defaultBackgroundColor = GetColor ("PersonChoosingViewModel", "defaultBackgroundColor");
+        SolidColorBrush defaultBorderColor = GetColor ("PersonChoosingViewModel", "defaultBorderColor");
+        SolidColorBrush defaultForegroundColor = GetColor ("PersonChoosingViewModel", "defaultForegroundColor");
+
+        List <SolidColorBrush> defaultColors = new List <SolidColorBrush> () { defaultBackgroundColor, defaultBorderColor 
+                                                                              , defaultForegroundColor};
+
         SolidColorBrush focusedBackgroundColor = GetColor ("PersonChoosingViewModel", "focusedBackgroundColor");
-        SolidColorBrush unfocusedColor = GetColor ("PersonChoosingViewModel", "unfocusedColor");
         SolidColorBrush focusedBorderColor = GetColor ("PersonChoosingViewModel", "focusedBorderColor");
 
-        return new PersonChoosingViewModel (placeHolder, entireListColor, focusedBackgroundColor, unfocusedColor
-                                                                                             , focusedBorderColor);
+        List <SolidColorBrush> focusedColors = new List <SolidColorBrush> () { focusedBackgroundColor, focusedBorderColor };
+
+        SolidColorBrush hoveredBackgroundColor = GetColor ("PersonChoosingViewModel", "hoveredBackgroundColor");
+        SolidColorBrush hoveredBorderColor = GetColor ("PersonChoosingViewModel", "hoveredBorderColor");
+
+        List <SolidColorBrush> hoveredColors = new List <SolidColorBrush> () { hoveredBackgroundColor, hoveredBorderColor };
+
+        SolidColorBrush selectedBackgroundColor = GetColor ("PersonChoosingViewModel", "selectedBackgroundColor");
+        SolidColorBrush selectedBorderColor = GetColor ("PersonChoosingViewModel", "selectedBorderColor");
+        SolidColorBrush selectedForegroundColor = GetColor ("PersonChoosingViewModel", "selectedForegroundColor");
+
+        List <SolidColorBrush> selectedColors = new List <SolidColorBrush> () { selectedBackgroundColor, selectedBorderColor
+                                                                            , selectedForegroundColor };
+
+        PersonChoosingUserControl.SetComboboxHoveredItemColors (hoveredBackgroundColor, hoveredBorderColor);
+        VisiblePerson.SetColors (defaultColors, focusedColors, selectedColors);
+
+        return new PersonChoosingViewModel (placeHolder, entireListColor, incorrectTemplateColor
+                                                  , defaultColors, focusedColors, selectedColors);
     }
 
 
     private static SolidColorBrush GetColor ( string forWhat, string colorSectionName )
     {
-        IEnumerable<IConfigurationSection> sections =
+        IEnumerable <IConfigurationSection> sections =
         GetterFromJson.GetChildren (new List<string> { forWhat, colorSectionName }, App.ConfigPath);
 
         List<int> rgb = new () { 100, 100, 100 };

@@ -33,26 +33,6 @@ namespace Lister.ViewModels
         private int _topMargin = 54;
         private MessageDialog _view;
 
-        private SolidColorBrush lB;
-        internal SolidColorBrush LineBackground
-        {
-            get { return lB; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref lB, value, nameof (LineBackground));
-            }
-        }
-
-        private SolidColorBrush cB;
-        internal SolidColorBrush CanvasBackground
-        {
-            get { return cB; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref cB, value, nameof (CanvasBackground));
-            }
-        }
-
         private Bitmap wI;
         internal Bitmap WarnImage
         {
@@ -63,30 +43,30 @@ namespace Lister.ViewModels
             }
         }
 
-        private List<string> mL;
+        private List<string> _messageLines;
         internal List<string> MessageLines
         {
-            get { return mL; }
+            get { return _messageLines; }
             set
             {
-                this.RaiseAndSetIfChanged (ref mL, value, nameof (MessageLines));
+                this.RaiseAndSetIfChanged (ref _messageLines, value, nameof (MessageLines));
 
                 foreach ( string line in MessageLines )
                 {
                     _topMargin -= _lineHeight;
                 }
 
-                messageMargin = new Thickness (10, _topMargin, 0, 0);
+                MessageMargin = new Thickness (18, _topMargin, 0, 0);
             }
         }
 
-        private Thickness mM;
-        internal Thickness messageMargin
+        private Thickness _messageMargin;
+        internal Thickness MessageMargin
         {
-            get { return mM; }
+            get { return _messageMargin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref mM, value, nameof (messageMargin));
+                this.RaiseAndSetIfChanged (ref _messageMargin, value, nameof (MessageMargin));
             }
         }
 
@@ -96,9 +76,6 @@ namespace Lister.ViewModels
             string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
-
-            CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
-            LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
         }
 
 

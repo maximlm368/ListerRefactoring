@@ -2,11 +2,13 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="460"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480"
 			 xmlns:vm="clr-namespace:Lister.ViewModels"
 			 xmlns:uc="clr-namespace:Lister.Views"
 			 x:Class="Lister.Views.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel"
+			 
+			 KeyDown="ToSide"
 			 
 			 Height="{Binding  Path=ViewHeight,  Mode=OneWay}"
 			 Width="{Binding  Path=ViewWidth,  Mode=OneWay}">
@@ -19,82 +21,90 @@
 
 		<Grid
 			Name="backBlock"
-			Height="40"
-			Background="#EEEEEE"
-			Margin="0,0">
+			Height="45"
+			Background="#EEEEEE">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="240" ></ColumnDefinition>
+				<ColumnDefinition Width="216" ></ColumnDefinition>
 				<ColumnDefinition ></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
 			<Grid.RowDefinitions>
-				<RowDefinition Height="20" ></RowDefinition>
-				<RowDefinition Height="20" ></RowDefinition>
+				<RowDefinition  Height="22"></RowDefinition>
+				<RowDefinition  Height="2"></RowDefinition>
+				<RowDefinition Height="22"></RowDefinition>
 			</Grid.RowDefinitions>
 
 			<Button
 				Name="Back"
-				Classes="mainButton"
+				Classes="superButton"
 				ToolTip.Tip="Сохранить изменения и вернуться к макету"
+				ToolTip.HorizontalOffset="10"
 				Grid.Column="1"
 				Grid.Row="0"
-				Grid.RowSpan="2"
+				Grid.RowSpan="3"
 				Width="200"
 				Height="32"
-				Margin="20,-2"
+				Margin="8,0"
+				Padding="4,3"
 				ZIndex="2"
-				Command="{Binding  Path = GoBackCommand}">
+				Command="{Binding  Path = GoBackCommand}"
+				PointerPressed="SomeButtonPressed">
 
-				<StackPanel Orientation="Horizontal">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="30"></ColumnDefinition>
+						<ColumnDefinition Width="170"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
 					<Label
 						Classes="picture"
+						Grid.Column="0"
 						Content="&#xf52b;"
 						Width="25"
 						Padding="3,8"/>
 					<Label
+						Grid.Column="1"
 						Content="Вернуться к макету"
 						Width="175"
-						Padding="0,6"/>
-				</StackPanel>
+						Padding="1,6"/>
+				</Grid>
 				
 				</Button>
 			
 			<Border
 				Grid.Column="0"
-				Grid.Row="1"
+				Grid.Row="2"
 				Height="20"
 				CornerRadius="0,5,0,0"
 				Background="White"/>
 
 			<Border
 				Grid.Column="2"
-				Grid.Row="1"
+				Grid.Row="2"
 				Height="20"
 				CornerRadius="5,0,0,0"
 				Background="White"/>
 
 			<Border
 				Grid.Column="1"
-				Grid.Row="1"
+				Grid.Row="2"
 				Height="20"
 				CornerRadius="0,0,0,0"
 				Background="White"/>
 
 			<Border
 				Grid.Column="1"
-				Grid.Row="1"
+				Grid.Row="2"
 				Height="20"
 				CornerRadius="0,0,5,5"
 				Background="#EEEEEE"/>
 			
 		</Grid>
 		
-		
 		<Grid
 		   Name="badgeArea"
-		   Margin="0,0"
 		   Background="AliceBlue"
 		   ZIndex="1">
 
@@ -110,46 +120,61 @@
 
 				<Border
 					Name="editionButtonsBlock"
-					Width="220"
-					Height="323"
-					Margin="0,20"
+					Width="232"
+					Height="357"
+					Margin="0,14"
 					CornerRadius="0,5,5,0"
-					Background="#EEEEEE"
+					Background="#eeeeee"
+					BoxShadow="3 3 10 0 #817974"
 					ZIndex="2">
 					
-					<StackPanel>
-
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="16"></RowDefinition>
+							<RowDefinition Height="48" ></RowDefinition>
+							<RowDefinition Height="8" ></RowDefinition>
+							<RowDefinition Height="20" ></RowDefinition>
+							<RowDefinition Height="32" ></RowDefinition>
+							<RowDefinition Height="16"></RowDefinition>
+							<RowDefinition Height="10" ></RowDefinition>
+							<RowDefinition Height="80" ></RowDefinition>
+							<RowDefinition Height="16" ></RowDefinition>
+							<RowDefinition Height="1" ></RowDefinition>
+							<RowDefinition Height="4" ></RowDefinition>
+							<RowDefinition Height="32" ></RowDefinition>
+						</Grid.RowDefinitions>
+						
 						<Grid
 							Name="entireCount"
-							Margin="0,5">
+							Grid.Row="1">
 
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="50"></ColumnDefinition>
-								<ColumnDefinition Width="170" ></ColumnDefinition>
+								<ColumnDefinition Width="62"></ColumnDefinition>
+								<ColumnDefinition Width="158" ></ColumnDefinition>
 							</Grid.ColumnDefinitions>
 
 							<Grid.RowDefinitions>
-								<RowDefinition Height="26"></RowDefinition>
-								<RowDefinition Height="26" ></RowDefinition>
+								<RowDefinition Height="24"></RowDefinition>
+								<RowDefinition Height="24" ></RowDefinition>
 							</Grid.RowDefinitions>
 
 							<Label
 								Grid.Column="0"
 								Grid.Row="0"
-								Padding="5,6"
+								Padding="16,0,4,0"
 								ToolTip.Tip="Всего бейджей"
 								Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"/>
 
 							<Label
 								Grid.Column="1"
 								Grid.Row="0"
-								VerticalContentAlignment="Center"
+								Padding="4,0"
 								Content="Всего бейджей"/>
 
 							<Label
 								Grid.Column="0"
 								Grid.Row="1"
-								Padding="5,6"
+								Padding="16,0,4,0"
 								Foreground="Red"
 								ToolTip.Tip="Из них с ошибками"
 								Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"/>
@@ -157,40 +182,42 @@
 							<Label
 								Grid.Column="1"
 								Grid.Row="1"
-								VerticalContentAlignment="Center"
+								Padding="4,0"
 								Content="Из них с ошибками"/>
 
 						</Grid>
 
 						<Label
-							Classes="height_40"
-							Margin="0,-5"
-							Padding="5,7"
+							Grid.Row="3"
+							Height="24"
+							Margin="16,0"
+							Padding="0,0"
 							Content="Размер шрифта"/>
 						
 						<StackPanel
 							Name="textSize"
-							Margin="0,-2"
+							Grid.Row="4"
 							Orientation="Horizontal">
 
 							<Button
 								Name="zoomOut"
-								Margin="5,0"
+								Classes="transparent"
+								Margin="16,0"
 								Padding="8,7"
 								Width="32"
-								FontFamily="{StaticResource FA}"
 								Content="&#xf068;"
 								ToolTip.Tip="Уменьшить шрифт"
 								KeyDown="ToSide"
 								Command="{Binding  Path = ReduceFontSize}"
-								IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
+								PointerPressed="SomeButtonPressed"
+								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
 
 							<Label
 								Name="scalabilityGrade"
-								Width="140"
+								Width="128"
 								Background="{Binding  Path = FocusedFontSizeColor,  Mode=OneWay}"
 								BorderBrush="{Binding  Path = FocusedFontSizeBorderColor,  Mode=OneWay}"
-								Margin="-2,0"
+								Margin="-12,0"
 								GotFocus="HandleGettingFocus"
 								KeyDown="ToParticularBadge"
 								Content="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
@@ -204,31 +231,30 @@
 
 							<Button
 								Name="zoomOn"
-								Margin="5,0"
-								Padding="8,7"
+								Classes="transparent"
+								Margin="16,0"
+								Padding="7,7"
 								Width="32"
-								FontFamily="{StaticResource FA}"
 								Content="&#x2b;"
 								ToolTip.Tip="Увеличить шрифт"
 								KeyDown="ToSide"
 								Command="{Binding  Path = IncreaseFontSize}"
-								IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}" />
+								PointerPressed="SomeButtonPressed"
+								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
 						</StackPanel>
 
 						<Label
-							Classes="height_40"
-							FontSize="16"
-							Margin="0,5"
-							Padding="5,10"
+							Grid.Row="6"
+							Height="24"
+							Margin="16,5"
+							Padding="0,2"
 							Content="Текст"/>
 						
 						<TextBox
 							Name="editorTextBox"
-							Width="210"
+							Grid.Row="7"
+							Width="200"
 							Height="80"
-							Background="White"
-							FontSize="16"
-							Margin="0,-10"
 							HorizontalAlignment="Center"
 							TextWrapping="Wrap"
 							IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
@@ -239,12 +265,15 @@
 
 						<Button
 							Name="spliter"
+							Classes="Primary"
+							Grid.Row="9"
 							ToolTip.Tip="Разделить текст на слова"
 							HorizontalAlignment="Center"
-							Width="210"
+							Width="200"
 							Height="32"
 							Margin="0,17"
 							Command="{Binding   Path = Split}"
+							PointerPressed="SomeButtonPressed"
 							KeyDown="ToParticularBadge"
 							IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}">
 
@@ -265,13 +294,16 @@
 
 						<Button
 							Name="cancel"
+							Classes="Primary"
+							Grid.Row="11"
 							ToolTip.Tip="Отменить все изменения"
-							Width="210"
+							Width="200"
 							Height="32"
 							HorizontalAlignment="Center"
 							Margin="0,-11"
 							IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
 							Command="{Binding  Path = CancelChanges}"
+							PointerPressed="SomeButtonPressed"
 							KeyDown="ToParticularBadge">
 
 							<StackPanel Orientation="Horizontal">
@@ -289,7 +321,7 @@
 							
 						</Button>
 					
-					</StackPanel>
+					</Grid>
 				</Border>
 				
 				<Border
@@ -297,7 +329,7 @@
 					HorizontalAlignment="Left"
 					Width="{Binding  Path=WorkAreaWidth,  Mode=OneWay}"
 					Height="{Binding  Path=WorkAreaHeight,  Mode=OneWay}"
-					Margin="-220, 0"
+					Margin="-232, 0"
 					BorderThickness="0">
 
 					<ScrollViewer
@@ -362,7 +394,7 @@
 
 												<TextBlock
 													Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
-													Padding="{Binding  Path = Padding,  Mode=OneWay}"
+													VerticalAlignment="Center"
 													Height="{Binding  Path = FontSize,  Mode=OneWay}"
 													FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 													FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
@@ -514,34 +546,31 @@
 
 			</StackPanel>
 
-			
 			<Border
 				Name="collectionManagement"
 				Grid.Column="1"
 				Width="250"
 				Margin="{Binding  Path=CollectionFilterMargin,  Mode=OneWay}"
-				Height="380"
+				Height="392"
 				CornerRadius="5,0,0,5"
 				PointerWheelChanged="ScrollByWheel"
-				Background="#EEEEEE">
+				Background="#EEEEEE"
+				BoxShadow="-3 3 10 0 #817974">
 						
 				<StackPanel
 					Name="sliderPanel"
 					Width="248"
-					Height="380">
+					Height="386">
 
 					<Button
 						Name="extender"
-						Classes="transparent"
+						Classes="extender"
 						CornerRadius="5,0,0,0"
 						HorizontalAlignment="Left"
-						HorizontalContentAlignment="Left"
-						VerticalContentAlignment="Center"
-						Width="20"
-						Height="30"
-						Margin="4,0"
-						Padding="0,5"
+						Margin="8,7"
+						Padding="4,4"
 						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
+						PointerPressed="SomeButtonPressed"
 						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
 						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}" />
 					
@@ -557,19 +586,20 @@
 							<Button
 								Name="switcher"
 								Width="{Binding  Path=SwitcherWidth,  Mode=OneWay}"
-								Margin="2,0"
+								Height="32"
+								Margin="1,0"
 								Padding="7,7"
 								FontFamily="{StaticResource FA}"
 								Content="&#xf0b0;"
 								Background="{Binding  Path=SwitcherBackground,  Mode=OneWay}"
 								ToolTip.Tip="{Binding  Path=SwitcherTip,  Mode=OneWay}"
 								Command="{Binding  Path = Filter}"
-								KeyDown="ToParticularBadge"/>
+								PointerPressed="SomeButtonPressed"/>
 							
 							<Label
 								Name="filterLabel"
 								Width="{Binding  Path=FilterLabelWidth,  Mode=OneWay}"
-								Margin="-2,4"
+								Margin="0,4"
 								Padding="0, 5"
 								Content="Фильтры"/>
 
@@ -577,8 +607,9 @@
 								Name="filterChoosing"
 								Background="White"
 								Height="32"
-								Width="150"
+								Width="143"
 								Margin="10,-4"
+								Padding="4,1"
 								MaxDropDownHeight="200"
 								IsEnabled="{Binding  Path=IsComboboxEnabled,  Mode=OneWay}"
 								SelectedIndex="{Binding  Path=ComboboxSelectedIndex,  Mode=OneWay}"
@@ -590,7 +621,7 @@
 									<DataTemplate >
 										<Label
 											Classes="narrow"
-											Padding="0,2"
+											Padding="-5,2"
 											Content="{Binding,  Mode=OneWay}"/>
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
@@ -602,81 +633,84 @@
 
 					<Button
 						Name="up"
-						Classes="littlePicture"
-						Width="30"
-						Height="20"
-						Padding="3,7"
-						Margin ="15,5"
+						Classes="upDownArrows"
+						Margin ="11,8"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						Command="{Binding   Path = ToPrevious}"
 						ToolTip.Tip="К предыдущему бейджу"
-						IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
+						IsEnabled="{Binding   Path = PreviousOnSliderIsEnable,   Mode=OneWay}"
 						IsVisible="{Binding   Path = UpDownIsVisible,   Mode=OneWay}"
+						Command="{Binding   Path = ToPrevious}"
+						PointerPressed="SomeButtonPressed"
 						Content="&#xf0d8;"/>
 					
-					<Border
+					<StackPanel 
 						Name="slider"
-						Width="240"
-						Height="{Binding  Path=ScrollHeight,  Mode=OneWay}"
-						Margin ="{Binding  Path=SliderMargin,  Mode=OneWay}"
-						CornerRadius="0,0,0,5"
-						KeyDown="ToParticularBadge">
-						
-					<StackPanel
+						Margin="{Binding  Path=SliderMargin,  Mode=OneWay}"
 						Orientation="Horizontal">
-
+						
 						<ItemsControl
 							Name="badgeStates"
-							Width="{Binding  Path=IconWidth,  Mode=OneWay}"
+							Width="{Binding  Path=SliderCollectionWidth,  Mode=OneWay}"
 							HorizontalAlignment="Left"
+							VerticalAlignment="Top"
 							ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 
-									<Grid
-										Width="{Binding  Path=IconWidth,  Mode=OneWay}"
+									<Border
+										Grid.Column="0"
+										HorizontalAlignment="Left"
+										Width="{Binding  Path=Width,  Mode=OneWay}"
+										Height="24"
 										Margin="0,2"
-										Tapped="ToParticularBadge">
+										BorderThickness="1"
+										Tapped="ToParticularBadge"
+										PointerEntered="SliderItemPointerEntered"
+										PointerExited="SliderItemPointerExited">
+									
+										<Grid
+											Width="{Binding  Path=InsideBorderWidth,  Mode=OneWay}"
+											Margin="-1,0">
 										
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition  Width="38"></ColumnDefinition>
-											<ColumnDefinition ></ColumnDefinition>
-										</Grid.ColumnDefinitions>
-										
-										<Border
-											Grid.Column="0"
-											HorizontalAlignment="Left"
-											Width="36"
-											Height="24"
-											BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay }"
-											BorderThickness="1">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition  Width="22"></ColumnDefinition>
+												<ColumnDefinition ></ColumnDefinition>
+											</Grid.ColumnDefinitions>
 
-											<Image
-												Source = "{Binding  Path = CorrectnessIcon,  Mode=OneWay }"
-												Width="34"
+											<Label
+												Grid.Column="0"
+												Width="22"
 												Height="22"
+												HorizontalContentAlignment="Center"
+												VerticalContentAlignment="Center"
+												FontFamily="{StaticResource FA}"
 												HorizontalAlignment="Left"
-												Opacity="{Binding  Path = IconOpacity,  Mode=OneWay }"/>
-
-										</Border>
-
-										<Label 
-											Classes="narrow"
-											Grid.Column="1"
-											Padding="5,2"
-											FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
-											Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"/>
+												Background="{Binding  Path = Background,  Mode=OneWay }"
+												Foreground="{Binding  Path = CorrectnessColor,  Mode=OneWay }"
+												Content="{Binding  Path = CorrectnessIcon,  Mode=OneWay }"/>
+																						
+											<Label 
 												
-									</Grid>
+												Grid.Column="1"
+												Height="22"
+												Padding="16,6"
+												Background="{Binding  Path = Background,  Mode=OneWay }"
+												FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
+												Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"/>
+												
+										</Grid>
+									</Border>
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
 
 						<Grid
 							Name="scroll"
+							VerticalAlignment="Top"
+							Margin="1,0"
 							Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-							Height="{Binding   Path = ScrollHeight,  Mode=OneWay}"
+							Height="{Binding   Path = ScrollerHeight,  Mode=OneWay}"
 							Background="White">
 							
 							<Grid.RowDefinitions>
@@ -695,12 +729,12 @@
 								Content="&#xF077;"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Command="{Binding Path=ScrollUp}"
-								PointerPressed=""/>
+								PointerPressed="SomeButtonPressed"/>
 
 							<Canvas
 								Name="runnerWay"
 								Grid.Row="1"
-								Background="White"
+								Background="#EEEEEE"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerBruttoWalkSpace,  Mode=OneWay}"
 								VerticalAlignment="Center"
@@ -708,13 +742,16 @@
 							
 								<Canvas
 									Name="runner"
+									Classes="Runner"
 									Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 									Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
 									Canvas.Left="0"
 									Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
-									Background="Red"
+									Background="#817974"
 									PointerPressed="CaptureRunner"
 									PointerMoved="MoveRunner"
+									PointerEntered="OverRunner"
+									PointerExited="ExitedRunner"
 									PointerReleased="ReleaseRunner"/>
 							
 							</Canvas>
@@ -727,26 +764,23 @@
 								Padding="2,2"
 								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 								Content="&#xF078;"
-								Command="{Binding Path=ScrollDown}"/>
+								Command="{Binding Path=ScrollDown}"
+								PointerPressed="SomeButtonPressed"/>
 
 						</Grid>
 						
 					</StackPanel>	
 						
-					</Border>
-				
 				    <Button
 						Name="down"
-						Classes="littlePicture"
-						Width="30"
-						Height="20"
-						Padding="3,3"
-						Margin ="15,5"
+						Classes="upDownArrows"
+						Margin ="11,8"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
-						Command="{Binding   Path = ToNext}"
 						ToolTip.Tip="К следующему бейджу"
-						IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
+						IsEnabled="{Binding   Path = NextOnSliderIsEnable,   Mode=OneWay}"
 						IsVisible="{Binding   Path = UpDownIsVisible,   Mode=OneWay}"
+						Command="{Binding   Path = ToNext}"
+						PointerPressed="SomeButtonPressed"
 						Content="&#xf0d7;"/>
 				
 				</StackPanel>
@@ -755,12 +789,11 @@
 		
 		</Grid>
 
-
 		<Grid
 			Name="navigation"
-			Height="40"
-			Background="#EEEEEE"
-			Margin="0,0">
+			Height="44"
+			Margin="0,0"
+			Background="#eeeeee">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
@@ -779,7 +812,7 @@
 				<ColumnDefinition Width="34"></ColumnDefinition>
 				<ColumnDefinition Width="64"></ColumnDefinition>
 				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="2"></ColumnDefinition>
+				<ColumnDefinition Width="4"></ColumnDefinition>
 				
 			</Grid.ColumnDefinitions>
 
@@ -788,10 +821,12 @@
 				Name="firstBadge"
 				Classes="transparent"
 				ToolTip.Tip="К первому бейджу"
+				ToolTip.HorizontalOffset="20"
 				Grid.Column="1"
 				Width="32"
-				Padding="7,7"
+				Padding="8,6"
 				Command="{Binding   Path = ToFirst}"
+				PointerPressed="SomeButtonPressed"
 				Content="&#xf048;"
 				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
 
@@ -799,10 +834,12 @@
 				Name="previousBadge"
 				Classes="littlePicture"
 				ToolTip.Tip="К предыдущему бейджу"
+				ToolTip.HorizontalOffset="20"
 				Grid.Column="2"
 				Width="32"
-				Padding="5,5"
+				Padding="8,4"
 				Command="{Binding   Path = ToPrevious}"
+				PointerPressed="SomeButtonPressed"
 				Content="&#xf0d9;"
 				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
 
@@ -821,14 +858,14 @@
 			<Label
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				Margin="0,6"
+				Margin="0,8"
 				Content="из"
 				Grid.Column="4"/>
 
 			<Label
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
-				Margin="0,7"
+				Margin="0,9"
 				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
 				Grid.Column="5"/>
 
@@ -836,21 +873,25 @@
 				Name="nextBadge"
 				Classes="littlePicture"
 				ToolTip.Tip="К следующему бейджу"
+				ToolTip.HorizontalOffset="20"
 				Grid.Column="6"
 				Width="32"
-				Padding="8,5"
+				Padding="8,4"
 				Command="{Binding   Path = ToNext}"
+				PointerPressed="SomeButtonPressed"
 				Content="&#xf0da;"
 				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
 
 			<Button
 				Name="lastBadge"
 				Classes="transparent"
-				ToolTip.Tip="К последнему бейджу"
 				Grid.Column="7"
 				Width="32"
-				Padding="6,7"
+				Padding="8,6"
+				ToolTip.Tip="К последнему бейджу"
+				ToolTip.HorizontalOffset="20"
 				Command="{Binding   Path = ToLast}"
+				PointerPressed="SomeButtonPressed"
 				Content="&#xf051;"
 				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
 
@@ -860,10 +901,12 @@
 				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="32"
-				Padding="8,7"
+				Padding="8,6"
 				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
 				Command="{Binding   Path = ZoomOut}"
+				PointerPressed="SomeButtonPressed"
 				ToolTip.Tip="Уменьшить масштаб"
+				ToolTip.VerticalOffset="-40"
 				Content="&#xf068;"/>
 
 			<Label
@@ -884,15 +927,16 @@
 				Margin="0,3"
 				HorizontalAlignment="Center"
 				Width="32"
-				Padding="8,7"
+				Padding="7,6"
 				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
-				Command="{Binding   Path = ZoomOn}"
 				ToolTip.Tip="Увеличить масштаб"
+				ToolTip.VerticalOffset="-40"
+				Command="{Binding   Path = ZoomOn}"
+				PointerPressed="SomeButtonPressed"
 				Content="&#x2b;" />
 
 
 		</Grid>
-
 
 		<StackPanel
 			Name="underDialogCurtain"
@@ -908,12 +952,20 @@
 
 		</StackPanel>
 
-
 	</StackPanel>
 </UserControl>
 
 
 <!-- 
+
+
+IsEnabled="{Binding   Path = ZoommerIsEnable,  Mode=OneWay}"
+
+
+
+Margin ="{Binding  Path=SliderMargin,  Mode=OneWay}"
+
+
 
 
 BorderBrush="{Binding   Path = FocusedFontSizeBorderColor,  Mode=OneWay }"

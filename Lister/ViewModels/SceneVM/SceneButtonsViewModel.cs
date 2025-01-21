@@ -29,10 +29,9 @@ namespace Lister.ViewModels
         public static int TappedPrintButton { get; set; }
 
         private readonly double _buttonWidth = 32;
-        private readonly double _countLabelWidth = 50;
         private readonly double _extention = 170;
-        private readonly double _buttonBlockWidth = 50;
-        private readonly double _workAreaLeftMargin = -61;
+        private readonly double _buttonBlockWidth = 62;
+        private readonly double _workAreaLeftMargin = -72;
         private readonly string _extentionToolTip;
         private readonly string _shrinkingToolTip;
         private readonly string _fileIsOpenMessage;
@@ -76,6 +75,16 @@ namespace Lister.ViewModels
             private set
             {
                 this.RaiseAndSetIfChanged (ref _workAreaMargin, value, nameof (WorkAreaMargin));
+            }
+        }
+
+        private Thickness _extenderMargin;
+        internal Thickness ExtenderMargin
+        {
+            get { return _extenderMargin; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _extenderMargin, value, nameof (ExtenderMargin));
             }
         }
 
@@ -136,6 +145,7 @@ namespace Lister.ViewModels
             HintWidth = 0;
             ButtonBlockWidth = _buttonBlockWidth;
             WorkAreaMargin = new Thickness (_workAreaLeftMargin, 0);
+            ExtenderMargin = new Thickness (28, 8);
             ExtentionTip = _extentionToolTip;
             ExtenderContent = "\uF061";
         }
@@ -149,6 +159,7 @@ namespace Lister.ViewModels
                 ButtonWidth -= _extention;
                 ButtonBlockWidth -= _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left + _extention ), 0);
+                ExtenderMargin = new Thickness (( ExtenderMargin.Left - _extention ), 8);
                 ExtentionTip = _extentionToolTip;
                 ExtenderContent = "\uF061";
                 _blockIsExtended = false;
@@ -159,6 +170,7 @@ namespace Lister.ViewModels
                 ButtonWidth += _extention;
                 ButtonBlockWidth += _extention;
                 WorkAreaMargin = new Thickness (( WorkAreaMargin. Left - _extention ), 0);
+                ExtenderMargin = new Thickness (( ExtenderMargin.Left + _extention ), 8);
                 ExtentionTip = _shrinkingToolTip;
                 ExtenderContent = "\uF060";
                 _blockIsExtended = true;

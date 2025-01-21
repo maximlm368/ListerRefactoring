@@ -121,6 +121,32 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = mainWindow;
             desktop.MainWindow.Show ();
             splashWindow.Close ();
+
+
+
+
+            //Stopwatch sw = new Stopwatch ();
+            //sw.Start ();
+
+            //for ( int index = 0;   index < 100;   index++ )
+            //{
+            //    keybd_event (0x09, 0x45, 0x0001, 0);
+
+            //    int aaa = 0;
+
+            //    for ( int ind = 0;   ind < 10_000_000;   ind++ ) 
+            //    {
+            //        aaa += 1;
+            //    }
+            //}
+
+
+
+            //keybd_event (0x09, 0x45, 0x0001, 0);
+            //Thread.Sleep (1000);
+            //keybd_event (0x09, 0x45, 0x0001, 0);
+
+            //keybd_event (0x0d, 0x45, 0x0001, 0);
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {
@@ -153,6 +179,11 @@ public partial class App : Avalonia.Application
             return result;
         }
     }
+
+
+    [DllImport ("user32.dll")]
+    static extern void keybd_event ( byte bvk, byte bScan, int flag, ulong extraInfo );
+
 }
 
 

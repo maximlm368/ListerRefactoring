@@ -18,33 +18,13 @@ namespace Lister.ViewModels
 
         private DialogWindow _view;
 
-        private SolidColorBrush lB;
-        internal SolidColorBrush LineBackground
-        {
-            get { return lB; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref lB, value, nameof (LineBackground));
-            }
-        }
-
-        private SolidColorBrush cB;
-        internal SolidColorBrush CanvasBackground
-        {
-            get { return cB; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref cB, value, nameof (CanvasBackground));
-            }
-        }
-
-        private Bitmap wI;
+        private Bitmap _warnImage;
         internal Bitmap WarnImage
         {
-            get { return wI; }
+            get { return _warnImage; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref wI, value, nameof (WarnImage));
+                this.RaiseAndSetIfChanged (ref _warnImage, value, nameof (WarnImage));
             }
         }
 
@@ -56,9 +36,6 @@ namespace Lister.ViewModels
             string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
             Uri correctUri = new Uri (correctnessIcon);
             WarnImage = ImageHelper.LoadFromResource (correctUri);
-
-            CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
-            LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
         }
 
 

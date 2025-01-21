@@ -90,8 +90,8 @@ namespace Lister.ViewModels
     {
         public int Id { get; protected set; }
 
-        private string _binding;
-        public string Binding
+        private string ? _binding;
+        public string ? Binding
         {
             get { return _binding; }
             protected set

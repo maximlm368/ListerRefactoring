@@ -78,6 +78,9 @@ namespace Lister.Views
 
             MainWindow mainWindow = App.MainWindow as MainWindow;
             mainWindow.ModalWindow = this;
+
+            Yes.FocusAdorner = null;
+            No.FocusAdorner = null;
         }
 
 

@@ -6,7 +6,7 @@
         x:Class="Lister.Views.LargeMessageDialog"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
-		Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
+		Width="668"
 		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:LargeMessageViewModel"
@@ -15,7 +15,7 @@
 
 	<UserControl
 		Name="body"
-		Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
+		Width="668"
 		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
 		BorderBrush = "gray"
         BorderThickness = "1">
@@ -27,16 +27,21 @@
 			Content ="Ошибка"/>
 
 		<Grid
-			Width="{Binding  Path = WindowWidth,  Mode=OneWay }"
-			Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }">
+			Width="668">
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition  Width="35"></ColumnDefinition>
 				<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
+			<Grid.RowDefinitions>
+				<RowDefinition  Height="8"></RowDefinition>
+				<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
+			</Grid.RowDefinitions>
+
 			<Image
 				Grid.Column="0"
+				Grid.Row="1"
 				Width="35"
 				Margin ="10,17"
 				VerticalAlignment="Top"
@@ -44,11 +49,13 @@
 
 			<Grid
 				Grid.Column="1"
+				Grid.Row="1"
 				Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }">
 				
 				<Grid.RowDefinitions>
 					<RowDefinition  Height="35"></RowDefinition>
 					<RowDefinition  Height="35"></RowDefinition>
+					<RowDefinition  Height="8"></RowDefinition>
 					<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
 				</Grid.RowDefinitions>
 				
@@ -93,16 +100,17 @@
 					Text="макет будет построен с дефолтными значениями !"/>
 
 				<ScrollViewer
-					Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }"
+					Width="592"
 					Height="{Binding  Path = ErrorsContainerHeight,  Mode=OneWay }"
 					HorizontalScrollBarVisibility="Auto"
 					VerticalScrollBarVisibility="Auto"
-					AllowAutoHide="True"
+					AllowAutoHide="False"
 					BorderBrush="Gray"
-					BorderThickness="5"
-					Grid.Row="2">
+					Grid.Row="3">
 
 					<SelectableTextBlock
+						Name="textArea"
+						Focusable="False"
 						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
 						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
 						LineHeight="16"
@@ -118,24 +126,23 @@
 
 		<Canvas
 			Name ="Line"
-			Width="{Binding  Path = LineWidth,  Mode=OneWay }"
+			Width="666"
 			Height="1"
 			Margin ="0,0,0,0"
-			Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+			Background ="#ececec"/>
 
 		<Canvas
-			Width="{Binding  Path = LineWidth,  Mode=OneWay }"
-			Height="39"
+			Width="666"
+			Height="51"
 			Margin ="0,0,0,0"
-			Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">	
+			Background ="#f6f6f6">	
 
 			<Button
 				Name="ok"
-				Classes="modalButton"
+				Classes="Primary"
 				Padding="31,4"
-				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
-				Canvas.Top="6"
-				Canvas.Left="{Binding  Path = ButtonCanvasLeft,  Mode=OneWay }"
+				Canvas.Top="8"
+				Canvas.Left="570"
 				Content="Ok"
 				Command="{Binding  Path=Close}"/>
 
@@ -147,6 +154,8 @@
 </Window>
 
 <!--
+Classes="modalButton"
+
 
 					<ItemsControl
 						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"

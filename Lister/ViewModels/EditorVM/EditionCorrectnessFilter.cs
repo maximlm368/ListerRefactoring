@@ -22,6 +22,7 @@ using AvaloniaEdit.Utils;
 using System.Collections.Immutable;
 using ReactiveUI;
 using Avalonia;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Lister.ViewModels
 {
@@ -157,8 +158,7 @@ namespace Lister.ViewModels
 
                 ScrollWidth = 0;
 
-                var imm = CorrectNumbered.ToImmutableSortedDictionary ();
-                CorrectNumbered = imm.ToDictionary ();
+                CorrectNumbered.Sort (_comparer);
                 CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
@@ -172,8 +172,7 @@ namespace Lister.ViewModels
 
                 TryChangeSpecificLists ();
 
-                var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
-                IncorrectNumbered = imm.ToDictionary ();
+                IncorrectNumbered.Sort (_comparer);
                 CurrentVisibleCollection = IncorrectNumbered;
                 IncorrectBadgesCount = CurrentVisibleCollection.Count;
             }
@@ -204,6 +203,7 @@ namespace Lister.ViewModels
         {
             BeingProcessedBadge = null;
             VisibleIcons = new ();
+            NextOnSliderIsEnable = true;
             NextIsEnable = true;
             LastIsEnable = true;
 
@@ -256,32 +256,22 @@ namespace Lister.ViewModels
         {
             int counter = 0;
 
-            foreach ( KeyValuePair <int, BadgeViewModel> badge   in   AllNumbered )
+            foreach ( BadgeViewModel badge   in   AllNumbered )
             {
                 if ( counter == _visibleRange )
                 {
                     break;
                 }
 
-                bool badgeIsCorrect = false;
-
-                if ( CorrectNumbered.ContainsKey (badge.Value.Id) )
-                {
-                    badgeIsCorrect = true;
-                }
-                else if ( IncorrectNumbered.ContainsKey (badge.Value.Id) )
-                {
-                    badgeIsCorrect = false;
-                }
-
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (badgeIsCorrect, badge.Value, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
+                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                     , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                     , _filterIsOpen));
 
                 counter++;
             }
 
-            BeingProcessedBadge = AllNumbered.ElementAt (0).Value;
-            VisibleIcons [0].IconOpacity = 1;
+            BeingProcessedBadge = AllNumbered.ElementAt (0);
             VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
             VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit
                                                     , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
@@ -295,23 +285,24 @@ namespace Lister.ViewModels
             int existingCounter = 0;
             int firstExistingCommonNumber = -1;
 
-            foreach ( KeyValuePair <int, BadgeViewModel> badge   in   CorrectNumbered )
+            foreach ( BadgeViewModel badge   in   CorrectNumbered )
             {
                 if ( existingCounter == _visibleRange )
                 {
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (true, badge.Value, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (badge
+                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen));
 
                 if ( existingCounter == 0 )
                 {
-                    VisibleIcons [existingCounter].IconOpacity = 1;
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
                     VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
                                                     , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
-                    firstExistingCommonNumber = badge.Key;
+                    firstExistingCommonNumber = badge.Id;
                 }
 
                 existingCounter++;
@@ -323,7 +314,7 @@ namespace Lister.ViewModels
                 Uri correctUri = new Uri (correctnessIcon);
                 FilterState = ImageHelper.LoadFromResource (correctUri);
                 ActiveIcon = VisibleIcons [0];
-                BeingProcessedBadge = CorrectNumbered.ElementAt (0).Value;
+                BeingProcessedBadge = CorrectNumbered.ElementAt (0);
             }
         }
 
@@ -333,23 +324,24 @@ namespace Lister.ViewModels
             int existingCounter = 0;
             int firstExistingCommonNumber = -1;
 
-            foreach ( KeyValuePair<int, BadgeViewModel> badge   in   IncorrectNumbered )
+            foreach ( BadgeViewModel badge   in   IncorrectNumbered )
             {
                 if ( existingCounter == _visibleRange )
                 {
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (false, badge.Value, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
+                                                            , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
+                                                  , _filterIsOpen));
 
                 if ( existingCounter == 0 )
                 {
-                    VisibleIcons [existingCounter].IconOpacity = 1;
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
                     VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
                                                     , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
-                    firstExistingCommonNumber = badge.Key;
+                    firstExistingCommonNumber = badge.Id;
                 }
 
                 existingCounter++;
@@ -361,7 +353,7 @@ namespace Lister.ViewModels
                 Uri correctUri = new Uri (correctnessIcon);
                 FilterState = ImageHelper.LoadFromResource (correctUri);
                 ActiveIcon = VisibleIcons [0];
-                BeingProcessedBadge = IncorrectNumbered.ElementAt (0).Value;
+                BeingProcessedBadge = IncorrectNumbered.ElementAt (0);
             }
         }
 
@@ -375,21 +367,27 @@ namespace Lister.ViewModels
 
             if ( BeingProcessedBadge. IsCorrect )
             {
-                try
+                if( ! CorrectNumbered.Contains(BeingProcessedBadge) )
                 {
-                    CorrectNumbered.Add (BeingProcessedBadge.Id, BeingProcessedBadge);
-                    IncorrectNumbered.Remove (BeingProcessedBadge.Id);
+                    CorrectNumbered.Add (BeingProcessedBadge);
+
+                    if ( IncorrectNumbered.Contains (BeingProcessedBadge) )
+                    {
+                        IncorrectNumbered.Remove (BeingProcessedBadge);
+                    }
                 }
-                catch ( Exception ex ) { }
             }
             else if ( ! BeingProcessedBadge. IsCorrect )
             {
-                try
+                if ( ! IncorrectNumbered.Contains (BeingProcessedBadge) )
                 {
-                    IncorrectNumbered.Add (BeingProcessedBadge.Id, BeingProcessedBadge);
-                    CorrectNumbered.Remove (BeingProcessedBadge.Id);
+                    IncorrectNumbered.Add (BeingProcessedBadge);
+
+                    if ( CorrectNumbered.Contains (BeingProcessedBadge) )
+                    {
+                        CorrectNumbered.Remove (BeingProcessedBadge);
+                    }      
                 }
-                catch ( Exception ex ) { }
             }
         }
 
@@ -444,8 +442,6 @@ namespace Lister.ViewModels
                 SwitcherTip = _correctTip;
                 TryChangeSpecificLists ();
 
-                var imm = CorrectNumbered.ToImmutableSortedDictionary ();
-                CorrectNumbered = imm.ToDictionary ();
                 CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
@@ -457,8 +453,6 @@ namespace Lister.ViewModels
                 SwitcherTip = _incorrectTip;
                 TryChangeSpecificLists ();
 
-                var imm = IncorrectNumbered.ToImmutableSortedDictionary ();
-                IncorrectNumbered = imm.ToDictionary ();
                 CurrentVisibleCollection = IncorrectNumbered;
                 IncorrectBadgesCount = CurrentVisibleCollection.Count;
             }
@@ -477,24 +471,48 @@ namespace Lister.ViewModels
             if ( _filterIsOpen )
             {
                 CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
-                WorkAreaWidth += _namesFilterWidth;
                 _filterIsOpen = false;
                 ExtenderContent = "\uF060";
                 SwitcherWidth = _switcherWidth;
                 FilterLabelWidth = 0;
                 IsComboboxEnabled = false;
                 ExtentionTip = _extentionToolTip;
+
+                TryEnableSliderUpDown (VisibleIcons.Count);
+                ExtendOrShrinkSlider (_filterIsOpen);
             }
             else
             {
                 CollectionFilterMargin = new Thickness (0, 0);
-                WorkAreaWidth -= _namesFilterWidth;
                 _filterIsOpen = true;
                 ExtenderContent = "\uF061";
                 SwitcherWidth = 0;
                 FilterLabelWidth = _filterLabelWidth;
                 IsComboboxEnabled = true;
                 ExtentionTip = _shrinkingToolTip;
+
+                TryEnableSliderUpDown (0);
+                ExtendOrShrinkSlider (_filterIsOpen);
+            }
+        }
+
+
+        internal void ExtendOrShrinkSlider ( bool isToExtend )
+        {
+            double width;
+
+            if ( isToExtend )
+            {
+                width = _extendedIconWidth;
+            }
+            else 
+            {
+                width = _shrinkedIconWidth;
+            }
+
+            foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+            {
+                item.Width = width;
             }
         }
 

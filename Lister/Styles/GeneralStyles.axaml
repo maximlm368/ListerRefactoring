@@ -6,68 +6,140 @@
     </Border>
   </Design.PreviewWith>
 
-  <!-- Add Styles Here -->
 
-
-	<Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="FontSize" Value="16"/>
-	</Style>
-	<Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">
+	<Style Selector="ComboBox">
+		<Setter Property="FontSize" Value="26"/>
 		<Setter Property="Height" Value="32"/>
 	</Style>
 
+
+	<Style Selector="TextBox">
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+
+	
 
 	<Style Selector="TextBlock.picture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 	</Style>
-	
-	
-	
-	<Style Selector="Label.picture /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
-	</Style>
+
+
 	<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontSize" Value="16"/>
-	</Style>
-	<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="32"/>
+	</Style>
+	<Style Selector="Label.picture /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 	</Style>
 	<Style Selector="Label.height_40 /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="40"/>
 	</Style>
 	<Style Selector="Label.narrow /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="22"/>
-	</Style>
-	<Style Selector="Label.narrow /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Padding" Value="3,0"/>
 	</Style>
-	
-	
 	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="20"/>
-	</Style>
-	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontSize" Value="12"/>
-	</Style>
-	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Margin" Value="5,0,0,0"/>
 	</Style>
 
-
+	<Style Selector="Label.comboboxItem /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#FFFFFF"/>
+		<Setter Property="BorderBrush" Value="#D5E8F6"/>
+		<Setter Property="Foreground" Value="#000000"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Padding" Value="8,4"/>
+		<Setter Property="BorderThickness" Value="2"/>
+	</Style>
+	<Style Selector="Label.comboboxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#E3F1FC"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="Label.comboboxItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#E3F1FC"/>
+		<Setter Property="BorderBrush" Value="#D5E8F6"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
 
 
 	<Style
 		Selector="Border.rotatable">
-	
-	
-	
-	
 	</Style>
 	
 </Styles>
 
 
 <!--
+	<Style Selector="TextBox">
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:pointerover">
+		<Setter Property="Background" Value="#D5E8f6"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:focus">
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:disabled">
+		<Setter Property="Background" Value="#FCF2E3"/>
+		<Setter Property="BorderBrush" Value="#DBCAAE"/>
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+	</Style>
+
+
+
+	<Style Selector="TextBox">
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:pointerover">
+		<Setter Property="Background" Value="#D5E8f6"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:focus">
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+	<Style Selector="TextBox:disabled">
+		<Setter Property="Background" Value="#000000"/>
+		<Setter Property="BorderBrush" Value="#000000"/>
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+	</Style>
+
+
+	<Style Selector="TextBox:disabled">
+		<Setter Property="Background" Value="#FCF2E3"/>
+		<Setter Property="BorderBrush" Value="#DBCAAE"/>
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+	</Style>
+
+
+	<Style Selector="TextBox /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Background" Value="#ffffff"/>
+		<Setter Property="BorderBrush" Value="#514C48"/>
+		<Setter Property="Foreground" Value="#0000ff"/>
+	</Style>
+
+
 
 	<Style Selector="TextBlock /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontSize" Value="26"/>
@@ -75,5 +147,18 @@
 	<Style Selector="TextBox /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="12"/>
 	</Style>
+	
+	
+	
+	<Style Selector="Canvas.Runner /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#817974"/>
+	</Style>
+	<Style Selector="Canvas.Runner:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#D1D1D1"/>
+	</Style>
+	<Style Selector="Canvas.Runner:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#514C48"/>
+	</Style>
+	
 
 -->

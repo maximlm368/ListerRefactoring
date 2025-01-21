@@ -186,7 +186,7 @@ namespace Lister.ViewModels
                         args.Graphics.DrawImage (img, args.Graphics.VisibleClipBounds);
                     };
 
-                    //pd.Print ();
+                    pd.Print ();
                 }
             }
         }

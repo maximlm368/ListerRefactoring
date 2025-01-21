@@ -6,8 +6,8 @@
 		x:Class="Lister.Views.DialogWindow"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
-		MaxWidth="350"
-		MaxHeight="130"
+		MaxWidth="360"
+		MaxHeight="138"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:DialogViewModel"
 		
@@ -19,8 +19,8 @@
 
 	
 		<StackPanel
-			Width="350"
-			Height="130">
+			Width="360"
+			Height="138">
 
 			<Label
 				Classes="modalLabel"
@@ -44,50 +44,45 @@
 					Grid.Column="1"
 					Width="320"
 					FontSize="12"
-					Margin ="10,37,0,0"
+					Margin ="18,37,0,0"
 					TextWrapping="WrapWithOverflow"
 					MaxLines="3"/>
 			</Grid>
 
 			<Canvas
 				Name ="Line"
-				Width="348"
+				Width="358"
 				Height="1"
 				Margin ="0,-5,0,0"
-				Background ="{Binding  Path = LineBackground,  Mode=OneWay }"/>
+				Background ="#ececec"/>
 
 			<Canvas
-				Width="348"
-				Height="39"
+				Width="358"
+				Height="47"
 				Margin ="0,-2,0,0"
-				Background ="{Binding  Path = CanvasBackground,  Mode=OneWay }">
+				Background ="#f6f6f6">
 
 				<Button
 					Name="Yes"
-					Classes="modalButton"
+					Classes="Primary"
 					Padding="31,4"
-					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
 					Canvas.Top="8"
-					Canvas.Left="170"
+					Canvas.Left="166"
 					Content="Да"
 					Command="{Binding  Path = ChooseYes}"/>
 
 				<Button
 					Name="No"
-					Classes="modalButton"
+					Classes="Primary"
 					Padding="28,4"
-					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
 					Canvas.Top="8"
 					Canvas.Left="260"
 					Content="Нет"
 					Command="{Binding  Path = ChooseNo}"/>
 
 			</Canvas>
-
 		</StackPanel>
 	
-		
-		
 </Window>
 
 

@@ -28,12 +28,6 @@ namespace Lister.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {
-        //private readonly string _suggestedFileNames = "Badge";
-        //private readonly string _saveTitle = "Сохранение документа";
-        //private readonly string _incorrectXSLX = " - некорректный файл.";
-        //private readonly string _buildingLimitIsExhaustedMessage = "Исчерпан лимит построений.";
-        //private readonly string _fileIsOpenMessage = "Файл открыт в другом приложении. Закройте его и повторите выбор.";
-
         private readonly string _suggestedFileNames;
         private readonly string _saveTitle;
         private readonly string _incorrectXSLX;
@@ -229,7 +223,7 @@ namespace Lister.ViewModels
             else if ( args.PropertyName == "EditIncorrectsIsSelected" )
             {
                 MainView mainView = MainView.Instance;
-                mainView.EditIncorrectBadges (_sceneViewModel.IncorrectBadges, _sceneViewModel.PrintableBadges
+                mainView.EditIncorrectBadges (_sceneViewModel.ProcessableBadges, _sceneViewModel.PrintableBadges
                                                                                 , _sceneViewModel.AllPages [0]);
             }
             else if ( args.PropertyName == "PdfIsWanted" )
@@ -310,9 +304,9 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ResetIncorrects ( )
+        internal void RefreshTemplateAppearences ( )
         {
-            _sceneViewModel.ResetIncorrects ();
+            //_sceneViewModel.ResetIncorrects ();
             _personChoosingViewModel.RefreshTemplateChoosingAppearence ();
         }
 

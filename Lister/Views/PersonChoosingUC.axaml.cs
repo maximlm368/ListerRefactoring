@@ -23,14 +23,15 @@ namespace Lister.Views
 {
     public partial class PersonChoosingUserControl : UserControl
     {
-        private static SolidColorBrush _unfocusedColor = new SolidColorBrush (MainWindow.white);
+        private static SolidColorBrush _comboboxItemBackground;
+        private static SolidColorBrush _comboboxItemBorderColor;
 
         private MainView _parent;
         private readonly int _inputLimit = 40;
         private string _previousText;
-        private bool _buttonIsPressed = false;
         private bool _cursorIsOverPersonList = false;
         private bool _personListIsDropped = false;
+        private bool _dropdownButtonIsTapped = false;
         private bool _runnerIsCaptured = false;
         private bool _scrollingCausedByTapping = false;
         private bool _runnerShiftCaused = false;
@@ -40,7 +41,20 @@ namespace Lister.Views
         private string _textBoxText = string.Empty;
         private string _theme;
 
-        private SolidColorBrush _personTBBackground = new SolidColorBrush (MainWindow.black);
+        private static IBrush _currentComboboxItemBackground;
+        private static IBrush _currentComboboxItemBorderColor;
+
+        IBrush _borderHovered;
+        IBrush _backgroundHovered;
+
+        IBrush _borderFocused;
+        SolidColorBrush _backgroundFocused;
+
+        IBrush _borderDisabled;
+        IBrush _backgroundDisabled;
+
+        IBrush _borderDefault;
+        IBrush _backgroundDefault;
 
 
         public PersonChoosingUserControl ()
@@ -51,9 +65,30 @@ namespace Lister.Views
             _viewModel = (PersonChoosingViewModel) DataContext;
 
             Loaded += OnLoaded;
+            
             //ActualThemeVariantChanged += ThemeChanged;
 
             personTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
+
+            _borderHovered = new SolidColorBrush ( new Color(255, 81, 76, 72) );
+            _backgroundHovered = new SolidColorBrush (new Color (255, 213, 232, 246));
+
+            _borderFocused = new SolidColorBrush (new Color (255, 4, 111, 255));
+            _backgroundFocused = new SolidColorBrush (new Color (255, 255, 255, 255));
+
+            _borderDisabled = new SolidColorBrush (new Color (255, 219, 202, 174));
+            _backgroundDisabled = new SolidColorBrush (new Color (255, 252, 242, 227));
+
+            _borderDefault = personTextBox.BorderBrush;
+
+            builtInBorder.BorderBrush = personTextBox.BorderBrush;
+        }
+
+
+        internal static void SetComboboxHoveredItemColors ( SolidColorBrush background, SolidColorBrush borderColor )
+        {
+            _comboboxItemBackground = background;
+            _comboboxItemBorderColor = borderColor;
         }
 
 
@@ -81,14 +116,25 @@ namespace Lister.Views
         }
 
 
-        internal void AcceptEntirePersonList ( object sender, TappedEventArgs args )
+        internal void AcceptEntirePersonList ( object sender, PointerPressedEventArgs args )
         {
+            MainView.SomeControlPressed = true;
             _viewModel.SetEntireList ();
+        }
+
+
+        internal void ScrollerPressed ( object sender, PointerPressedEventArgs args )
+        {
+            MainView.SomeControlPressed = true;
         }
 
 
         internal void CustomComboboxGotFocus ( object sender, GotFocusEventArgs args )
         {
+            builtInBorder.BorderBrush = _borderFocused;
+            builtInButton.Background = _backgroundFocused;
+            builtInBorder.BorderThickness = new Thickness (0, 2, 2, 2);
+
             if ( personTextBox.Text == null )
             {
                 return;
@@ -98,18 +144,50 @@ namespace Lister.Views
             personTextBox.SelectionEnd = personTextBox.Text.Length;
         }
 
-        #region Drop
 
         internal void CustomComboboxLostFocus ( object sender, RoutedEventArgs args )
         {
             CloseCustomCombobox ();
+
+            builtInBorder.BorderBrush = _borderDefault;
+            builtInButton.Background = _backgroundDefault;
+            builtInBorder.BorderThickness = new Thickness (0, 1, 1, 1);
         }
 
 
+        internal void CustomComboboxPointerOver ( object sender, PointerEventArgs args )
+        {
+            if ( personTextBox.IsFocused )
+            {
+                builtInButton.Background = _backgroundFocused;
+                builtInBorder.BorderBrush = _borderFocused;
+            }
+            else 
+            {
+                builtInButton.Background = new SolidColorBrush (new Color (255, 248, 248, 248));
+                builtInBorder.BorderBrush = _borderHovered;
+            }
+        }
+
+
+        internal void CustomComboboxPointerExited ( object sender, PointerEventArgs args )
+        {
+            if ( personTextBox.IsFocused )
+            {
+                builtInButton.Background = _backgroundFocused;
+                builtInBorder.BorderBrush = _borderFocused;
+            }
+            else
+            {
+                builtInButton.Background = _backgroundDefault;
+                builtInBorder.BorderBrush = _borderDefault;
+            }
+        }
+
+        #region Drop
+
         internal void CloseCustomCombobox ( )
         {
-            _buttonIsPressed = false;
-
             if ( _personListIsDropped )
             {
                 _personListIsDropped = false;
@@ -147,9 +225,22 @@ namespace Lister.Views
         }
 
 
-        internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
+        //internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
+        //{
+        //    DropOrPickUp ();
+        //    personTextBox.Focus (NavigationMethod.Tab);
+        //}
+
+
+        internal void ButtonPressed ( object sender, PointerPressedEventArgs args )
         {
-            _buttonIsPressed = true;
+            _dropdownButtonIsTapped = true;
+            MainView.SomeControlPressed = true;
+        }
+
+
+        internal void ButtonReleased ( object sender, PointerReleasedEventArgs args )
+        {
             DropOrPickUp ();
             personTextBox.Focus (NavigationMethod.Tab);
         }
@@ -211,48 +302,48 @@ namespace Lister.Views
         }
 
 
-        internal void HandlePersonListReductio ( object sender, KeyEventArgs args )
-        {
-            string key = args.Key.ToString ();
-            bool keyIsUnimpacting = IsKeyUnimpacting (key);
+        //internal void HandlePersonListReductio ( object sender, KeyEventArgs args )
+        //{
+        //    string key = args.Key.ToString ();
+        //    bool keyIsUnimpacting = IsKeyUnimpacting (key);
 
-            if ( keyIsUnimpacting )
-            {
-                return;
-            }
+        //    if ( keyIsUnimpacting )
+        //    {
+        //        return;
+        //    }
 
-            _viewModel.ToZeroPersonSelection ();
-            TextBox textBox = ( TextBox ) sender;
-            string input = textBox.Text;
+        //    _viewModel.ToZeroPersonSelection ();
+        //    TextBox textBox = ( TextBox ) sender;
+        //    string input = textBox.Text;
 
-            if ( input != null )
-            {
-                RestrictInput (input);
+        //    if ( input != null )
+        //    {
+        //        RestrictInput (input);
 
-                if ( ( input == string.Empty ) )
-                {
-                    RecoverVisiblePeople ();
-                    _personListIsDropped = true;
-                    return;
-                }
+        //        if ( ( input == string.Empty ) )
+        //        {
+        //            RecoverVisiblePeople ();
+        //            _personListIsDropped = true;
+        //            return;
+        //        }
 
-                List<VisiblePerson> foundVisiblePeople = new List<VisiblePerson> ();
+        //        List<VisiblePerson> foundVisiblePeople = new List<VisiblePerson> ();
 
-                foreach ( VisiblePerson person in _viewModel.PeopleStorage )
-                {
-                    person.BorderBrushColor = _unfocusedColor;
-                    string entireName = person.Person.StringPresentation;
+        //        foreach ( VisiblePerson person in _viewModel.PeopleStorage )
+        //        {
+        //            person.BorderColor = _unfocusedColor;
+        //            string entireName = person.Person.StringPresentation;
 
-                    if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
-                    {
-                        foundVisiblePeople.Add (person);
-                    }
-                }
+        //            if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
+        //            {
+        //                foundVisiblePeople.Add (person);
+        //            }
+        //        }
 
-                _viewModel.SetInvolvedPeople (foundVisiblePeople);
-                _personListIsDropped = true;
-            }
-        }
+        //        _viewModel.SetInvolvedPeople (foundVisiblePeople);
+        //        _personListIsDropped = true;
+        //    }
+        //}
 
 
         private void RestrictInput ( string input )
@@ -292,10 +383,51 @@ namespace Lister.Views
 
         #endregion PersonListReduction
 
-        #region Choosing
+        #region ChoosingAndItemHovering
 
-        internal void HandleChoosingByTapping ( object sender, TappedEventArgs args )
+        internal void HoverCustomComboboxItem ( object sender, PointerEventArgs args )
         {
+            Label hovered = sender as Label;
+            _currentComboboxItemBackground = hovered.Background;
+            _currentComboboxItemBorderColor = hovered.BorderBrush;
+            hovered.Background = _comboboxItemBackground;
+            hovered.BorderBrush = _comboboxItemBorderColor;
+        }
+
+
+        internal void ExitCustomComboboxItem ( object sender, PointerEventArgs args )
+        {
+            Label hovered = sender as Label;
+            hovered.Background = _currentComboboxItemBackground;
+            hovered.BorderBrush = _currentComboboxItemBorderColor;
+        }
+
+
+        internal void HoverComboboxItem ( object sender, PointerEventArgs args )
+        {
+            Label hovered = sender as Label;
+            _currentComboboxItemBackground = hovered.Background;
+            _currentComboboxItemBorderColor = hovered.BorderBrush;
+            hovered.Background = _comboboxItemBackground;
+            hovered.BorderBrush = _comboboxItemBorderColor;
+        }
+
+
+        internal void ExitComboboxItem ( object sender, PointerEventArgs args )
+        {
+            if ( _personListIsDropped ) 
+            {
+                Label hovered = sender as Label;
+                hovered.Background = _currentComboboxItemBackground;
+                hovered.BorderBrush = _currentComboboxItemBorderColor;
+            }
+        }
+
+
+        internal void HandleChoosingByTapping ( object sender, PointerPressedEventArgs args )
+        {
+            MainView.SomeControlPressed = true;
+
             Label chosenLabel = ( Label ) sender;
             string chosenName = ( string ) chosenLabel.Content;
             _viewModel.SetChosenPerson (chosenName);
@@ -346,9 +478,23 @@ namespace Lister.Views
 
         internal void CaptureRunner ( object sender, PointerPressedEventArgs args )
         {
+            PaintRunner (0x51, 0x4c, 0x48);
+
             _runnerIsCaptured = true;
             Point inRunnerRelativePosition = args.GetPosition (( Canvas ) args.Source);
             _capturingY = inRunnerRelativePosition.Y;
+        }
+
+
+        internal void OverRunner ( object sender, PointerEventArgs args )
+        {
+            PaintRunner (0xd1, 0xd1, 0xd1);
+        }
+
+
+        internal void ExitedRunner ( object sender, PointerEventArgs args )
+        {
+            PaintRunner (0x81, 0x79, 0x74);
         }
 
 
@@ -358,6 +504,7 @@ namespace Lister.Views
             {
                 if ( _runnerIsCaptured )
                 {
+                    PaintRunner (0x81, 0x79, 0x74);
                     _runnerIsCaptured = false;
                 }
 
@@ -371,7 +518,7 @@ namespace Lister.Views
             }
             else 
             {
-                if ( !_runnerShiftCaused )
+                if ( !_runnerShiftCaused   &&   !_dropdownButtonIsTapped )
                 {
                     CloseCustomCombobox ();
                 }
@@ -380,6 +527,14 @@ namespace Lister.Views
                     _runnerShiftCaused = false;
                 }
             }
+
+            _dropdownButtonIsTapped = false;
+        }
+
+
+        private void PaintRunner ( byte red, byte green, byte blue )
+        {
+            runner.Background = new SolidColorBrush (new Color (255, red, green, blue));
         }
 
 

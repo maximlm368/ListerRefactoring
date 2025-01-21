@@ -58,20 +58,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        //var children = this.chil;
-
-        //foreach ( var child   in   children ) 
-        //{
-        //    Button button = child as Button;
-
-        //    if ( button != null ) 
-        //    {
-        //        button.FocusAdorner = null;
-        //    }
-        //}
-
-
-
         CommonStorageProvider = StorageProvider;
 
         this.Opened += OnOpened;
@@ -81,7 +67,6 @@ public partial class MainWindow : Window
         _currentWidth = Width;
         _currentHeight = Height;
 
-        //this.Tapped += HandleTapping;
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += HandlePositionChange;
 
@@ -161,19 +146,6 @@ public partial class MainWindow : Window
     internal void CancelSizeDifference ( )
     {
         WidthDifference = 0;
-    }
-
-
-    internal void HandleTapping ( object sender, TappedEventArgs args )
-    {
-        try
-        {
-            MainView mainView = ( MainView ) Content;
-            mainView.CloseCustomCombobox ();
-        }
-        catch ( InvalidCastException ex )
-        {
-        }
     }
 
 

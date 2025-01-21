@@ -39,12 +39,24 @@ public partial class PageNavigationZoomer : UserControl
         //zoomOut.Background = null;
 
         visiblePageNumber.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
+
+        
+        //Border border = new Border();
+        //border.BoxShadow = new Avalonia.Media.BoxShadows ();
+
+        
     }
 
 
     private void PreventPasting ( object sender, PointerReleasedEventArgs args )
     {
         args.Handled = true;
+    }
+
+
+    internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
+    {
+        MainView.SomeControlPressed = true;
     }
 
 

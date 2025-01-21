@@ -2,12 +2,12 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="190"
+		mc:Ignorable="d" d:DesignWidth="668" d:DesignHeight="369"
 		x:Class="Lister.Views.PrintDialog"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
-		Width="600"
-		Height="343"
+		Width="668"
+		Height="369"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:PrintDialogViewModel"
 		
@@ -18,8 +18,8 @@
 		ExtendClientAreaTitleBarHeightHint = "0">
 
 	<UserControl
-		Width="600"
-		Height="343"
+		Width="668"
+		Height="369"
 		BorderBrush = "gray"
         BorderThickness = "1">
 
@@ -29,7 +29,7 @@
 				Classes="modalLabel"
 				Content ="Настройка печати"/>
 
-            <Grid Margin="0,10">
+            <Grid Margin="8,16">
 				
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition  Width="180"></ColumnDefinition>
@@ -62,7 +62,7 @@
 					Background="White"
 					FontSize="16"
 					Height="32"
-					Width="400"
+					Width="461"
 					Padding="6,0"
 					Margin="0,2"
 					MaxDropDownHeight="120"
@@ -112,7 +112,7 @@
 					Grid.Column="1"
 					Grid.Row="3"
 					Height="32"
-					Width="400"
+					Width="461"
 					Margin="0,-2"
 					HorizontalAlignment="Left"
 					FontSize="16"
@@ -169,36 +169,34 @@
 
 			<Canvas
 				Name ="Line"
-				Width="600"
+				Width="666"
 				Height="1"
-				Margin ="0,0,0,0"
-				Background ="Gray"/>
+				Margin ="0,2"
+				Background ="#dcdcdc"/>
 
 			<Canvas
 				Name="buttons"
-				Width="598"
-				Height="40"
+				Width="666"
+				Height="51"
 				Margin ="0,-2,0,0"
-				Background = "{Binding  Path = CanvasBackground,  Mode=OneWay}">
+				Background = "#f0f0f0">
 
 				<Button
 					Name="print"
-					Classes="modalButton"
+					Classes="Primary"
 					Padding="13,4"
-					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
 					Canvas.Top="8"
-					Canvas.Left="420"
+					Canvas.Left="453"
 					Content="Печатать"
 					IsEnabled="{Binding  Path = PrintingIsAvailable,  Mode=OneWay}"
 					Command="{Binding  Path = Print}"/>
 
 				<Button
 					Name="cancel"
-					Classes="modalButton"
+					Classes="Primary"
 					Padding="15,4"
-					Background ="{Binding  Path = LineBackground,  Mode=OneWay }"
 					Canvas.Top="8"
-					Canvas.Left="510"
+					Canvas.Left="563"
 					Content="Отмена"
 					Command="{Binding  Path = Cancel}"/>
 

@@ -33,6 +33,20 @@ namespace Lister.Views
             DataContext = App.services.GetRequiredService<BadgesBuildingViewModel> ();
             _viewModel = ( BadgesBuildingViewModel ) DataContext;
             ActualThemeVariantChanged += ThemeChanged;
+
+            buildBadges.FocusAdorner = null;
+        }
+
+
+        private void RightPointerPressed ( object sender, PointerPressedEventArgs args )
+        {
+            var point = args.GetCurrentPoint (sender as Control);
+
+            if ( point.Properties.IsRightButtonPressed )
+            {
+                MainView.SomeControlPressed = true;
+                this.Focus ();
+            }
         }
 
 

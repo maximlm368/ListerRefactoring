@@ -15,6 +15,7 @@ namespace Lister.Views
         public PersonSourceUserControl ()
         {
             InitializeComponent ();
+            openPicker.FocusAdorner = null;
             DataContext = App.services.GetRequiredService<PersonSourceViewModel> ();
             PersonSourceViewModel viewModel = (PersonSourceViewModel) DataContext;
             viewModel.OnLoaded ();

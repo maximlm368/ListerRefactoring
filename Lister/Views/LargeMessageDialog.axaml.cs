@@ -54,12 +54,6 @@ namespace Lister.Views
         public LargeMessageDialog ()
         {
             InitializeComponent ();
-
-            //ScrollViewer scroll = new ScrollViewer ();
-
-            //SelectableTextBlock block = new SelectableTextBlock ();
-
-            
         }
 
 
@@ -72,6 +66,8 @@ namespace Lister.Views
             _viewModel.PassView (this);
 
             CanResize = false;
+            ok.FocusAdorner = null;
+            
 
             Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
 

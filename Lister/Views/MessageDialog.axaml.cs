@@ -68,6 +68,7 @@ namespace Lister.Views
             mainWindow.ModalWindow = this;
 
             Message = message;
+            ok.FocusAdorner = null;
         }
 
 

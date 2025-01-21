@@ -201,6 +201,7 @@ namespace Lister.ViewModels
             SetYourself (text.Width, FontSize, text.TopOffset, text.LeftOffset, brush);
             SetAlignment (text.Alignment);
 
+            Height = text.Height;
             Padding = GetPadding ();
         }
 
@@ -247,10 +248,12 @@ namespace Lister.ViewModels
 
         private Thickness GetPadding ()
         {
-            //Thickness padding;
-            //double paddingTop = ( UsefullHeight - FontSize ) / 2;
+            UsefullHeight = HeightWithBorder;
+            double paddingTop = ( Height - FontSize ) / 4;
             
-            return new Thickness (0, 1);
+
+            //return new Thickness (0, 1);
+            return new Thickness (0, -3);
         }
 
 
@@ -275,13 +278,6 @@ namespace Lister.ViewModels
         {
             return new Avalonia.Media.FontFamily (fontName);
         }
-
-
-        //private void SetUsefullWidth ()
-        //{
-        //    UsefullWidth = CalculateWidth (Content, DataSource);
-        //    UsefullHeight = FontSize;
-        //}
 
 
         private void SetUsefullWidth ()
