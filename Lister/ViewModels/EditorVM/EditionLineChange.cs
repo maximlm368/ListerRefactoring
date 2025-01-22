@@ -66,6 +66,8 @@ namespace Lister.ViewModels
 
         internal void FocusedToSide ( string direction )
         {
+            if ( BeingProcessedBadge == null ) return;
+
             BeingProcessedBadge.FocusedToSide (direction, _scale);
             ResetActiveIcon ();
         }

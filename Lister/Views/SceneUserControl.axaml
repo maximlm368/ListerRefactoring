@@ -45,8 +45,8 @@
 					Name="entireCount">
 
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="62"></ColumnDefinition>
-						<ColumnDefinition Width="170" ></ColumnDefinition>
+						<ColumnDefinition Width="64"></ColumnDefinition>
+						<ColumnDefinition Width="168" ></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 
 					<Grid.RowDefinitions>
@@ -58,14 +58,14 @@
 						Grid.Column="0"
 						Grid.Row="0"
 						Padding="12,5"
-						Width="62"
+						Width="64"
 						ToolTip.Tip="Всего бейджей"
 						Content="{Binding  Path = BadgeCount,  Mode=OneWay}"/>
 
 					<Label
 						Grid.Column="1"
 						Grid.Row="0"
-						Padding="2,5"
+						Padding="0,5"
 						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
 						Content="Всего бейджей"/>
 
@@ -74,7 +74,7 @@
 						Grid.Row="1"
 						Padding="12,0"
 						Margin="0,0,0,5"
-						Width="62"
+						Width="64"
 						Foreground="Red"
 						ToolTip.Tip="Из них с ошибками"
 						Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"/>
@@ -82,7 +82,7 @@
 					<Label
 						Grid.Column="1"
 						Grid.Row="1"
-						Padding="2,0"
+						Padding="0,0"
 						Margin="0,0,0,5"
 						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
 						Content="Из них с ошибками"/>
@@ -209,7 +209,7 @@
 			HorizontalAlignment="Left"
 			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
 			Height="311"
-			Width="850" >
+			Width="848" >
 
 			<ScrollViewer
 				Name="scroller"

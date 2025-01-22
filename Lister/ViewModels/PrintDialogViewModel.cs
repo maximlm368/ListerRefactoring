@@ -364,7 +364,7 @@ namespace Lister.ViewModels
 
                 if ( ! Some )
                 {
-                    _chosenPagesToPrint = new List<int> ();
+                    _chosenPagesToPrint = new List <int> ();
 
                     for ( int index = 0;   index < _passedPagesAmount;   index++ )
                     {
@@ -759,6 +759,7 @@ namespace Lister.ViewModels
         public void Prepare ()
         {
             ObservableCollection <PrinterPresentation> printersList = null;
+            //SelectedIndex = -1;
 
             if ( App.OsName == "Windows" )
             {
@@ -853,13 +854,6 @@ namespace Lister.ViewModels
             _passedPagesAmount = pageAmmount;
             _printingAdjusting = printAdjusting;
         }
-
-
-        //public void TakeView ( PrintDialog view )
-        //{
-        //    //_view = view;
-        //}
-
 
 
         private enum ParserStates 

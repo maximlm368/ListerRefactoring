@@ -32,21 +32,21 @@
 			<Grid Height="70">
 
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition  Width="30"></ColumnDefinition>
-					<ColumnDefinition  Width="330"></ColumnDefinition>
+					<ColumnDefinition  Width="36"></ColumnDefinition>
+					<ColumnDefinition  Width="324"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Image
 					Grid.Column="0"
 					Width="35"
-					Margin ="10,0,0,0"
+					Margin ="16,0,0,0"
 					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
 
 
 				<ItemsControl
 					Name="messageLines"
 					Grid.Column="1"
-					Width="330"
+					Width="324"
 					Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
 					HorizontalAlignment="Left"
 					ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
@@ -55,7 +55,7 @@
 						<DataTemplate>
 
 							<TextBlock
-								Width="330"
+								Width="324"
 								FontSize="12"
 								Text ="{Binding,  Mode=OneWay}"
 								TextWrapping="WrapWithOverflow"

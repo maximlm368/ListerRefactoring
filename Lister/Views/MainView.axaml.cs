@@ -175,7 +175,7 @@ namespace Lister.Views
 
         internal void RefreshTempateAppearences ( )
         {
-            _viewModel.RefreshTemplateAppearences ();
+            _viewModel.RefreshAppearences ();
         }
 
 
@@ -208,7 +208,7 @@ namespace Lister.Views
             (
                 () =>
                 {
-                    EditorView.PassIncorrectBadges (_processableBadges, _allPrintableBadges, _firstPage);
+                    EditorView.SetProcessableBadges (_processableBadges, _allPrintableBadges, _firstPage);
                     EditorView.PassBackPoint (this);
 
                     Dispatcher.UIThread.Invoke

@@ -30,7 +30,7 @@ namespace Lister.ViewModels
 
         private readonly double _buttonWidth = 32;
         private readonly double _extention = 170;
-        private readonly double _buttonBlockWidth = 62;
+        private readonly double _buttonBlockWidth = 64;
         private readonly double _workAreaLeftMargin = -72;
         private readonly string _extentionToolTip;
         private readonly string _shrinkingToolTip;
@@ -145,7 +145,7 @@ namespace Lister.ViewModels
             HintWidth = 0;
             ButtonBlockWidth = _buttonBlockWidth;
             WorkAreaMargin = new Thickness (_workAreaLeftMargin, 0);
-            ExtenderMargin = new Thickness (28, 8);
+            ExtenderMargin = new Thickness (30, 8);
             ExtentionTip = _extentionToolTip;
             ExtenderContent = "\uF061";
         }

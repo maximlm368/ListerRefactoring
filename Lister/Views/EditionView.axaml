@@ -567,7 +567,7 @@
 						Classes="extender"
 						CornerRadius="5,0,0,0"
 						HorizontalAlignment="Left"
-						Margin="8,7"
+						Margin="8,6"
 						Padding="4,4"
 						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
 						PointerPressed="SomeButtonPressed"
@@ -585,16 +585,23 @@
 
 							<Button
 								Name="switcher"
+								Classes="Switcher"
 								Width="{Binding  Path=SwitcherWidth,  Mode=OneWay}"
 								Height="32"
-								Margin="1,0"
-								Padding="7,7"
-								FontFamily="{StaticResource FA}"
-								Content="&#xf0b0;"
-								Background="{Binding  Path=SwitcherBackground,  Mode=OneWay}"
+								Margin="1,2"
+								Padding="3,3"
 								ToolTip.Tip="{Binding  Path=SwitcherTip,  Mode=OneWay}"
 								Command="{Binding  Path = Filter}"
-								PointerPressed="SomeButtonPressed"/>
+								PointerPressed="SomeButtonPressed">
+							
+								<Label
+									FontFamily="{StaticResource FA}"
+									FontSize="16"
+									VerticalContentAlignment="Center"
+									Content="&#xf0b0;"
+									Foreground="{Binding  Path=SwitcherForeground,  Mode=OneWay}"/>
+								
+							</Button>
 							
 							<Label
 								Name="filterLabel"
@@ -634,7 +641,7 @@
 					<Button
 						Name="up"
 						Classes="upDownArrows"
-						Margin ="11,8"
+						Margin ="11,10"
 						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
 						ToolTip.Tip="К предыдущему бейджу"
 						IsEnabled="{Binding   Path = PreviousOnSliderIsEnable,   Mode=OneWay}"
@@ -645,6 +652,7 @@
 					
 					<StackPanel 
 						Name="slider"
+						Height="226"
 						Margin="{Binding  Path=SliderMargin,  Mode=OneWay}"
 						Orientation="Horizontal">
 						
@@ -691,7 +699,6 @@
 												Content="{Binding  Path = CorrectnessIcon,  Mode=OneWay }"/>
 																						
 											<Label 
-												
 												Grid.Column="1"
 												Height="22"
 												Padding="16,6"
@@ -801,7 +808,7 @@
 				<ColumnDefinition Width="34"></ColumnDefinition>
 				<ColumnDefinition Width="64"></ColumnDefinition>
 				
-				<ColumnDefinition Width="50"></ColumnDefinition>
+				<ColumnDefinition Width="60"></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 				
 				<ColumnDefinition Width="34"></ColumnDefinition>
@@ -848,7 +855,9 @@
 				Width="60"
 				Grid.Column="3"
 				Margin="0,3"
-				Padding="10,5"
+				Padding="5,5"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
 				BorderBrush="black"
 				CornerRadius = "3"
 				BorderThickness="1"

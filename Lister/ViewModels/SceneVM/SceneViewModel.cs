@@ -410,8 +410,6 @@ namespace Lister.ViewModels
                     PageCount = AllPages.Count;
                     VisiblePage.Show ();
                 });
-
-                //IncorrectBadges.Sort (new KeyComparer ());
             }
 
             return true;
@@ -602,73 +600,6 @@ namespace Lister.ViewModels
         }
 
 
-        //internal void ResetIncorrects ()
-        //{
-        //    List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
-
-        //    foreach ( BadgeViewModel badge   in   ProcessableBadges )
-        //    {
-        //        if ( badge.IsCorrect )
-        //        {
-        //            corrects.Add (badge);
-        //        }
-        //    }
-
-        //    foreach ( BadgeViewModel correctBadge   in   corrects )
-        //    {
-        //        ProcessableBadges.Remove (correctBadge);
-        //    }
-
-        //    int counter = 0;
-
-        //    foreach ( BadgeViewModel badge   in   ProcessableBadges )
-        //    {
-        //        badge.Id = counter;
-        //        counter++;
-        //    }
-
-        //    IncorrectBadgeCount = ProcessableBadges. Count;
-
-        //    if ( IncorrectBadgeCount < 1 ) 
-        //    {
-        //        EditionMustEnable = false;
-        //    }
-        //}
-
-
-        internal void ResetIncorrectss ()
-        {
-            List <BadgeViewModel> corrects = new List <BadgeViewModel> ();
-
-            foreach ( BadgeViewModel badge   in   ProcessableBadges )
-            {
-                if ( badge.IsCorrect )
-                {
-                    IncorrectBadgeCount--;
-                }
-            }
-
-            //foreach ( BadgeViewModel correctBadge   in   corrects )
-            //{
-            //    IncorrectBadges.Remove (correctBadge);
-            //}
-
-            //int counter = 0;
-
-            //foreach ( BadgeViewModel badge   in   IncorrectBadges )
-            //{
-            //    badge.Id = counter;
-            //    counter++;
-            //}
-
-            //IncorrectBadgeCount = IncorrectBadges.Count;
-
-            if ( IncorrectBadgeCount < 1 )
-            {
-                EditionMustEnable = false;
-            }
-        }
-
         private void DisableButtons ()
         {
             EditionMustEnable = false;
@@ -684,6 +615,25 @@ namespace Lister.ViewModels
             ClearIsEnable = true;
             SaveIsEnable = true;
             PrintIsEnable = true;
+        }
+
+
+        internal void ResetIncorrects ()
+        {
+            IncorrectBadgeCount = 0;
+
+            foreach ( BadgeViewModel badge   in   ProcessableBadges )
+            {
+                if ( ! badge.IsCorrect )
+                {
+                    IncorrectBadgeCount++;
+                }
+            }
+
+            if ( IncorrectBadgeCount < 1 )
+            {
+                EditionMustEnable = false;
+            }
         }
     }
 }

@@ -63,7 +63,6 @@
 					FontSize="16"
 					Height="32"
 					Width="461"
-					Padding="6,0"
 					Margin="0,2"
 					MaxDropDownHeight="120"
 					SelectedIndex="{Binding  Path=SelectedIndex, Mode=TwoWay}"
@@ -73,7 +72,7 @@
 						<DataTemplate >
 							<Label
 								Classes="narrow"
-								Width="360"
+								Width="420"
 								Content="{Binding  Path=StringPresentation, Mode=OneWay}"/>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>

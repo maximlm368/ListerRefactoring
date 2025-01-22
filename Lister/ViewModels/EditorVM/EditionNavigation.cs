@@ -10,26 +10,6 @@ namespace Lister.ViewModels
     {
         private int _numberAmongVisibleIcons = 1;
 
-        private bool _upDownIsVisible;
-        internal bool UpDownIsVisible
-        {
-            get { return _upDownIsVisible; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _upDownIsVisible, value, nameof (UpDownIsVisible));
-            }
-        }
-
-        private Thickness _sliderMargin;
-        internal Thickness SliderMargin
-        {
-            get { return _sliderMargin; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _sliderMargin, value, nameof (SliderMargin));
-            }
-        }
-
         private bool _firstIsEnable;
         internal bool FirstIsEnable
         {
@@ -130,7 +110,7 @@ namespace Lister.ViewModels
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
-                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen));
 
@@ -321,7 +301,7 @@ namespace Lister.ViewModels
             {
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
-                                                             , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                             , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen));
             }
@@ -530,10 +510,25 @@ namespace Lister.ViewModels
 
         private void TryEnableSliderUpDown ( int enablingRange )
         {
+            double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
+
             if ( enablingRange < 2 )
             {
                 UpDownIsVisible = false;
                 SliderMargin = new Thickness (12, 40);
+            }
+            else if (( enablingRange > 2 )   &&   ( enablingRange <= scrollerItemsCount ))
+            {
+                UpDownIsVisible = false;
+                SliderMargin = new Thickness (12, 40);
+
+                if ( _filterIsOpen ) 
+                {
+                    foreach ( BadgeCorrectnessViewModel item in VisibleIcons )
+                    {
+                        item.Width = _mostExtendedMaxIconWidth;
+                    }
+                }
             }
             else
             {
@@ -547,7 +542,7 @@ namespace Lister.ViewModels
                     UpDownIsVisible = true;
                     SliderMargin = new Thickness (12, 0);
                     NextOnSliderIsEnable = NextIsEnable;
-                    PreviousOnSliderIsEnable= PreviousIsEnable;
+                    PreviousOnSliderIsEnable = PreviousIsEnable;
                 }
             }
         }

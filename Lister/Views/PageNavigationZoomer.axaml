@@ -13,7 +13,7 @@
 			Height="42">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition  Width="135"></ColumnDefinition>
+				<ColumnDefinition  Width="136"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
 			<Grid
@@ -124,7 +124,7 @@
 					<ColumnDefinition Width="34"></ColumnDefinition>
 					<ColumnDefinition Width="64"></ColumnDefinition>
 					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="11"></ColumnDefinition>
+					<ColumnDefinition Width="4"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Button

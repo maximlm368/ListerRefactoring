@@ -304,9 +304,9 @@ namespace Lister.ViewModels
         }
 
 
-        internal void RefreshTemplateAppearences ( )
+        internal void RefreshAppearences ( )
         {
-            //_sceneViewModel.ResetIncorrects ();
+            _sceneViewModel.ResetIncorrects ();
             _personChoosingViewModel.RefreshTemplateChoosingAppearence ();
         }
 
@@ -434,17 +434,7 @@ namespace Lister.ViewModels
         {
             _printAdjusting = new ();
 
-            _printDialog = new PrintDialog (_sceneViewModel.GetPrintablePagesCount(), _printAdjusting);
-
-            //printDialog.Closed += ( sender, args ) =>
-            //{
-            //    if ( _printAdjusting.Cancelled )
-            //    {
-            //        return;
-            //    }
-
-            //    WaitForPrinting ();
-            //};
+            _printDialog = PrintDialog.GetPreparedDialog (_sceneViewModel.GetPrintablePagesCount(), _printAdjusting);
 
             _waitingViewModel.Darken ();
             _printDialog.ShowDialog (MainWindow.Window);

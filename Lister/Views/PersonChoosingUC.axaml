@@ -201,14 +201,16 @@
 				Name="builtInButton"
 				Classes="inBuiltIn"
 				VerticalAlignment="Top"
+				VerticalContentAlignment="Center"
 				Width="28"
+				Height="28"
 				CornerRadius="0,4,4,0"
 				Padding="6,7"
 				PointerPressed="ButtonPressed"
 				PointerReleased="ButtonReleased"
 				FontFamily="{StaticResource FA}"
-				FontWeight="Thin"
 				Foreground="Gray"
+				Background="White"
 				Content="&#xf107;"/>
 
 		</Border>

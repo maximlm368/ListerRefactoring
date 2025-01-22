@@ -41,9 +41,9 @@ namespace Lister.ViewModels
         private readonly int _narrowMinCorrectnessTextLength = 14;
         private readonly int _narrowMaxCorrectnessTextLength = 20;
 
-        private readonly double _wideCorrectnessWidthLimit = 165;
-        private readonly int _wideMinCorrectnessTextLength = 17;
-        private readonly int _wideMaxCorrectnessTextLength = 23;
+        private readonly double _wideCorrectnessWidthLimit = 160;
+        private readonly int _wideMinCorrectnessTextLength = 15;
+        private readonly int _wideMaxCorrectnessTextLength = 21;
 
         private string _correctnessIcon;
         private string _incorrectnessIcon;
@@ -150,7 +150,7 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Corrects;
                 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 100, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 100, 0));
                 SwitcherTip = _correctTip;
                 ComboboxSelectedIndex = 1;
 
@@ -166,7 +166,7 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 100, 0, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 100, 0, 0));
                 SwitcherTip = _incorrectTip;
                 ComboboxSelectedIndex = 2;
 
@@ -181,7 +181,7 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 0, 100));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 0, 100));
                 SwitcherTip = _allTip;
                 ComboboxSelectedIndex = 0;
 
@@ -264,7 +264,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
-                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                      , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                      , _filterIsOpen));
 
@@ -293,7 +293,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (badge
-                                                              , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen));
 
@@ -332,7 +332,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
-                                                            , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                            , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen));
 
@@ -428,7 +428,7 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 200));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 200));
                 SwitcherTip = _allTip;
                 TryChangeSpecificLists ();
 
@@ -438,10 +438,12 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Corrects;
 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 0));
                 SwitcherTip = _correctTip;
+
                 TryChangeSpecificLists ();
 
+                CorrectNumbered.Sort (_comparer);
                 CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
@@ -449,10 +451,12 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 0, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 0, 0));
                 SwitcherTip = _incorrectTip;
+
                 TryChangeSpecificLists ();
 
+                IncorrectNumbered.Sort (_comparer);
                 CurrentVisibleCollection = IncorrectNumbered;
                 IncorrectBadgesCount = CurrentVisibleCollection.Count;
             }
@@ -503,7 +507,16 @@ namespace Lister.ViewModels
 
             if ( isToExtend )
             {
-                width = _extendedIconWidth;
+                double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
+
+                if ( VisibleIcons.Count > scrollerItemsCount )
+                {
+                    width = _extendedScrollableIconWidth;
+                }
+                else 
+                {
+                    width = _mostExtendedMaxIconWidth;
+                }
             }
             else 
             {

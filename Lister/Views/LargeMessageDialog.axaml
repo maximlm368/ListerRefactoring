@@ -6,7 +6,7 @@
         x:Class="Lister.Views.LargeMessageDialog"
 		xmlns:views="clr-namespace:Lister.Views;assembly=Lister"
 		xmlns:vm="clr-namespace:Lister.ViewModels"
-		Width="668"
+		Width="680"
 		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:LargeMessageViewModel"
@@ -15,140 +15,140 @@
 
 	<UserControl
 		Name="body"
-		Width="668"
+		Width="680"
 		Height="{Binding  Path = WindowHeight,  Mode=OneWay }"
 		BorderBrush = "gray"
         BorderThickness = "1">
 		
-	<StackPanel>
+		<StackPanel>
 
-		<Label
-			Classes="modalLabel"
-			Content ="Ошибка"/>
-
-		<Grid
-			Width="668">
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition  Width="35"></ColumnDefinition>
-				<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-
-			<Grid.RowDefinitions>
-				<RowDefinition  Height="8"></RowDefinition>
-				<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
-			</Grid.RowDefinitions>
-
-			<Image
-				Grid.Column="0"
-				Grid.Row="1"
-				Width="35"
-				Margin ="10,17"
-				VerticalAlignment="Top"
-				Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+			<Label
+				Classes="modalLabel"
+				Content ="Ошибка"/>
 
 			<Grid
-				Grid.Column="1"
-				Grid.Row="1"
-				Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }">
-				
+				Width="668">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition  Width="35"></ColumnDefinition>
+					<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+
 				<Grid.RowDefinitions>
-					<RowDefinition  Height="35"></RowDefinition>
-					<RowDefinition  Height="35"></RowDefinition>
 					<RowDefinition  Height="8"></RowDefinition>
 					<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
 				</Grid.RowDefinitions>
-				
-				<Grid
-					Grid.Row="0"
-					Height="35">
-					
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition  Width="55"></ColumnDefinition>
-						<ColumnDefinition  Width="370"></ColumnDefinition>
-						<ColumnDefinition  Width="175"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
 
-					<TextBlock
-						Grid.Column="0"
-						Height="35"
-						FontSize="16"
-						Padding="2,6"
-						Text="Файл:"/>
-
-					<TextBox
-						Grid.Column="1"
-						FontSize="16"
-						BorderThickness="1"
-						IsReadOnly="True"
-						Text="{Binding  Path = ErrorsSource,  Mode=OneWay }"/>
-					
-					<TextBlock
-						Grid.Column="2"
-						Height="35"
-						FontSize="16"
-						Padding="2,6"
-						Text=" - содержит ошибки,"/>
-					
-				</Grid>
-				
-				<TextBlock
+				<Image
+					Grid.Column="0"
 					Grid.Row="1"
-					Height="35"
-					FontSize="16"
-					Padding="2,6"
-					Text="макет будет построен с дефолтными значениями !"/>
+					Width="35"
+					Margin ="16,17"
+					VerticalAlignment="Top"
+					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
 
-				<ScrollViewer
-					Width="592"
-					Height="{Binding  Path = ErrorsContainerHeight,  Mode=OneWay }"
-					HorizontalScrollBarVisibility="Auto"
-					VerticalScrollBarVisibility="Auto"
-					AllowAutoHide="False"
-					BorderBrush="Gray"
-					Grid.Row="3">
-
-					<SelectableTextBlock
-						Name="textArea"
-						Focusable="False"
-						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
-						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
-						LineHeight="16"
-						FontSize="12"
-						Tapped="TappedForWholeSelection"
-						Text ="{Binding  Path = Message,  Mode=OneWay}"/>
-
-				</ScrollViewer>
+				<Grid
+					Grid.Column="1"
+					Grid.Row="1"
+					Width="{Binding  Path = MessageContainerWidth,  Mode=OneWay }">
 				
+					<Grid.RowDefinitions>
+						<RowDefinition  Height="35"></RowDefinition>
+						<RowDefinition  Height="35"></RowDefinition>
+						<RowDefinition  Height="8"></RowDefinition>
+						<RowDefinition  Height="{Binding  Path = MessageContainerHeight,  Mode=OneWay }"></RowDefinition>
+					</Grid.RowDefinitions>
+				
+					<Grid
+						Grid.Row="0"
+						Height="35">
+					
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition  Width="55"></ColumnDefinition>
+							<ColumnDefinition  Width="370"></ColumnDefinition>
+							<ColumnDefinition  Width="175"></ColumnDefinition>
+						</Grid.ColumnDefinitions>
+
+						<TextBlock
+							Grid.Column="0"
+							Height="35"
+							FontSize="16"
+							Padding="2,6"
+							Text="Файл:"/>
+
+						<TextBox
+							Grid.Column="1"
+							FontSize="16"
+							BorderThickness="1"
+							IsReadOnly="True"
+							Text="{Binding  Path = ErrorsSource,  Mode=OneWay }"/>
+					
+						<TextBlock
+							Grid.Column="2"
+							Height="35"
+							FontSize="16"
+							Padding="2,6"
+							Text=" - содержит ошибки,"/>
+					
+					</Grid>
+				
+					<TextBlock
+						Grid.Row="1"
+						Height="35"
+						FontSize="16"
+						Padding="2,6"
+						Text="макет будет построен с дефолтными значениями !"/>
+
+					<ScrollViewer
+						Width="592"
+						Height="{Binding  Path = ErrorsContainerHeight,  Mode=OneWay }"
+						HorizontalScrollBarVisibility="Auto"
+						VerticalScrollBarVisibility="Auto"
+						AllowAutoHide="False"
+						BorderBrush="Gray"
+						Grid.Row="3">
+
+						<SelectableTextBlock
+							Name="textArea"
+							Focusable="False"
+							Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
+							Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
+							LineHeight="16"
+							FontSize="12"
+							Tapped="TappedForWholeSelection"
+							Text ="{Binding  Path = Message,  Mode=OneWay}"/>
+
+					</ScrollViewer>
+				
+				</Grid>
+			
 			</Grid>
+
+			<Canvas
+				Name ="Line"
+				Width="678"
+				Height="1"
+				Margin ="0,0,0,0"
+				Background ="#ececec"/>
+
+			<Canvas
+				Width="678"
+				Height="51"
+				Margin ="0,0,0,0"
+				Background ="#f6f6f6">	
+
+				<Button
+					Name="ok"
+					Classes="Primary"
+					Padding="31,4"
+					Canvas.Top="8"
+					Canvas.Left="582"
+					Content="Ok"
+					Command="{Binding  Path=Close}"/>
+
+			</Canvas>
 			
-		</Grid>
-
-		<Canvas
-			Name ="Line"
-			Width="666"
-			Height="1"
-			Margin ="0,0,0,0"
-			Background ="#ececec"/>
-
-		<Canvas
-			Width="666"
-			Height="51"
-			Margin ="0,0,0,0"
-			Background ="#f6f6f6">	
-
-			<Button
-				Name="ok"
-				Classes="Primary"
-				Padding="31,4"
-				Canvas.Top="8"
-				Canvas.Left="570"
-				Content="Ok"
-				Command="{Binding  Path=Close}"/>
-
-		</Canvas>
-			
-	</StackPanel>
+		</StackPanel>
     </UserControl>
 		
 </Window>

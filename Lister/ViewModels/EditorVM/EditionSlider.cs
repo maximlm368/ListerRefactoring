@@ -48,7 +48,8 @@ namespace Lister.ViewModels
         private double _itemHeightWithMargin = 28;
         private double _entireBlockHeight = 380;
         private double _scrollerHeight = 224;
-        private double _extendedIconWidth = 219;
+        private double _extendedScrollableIconWidth = 219;
+        private double _mostExtendedMaxIconWidth = 224;
         private double _shrinkedIconWidth = 24;
         private double _iconWidthIncreasing = 20;
         private bool _filterIsOpen;
@@ -57,13 +58,13 @@ namespace Lister.ViewModels
         private int _scrollStepNumberStorage;
         private int _scrollStepIndex;
 
-        private SolidColorBrush _switcherBackground;
-        internal SolidColorBrush SwitcherBackground
+        private SolidColorBrush _switcherForeground;
+        internal SolidColorBrush SwitcherForeground
         {
-            get { return _switcherBackground; }
+            get { return _switcherForeground; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _switcherBackground, value, nameof (SwitcherBackground));
+                this.RaiseAndSetIfChanged (ref _switcherForeground, value, nameof (SwitcherForeground));
             }
         }
 
@@ -261,6 +262,26 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool _upDownIsVisible;
+        internal bool UpDownIsVisible
+        {
+            get { return _upDownIsVisible; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _upDownIsVisible, value, nameof (UpDownIsVisible));
+            }
+        }
+
+        private Thickness _sliderMargin;
+        internal Thickness SliderMargin
+        {
+            get { return _sliderMargin; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _sliderMargin, value, nameof (SliderMargin));
+            }
+        }
+
         private bool _previousOnSliderIsEnable;
         internal bool PreviousOnSliderIsEnable
         {
@@ -292,7 +313,7 @@ namespace Lister.ViewModels
 
         private void SetUpSliderBlock ( int incorrectBadgesAmmount )
         {
-            SwitcherBackground = new SolidColorBrush (new Color (255, 0, 0, 200));
+            SwitcherForeground = new SolidColorBrush (new Color (255, 0, 0, 200));
             SwitcherTip = _allTip;
 
             FilterNames = new ObservableCollection <string> () { _allLabel, _correctLabel, _incorrectLabel };
@@ -330,7 +351,7 @@ namespace Lister.ViewModels
             {
                 ScrollWidth = 0;
                 UpDownWidth = 0;
-                SliderCollectionWidth = _extendedIconWidth + _iconWidthIncreasing;
+                SliderCollectionWidth = _extendedScrollableIconWidth + _iconWidthIncreasing;
                 UpDownIsFocusable = false;
                 return;
             }
@@ -338,14 +359,14 @@ namespace Lister.ViewModels
             if ( badgesAmount < _scrollHeight/_itemHeightWithMargin ) 
             {
                 ScrollWidth = 0;
-                SliderCollectionWidth = _extendedIconWidth + _iconWidthIncreasing;
+                SliderCollectionWidth = _extendedScrollableIconWidth + _iconWidthIncreasing;
                 UpDownWidth = _upDownWidth;
                 return;
             }
 
             UpDownIsFocusable = true;
             UpDownWidth = _upDownWidth;
-            SliderCollectionWidth = _extendedIconWidth;
+            SliderCollectionWidth = _extendedScrollableIconWidth;
             CalcRunner (badgesAmount);
             FilterState = null;
         }
@@ -582,7 +603,7 @@ namespace Lister.ViewModels
             if ( goalBadge != null ) 
             {
                 result = new BadgeCorrectnessViewModel (goalBadge
-                                                        , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                        , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen);
             }
@@ -762,7 +783,7 @@ namespace Lister.ViewModels
                 {
                     BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
                     BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge
-                                                  , _extendedIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
+                                                  , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
                                                   , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
                                                   , _filterIsOpen);
                     VisibleIcons.Add (icon);
@@ -776,6 +797,14 @@ namespace Lister.ViewModels
                     }
                 } 
             }
+        }
+
+
+        internal void RefreshSwitcher ( )
+        {
+            SolidColorBrush brush = SwitcherForeground;
+            SwitcherForeground = null;
+            SwitcherForeground = brush;
         }
     }
 

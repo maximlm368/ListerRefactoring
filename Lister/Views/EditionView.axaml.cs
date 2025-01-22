@@ -199,10 +199,10 @@ namespace Lister.Views
         }
 
 
-        internal void PassIncorrectBadges ( List <BadgeViewModel> incorrects
+        internal void SetProcessableBadges ( List <BadgeViewModel> processables
                                           , List <BadgeViewModel> allPrintable, PageViewModel firstPage ) 
         {
-            _viewModel.SetProcessables (incorrects, allPrintable, firstPage);
+            _viewModel.SetProcessables (processables, allPrintable, firstPage);
         }
 
 
@@ -580,14 +580,6 @@ namespace Lister.Views
 
         #region NavigationAndScrolling
 
-        //internal void UpDownPointerPressed ( object sender, PointerPressedEventArgs args )
-        //{
-        //    Button button = sender as Button;
-
-        //    button.Padding = new Thickness (5, 3);
-        //}
-
-
         internal void ToParticularBadge ( object sender, TappedEventArgs args )
         {
             Border border = sender   as   Border;
@@ -695,6 +687,13 @@ namespace Lister.Views
 
         #endregion
 
+
+        internal void SwitcherPointerEntered ( object sender, PointerEventArgs args )
+        {
+            Button button = sender   as   Button;
+
+            _viewModel.RefreshSwitcher ();
+        }
     }
 
 

@@ -22,7 +22,8 @@ namespace Lister.ViewModels
         private static SolidColorBrush _focusedBackground;
         private static SolidColorBrush _defaultBackground;
 
-        private double _extendedMaxIconWidth;
+        private double _extendedScrollableMaxIconWidth;
+        private double _mostExtendedMaxIconWidth;
         private double _shrinkedIconWidth;
 
         private bool _correctness;
@@ -154,8 +155,9 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeCorrectnessViewModel ( BadgeViewModel boundBadge, double extendedWidth, double shortWidth
-                                           , double widthLimit, int [] remotableGlyphRange, bool isExtended ) 
+        internal BadgeCorrectnessViewModel ( BadgeViewModel boundBadge, double extendedScrollableWidth, double shortWidth
+                                            //, double mostExtendedWidth
+                                            , double widthLimit, int [] remotableGlyphRange, bool isExtended ) 
         {
             BoundBadge = boundBadge;
             BoundFontWeight = Avalonia.Media.FontWeight.Normal;
@@ -173,12 +175,13 @@ namespace Lister.ViewModels
                 CorrectnessIcon = _incorrectIcon;
             }
 
-            _extendedMaxIconWidth = extendedWidth;
+            _extendedScrollableMaxIconWidth = extendedScrollableWidth;
+            //_mostExtendedMaxIconWidth = mostExtendedWidth;
             _shrinkedIconWidth = shortWidth;
 
             if ( isExtended )
             {
-                Width = _extendedMaxIconWidth;
+                Width = _extendedScrollableMaxIconWidth;
             }
             else 
             {
@@ -208,7 +211,7 @@ namespace Lister.ViewModels
 
             int index = Math.Min (personPresentation.Length, remotableGlyphRange [1]);
 
-            for ( ; index > remotableGlyphRange [0]; index-- )
+            for ( ;   index > remotableGlyphRange [0];   index-- )
             {
                 FormattedText formatted = new FormattedText (personPresentation
                                                            , System.Globalization.CultureInfo.CurrentCulture

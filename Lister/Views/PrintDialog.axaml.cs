@@ -11,12 +11,37 @@ using ExtentionsAndAuxiliary;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Interactivity;
 using static QuestPDF.Helpers.Colors;
+using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.Views;
 
 public partial class PrintDialog : BaseWindow
 {
+    private static int _defaultSelectedIndex = -1;
+
     private PrintDialogViewModel _viewModel;
+
+
+    public static PrintDialog GetPreparedDialog ( int pageAmount, PrintAdjustingData printAdjusting )
+    {
+        PrintDialog result = new PrintDialog (pageAmount, printAdjusting);
+
+        result._viewModel.Prepare ();
+        result._viewModel.TakeAmmountAndAdjusting (pageAmount, printAdjusting);
+        result.printerChoosing.SelectedIndex = result._viewModel.SelectedIndex;
+
+        if ( _defaultSelectedIndex < 0 )
+        {
+            _defaultSelectedIndex = result.printerChoosing.SelectedIndex;
+        }
+
+        if ( result.printerChoosing.SelectedIndex < 0 ) 
+        {
+            result.printerChoosing.SelectedIndex = _defaultSelectedIndex;
+        }
+
+        return result;
+    }
 
 
     public PrintDialog ()
@@ -30,10 +55,6 @@ public partial class PrintDialog : BaseWindow
         DataContext = App.services.GetRequiredService<PrintDialogViewModel> ();
         _viewModel = (PrintDialogViewModel) DataContext;
 
-        _viewModel.Prepare ();
-        _viewModel.TakeAmmountAndAdjusting (pageAmount, printAdjusting);
-
-        printerChoosing.SelectedIndex = _viewModel.SelectedIndex;
         allPages.IsChecked = true;
         amountText.Text = "1";
 

@@ -144,6 +144,22 @@
 		<Setter Property="Background" Value="#FCF2E3"/>
 	</Style>
 
+
+
+	<Style Selector="Button.Switcher /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#1C547D"/>
+		<Setter Property="BorderThickness" Value="2"/>
+	</Style>
+	<Style Selector="Button.Switcher:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#1C547D"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+	</Style>
+	<Style Selector="Button.Switcher:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#2570A7"/>
+	</Style>
+	<Style Selector="Button.Switcher:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#94BEE6"/>
+	</Style>
 	
 	
 	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">

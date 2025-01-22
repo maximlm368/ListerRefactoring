@@ -29,20 +29,20 @@
 			<Grid Height="70">
 
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition  Width="30"></ColumnDefinition>
-					<ColumnDefinition  Width="320"></ColumnDefinition>
+					<ColumnDefinition  Width="36"></ColumnDefinition>
+					<ColumnDefinition  Width="314"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Image
 					Grid.Column="0"
 					Width="35"
-					Margin ="10,0,0,0"
+					Margin ="16,0,0,0"
 					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
 
 				<TextBlock
 					Name="message"
 					Grid.Column="1"
-					Width="320"
+					Width="314"
 					FontSize="12"
 					Margin ="18,37,0,0"
 					TextWrapping="WrapWithOverflow"
