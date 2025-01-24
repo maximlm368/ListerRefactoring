@@ -19,6 +19,8 @@
 		<Setter Property="Background" Value="#ffffff"/>
 		<Setter Property="BorderBrush" Value="#514C48"/>
 		<Setter Property="Foreground" Value="#000000"/>
+		<Setter Property="SelectionBrush" Value="#4aacfe"/>
+		<Setter Property="SelectionForegroundBrush" Value="#fafafa"/>
 	</Style>
 
 	

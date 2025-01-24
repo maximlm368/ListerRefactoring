@@ -95,9 +95,6 @@ namespace Lister.ViewModels
             {
                 ChosenTemplateColor = ChosenTemplate.Color;
             }
-
-            //ChosenTemplatePadding = new Thickness (0, 0);
-            //ChosenTemplatePadding = new Thickness (8, 0);
         }
 
 

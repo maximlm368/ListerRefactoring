@@ -93,7 +93,7 @@ public partial class App : Avalonia.Application
     }
 
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted ()
     {
         if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
@@ -121,40 +121,43 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = mainWindow;
             desktop.MainWindow.Show ();
             splashWindow.Close ();
-
-
-
-
-            //Stopwatch sw = new Stopwatch ();
-            //sw.Start ();
-
-            //for ( int index = 0;   index < 100;   index++ )
-            //{
-            //    keybd_event (0x09, 0x45, 0x0001, 0);
-
-            //    int aaa = 0;
-
-            //    for ( int ind = 0;   ind < 10_000_000;   ind++ ) 
-            //    {
-            //        aaa += 1;
-            //    }
-            //}
-
-
-
-            //keybd_event (0x09, 0x45, 0x0001, 0);
-            //Thread.Sleep (1000);
-            //keybd_event (0x09, 0x45, 0x0001, 0);
-
-            //keybd_event (0x0d, 0x45, 0x0001, 0);
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {
             singleViewPlatform.MainView = _mainView;
         }
 
-        base.OnFrameworkInitializationCompleted();
+        base.OnFrameworkInitializationCompleted ();
     }
+
+
+    //public override void OnFrameworkInitializationCompleted ()
+    //{
+    //    if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
+    //    {
+    //        MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
+
+    //        MainView mainView = new MainView ()
+    //        {
+    //            DataContext = mainViewModel
+    //        };
+
+    //        MainWindow mainWindow = new MainWindow ()
+    //        {
+    //            DataContext = new MainWindowViewModel (),
+    //            Content = mainView
+    //        };
+
+    //        App.MainWindow = mainWindow;
+    //        desktop.MainWindow = mainWindow;
+    //    }
+    //    else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
+    //    {
+    //        singleViewPlatform.MainView = _mainView;
+    //    }
+
+    //    base.OnFrameworkInitializationCompleted ();
+    //}
 
 
     public static string ExecuteBashCommand ( string command )
@@ -187,3 +190,25 @@ public partial class App : Avalonia.Application
 }
 
 
+//Stopwatch sw = new Stopwatch ();
+//sw.Start ();
+
+//for ( int index = 0;   index < 100;   index++ )
+//{
+//    keybd_event (0x09, 0x45, 0x0001, 0);
+
+//    int aaa = 0;
+
+//    for ( int ind = 0;   ind < 10_000_000;   ind++ ) 
+//    {
+//        aaa += 1;
+//    }
+//}
+
+
+
+//keybd_event (0x09, 0x45, 0x0001, 0);
+//Thread.Sleep (1000);
+//keybd_event (0x09, 0x45, 0x0001, 0);
+
+//keybd_event (0x0d, 0x45, 0x0001, 0);

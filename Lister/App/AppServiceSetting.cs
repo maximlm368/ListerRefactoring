@@ -321,14 +321,14 @@ public static class ServiceCollectionExtensions
         string incorrectnessIcon =
         GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectnessIcon" }, App.ConfigPath);
 
-        string allLabel =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "allLabel" }, App.ConfigPath);
+        string allFilter =
+        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "allFilter" }, App.ConfigPath);
 
-        string incorrectLabel =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectLabel" }, App.ConfigPath);
+        string incorrectFilter =
+        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectFilter" }, App.ConfigPath);
 
-        string correctLabel =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "correctLabel" }, App.ConfigPath);
+        string correctFilter =
+        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "correctFilter" }, App.ConfigPath);
 
         string allTip =
         GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "allTip" }, App.ConfigPath);
@@ -339,10 +339,10 @@ public static class ServiceCollectionExtensions
         string incorrectTip =
         GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectTip" }, App.ConfigPath);
 
-        SolidColorBrush focusedFontSizeColor = GetColor ("EditorViewModel", "focusedFontSizeColor");
-        SolidColorBrush releasedFontSizeColor = GetColor ("EditorViewModel", "releasedFontSizeColor");
-        SolidColorBrush focusedFontSizeBorderColor = GetColor ("EditorViewModel", "focusedFontSizeBorderColor");
-        SolidColorBrush releasedFontSizeBorderColor = GetColor ("EditorViewModel", "releasedFontSizeBorderColor");
+        SolidColorBrush focusedFontColor = GetColor ("EditorViewModel", "focusedFontColor");
+        SolidColorBrush releasedFontColor = GetColor ("EditorViewModel", "releasedFontColor");
+        SolidColorBrush focusedFontBorderColor = GetColor ("EditorViewModel", "focusedFontBorderColor");
+        SolidColorBrush releasedFontBorderColor = GetColor ("EditorViewModel", "releasedFontBorderColor");
 
         EditorViewModelArgs result = new ();
 
@@ -350,17 +350,17 @@ public static class ServiceCollectionExtensions
         result.shrinkingToolTip = shrinkingToolTip;
         result.correctnessIcon = correctnessIcon;
         result.incorrectnessIcon = incorrectnessIcon;
-        result.allLabel = allLabel;
-        result.correctLabel = correctLabel;
-        result.incorrectLabel = incorrectLabel;
+        result.allFilter = allFilter;
+        result.correctFilter = correctFilter;
+        result.incorrectFilter = incorrectFilter;
         result.allTip = allTip;
         result.correctTip = correctTip;
         result.incorrectTip = incorrectTip;
 
-        result.focusedFontSizeColor = focusedFontSizeColor;
-        result.releasedFontSizeColor = releasedFontSizeColor;
-        result.focusedFontSizeBorderColor = focusedFontSizeBorderColor;
-        result.releasedFontSizeBorderColor = releasedFontSizeBorderColor;
+        result.focusedFontSizeColor = focusedFontColor;
+        result.releasedFontSizeColor = releasedFontColor;
+        result.focusedFontSizeBorderColor = focusedFontBorderColor;
+        result.releasedFontSizeBorderColor = releasedFontBorderColor;
 
         return result;
     }

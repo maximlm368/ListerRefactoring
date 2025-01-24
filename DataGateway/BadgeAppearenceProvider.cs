@@ -3,6 +3,7 @@ using ExtentionsAndAuxiliary;
 using Microsoft.Extensions.Configuration;
 using NJsonSchema;
 using NJsonSchema.Validation;
+using System.Drawing.Text;
 
 
 namespace DataGateway
@@ -238,10 +239,10 @@ namespace DataGateway
 
         public BadgeLayout GetBadgeLayout ( string templateName )
         {
-            //if ( _badgeLayouts.ContainsKey (templateName) )
-            //{
-            //    return _badgeLayouts [templateName];
-            //}
+            if ( _badgeLayouts.ContainsKey (templateName) )
+            {
+                return _badgeLayouts [templateName];
+            }
 
             string jsonPath = _nameAndJson [ templateName ];
 
@@ -671,14 +672,14 @@ namespace DataGateway
                         }
                         else 
                         {
-                            ICollection<ValidationError> errors = validator.Validate (json, schema);
+                            ICollection <ValidationError> errors = validator.Validate (json, schema);
                             bool templateIsInCorrect = ( errors.Count != 0 );
 
                             if ( templateIsInCorrect )
                             {
-                                List<ValidationError> children = new ();
+                                List <ValidationError> children = new ();
 
-                                foreach ( ValidationError err in errors )
+                                foreach ( ValidationError err   in   errors )
                                 {
                                     ChildSchemaValidationError childErr = err as ChildSchemaValidationError;
 
@@ -728,7 +729,15 @@ namespace DataGateway
                             }
                         }
 
-                        KeyValuePair<string, List<string>> jsonAndErrors = KeyValuePair.Create (jsonPath, message);
+                        List<string> uninstalledFonts = CheckUninstalledFonts (jsonPath);
+
+                        foreach ( string uninstalledFont   in   uninstalledFonts ) 
+                        {
+                            string uninstalledFontMessage = "Не установлен шрифт с именем " + uninstalledFont;
+                            message.Add (uninstalledFontMessage);
+                        }
+
+                        KeyValuePair <string, List<string>> jsonAndErrors = KeyValuePair.Create (jsonPath, message);
                         layouts.Add (GetBadgeLayout (template.Key), jsonAndErrors);
                     }
                 }
@@ -739,6 +748,58 @@ namespace DataGateway
             }
 
             return layouts;
+        }
+
+
+        private List<string> CheckUninstalledFonts ( string jsonPath )
+        {
+            List<string> fontNames = new ();
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FamilyName", "FontName" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FirstName", "FontName" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "PatronymicName", "FontName" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Post", "FontName" }, jsonPath));
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "Department", "FontName" }, jsonPath));
+
+            IEnumerable <IConfigurationSection> unitings =
+                      GetterFromJson.GetIncludedItemsOfSection (new List<string> { "UnitedTextBlocks" }, jsonPath);
+
+            foreach ( IConfigurationSection unit   in   unitings )
+            {
+                IConfigurationSection fontNameSection = unit.GetSection ("FontName");
+                fontNames.Add (fontNameSection.Value);
+            }
+
+            return GetUninstalledFontsFrom (fontNames);
+        }
+
+
+        private List<string> GetUninstalledFontsFrom ( List<string> fontNames )
+        {
+            InstalledFontCollection ifc = new InstalledFontCollection ();
+
+            System.Drawing.FontFamily [] families = ifc.Families;
+            List<string> names = new List<string> ();
+
+            foreach ( var family   in   families )
+            {
+                names.Add (family.Name);
+            }
+
+            List <string> uninstalled = new ();
+
+            foreach ( var name   in   fontNames )
+            {
+                bool isExisting = ! string.IsNullOrWhiteSpace (name);
+
+                if ( isExisting   &&   ! names.Contains (name) )
+                {
+                    uninstalled.Add (name);
+                }
+            }
+
+            uninstalled = uninstalled.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
+
+            return uninstalled;
         }
 
 

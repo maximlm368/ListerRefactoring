@@ -38,23 +38,25 @@ namespace Lister.Views
         private double _capturingY;
         private double _shiftScratch = 0;
         private PersonChoosingViewModel _viewModel;
+        private TemplateViewModel _chosenTemplate;
         private string _textBoxText = string.Empty;
         private string _theme;
 
         private static IBrush _currentComboboxItemBackground;
         private static IBrush _currentComboboxItemBorderColor;
 
-        IBrush _borderHovered;
-        IBrush _backgroundHovered;
+        SolidColorBrush _borderHovered = new SolidColorBrush ( new Color (255, 81, 76, 72) );
+        SolidColorBrush _backgroundHovered = new SolidColorBrush (new Color (255, 213, 232, 246));
 
-        IBrush _borderFocused;
-        SolidColorBrush _backgroundFocused;
+        SolidColorBrush _borderFocused = new SolidColorBrush (new Color (255, 4, 111, 255));
+        SolidColorBrush _backgroundFocused = new SolidColorBrush (new Color (255, 255, 255, 255));
 
-        IBrush _borderDisabled;
-        IBrush _backgroundDisabled;
+        SolidColorBrush _borderDisabled = new SolidColorBrush (new Color (255, 219, 202, 174));
+        SolidColorBrush _backgroundDisabled = new SolidColorBrush (new Color (255, 252, 242, 227));
 
         IBrush _borderDefault;
-        IBrush _backgroundDefault;
+        SolidColorBrush _backgroundDefault = new SolidColorBrush (new Color (255, 255, 255, 255));
+
 
 
         public PersonChoosingUserControl ()
@@ -69,15 +71,6 @@ namespace Lister.Views
             //ActualThemeVariantChanged += ThemeChanged;
 
             personTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
-
-            _borderHovered = new SolidColorBrush ( new Color(255, 81, 76, 72) );
-            _backgroundHovered = new SolidColorBrush (new Color (255, 213, 232, 246));
-
-            _borderFocused = new SolidColorBrush (new Color (255, 4, 111, 255));
-            _backgroundFocused = new SolidColorBrush (new Color (255, 255, 255, 255));
-
-            _borderDisabled = new SolidColorBrush (new Color (255, 219, 202, 174));
-            _backgroundDisabled = new SolidColorBrush (new Color (255, 252, 242, 227));
 
             _borderDefault = personTextBox.BorderBrush;
 
@@ -94,10 +87,6 @@ namespace Lister.Views
 
         private void PreventPasting ( object sender, PointerReleasedEventArgs args )
         {
-            var point = args.GetCurrentPoint (sender as Control);
-            var x = point.Position.X;
-            var y = point.Position.Y;
-
             args.Handled = true;
         }
 
@@ -243,6 +232,8 @@ namespace Lister.Views
         {
             DropOrPickUp ();
             personTextBox.Focus (NavigationMethod.Tab);
+
+            builtInButton.Background = _backgroundDefault;
         }
 
 
@@ -565,6 +556,13 @@ namespace Lister.Views
             {
                 return;
             }
+
+            if ( _chosenTemplate == chosen ) 
+            {
+                return;
+            }
+
+            _chosenTemplate = chosen;
 
             _viewModel.ChosenTemplate = chosen;
         }

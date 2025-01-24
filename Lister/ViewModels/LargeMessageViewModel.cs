@@ -186,6 +186,12 @@ namespace Lister.ViewModels
         }
 
 
+        internal void CopyCommand ()
+        {
+            int fdf = 0;
+        }
+
+
         internal void Set ( List<string> message, string errorsSource )
         {
             ErrorsSource = errorsSource;

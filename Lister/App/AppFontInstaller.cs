@@ -25,6 +25,8 @@ using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.Drawing.Text;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Lister;
 
@@ -35,44 +37,68 @@ public partial class App : Avalonia.Application
         Task task = new Task
         (() =>
         {
-            _runningOnWindow = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
-            _runningOnLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
+            //_runningOnWindow = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
+            //_runningOnLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
 
-            string ResourceUriFolderName = string.Empty;
-            string ResourceUriType = string.Empty;
+            //string ResourceUriFolderName = string.Empty;
+            //string ResourceUriType = string.Empty;
 
-            string workDirectory = @"./";
+            //string workDirectory = @"./";
 
-            if ( _runningOnWindow )
-            {
-                ResourceUriFolderName = @"Resources\";
-            }
-            else if ( _runningOnLinux )
-            {
-                ResourceUriFolderName = "Resources/";
-            }
+            //if ( _runningOnWindow )
+            //{
+            //    ResourceUriFolderName = @"Resources\";
+            //}
+            //else if ( _runningOnLinux )
+            //{
+            //    ResourceUriFolderName = "Resources/";
+            //}
 
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory + ResourceUriFolderName);
-            string resourcePath = containingDirectory.FullName;
+            //DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory + ResourceUriFolderName);
+            //string resourcePath = containingDirectory.FullName;
 
-            List<string> fontFiles = new ();
-            List<string> fontNames = new ();
-            FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
+            //List<string> fontFiles = new ();
+            //List<string> fontNames = new ();
+            //FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
 
-            GetFontFilesAndNames (containingFiles, out fontFiles, out fontNames);
+            //GetFontFilesAndNames (containingFiles, out fontFiles, out fontNames);
 
-            fontFiles = fontFiles.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
-            fontNames = fontNames.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
+            //fontFiles = fontFiles.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
+            //fontNames = fontNames.Distinct (StringComparer.OrdinalIgnoreCase).ToList ();
 
-            SetFonts (fontFiles, fontNames, resourcePath);
+            //CheckIfFontsAreInstalled (fontNames);
 
-            Thread.Sleep (3000);
+            //SetFonts (fontFiles, fontNames, resourcePath);
         });
 
         task.Start ();
 
         return task;
     }
+
+
+    //private static void CheckIfFontsAreInstalled ( List<string> fontNames )
+    //{
+    //    InstalledFontCollection ifc = new InstalledFontCollection ();
+
+    //    System.Drawing.FontFamily [] families = ifc.Families;
+    //    List<string> names = new List<string> ();
+
+    //    foreach ( var family   in   families )
+    //    {
+    //        names.Add (family.Name);
+    //    }
+
+    //    foreach ( var name   in   fontNames )
+    //    {
+    //        bool isExisting = ! string.IsNullOrWhiteSpace (name);
+
+    //        if ( isExisting   &&   ! names.Contains(name) ) 
+    //        {
+    //            int dfdfd = 0;
+    //        }
+    //    }
+    //}
 
 
     private static void GetFontFilesAndNames ( FileInfo [] jsonFiles, out List<string> fontFiles, out List<string> fontNames )
@@ -196,12 +222,12 @@ public partial class App : Avalonia.Application
         {
             string usersFontStorageDir = GetUsersFontStorageDirectory ();
 
-            if ( !Directory.Exists (usersFontStorageDir) )
+            if ( ! Directory.Exists (usersFontStorageDir) )
             {
                 Directory.CreateDirectory (usersFontStorageDir);
             }
 
-            for ( int index = 0; index < fontFiles.Count; index++ )
+            for ( int index = 0;   index < fontFiles.Count;   index++ )
             {
                 string fontFile = fontFiles [index];
                 string fontName = fontNames [index];

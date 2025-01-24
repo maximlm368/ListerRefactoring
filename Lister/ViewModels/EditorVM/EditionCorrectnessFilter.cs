@@ -30,9 +30,9 @@ namespace Lister.ViewModels
     {
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;
-        private readonly string _allLabel;
-        private readonly string _incorrectLabel;
-        private readonly string _correctLabel;
+        private readonly string _allFilter;
+        private readonly string _incorrectFilter;
+        private readonly string _correctFilter;
         private readonly string _allTip;
         private readonly string _correctTip;
         private readonly string _incorrectTip;
@@ -95,12 +95,12 @@ namespace Lister.ViewModels
         }
 
         private int _comboboxSelectedIndex;
-        internal int ComboboxSelectedIndex
+        internal int FilterSelectedIndex
         {
             get { return _comboboxSelectedIndex; }
             set
             {
-                this.RaiseAndSetIfChanged (ref _comboboxSelectedIndex, value, nameof (ComboboxSelectedIndex));
+                this.RaiseAndSetIfChanged (ref _comboboxSelectedIndex, value, nameof (FilterSelectedIndex));
             }
         }
 
@@ -150,9 +150,9 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Corrects;
                 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 100, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 255, 0));
                 SwitcherTip = _correctTip;
-                ComboboxSelectedIndex = 1;
+                FilterSelectedIndex = 1;
 
                 TryChangeSpecificLists ();
 
@@ -166,9 +166,9 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 100, 0, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 0, 0));
                 SwitcherTip = _incorrectTip;
-                ComboboxSelectedIndex = 2;
+                FilterSelectedIndex = 2;
 
                 TryChangeSpecificLists ();
 
@@ -181,9 +181,9 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (155, 0, 0, 100));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 255));
                 SwitcherTip = _allTip;
-                ComboboxSelectedIndex = 0;
+                FilterSelectedIndex = 0;
 
                 TryChangeSpecificLists ();
 
@@ -423,22 +423,22 @@ namespace Lister.ViewModels
                 return;
             }
 
-            if ( filterName == _allLabel )
+            if ( filterName == _allFilter )
             {
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 200));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 255));
                 SwitcherTip = _allTip;
                 TryChangeSpecificLists ();
 
                 IncorrectBadgesCount = IncorrectNumbered.Count;
             }
-            else if ( filterName == _correctLabel )
+            else if ( filterName == _correctFilter )
             {
                 _filterState = FilterChoosing.Corrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 200, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 255, 0));
                 SwitcherTip = _correctTip;
 
                 TryChangeSpecificLists ();
@@ -447,11 +447,11 @@ namespace Lister.ViewModels
                 CurrentVisibleCollection = CorrectNumbered;
                 IncorrectBadgesCount = 0;
             }
-            else if ( filterName == _incorrectLabel )
+            else if ( filterName == _incorrectFilter )
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 200, 0, 0));
+                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 0, 0));
                 SwitcherTip = _incorrectTip;
 
                 TryChangeSpecificLists ();
@@ -467,6 +467,7 @@ namespace Lister.ViewModels
             SetScroller (CurrentVisibleCollection.Count);
             SetAccordingIcons ();
             EnableNavigation ();
+            ExtendOrShrinkSliderItems ();
         }
 
 
@@ -474,7 +475,7 @@ namespace Lister.ViewModels
         {
             if ( _filterIsOpen )
             {
-                CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
+                FilterBlockMargin = new Thickness (_collectionFilterMarginLeft, 0);
                 _filterIsOpen = false;
                 ExtenderContent = "\uF060";
                 SwitcherWidth = _switcherWidth;
@@ -483,11 +484,11 @@ namespace Lister.ViewModels
                 ExtentionTip = _extentionToolTip;
 
                 TryEnableSliderUpDown (VisibleIcons.Count);
-                ExtendOrShrinkSlider (_filterIsOpen);
+                ExtendOrShrinkSliderItems ();
             }
             else
             {
-                CollectionFilterMargin = new Thickness (0, 0);
+                FilterBlockMargin = new Thickness (0, 0);
                 _filterIsOpen = true;
                 ExtenderContent = "\uF061";
                 SwitcherWidth = 0;
@@ -496,26 +497,26 @@ namespace Lister.ViewModels
                 ExtentionTip = _shrinkingToolTip;
 
                 TryEnableSliderUpDown (0);
-                ExtendOrShrinkSlider (_filterIsOpen);
+                ExtendOrShrinkSliderItems ();
             }
         }
 
 
-        internal void ExtendOrShrinkSlider ( bool isToExtend )
+        internal void ExtendOrShrinkSliderItems ()
         {
             double width;
 
-            if ( isToExtend )
+            if ( _filterIsOpen )
             {
                 double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
 
-                if ( VisibleIcons.Count > scrollerItemsCount )
+                if ( CurrentVisibleCollection. Count > scrollerItemsCount )
                 {
                     width = _extendedScrollableIconWidth;
                 }
                 else 
                 {
-                    width = _mostExtendedMaxIconWidth;
+                    width = _mostExtendedIconWidth;
                 }
             }
             else 

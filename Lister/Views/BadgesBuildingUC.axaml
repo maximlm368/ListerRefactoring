@@ -5,9 +5,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="48"
              x:Class="Lister.Views.BadgesBuildingUserControl"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
-			 x:DataType="vm:BadgesBuildingViewModel">
+			 x:DataType="vm:BadgesBuildingViewModel"
+			 Width="830">
+	        
 
-	
 	<Grid
 		Name="badgeTemplateChoice"
 		Height="48"
@@ -75,7 +76,69 @@
 			Grid.Row="2"
 			Height="24"
 			CornerRadius="0,5,0,0"
-			Background="White"/>
+			Background="White">
+			
+			<Canvas>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="0"
+					Width="304"
+					Height="1"
+					Background="#aaaaaa"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="1"
+					Width="306"
+					Height="1"
+					Background="#ababab"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="2"
+					Width="308"
+					Height="1"
+					Background="#cccccc"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="3"
+					Width="309"
+					Height="1"
+					Background="#cecece"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="4"
+					Width="310"
+					Height="1"
+					Background="#dddddd"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="5"
+					Width="310"
+					Height="1"
+					Background="#eeeeee"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="6"
+					Width="310"
+					Height="1"
+					Background="#eeeeee"/>
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="7"
+					Width="310"
+					Height="1"
+					Background="#fefefe"/>
+				
+			</Canvas>
+			
+			
+		</Border>
 
 		<Border
 			Grid.Column="2"
@@ -105,128 +168,3 @@
 
 
 
-<!-- 
-
-IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-
-
-		<Label
-			Grid.Column="0"
-			Content="Шаблон:"
-			Padding="10"/>
-
-		<ComboBox
-			Name="templateChoosing"
-			Grid.Column="1"
-			VerticalAlignment="Center"
-			Foreground="{Binding  Path=Color,  Mode=OneWay}"
-			Width="230"
-			MaxDropDownHeight="100"
-			SelectedIndex="1"
-			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
-			GotFocus="CloseCustomCombobox"
-			DropDownClosed="HandleClosing"
-		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
-
-			<ComboBox.ItemTemplate >
-				<DataTemplate >
-					<Label
-						Padding="0,0,0,0"
-						FontSize="14"
-						Foreground="{Binding  Path=Color,  Mode=OneWay}"
-						Content="{Binding  Path=Name,  Mode=OneWay}"/>
-				</DataTemplate>
-			</ComboBox.ItemTemplate>
-			
-		</ComboBox>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		<Button
-			Name="clearBadges"
-			Grid.Column="3"
-			HorizontalAlignment="Center"
-			HorizontalContentAlignment="Center"
-			Width="86"
-			IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
-			Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
-			Command="{Binding  Path=ClearBadges}"
-			ToolTip.Tip="Удалить все построения"
-			Content="Очистить" />
-
-		<Button
-			Name="save"
-			Grid.Column="4"
-			HorizontalAlignment="Center"
-			HorizontalContentAlignment="Center"
-			Width="91"
-			IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
-			Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
-			Command="{Binding  GeneratePdf}"
-			ToolTip.Tip="Сохранить в файле"
-			Content="Сохранить" />
-		
-		<Button
-			Name="print"
-			Grid.Column="5"
-			HorizontalAlignment="Center"
-			HorizontalContentAlignment="Center"
-			Width="71"
-			IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
-			Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
-			Command="{Binding  Path=Print}"
-			ToolTip.Tip="Печатать на принтере по умолчанию"
-			Content="Печать"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ToolTip.Tip="Построить выбранные бэйджи"
-
-
-
-IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
-
-Command="{Binding  Path=BuildBadges}"
-PointerReleased="Released"
-
-
-IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
-IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
-IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
-
-
-Foreground="{Binding  Path=Color,  Mode=OneWay}"
-
-
-<ComboBox.ItemsView>
-				<TextBlock
-					Tapped="HandleTapping"
-					Text="{Binding  Path=Name,  Mode=OneWay}"
-					FontSize="14"
-					Height="24"/>
-			</ComboBox.ItemsView>
-
-
--->

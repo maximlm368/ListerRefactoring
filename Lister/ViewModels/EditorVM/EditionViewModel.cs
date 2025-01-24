@@ -218,9 +218,9 @@ namespace Lister.ViewModels
             _shrinkingToolTip = settingArgs.shrinkingToolTip;
             _correctnessIcon = settingArgs.correctnessIcon;
             _incorrectnessIcon = settingArgs.incorrectnessIcon;
-            _allLabel = settingArgs.allLabel;
-            _correctLabel = settingArgs.correctLabel;
-            _incorrectLabel = settingArgs.incorrectLabel;
+            _allFilter = settingArgs.allFilter;
+            _correctFilter = settingArgs.correctFilter;
+            _incorrectFilter = settingArgs.incorrectFilter;
             _allTip = settingArgs.allTip;
             _correctTip = settingArgs.correctTip;
             _incorrectTip = settingArgs.incorrectTip;
@@ -468,9 +468,9 @@ namespace Lister.ViewModels
         public string shrinkingToolTip;
         public string correctnessIcon;
         public string incorrectnessIcon;
-        public string allLabel;
-        public string incorrectLabel;
-        public string correctLabel;
+        public string allFilter;
+        public string incorrectFilter;
+        public string correctFilter;
         public string allTip;
         public string correctTip;
         public string incorrectTip;

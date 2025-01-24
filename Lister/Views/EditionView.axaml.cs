@@ -22,6 +22,7 @@ using Avalonia.Animation.Easings;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using Avalonia.Controls.Presenters;
+using Avalonia.Interactivity;
 
 namespace Lister.Views
 {
@@ -75,8 +76,15 @@ namespace Lister.Views
             }
 
             DisableFocusAdorner ();
+            editorTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
             filterChoosing.SelectedValue = _startFilter;
             PointerPressed += PointerIsPressed;
+        }
+
+
+        private void PreventPasting ( object sender, PointerReleasedEventArgs args )
+        {
+            args.Handled = true;
         }
 
 
@@ -257,6 +265,12 @@ namespace Lister.Views
 
             if ( actionWasJustNavigation )
             {
+                return;
+            }
+
+            if ( edited.Length > 100 ) 
+            {
+                editorTextBox.Text = edited.Substring(0, 100);
                 return;
             }
 
@@ -688,12 +702,12 @@ namespace Lister.Views
         #endregion
 
 
-        internal void SwitcherPointerEntered ( object sender, PointerEventArgs args )
-        {
-            Button button = sender   as   Button;
+        //internal void FilterSwitcherPointerEntered ( object sender, PointerEventArgs args )
+        //{
+        //    Button button = sender   as   Button;
 
-            _viewModel.RefreshSwitcher ();
-        }
+        //    _viewModel.RefreshSwitcher ();
+        //}
     }
 
 

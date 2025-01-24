@@ -134,6 +134,7 @@ namespace Lister.ViewModels
 
             ReplaceActiveIcon (VisibleIcons [0]);
             SetManageControlsAbility ();
+            SetSliderItemsCorrectWidth (CurrentVisibleCollection.Count);
         }
 
 
@@ -202,6 +203,7 @@ namespace Lister.ViewModels
             }
 
             SetManageControlsAbility ();
+            SetSliderItemsCorrectWidth (CurrentVisibleCollection.Count);
         }
 
 
@@ -269,6 +271,7 @@ namespace Lister.ViewModels
             }
 
             SetManageControlsAbility ();
+            SetSliderItemsCorrectWidth (CurrentVisibleCollection.Count);
         }
 
 
@@ -336,6 +339,7 @@ namespace Lister.ViewModels
             }
 
             SetManageControlsAbility ();
+            SetSliderItemsCorrectWidth (CurrentVisibleCollection.Count);
         }
 
 
@@ -480,6 +484,7 @@ namespace Lister.ViewModels
                 }
 
                 SetManageControlsAbility ();
+                SetSliderItemsCorrectWidth (CurrentVisibleCollection.Count);
             }
             catch ( Exception ex )
             {
@@ -517,19 +522,6 @@ namespace Lister.ViewModels
                 UpDownIsVisible = false;
                 SliderMargin = new Thickness (12, 40);
             }
-            else if (( enablingRange > 2 )   &&   ( enablingRange <= scrollerItemsCount ))
-            {
-                UpDownIsVisible = false;
-                SliderMargin = new Thickness (12, 40);
-
-                if ( _filterIsOpen ) 
-                {
-                    foreach ( BadgeCorrectnessViewModel item in VisibleIcons )
-                    {
-                        item.Width = _mostExtendedMaxIconWidth;
-                    }
-                }
-            }
             else
             {
                 if ( _filterIsOpen )
@@ -543,6 +535,37 @@ namespace Lister.ViewModels
                     SliderMargin = new Thickness (12, 0);
                     NextOnSliderIsEnable = NextIsEnable;
                     PreviousOnSliderIsEnable = PreviousIsEnable;
+                }
+            }
+        }
+
+
+        private void SetSliderItemsCorrectWidth ( int enablingRange )
+        {
+            double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
+
+            if ( enablingRange <= scrollerItemsCount )
+            {
+                if ( _filterIsOpen )
+                {
+                    SliderCollectionWidth = _mostExtendedIconWidth;
+
+                    foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+                    {
+                        item.Width = _mostExtendedIconWidth;
+                    }
+                }
+            }
+            else
+            {
+                if ( _filterIsOpen )
+                {
+                    SliderCollectionWidth = _extendedScrollableIconWidth;
+
+                    foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+                    {
+                        item.Width = _extendedScrollableIconWidth;
+                    }
                 }
             }
         }

@@ -73,15 +73,25 @@
 							Grid.Column="0"
 							Height="35"
 							FontSize="16"
-							Padding="2,6"
+							Padding="0,6"
 							Text="Файл:"/>
 
 						<TextBox
 							Grid.Column="1"
 							FontSize="16"
 							BorderThickness="1"
+							ScrollViewer.VerticalScrollBarVisibility="Disabled"
+							ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							IsReadOnly="True"
-							Text="{Binding  Path = ErrorsSource,  Mode=OneWay }"/>
+							Text="{Binding  Path = ErrorsSource,  Mode=OneWay }">
+
+							<TextBox.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Копировать    (Ctrl+C)" Command="{Binding $parent[TextBox].Copy}" IsEnabled="{Binding $parent[TextBox].CanCopy}"/>
+								</ContextMenu>
+							</TextBox.ContextMenu>
+							
+						</TextBox>
 					
 						<TextBlock
 							Grid.Column="2"
@@ -96,7 +106,7 @@
 						Grid.Row="1"
 						Height="35"
 						FontSize="16"
-						Padding="2,6"
+						Padding="0,6"
 						Text="макет будет построен с дефолтными значениями !"/>
 
 					<ScrollViewer
@@ -110,13 +120,25 @@
 
 						<SelectableTextBlock
 							Name="textArea"
-							Focusable="False"
 							Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
 							Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
 							LineHeight="16"
 							FontSize="12"
+							HorizontalAlignment="Left"
+							Focusable="True"
+							SelectionBrush="#4aacfe"
+							SelectionForegroundBrush="#fafafa"
 							Tapped="TappedForWholeSelection"
-							Text ="{Binding  Path = Message,  Mode=OneWay}"/>
+							GotFocus="MessageGotFocus"
+							Text ="{Binding  Path = Message,  Mode=OneWay}">
+
+							<SelectableTextBlock.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Копировать    (Ctrl+C)" Command="{Binding $parent[SelectableTextBlock].Copy}" IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"/>
+								</ContextMenu>
+							</SelectableTextBlock.ContextMenu>
+							
+						</SelectableTextBlock>
 
 					</ScrollViewer>
 				
@@ -153,44 +175,23 @@
 		
 </Window>
 
+
 <!--
-Classes="modalButton"
 
-
-					<ItemsControl
-						Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
-						Height="{Binding  Path = MessageHeight,  Mode=OneWay }"
-						HorizontalAlignment="Left"
-						ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
-
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-
-								<SelectableTextBlock
-									Width="{Binding  Path = MessageWidth,  Mode=OneWay }"
-									Height="16"
-									FontSize="12"
-									Text ="{Binding,  Mode=OneWay}"/>
-
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
-
-
-
-
-
-
-				Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
-				HorizontalAlignment="Left"
-
-D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\Resources\Doctor.json
-
-<ColumnDefinition  Width="{Binding  Path = MessageWidth,  Mode=OneWay }"></ColumnDefinition>
-Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
-
-		ExtendClientAreaToDecorationsHint = "true"
-		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0"
+							<SelectableTextBlock.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Копировать"/>
+								</ContextMenu>
+							</SelectableTextBlock.ContextMenu>
+							
+							
+							
+														<SelectableTextBlock.ContextFlyout>
+								<ContextFlyout x:Key="DefaultTextBoxContextFlyout" Placement="Bottom">
+									<MenuItem x:Name="TextBoxContextFlyoutCutItem" Header="Cut" Command="{Binding $parent[SelectableTextBlock].Cut}" IsEnabled="{Binding $parent[SelectableTextBlock].CanCut}" InputGesture="{x:Static SelectableTextBlock.CutGesture}" />
+									<MenuItem x:Name="TextBoxContextFlyoutCopyItem" Header="Copy" Command="{Binding $parent[SelectableTextBlock].Copy}" IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}" InputGesture="{x:Static SelectableTextBlock.CopyGesture}"/>
+									<MenuItem x:Name="TextBoxContextFlyoutPasteItem" Header="Paste" Command="{Binding $parent[SelectableTextBlock].Paste}" IsEnabled="{Binding $parent[SelectableTextBlock].CanPaste}" InputGesture="{x:Static SelectableTextBlock.PasteGesture}"/>
+								</ContextFlyout>
+							</SelectableTextBlock.ContextFlyout>
 
 -->

@@ -67,8 +67,8 @@ namespace Lister.Views
 
             CanResize = false;
             ok.FocusAdorner = null;
+            textArea.FocusAdorner = null;
             
-
             Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
 
             MainWindow mainWindow = App.MainWindow;
@@ -120,10 +120,29 @@ namespace Lister.Views
                 SelectableTextBlock textBlock = sender as SelectableTextBlock;
                 textBlock.SelectAll ();
             }
-            else 
+            else
             {
                 _messageIsSelected = false;
             }
+        }
+
+
+        internal void MessageGotFocus ( object sender, GotFocusEventArgs args )
+        {
+            //_messageIsSelected = true;
+            SelectableTextBlock textBlock = sender as SelectableTextBlock;
+            textBlock.SelectAll ();
+
+            //if ( !_messageIsSelected )
+            //{
+            //    _messageIsSelected = true;
+            //    SelectableTextBlock textBlock = sender as SelectableTextBlock;
+            //    textBlock.SelectAll ();
+            //}
+            //else
+            //{
+            //    _messageIsSelected = false;
+            //}
         }
     }
 }

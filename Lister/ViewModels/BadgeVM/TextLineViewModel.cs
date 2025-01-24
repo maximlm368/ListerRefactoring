@@ -251,8 +251,6 @@ namespace Lister.ViewModels
             UsefullHeight = HeightWithBorder;
             double paddingTop = ( Height - FontSize ) / 4;
             
-
-            //return new Thickness (0, 1);
             return new Thickness (0, -3);
         }
 

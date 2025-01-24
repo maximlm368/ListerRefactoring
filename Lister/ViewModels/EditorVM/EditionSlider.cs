@@ -49,7 +49,7 @@ namespace Lister.ViewModels
         private double _entireBlockHeight = 380;
         private double _scrollerHeight = 224;
         private double _extendedScrollableIconWidth = 219;
-        private double _mostExtendedMaxIconWidth = 224;
+        private double _mostExtendedIconWidth = 224;
         private double _shrinkedIconWidth = 24;
         private double _iconWidthIncreasing = 20;
         private bool _filterIsOpen;
@@ -79,12 +79,12 @@ namespace Lister.ViewModels
         }
 
         private Thickness _collectionFilterMargin;
-        internal Thickness CollectionFilterMargin
+        internal Thickness FilterBlockMargin
         {
             get { return _collectionFilterMargin; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _collectionFilterMargin, value, nameof (CollectionFilterMargin));
+                this.RaiseAndSetIfChanged (ref _collectionFilterMargin, value, nameof (FilterBlockMargin));
             }
         }
 
@@ -313,13 +313,13 @@ namespace Lister.ViewModels
 
         private void SetUpSliderBlock ( int incorrectBadgesAmmount )
         {
-            SwitcherForeground = new SolidColorBrush (new Color (255, 0, 0, 200));
+            SwitcherForeground = new SolidColorBrush (new Color (255, 0, 0, 255));
             SwitcherTip = _allTip;
 
-            FilterNames = new ObservableCollection <string> () { _allLabel, _correctLabel, _incorrectLabel };
+            FilterNames = new ObservableCollection <string> () { _allFilter, _correctFilter, _incorrectFilter };
 
             CollectionFilterWidth = _sliderWidth;
-            CollectionFilterMargin = new Thickness (_collectionFilterMarginLeft, 0);
+            FilterBlockMargin = new Thickness (_collectionFilterMarginLeft, 0);
 
             SwitcherWidth = _switcherWidth;
 
@@ -686,7 +686,7 @@ namespace Lister.ViewModels
             {
                 VisibleIcons = _visibleIconsStorage;
 
-                ExtendOrShrinkSlider (_filterIsOpen);
+                ExtendOrShrinkSliderItems ();
 
                 _scrollStepIndex = _scrollStepNumberStorage;
                 _runnerHasWalked = _runnerHasWalkedStorage;
@@ -800,12 +800,12 @@ namespace Lister.ViewModels
         }
 
 
-        internal void RefreshSwitcher ( )
-        {
-            SolidColorBrush brush = SwitcherForeground;
-            SwitcherForeground = null;
-            SwitcherForeground = brush;
-        }
+        //internal void RefreshSwitcher ( )
+        //{
+        //    SolidColorBrush brush = SwitcherForeground;
+        //    SwitcherForeground = null;
+        //    SwitcherForeground = brush;
+        //}
     }
 
 }
