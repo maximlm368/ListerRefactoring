@@ -3,7 +3,6 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
-using DocumentFormat.OpenXml.Wordprocessing;
 using ExtentionsAndAuxiliary;
 using Lister.ViewModels;
 using MessageBox.Avalonia.Views;
@@ -16,7 +15,7 @@ namespace Lister.Views
         public ShowingDialog Caller { get; private set; }
 
         private bool _messageIsSelected;
-
+        private bool _pathIsSelected;
         private string _message;
         internal string Message 
         {
@@ -29,11 +28,11 @@ namespace Lister.Views
             {
                 if ( value != null ) 
                 {
-                    List<string> lines = value.SplitBySeparators (new List<char> () { '.' });
+                    string [] lines = value.Split (['.'], StringSplitOptions.RemoveEmptyEntries);
 
-                    if ( lines.Count == 1 ) 
+                    if ( lines.Length == 1 ) 
                     {
-                        lines = new List<string> () { value };
+                        lines = [value];
                     }
 
                     List<string> pureLines = new List<string> ();
@@ -88,11 +87,11 @@ namespace Lister.Views
                 return pureLines;
             }
 
-            List<string> lines = message.SplitBySeparators (new List<char> () { '.' });
+            string [] lines = message.Split (['.'], StringSplitOptions.RemoveEmptyEntries);
 
-            if ( lines.Count == 1 )
+            if ( lines.Length == 1 )
             {
-                lines = new List<string> () { message };
+                lines = [message];
             }
 
             foreach ( string line   in   lines )
@@ -127,22 +126,25 @@ namespace Lister.Views
         }
 
 
+        internal void TappedPathForWholeSelection ( object sender, TappedEventArgs args )
+        {
+            if ( !_pathIsSelected )
+            {
+                _pathIsSelected = true;
+                TextBox textBox = sender as TextBox;
+                textBox.SelectAll ();
+            }
+            else
+            {
+                _pathIsSelected = false;
+            }
+        }
+
+
         internal void MessageGotFocus ( object sender, GotFocusEventArgs args )
         {
-            //_messageIsSelected = true;
             SelectableTextBlock textBlock = sender as SelectableTextBlock;
             textBlock.SelectAll ();
-
-            //if ( !_messageIsSelected )
-            //{
-            //    _messageIsSelected = true;
-            //    SelectableTextBlock textBlock = sender as SelectableTextBlock;
-            //    textBlock.SelectAll ();
-            //}
-            //else
-            //{
-            //    _messageIsSelected = false;
-            //}
         }
     }
 }

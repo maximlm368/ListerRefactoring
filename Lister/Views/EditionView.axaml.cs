@@ -30,6 +30,7 @@ namespace Lister.Views
     {
         private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
         private static readonly string _startFilter = "Все";
+        private static readonly int _focusedTextLineLengthLimit = 100;
 
         private static bool _widthIsChanged;
         private static bool _heightIsChanged;
@@ -49,6 +50,8 @@ namespace Lister.Views
         private MainView _back;
         private BadgeEditorViewModel _viewModel;
         private bool _isReleaseLocked;
+        private bool _isTextEditorFocused;
+        private bool _isZoomOnOutFocused;
         private Stopwatch _focusTime;
         private double _dastinationPointer = 0;
 
@@ -268,9 +271,9 @@ namespace Lister.Views
                 return;
             }
 
-            if ( edited.Length > 100 ) 
+            if ( edited.Length > _focusedTextLineLengthLimit ) 
             {
-                editorTextBox.Text = edited.Substring(0, 100);
+                editorTextBox.Text = edited.Substring(0, _focusedTextLineLengthLimit);
                 return;
             }
 
@@ -312,6 +315,26 @@ namespace Lister.Views
         internal void HandleGettingFocus ( object sender, GotFocusEventArgs args )
         {
             _isReleaseLocked = true;
+            _isTextEditorFocused = true;
+        }
+
+
+        internal void TextEditorLostFocus ( object sender, RoutedEventArgs args )
+        {
+            _isTextEditorFocused = false;
+        }
+
+
+        internal void ZoomOnOutGotFocus ( object sender, GotFocusEventArgs args )
+        {
+            _isReleaseLocked = true;
+            _isZoomOnOutFocused = true;
+        }
+
+
+        internal void ZoomOnOutLostFocus ( object sender, RoutedEventArgs args )
+        {
+            _isZoomOnOutFocused = false;
         }
 
 
@@ -470,8 +493,28 @@ namespace Lister.Views
 
         internal void ToSide ( object sender, KeyEventArgs args )
         {
+            if ( _isTextEditorFocused   ||   _isZoomOnOutFocused ) 
+            {
+                return;
+            }
+
             string key = args.Key.ToString ();
             _viewModel.FocusedToSide (key);
+        }
+
+
+        internal void ChangeFocusedFontSize ( object sender, KeyEventArgs args )
+        {
+            string key = args.Key.ToString ();
+
+            if ( key == "Up" )
+            {
+                _viewModel.IncreaseFontSize ();
+            }
+            else if ( key == "Down" ) 
+            {
+                _viewModel.ReduceFontSize ();
+            }
         }
 
 
@@ -687,6 +730,11 @@ namespace Lister.Views
 
         internal void ToParticularBadge ( object sender, KeyEventArgs args )
         {
+            if ( _isTextEditorFocused   ||   _isZoomOnOutFocused )
+            {
+                return;
+            }
+
             string key = args.Key.ToString ();
 
             if ( key == "Up" )
@@ -701,13 +749,6 @@ namespace Lister.Views
 
         #endregion
 
-
-        //internal void FilterSwitcherPointerEntered ( object sender, PointerEventArgs args )
-        //{
-        //    Button button = sender   as   Button;
-
-        //    _viewModel.RefreshSwitcher ();
-        //}
     }
 
 

@@ -9,7 +9,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ColorTextBlock.Avalonia;
 using ContentAssembler;
-using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -213,7 +212,8 @@ namespace Lister.ViewModels
                 {
                     EndWaiting ();
 
-                    var messegeDialog = new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage);
+                    string limit = _sceneViewModel.GetLimit ().ToString() + ".";
+                    var messegeDialog = new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
 
                     WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                     waitingVM.Darken ();

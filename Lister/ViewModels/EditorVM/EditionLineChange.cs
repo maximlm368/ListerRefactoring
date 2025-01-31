@@ -52,6 +52,7 @@ namespace Lister.ViewModels
         internal void ResetFocusedText ( string newText )
         {
             BeingProcessedBadge.ResetFocusedText (newText);
+            EnableSplitting (newText);
             ResetActiveIcon ();
         }
 
@@ -68,7 +69,7 @@ namespace Lister.ViewModels
         {
             if ( BeingProcessedBadge == null ) return;
 
-            BeingProcessedBadge.FocusedToSide (direction, _scale);
+            BeingProcessedBadge.FocusedToSide (direction);
             ResetActiveIcon ();
         }
 
@@ -154,14 +155,15 @@ namespace Lister.ViewModels
                 return;
             }
 
-            List<string> strings = content.SplitBySeparators (new List<char> () { ' ', '-' });
-            bool lineIsSplitable = ( strings.Count > 1 );
-            EnableSplitting (lineIsSplitable, line);
+            EnableSplitting (content);
         }
 
 
-        private void EnableSplitting ( bool lineIsSplitable, TextLineViewModel splittable )
+        private void EnableSplitting ( string content )
         {
+            string [] strings = content.Split ([' ', '-'], StringSplitOptions.RemoveEmptyEntries);
+            bool lineIsSplitable = ( strings.Length > 1 );
+
             if ( lineIsSplitable )
             {
                 SplitterIsEnable = true;

@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using ContentAssembler;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;

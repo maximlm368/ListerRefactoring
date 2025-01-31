@@ -22,7 +22,6 @@ using AvaloniaEdit.Utils;
 using System.Collections.Immutable;
 using ReactiveUI;
 using Avalonia;
-using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Lister.ViewModels
 {
@@ -30,6 +29,14 @@ namespace Lister.ViewModels
     {
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;
+
+        private readonly SolidColorBrush _switcherAllForeground = 
+                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 250, 250, 250));
+        private readonly SolidColorBrush _switcherCorrectForeground = 
+                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 97, 184, 97));
+        private readonly SolidColorBrush _switcherIncorrectForeground = 
+                                                          new SolidColorBrush (new Avalonia.Media.Color (255, 210, 54, 80));
+
         private readonly string _allFilter;
         private readonly string _incorrectFilter;
         private readonly string _correctFilter;
@@ -114,6 +121,16 @@ namespace Lister.ViewModels
             }
         }
 
+        private SolidColorBrush _switcherForeground;
+        internal SolidColorBrush SwitcherForeground
+        {
+            get { return _switcherForeground; }
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _switcherForeground, value, nameof (SwitcherForeground));
+            }
+        }
+
 
         internal bool IsProcessableChangedInSpecificFilter ( int filterableNumber )
         {
@@ -149,8 +166,8 @@ namespace Lister.ViewModels
             if ( _filterState == FilterChoosing.All )
             {
                 _filterState = FilterChoosing.Corrects;
-                
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 255, 0));
+
+                SwitcherForeground = _switcherCorrectForeground;
                 SwitcherTip = _correctTip;
                 FilterSelectedIndex = 1;
 
@@ -166,7 +183,7 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 0, 0));
+                SwitcherForeground = _switcherIncorrectForeground;
                 SwitcherTip = _incorrectTip;
                 FilterSelectedIndex = 2;
 
@@ -181,7 +198,7 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 255));
+                SwitcherForeground = _switcherAllForeground;
                 SwitcherTip = _allTip;
                 FilterSelectedIndex = 0;
 
@@ -310,9 +327,8 @@ namespace Lister.ViewModels
 
             if ( firstExistingCommonNumber > -1 )
             {
-                string correctnessIcon = App.ResourceDirectoryUri + _correctnessIcon;
-                Uri correctUri = new Uri (correctnessIcon);
-                FilterState = ImageHelper.LoadFromResource (correctUri);
+                string correctnessIcon = App.ResourceFolderName + _correctnessIcon;
+                FilterState = ImageHelper.LoadFromResource (correctnessIcon);
                 ActiveIcon = VisibleIcons [0];
                 BeingProcessedBadge = CorrectNumbered.ElementAt (0);
             }
@@ -349,9 +365,8 @@ namespace Lister.ViewModels
 
             if ( firstExistingCommonNumber > -1 )
             {
-                string correctnessIcon = App.ResourceDirectoryUri + _incorrectnessIcon;
-                Uri correctUri = new Uri (correctnessIcon);
-                FilterState = ImageHelper.LoadFromResource (correctUri);
+                string correctnessIcon = App.ResourceFolderName + _incorrectnessIcon;
+                FilterState = ImageHelper.LoadFromResource (correctnessIcon);
                 ActiveIcon = VisibleIcons [0];
                 BeingProcessedBadge = IncorrectNumbered.ElementAt (0);
             }
@@ -428,7 +443,7 @@ namespace Lister.ViewModels
                 _filterState = FilterChoosing.All;
                 CurrentVisibleCollection = AllNumbered;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 0, 255));
+                SwitcherForeground = _switcherAllForeground;
                 SwitcherTip = _allTip;
                 TryChangeSpecificLists ();
 
@@ -438,7 +453,7 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Corrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 0, 255, 0));
+                SwitcherForeground = _switcherCorrectForeground;
                 SwitcherTip = _correctTip;
 
                 TryChangeSpecificLists ();
@@ -451,7 +466,7 @@ namespace Lister.ViewModels
             {
                 _filterState = FilterChoosing.Incorrects;
 
-                SwitcherForeground = new SolidColorBrush (new Avalonia.Media.Color (255, 255, 0, 0));
+                SwitcherForeground = _switcherIncorrectForeground;
                 SwitcherTip = _incorrectTip;
 
                 TryChangeSpecificLists ();

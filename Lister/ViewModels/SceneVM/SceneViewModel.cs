@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Threading;
 using ContentAssembler;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using Lister.Extentions;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -264,6 +263,12 @@ namespace Lister.ViewModels
             PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
             PageCount = 1;
+        }
+
+
+        internal int GetLimit ( )
+        {
+            return _badgeCountLimit;
         }
 
 
@@ -611,7 +616,7 @@ namespace Lister.ViewModels
 
         internal void EnableButtons ()
         {
-            EditionMustEnable = ( IncorrectBadgeCount > 0 );
+            EditionMustEnable = ( ProcessableBadges.Count > 0 );
             ClearIsEnable = true;
             SaveIsEnable = true;
             PrintIsEnable = true;
@@ -628,11 +633,6 @@ namespace Lister.ViewModels
                 {
                     IncorrectBadgeCount++;
                 }
-            }
-
-            if ( IncorrectBadgeCount < 1 )
-            {
-                EditionMustEnable = false;
             }
         }
     }

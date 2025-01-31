@@ -29,11 +29,13 @@
 				Classes="modalLabel"
 				Content ="Ошибка"/>
 
-			<Grid Height="70">
+			<Grid Height="70"
+				  Width="344"
+				  HorizontalAlignment="Left">
 
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition  Width="36"></ColumnDefinition>
-					<ColumnDefinition  Width="324"></ColumnDefinition>
+					<ColumnDefinition  Width="308"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 
 				<Image
@@ -42,28 +44,23 @@
 					Margin ="16,0,0,0"
 					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
 
-
-				<ItemsControl
-					Name="messageLines"
+				<Border
 					Grid.Column="1"
-					Width="324"
-					Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
+					Width="293"
 					HorizontalAlignment="Left"
-					ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+					VerticalAlignment="Bottom">
 
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-
-							<TextBlock
-								Width="324"
-								FontSize="12"
-								Text ="{Binding,  Mode=OneWay}"
-								TextWrapping="WrapWithOverflow"
-					            MaxLines="3"/>
-
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+					<TextBlock
+						Name="messageText"
+						Width="270"
+						Margin="16,0,0,16"
+						FontSize="12"
+						Text ="{Binding  Path = Message,  Mode=OneWay}"
+						TextWrapping="WrapWithOverflow"
+						MaxLines="3"/>
+					
+				</Border>
+				
 			</Grid>
 
 			<Canvas
@@ -95,3 +92,30 @@
 	</UserControl>
 
 </Window>
+
+
+<!--
+
+				<ItemsControl
+					Name="messageLines"
+					Grid.Column="1"
+					Width="308"
+					Margin ="{Binding  Path=MessageMargin,  Mode=OneWay}"
+					HorizontalAlignment="Left"
+					ItemsSource="{Binding  Path=MessageLines,  Mode=OneWay}">
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+
+							<TextBlock
+								Width="308"
+								FontSize="12"
+								Text ="{Binding,  Mode=OneWay}"
+								TextWrapping="WrapWithOverflow"
+					            MaxLines="3"/>
+
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+-->

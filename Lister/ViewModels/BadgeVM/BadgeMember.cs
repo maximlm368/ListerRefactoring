@@ -116,27 +116,6 @@ namespace Lister.ViewModels
             }
         }
 
-        //private byte _red;
-        //internal byte Red
-        //{
-        //    get { return _red; }
-        //    private set { _red = value; }
-        //}
-
-        //private byte _green;
-        //internal byte Green
-        //{
-        //    get { return _green; }
-        //    private set { _green = value; }
-        //}
-
-        //private byte _blue;
-        //internal byte Blue
-        //{
-        //    get { return _blue; }
-        //    private set { _blue = value; }
-        //}
-
 
         protected void SetYourself ( double width, double height, double topOffset, double leftOffset
                                                                                   , SolidColorBrush outLineColor ) 

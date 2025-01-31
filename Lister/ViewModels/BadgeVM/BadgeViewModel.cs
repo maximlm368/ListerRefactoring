@@ -21,10 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Fluent;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using System.Drawing;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Reflection;
+
 
 namespace Lister.ViewModels;
 
@@ -626,17 +623,14 @@ public class BadgeViewModel : ViewModelBase
         if( _bitMap == null )
         {
             string path = BadgeModel. BackgroundImagePath;
-            Uri uri = new Uri ( path );
-            string absolutePath = uri.AbsolutePath;
 
-            if ( ! _pathToImage.ContainsKey ( absolutePath ) ) 
+            if ( ! _pathToImage.ContainsKey ( path ) ) 
             {
-                _bitMap = ImageHelper.LoadFromResource ( uri );
-                _pathToImage.Add ( absolutePath , _bitMap );
+                _bitMap = ImageHelper.LoadFromResource (path);
             }
             else
             {
-                _bitMap = _pathToImage [ absolutePath ];
+                _bitMap = _pathToImage [ path ];
             }
         }
 
@@ -741,7 +735,8 @@ public class BadgeViewModel : ViewModelBase
         }
 
         string content = ( string ) FocusedLine. Content;
-        List<string> pieces = content.SplitBySeparators (new List<char> () { ' ', '-' });
+
+        List<string> pieces = content.SplitBySeparators ([' ', '-']);
 
         for ( int index = 0;   index < pieces.Count;   index++ ) 
         {
@@ -982,7 +977,7 @@ public class BadgeViewModel : ViewModelBase
             double delta = 0;
             int index = 0;
 
-            for ( ;  index < TextLines.Count;   index++ )
+            for ( ;   index < TextLines.Count;   index++ )
             {
                 TextLineViewModel line = TextLines [index];
 
@@ -1000,7 +995,6 @@ public class BadgeViewModel : ViewModelBase
                     {
                         delta -= member.TopOffset;
                         delta -= member.HeightWithBorder;
-                        //index--;
                     }
                     else 
                     {
@@ -1027,9 +1021,9 @@ public class BadgeViewModel : ViewModelBase
 
     private void ShiftBelowMembers ( BoundToTextLine member, int startIndex, double memberRelativeTopOffset ) 
     {
-        for ( int ind = startIndex;   ind < TextLines.Count;   ind++ )
+        for ( int index = startIndex;   index < TextLines.Count;   index++ )
         {
-            TextLineViewModel line = TextLines [ind];
+            TextLineViewModel line = TextLines [index];
             line.TopOffset += ( member.Height + memberRelativeTopOffset );
         }
 
@@ -1040,13 +1034,13 @@ public class BadgeViewModel : ViewModelBase
 
 
     private void ShiftBelowBounds <T> ( ObservableCollection <T> bounds, BoundToTextLine member, int startIndex
-                                                                   , double memberRelativeTopOffset ) where T : BoundToTextLine
+                                      , double memberRelativeTopOffset ) where T : BoundToTextLine
     {
         for ( int index = 0;   index < bounds.Count;   index++ )
         {
             BoundToTextLine bound = bounds [index];
 
-            if ((! string.IsNullOrWhiteSpace (bound.Binding))   &&   (bound.TopOffset > member.TopOffset))
+            if (( ! string.IsNullOrWhiteSpace (bound.Binding))   &&   (bound.TopOffset > member.TopOffset))
             {
                 bound.TopOffset += ( member.Height + memberRelativeTopOffset );
             }
@@ -1310,149 +1304,196 @@ public class BadgeViewModel : ViewModelBase
     {
         if ( FocusedLine != null )
         {
+            double currentLeftOffset = FocusedLine.LeftOffset;
+            double currentTopOffset = FocusedLine.TopOffset;
+
             FocusedLine.Shift (delta);
-            PreventTextLineHiding (FocusedLine);
+            PreventMemberHiding (FocusedLine, currentLeftOffset, currentTopOffset, GetDirection(delta));
             IsChanged = true;
         }
         else if ( FocusedImage != null )
         {
+            double currentLeftOffset = FocusedImage.LeftOffset;
+            double currentTopOffset = FocusedImage.TopOffset;
+
             FocusedImage.Shift (delta);
-            PreventImageOrShapeHiding (FocusedImage);
+            PreventMemberHiding (FocusedImage, currentLeftOffset, currentTopOffset, GetDirection (delta));
             IsChanged = true;
         }
         else if ( FocusedRect != null )
         {
+            double currentLeftOffset = FocusedRect.LeftOffset;
+            double currentTopOffset = FocusedRect.TopOffset;
+
             FocusedRect.Shift (delta);
-            PreventImageOrShapeHiding (FocusedRect);
+            PreventMemberHiding (FocusedRect, currentLeftOffset, currentTopOffset, GetDirection (delta));
             IsChanged = true;
         }
         else if ( FocusedEllipse != null ) 
         {
+            double currentLeftOffset = FocusedEllipse.LeftOffset;
+            double currentTopOffset = FocusedEllipse.TopOffset;
+
             FocusedEllipse.Shift (delta);
-            PreventImageOrShapeHiding (FocusedEllipse);
+            PreventMemberHiding (FocusedEllipse, currentLeftOffset, currentTopOffset, GetDirection (delta));
             IsChanged = true;
         }
     }
 
 
-    internal void FocusedToSide ( string direction, double shift )
+    private List<string> GetDirection ( Avalonia.Point delta ) 
+    {
+        List<string> directions = [];
+
+        if (delta.X > 0) 
+        {
+            directions.Add ("Left");
+        }
+
+        if ( delta.X < 0 )
+        {
+            directions.Add ("Right");
+        }
+
+        if ( delta.Y > 0 )
+        {
+            directions.Add ("Up");
+        }
+
+        if ( delta.Y < 0 )
+        {
+            directions.Add ("Down");
+        }
+
+        return directions;
+    }
+
+
+    internal void FocusedToSide ( string direction )
     {
         if ( FocusedLine != null )
         {
-            IsChanged = ShiftFocusedIfShould (direction, Scale, FocusedLine);
-            PreventTextLineHiding (FocusedLine);
+            IsChanged = ShiftFocusedIfShould (direction, FocusedLine);
             CheckFocusedLineCorrectness ();
         }
         else if ( FocusedImage != null )
         {
-            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedImage);
-            PreventImageOrShapeHiding (FocusedImage);
+            IsChanged = ShiftFocusedIfShould (direction, FocusedImage);
         }
         else if ( FocusedEllipse != null )
         {
-            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedEllipse);
-            PreventImageOrShapeHiding (FocusedEllipse);
+            IsChanged = ShiftFocusedIfShould (direction, FocusedEllipse);
         }
         else if ( FocusedRect != null )
         {
-            IsChanged = ShiftFocusedIfShould (direction, shift, FocusedRect);
-            PreventImageOrShapeHiding (FocusedRect);
+            IsChanged = ShiftFocusedIfShould (direction, FocusedRect);
         }
     }
 
 
-    private bool ShiftFocusedIfShould ( string direction, double shift, BadgeMember shiftable )
+    private bool ShiftFocusedIfShould ( string direction, BadgeMember shiftable )
     {
+        List<string> directions = [];
+        directions.Add (direction);
+
+        double currentLeftOffset = shiftable.LeftOffset;
+        double currentTopOffset = shiftable.TopOffset;
+
         if ( direction == "Left" )
         {
             shiftable.LeftOffset -= Scale;
-            return true;
+            IsChanged = true;
         }
 
         if ( direction == "Right" )
         {
             shiftable.LeftOffset += Scale;
-            return true;
+            IsChanged = true;
         }
 
         if ( direction == "Up" )
         {
             shiftable.TopOffset -= Scale;
-            return true;
+            IsChanged = true;
         }
 
         if ( direction == "Down" )
         {
             shiftable.TopOffset += Scale;
-            return true;
+            IsChanged = true;
         }
+
+        PreventMemberHiding (shiftable, currentLeftOffset, currentTopOffset, directions);
 
         return IsChanged;
     }
 
 
-    private void PreventTextLineHiding ( TextLineViewModel preventable )
+    private void PreventMemberHiding ( BadgeMember preventable, double oldLeftOffset, double oldTopOffset
+                                                                                      , List<string> directions )
     {
-        bool isHidedBeyondRight = ( preventable.LeftOffset > (BadgeWidth - RightSpan) );
+        bool isHiddenBeyondRight = (preventable.LeftOffset > (BadgeWidth - RightSpan))  &&  (directions.Contains ("Right"));
 
-        if ( isHidedBeyondRight ) 
+        if ( isHiddenBeyondRight ) 
         {
-            preventable.LeftOffset = (BadgeWidth - RightSpan);
+            preventable.LeftOffset = oldLeftOffset;
         }
 
-        bool isHidedBeyondLeft = ( preventable.LeftOffset < ( preventable.UsefullWidth - LeftSpan ) * ( -1 ) );
+        bool isHiddenBeyondLeft = (preventable.LeftOffset < ( preventable.Width - LeftSpan ) * ( -1 ))  
+                                 &&  (directions.Contains ("Left"));
 
-        if ( isHidedBeyondLeft )
+        if ( isHiddenBeyondLeft )
         {
-            preventable.LeftOffset = ( preventable.UsefullWidth - LeftSpan ) * ( -1 );
+            preventable.LeftOffset = oldLeftOffset;
         }
 
-        bool isHidedBeyondBottom = ( preventable.TopOffset > ( BadgeHeight - BottomSpan ) );
+        bool isHiddenBeyondBottom = (preventable.TopOffset > ( BadgeHeight - BottomSpan ))  &&  (directions.Contains ("Down"));
 
-        if ( isHidedBeyondBottom )
+        if ( isHiddenBeyondBottom )
         {
-            preventable.TopOffset = (BadgeHeight - BottomSpan);
+            preventable.TopOffset = oldTopOffset;
         }
 
-        bool isHidedBeyondTop = ( preventable.TopOffset < ( preventable.Height / 4 ) * ( -1 ) );
+        bool isHiddenBeyondTop = (preventable.TopOffset < ( preventable.Height / 4 ) * ( -1 ))  
+                                 &&  (directions.Contains ("Up"));
 
-        if ( isHidedBeyondTop )
+        if ( isHiddenBeyondTop )
         {
-            preventable.TopOffset = ( preventable.Height / 4 ) * ( -1 );
+            preventable.TopOffset = oldTopOffset;
         }
     }
 
 
-    private void PreventImageOrShapeHiding ( BoundToTextLine preventable ) 
-    {
-        bool isPreventableBeyondRight = ( preventable.LeftOffset > (BadgeWidth - preventable.WidthWithBorder/2) );
+    //private void PreventImageOrShapeHiding ( BoundToTextLine preventable, double oldLeftOffset, double oldTopOffset ) 
+    //{
+    //    bool isPreventableBeyondRight = ( preventable.LeftOffset > (BadgeWidth - preventable.WidthWithBorder/2) );
 
-        if ( isPreventableBeyondRight )
-        {
-            preventable.LeftOffset = BadgeWidth - preventable.Width/2;
-        }
+    //    if ( isPreventableBeyondRight )
+    //    {
+    //        preventable.LeftOffset = oldLeftOffset;
+    //    }
 
-        bool isPreventableBeyondLeft = (preventable.LeftOffset < ((preventable.Width/2) * ( -1 )));
+    //    bool isPreventableBeyondLeft = (preventable.LeftOffset < ((preventable.Width/2) * ( -1 )));
 
-        if ( isPreventableBeyondLeft )
-        {
-            preventable.LeftOffset = ( preventable.Width/2) * ( -1 );
-        }
+    //    if ( isPreventableBeyondLeft )
+    //    {
+    //        preventable.LeftOffset = oldLeftOffset;
+    //    }
 
-        bool isPreventableBeyondBottom = ( preventable.TopOffset > (BadgeHeight - preventable.HeightWithBorder) );
+    //    bool isPreventableBeyondBottom = ( preventable.TopOffset > (BadgeHeight - preventable.HeightWithBorder) );
 
-        if ( isPreventableBeyondBottom )
-        {
-            preventable.TopOffset = BadgeHeight - preventable.HeightWithBorder;
-        }
+    //    if ( isPreventableBeyondBottom )
+    //    {
+    //        preventable.TopOffset = oldTopOffset;
+    //    }
 
-        bool isPreventableBeyondTop = ( preventable.TopOffset < 0 );
+    //    bool isPreventableBeyondTop = ( preventable.TopOffset < 0 );
 
-        if ( isPreventableBeyondTop )
-        {
-            preventable.TopOffset = 0;
-        }
-    }
+    //    if ( isPreventableBeyondTop )
+    //    {
+    //        preventable.TopOffset = oldTopOffset;
+    //    }
+    //}
 
     #endregion
 
@@ -1470,7 +1511,6 @@ public class BadgeViewModel : ViewModelBase
         }
 
         FocusedLine. Content = newText;
-        PreventTextLineHiding (FocusedLine);
         CheckFocusedLineCorrectness ();
     }
 

@@ -5,26 +5,6 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
-using ContentAssembler;
-using SkiaSharp;
-using Avalonia.Skia;
-using Avalonia.Media.Fonts;
-using System.Reactive.Concurrency;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using DataGateway;
-using Lister.ViewModels;
-using Lister.Views;
-using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
-using DocumentFormat.OpenXml.Packaging;
-using System.Text.Json;
-//using Json.Schema;
-//using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
-using NJsonSchema;
-using NJsonSchema.Validation;
-using NJsonSchema.Generation;
 
 
 namespace Lister.Desktop;

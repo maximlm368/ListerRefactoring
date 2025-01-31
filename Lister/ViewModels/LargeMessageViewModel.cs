@@ -168,9 +168,8 @@ namespace Lister.ViewModels
 
         public LargeMessageViewModel () 
         {
-            string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
-            Uri correctUri = new Uri (correctnessIcon);
-            WarnImage = ImageHelper.LoadFromResource (correctUri);
+            string correctnessIcon = App.ResourceFolderName + _warnImageName;
+            WarnImage = ImageHelper.LoadFromResource (correctnessIcon);
         }
 
 

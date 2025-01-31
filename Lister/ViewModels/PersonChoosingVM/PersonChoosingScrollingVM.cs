@@ -494,7 +494,7 @@ namespace Lister.ViewModels
                 _scrollValue = 0;
             }
 
-            SetVisiblePeople ( shiftInLines );
+            SetVisiblePeopleStartingFrom ( shiftInLines );
         }
 
 

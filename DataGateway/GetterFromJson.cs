@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using static System.Collections.Specialized.BitVector32;
 using ContentAssembler;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
+//using DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace DataGateway
 {
@@ -18,17 +18,17 @@ namespace DataGateway
         private static string attributeSection;
 
 
-        public static IConfigurationSection ? GetSection ( string jsonPath, List<string> sectionPath )
+        public static IConfigurationSection ? GetSection ( string jsonPath, List<string> keyPathOfSection )
         {
             IConfigurationSection section = null;
 
-            if ( sectionPath.Count > 1 )
+            if ( keyPathOfSection.Count > 1 )
             {
-                section = GetConfigRoot (jsonPath).GetSection (sectionPath [0]);
+                section = GetConfigRoot (jsonPath).GetSection (keyPathOfSection [0]);
 
-                for ( int step = 1; step < sectionPath.Count; step++ )
+                for ( int step = 1; step < keyPathOfSection.Count; step++ )
                 {
-                    string sectionName = sectionPath [step];
+                    string sectionName = keyPathOfSection [step];
                     section = section.GetSection (sectionName);
                 }
             }
@@ -64,9 +64,9 @@ namespace DataGateway
         }
 
 
-        public static string GetSectionStrValue ( List<string> keyPathInJson, string jsonPath )
+        public static string GetSectionStrValue ( List<string> keyPathOfSection, string jsonPath )
         {
-            bool sectionIsNotAvailable = ( keyPathInJson == null )   ||   ( keyPathInJson.Count < 1 ) 
+            bool sectionIsNotAvailable = ( keyPathOfSection == null )   ||   ( keyPathOfSection.Count < 1 ) 
                                         ||   ( jsonPath == null )   ||   ( jsonPath == string.Empty );
 
             if (sectionIsNotAvailable)
@@ -86,14 +86,14 @@ namespace DataGateway
             {
                 IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
 
-                string sectionName = keyPathInJson [0];
+                string sectionName = keyPathOfSection [0];
                 IConfigurationSection section = configRoot.GetSection (sectionName);
 
-                if ( keyPathInJson.Count > 1 )
+                if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1;   step < keyPathInJson.Count;   step++ )
+                    for ( int step = 1;   step < keyPathOfSection.Count;   step++ )
                     {
-                        sectionName = keyPathInJson [step];
+                        sectionName = keyPathOfSection [step];
                         section = section.GetSection (sectionName);
                     }
                 }
@@ -109,9 +109,9 @@ namespace DataGateway
         }
 
 
-        public static int GetSectionIntValue ( List<string> keyPathInJson, string jsonPath )
+        public static int GetSectionIntValue ( List<string> keyPathOfSection, string jsonPath )
         {
-            string strResult = GetSectionStrValue (keyPathInJson, jsonPath);
+            string strResult = GetSectionStrValue (keyPathOfSection, jsonPath);
 
             bool sectionIsNotAvailable = ( string.IsNullOrWhiteSpace(strResult) );
 
@@ -133,9 +133,9 @@ namespace DataGateway
         }
 
 
-        public static bool GetSectionBoolValue ( List<string> keyPathInJson, string jsonPath )
+        public static bool GetSectionBoolValue ( List<string> keyPathOfSection, string jsonPath )
         {
-            string strResult = GetSectionStrValue (keyPathInJson, jsonPath);
+            string strResult = GetSectionStrValue (keyPathOfSection, jsonPath);
 
             bool sectionIsNotAvailable = ( string.IsNullOrWhiteSpace (strResult) );
 
@@ -170,9 +170,9 @@ namespace DataGateway
 
 
         public static IEnumerable <IConfigurationSection> GetIncludedItemsOfSection
-                                                                          ( List<string> keyPathInJson, string jsonPath )
+                                                                          ( List<string> keyPathOfSection, string jsonPath )
         {
-            if ( (keyPathInJson == null)   ||   (keyPathInJson.Count < 1) ) 
+            if ( (keyPathOfSection == null)   ||   (keyPathOfSection.Count < 1) ) 
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }
@@ -180,14 +180,14 @@ namespace DataGateway
             try 
             {
                 IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
-                string sectionName = keyPathInJson [0];
+                string sectionName = keyPathOfSection [0];
                 IConfigurationSection section = configRoot.GetSection (sectionName);
 
-                if ( keyPathInJson.Count > 1 )
+                if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1;   step < keyPathInJson.Count;   step++ )
+                    for ( int step = 1;   step < keyPathOfSection.Count;   step++ )
                     {
-                        sectionName = keyPathInJson [step];
+                        sectionName = keyPathOfSection [step];
                         section = section.GetSection (sectionName);
                     }
                 }
@@ -204,9 +204,9 @@ namespace DataGateway
         }
 
 
-        public static IEnumerable <IConfigurationSection> GetChildren ( List<string> keyPathInJson, string jsonPath )
+        public static IEnumerable <IConfigurationSection> GetChildren ( List<string> keyPathOfSection, string jsonPath )
         {
-            if ( ( keyPathInJson == null )   ||   ( keyPathInJson.Count < 1 ) )
+            if ( ( keyPathOfSection == null )   ||   ( keyPathOfSection.Count < 1 ) )
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }
@@ -214,14 +214,14 @@ namespace DataGateway
             try
             {
                 IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
-                string sectionName = keyPathInJson [0];
+                string sectionName = keyPathOfSection [0];
                 IConfigurationSection section = configRoot.GetSection (sectionName);
 
-                if ( keyPathInJson.Count > 1 )
+                if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1; step < keyPathInJson.Count; step++ )
+                    for ( int step = 1; step < keyPathOfSection.Count; step++ )
                     {
-                        sectionName = keyPathInJson [step];
+                        sectionName = keyPathOfSection [step];
                         section = section.GetSection (sectionName);
                     }
                 }

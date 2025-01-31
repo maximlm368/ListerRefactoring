@@ -290,9 +290,8 @@ namespace Lister.ViewModels
             _emptyPages = emptyPages;
             _emptyPrinters = emptyPrinters;
 
-            string correctnessIcon = App.ResourceDirectoryUri + _warnImagePath;
-            Uri correctUri = new Uri (correctnessIcon);
-            WarnImage = ImageHelper.LoadFromResource (correctUri);
+            string correctnessIcon = App.ResourceFolderName + _warnImagePath;
+            WarnImage = ImageHelper.LoadFromResource (correctnessIcon);
 
             CanvasBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 240, 240, 240));
             LineBackground = new SolidColorBrush (new Avalonia.Media.Color (255, 220, 220, 220));
@@ -345,6 +344,20 @@ namespace Lister.ViewModels
         }
 
 
+        public void OpenPrinterSettings ()
+        {
+            string printerName = Printers [SelectedIndex].StringPresentation;
+            System.Diagnostics.Process process = new System.Diagnostics.Process ();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo ();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + printerName + "\"";
+
+            process.StartInfo = startInfo;
+            process.Start ();
+        }
+
+
         public void Print ()
         {
             try
@@ -354,7 +367,7 @@ namespace Lister.ViewModels
                     throw new ParsingException (_emptyCopies);
                 }
 
-                if ( string.IsNullOrEmpty (Pages)   &&   Some )
+                if ( string.IsNullOrEmpty (Pages) && Some )
                 {
                     throw new ParsingException (_emptyPages);
                 }
@@ -362,11 +375,11 @@ namespace Lister.ViewModels
                 PrinterPresentation printer = Printers [SelectedIndex];
                 _printingAdjusting.PrinterName = printer.StringPresentation;
 
-                if ( ! Some )
+                if ( !Some )
                 {
-                    _chosenPagesToPrint = new List <int> ();
+                    _chosenPagesToPrint = new List<int> ();
 
-                    for ( int index = 0;   index < _passedPagesAmount;   index++ )
+                    for ( int index = 0; index < _passedPagesAmount; index++ )
                     {
                         _chosenPagesToPrint.Add (index);
                     }
@@ -381,13 +394,13 @@ namespace Lister.ViewModels
                 _printingAdjusting.Cancelled = false;
                 NeedClose = true;
             }
-            catch (ParsingException ex) 
+            catch ( ParsingException ex )
             {
                 if ( ex.Message == _emptyPages )
                 {
                     PagesError = ex.Message;
                 }
-                else if ( ex.Message == _emptyCopies ) 
+                else if ( ex.Message == _emptyCopies )
                 {
                     CopiesError = ex.Message;
                 }
@@ -810,7 +823,8 @@ namespace Lister.ViewModels
             string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
 
             string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
-            List<string> printers = printersLine.SplitBySeparators (new () { '\n' });
+
+            string[] printers = printersLine.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
 
             int counter = 0;
 

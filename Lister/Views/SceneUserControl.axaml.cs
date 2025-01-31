@@ -7,7 +7,6 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;

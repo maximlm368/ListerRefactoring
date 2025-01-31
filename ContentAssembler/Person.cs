@@ -35,39 +35,34 @@ namespace ContentAssembler
         }
 
 
-        public static Person Create ( string id, string familyName, string firstName
-                                     , string patronymicName, string department, string post )
-        {
-            return new Person (id, familyName, firstName, patronymicName, department, post);
-        }
-
-
-        public static Person Create ( string [] parts )
+        public static Person ? Create ( string [] parts )
         {
             if ((parts == null)   ||   (parts.Length < 1)) 
             {
-                throw new ArgumentException ("Arguments are incorrect, check input value");
+                return null;
             }
 
             bool condition = IsAllEmpty(parts);
 
             if ( condition )
             {
-                throw new ArgumentException ("Arguments are incorrect, check input value");
+                return null;
             }
 
             if ( parts.Length < 6 ) 
             {
                 string [] newParts = new string [6];
 
-                for ( int index = 0;   index < parts.Length;   index++ )
+                for ( int index = 0;   index < newParts.Length;   index++ )
                 {
-                    newParts [index] = parts [index];
-                }
-
-                for ( int index = parts.Length;   index < 6;   index++ )
-                {
-                    newParts [index] = parts [index];
+                    if ( index >= parts.Length )
+                    {
+                        newParts [index] = string.Empty;
+                    }
+                    else 
+                    {
+                        newParts [index] = parts [index];
+                    }
                 }
 
                 parts = newParts;

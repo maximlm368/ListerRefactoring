@@ -4,31 +4,51 @@ using Microsoft.Extensions.Configuration;
 using NJsonSchema;
 using NJsonSchema.Validation;
 using System.Drawing.Text;
+using System.Text;
 
 
 namespace DataGateway
 {
     public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider
     {
-        private string _resourceUri;
-        private string _resourceFolder;
-        private FileInfo _schemeFile;
+        private static string _resourceFolder;
+        private static FileInfo _schemeFile;
 
-        private readonly string _defaultSplitability = "0";
+        private static readonly string _defaultSplitability = "0";
         
-        private Dictionary<string, string> _nameAndJson;
-        private Dictionary<string, List<byte>> _nameAndColor;
-        private Dictionary<string, BadgeLayout> _badgeLayouts;
-        private Dictionary<string, ICollection <ValidationError>> _jsonAndErrors;
-        private Dictionary<string, string> _incorrectJsonAndError;
+        private static Dictionary<string, string> _nameAndJson;
+        private static Dictionary<string, List<byte>> _nameAndColor;
+        private static Dictionary<string, BadgeLayout> _badgeLayouts;
+        private static Dictionary<string, ICollection <ValidationError>> _jsonAndErrors;
+        private static Dictionary<string, string> _incorrectJsonAndError;
 
 
-        public BadgeAppearenceProvider ( string resourceUri, string resourceFolder, string jsonSchemeFolder )
+        public static Task SetUp ( string resourceFolder, string jsonSchemeFolder )
         {
-            _resourceUri = resourceUri;
+            Task task = new Task
+            (() =>
+            {
+                BadgeAppearenceProvider badgeAppearenceProvider = new BadgeAppearenceProvider ();
+                badgeAppearenceProvider.SetLayouts (resourceFolder, jsonSchemeFolder);
+                Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
+                //using XLWorkbook workbook = new XLWorkbook ("D:\\MML\\Памятка_Lister_JSON.xlsx");
+            });
+
+            task.Start ();
+
+            return task;
+        }
+
+
+        public void SetLayouts ( string resourceFolder, string jsonSchemeFolder )
+        {
             _resourceFolder = resourceFolder;
 
             _badgeLayouts = new Dictionary<string, BadgeLayout> ();
+            _nameAndJson = new ();
+            _nameAndColor = new ();
+            _jsonAndErrors = new ();
+            _incorrectJsonAndError = new ();
 
             DirectoryInfo containingDirectory = new DirectoryInfo (jsonSchemeFolder);
             FileInfo [] containingFiles = containingDirectory.GetFiles ("*.json");
@@ -36,10 +56,6 @@ namespace DataGateway
 
             containingDirectory = new DirectoryInfo (_resourceFolder);
             FileInfo [] fileInfos = containingDirectory.GetFiles ("*.json");
-            _nameAndJson = new ();
-            _nameAndColor = new ();
-            _jsonAndErrors = new ();
-            _incorrectJsonAndError = new ();
 
             foreach ( FileInfo fileInfo   in   fileInfos )
             {
@@ -226,7 +242,7 @@ namespace DataGateway
         {
             string fileName = _nameAndJson [ templateName ];
             fileName = GetSectionStrValueOrDefault ( new List<string> { "BackgroundImagePath" }, fileName) ?? "";
-            string fileUri = _resourceUri + fileName;
+            string fileUri = _resourceFolder + fileName;
             return fileUri;
         }
 
@@ -394,19 +410,19 @@ namespace DataGateway
                 (byte) GetSectionIntValueOrDefault (new List<string> { atomName, "Foreground", "Blue" }, jsonPath);
             foreground.Add (foregroundBlue);
 
-            List<byte> outlineRGB = new List<byte> ();
+            List<byte> outlineRGB = [];
 
             //byte outlineRed =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
-            //outlineRGB.Add (outlineRed);
+            //( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
+            //outlineRGB.Add (foregroundRed);
 
             //byte outlineGreen =
             //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Green" }, jsonPath);
-            //outlineRGB.Add (outlineGreen);
+            //outlineRGB.Add (foregroundGreen);
 
             //byte outlineBlue =
             //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Blue" }, jsonPath);
-            //outlineRGB.Add (outlineBlue);
+            //outlineRGB.Add (foregroundBlue);
 
             string fontWeight = GetSectionStrValueOrDefault (new List<string> { atomName, "FontWeight" }, jsonPath) ?? "";
             bool isShiftable = GetSectionBoolValueOrDefault (new List<string> { atomName, "IsSplitable" }, jsonPath);
@@ -449,8 +465,6 @@ namespace DataGateway
             childSection = section.GetSection ("FontName");
             string fontName = GetSectionStrValueOrDefault (childSection, jsonPath, "FontName");
 
-
-
             childSection = section.GetSection ("Foreground");
             childSection = childSection.GetSection ("Red");
             byte red = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
@@ -465,21 +479,10 @@ namespace DataGateway
 
             List<byte> foreground = new List<byte> () { red, green, blue };
 
+            //childSection = section.GetSection ("OutLineColor");
+            //List<byte> outlineRGB = GetRGB (childSection);
 
-
-            List<byte> outlineRGB = new List<byte> ();
-
-            //byte outlineRed =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
-            //outlineRGB.Add (outlineRed);
-
-            //byte outlineGreen =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Green" }, jsonPath);
-            //outlineRGB.Add (outlineGreen);
-
-            //byte outlineBlue =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Blue" }, jsonPath);
-            //outlineRGB.Add (outlineBlue);
+            List<byte> outlineRGB = [];
 
 
             childSection = section.GetSection ("FontWeight");
@@ -504,31 +507,13 @@ namespace DataGateway
         }
 
 
-        //private List<byte> GetRGB ( string sectionName, IConfigurationSection section )
-        //{
-        //    IConfigurationSection childSection = section.GetSection ("Foreground");
-        //    childSection = childSection.GetSection ("Red");
-        //    byte red = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
-
-        //    childSection = section.GetSection ("Foreground");
-        //    childSection = childSection.GetSection ("Green");
-        //    byte green = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Green");
-
-        //    childSection = section.GetSection ("Foreground");
-        //    childSection = childSection.GetSection ("Blue");
-        //    byte blue = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Blue");
-
-        //    return new List<byte> () { red, green, blue };
-        //}
-
-
         private InsideImage BuildInsideImage ( IConfigurationSection section )
         {
             List<double> commonData = GetCommonData (section);
 
             IConfigurationSection childSection = section.GetSection ( "Path" );
             string fileName = GetterFromJson.GetSectionValue ( childSection) ?? "";
-            string fileUri = _resourceUri + fileName;
+            string fileUri = _resourceFolder + fileName;
 
             childSection = section.GetSection ("BindingObject");
             string bindingObjectName = GetterFromJson.GetSectionValue (childSection) ?? "";
@@ -754,6 +739,7 @@ namespace DataGateway
         private List<string> CheckUninstalledFonts ( string jsonPath )
         {
             List<string> fontNames = new ();
+            fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "CommonDefaultFontFamily" }, jsonPath));
             fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FamilyName", "FontName" }, jsonPath));
             fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "FirstName", "FontName" }, jsonPath));
             fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "PatronymicName", "FontName" }, jsonPath));

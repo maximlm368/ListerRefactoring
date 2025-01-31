@@ -15,8 +15,6 @@ namespace Lister.ViewModels
 {
     internal class BadgeCorrectnessViewModel : ViewModelBase
     {
-        private static string _correctnessIconPath = "Icons/GreenCheckMarker.jpg";
-        private static string _incorrectnessIconPath = "Icons/RedCross.png";
         private static readonly string _correctIcon;
         private static readonly string _incorrectIcon;
         private static SolidColorBrush _focusedBackground;

@@ -22,7 +22,6 @@ using static SkiaSharp.HarfBuzz.SKShaper;
 using DynamicData;
 using ExCSS;
 using Avalonia;
-using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using Avalonia.Interactivity;
 
 namespace Lister.ViewModels
@@ -300,43 +299,6 @@ namespace Lister.ViewModels
 }
 
 
-//string path = files [0].Path.ToString ();
-//int uriTypeLength = App.ResourceUriType.Length;
-//path = path.Substring (uriTypeLength, path.Length - uriTypeLength);
 
 
-//private string SetCorrespondingPersons ( string path )
-//{
-//    bool valueIsSuitable = ! string.IsNullOrWhiteSpace(path);
 
-//    if ( valueIsSuitable )
-//    {
-//        try
-//        {
-//            List <Person> persons = _uniformAssembler.GetPersons (path);
-//            _personChoosingVM.SetPersons (persons);
-
-//            return path;
-//        }
-//        catch ( IOException ex )
-//        {
-//            var messegeDialog = new MessageDialog (ModernMainView.Instance);
-
-//            if ( ! _pathIsFromKeeper )
-//            {
-//                messegeDialog.Message = _fileIsOpenMessage;
-//                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-//                waitingVM.HandleDialogOpenig ();
-//                messegeDialog.ShowDialog (MainWindow.Window);
-//            }
-
-//            return string.Empty;
-//        }
-//    }
-//    else
-//    {
-//        _personChoosingVM.SetPersons (( List<Person>? )null);
-//    }
-
-//    return string.Empty;
-//}

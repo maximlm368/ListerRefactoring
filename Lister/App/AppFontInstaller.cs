@@ -25,8 +25,7 @@ using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.Drawing.Text;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
+
 
 namespace Lister;
 

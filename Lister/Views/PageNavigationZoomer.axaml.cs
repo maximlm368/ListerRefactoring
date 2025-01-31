@@ -12,6 +12,7 @@ public partial class PageNavigationZoomer : UserControl
 {
     private PageNavigationZoomerViewModel _viewModel;
     private SceneViewModel _sceneVM;
+    private char [] _pageNumberAcceptables = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 
     public PageNavigationZoomer()
@@ -78,30 +79,27 @@ public partial class PageNavigationZoomer : UserControl
         TextBox textBox = ( TextBox ) sender;
         string text = textBox.Text;
 
-        try
-        {
-            int pageNumber = ( int ) UInt32.Parse (text);
+        if ( string.IsNullOrWhiteSpace (text) ) return; 
 
-            if ( pageNumber == 0 )
+        for ( int index = 0;   index < text.Length;   index++ ) 
+        {
+            if ( !_pageNumberAcceptables.Contains (text [index]) ) 
             {
-                pageNumber = 1;
                 visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
                 return;
             }
+        }
 
-            _viewModel.ShowPageWithNumber (pageNumber);
-            visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
-        }
-        catch ( System.FormatException exp )
+        int pageNumber = ( int ) UInt32.Parse (text);
+
+        if ( pageNumber == 0 )
         {
-            if ( ! string.IsNullOrWhiteSpace (text) )
-            {
-                visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
-            }
-        }
-        catch ( System.OverflowException exp )
-        {
+            pageNumber = 1;
             visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
+            return;
         }
+
+        _viewModel.ShowPageWithNumber (pageNumber);
+        visiblePageNumber.Text = _viewModel.VisiblePageNumber.ToString ();
     }
 }

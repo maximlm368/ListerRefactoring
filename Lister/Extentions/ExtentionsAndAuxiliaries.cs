@@ -30,14 +30,13 @@ namespace Lister.Extentions
 
     public static class ImageHelper
     {
-        public static Bitmap ? LoadFromResource (Uri resourceUri)
+        public static Bitmap ? LoadFromResource (string source)
         {
             Bitmap bitmap = null;
 
-            if ( File.Exists (resourceUri.AbsolutePath) ) 
+            if ( File.Exists (source) ) 
             {
-                using Stream stream = new FileStream (resourceUri.AbsolutePath, FileMode.Open);
-                bitmap = new Bitmap (stream);
+                bitmap = new Bitmap (source);
             }
 
             return bitmap;
@@ -56,7 +55,6 @@ namespace Lister.Extentions
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"An error occurred while downloading image '{url}' : {ex.Message}");
                 return null;
             }
         }

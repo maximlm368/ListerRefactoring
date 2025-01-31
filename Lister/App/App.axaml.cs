@@ -38,6 +38,7 @@ public partial class App : Avalonia.Application
     public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
+    public static string ImagesUri { get; private set; }
     public static string ConfigPath { get; private set; }
     public static string OsName { get; private set; }
 
@@ -80,6 +81,7 @@ public partial class App : Avalonia.Application
         }
 
         ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceFolderName;
+        ImagesUri = "avares://Lister/Assets/";
         ConfigPath = WorkDirectoryPath + ResourceFolderName + "ListerConfig.json";
     }
 
@@ -101,8 +103,11 @@ public partial class App : Avalonia.Application
             SplashViewModel splashViewModel = new SplashViewModel ();
             splashWindow.DataContext = splashViewModel;
             desktop.MainWindow = splashWindow;
+            splashWindow.Show ();
 
-            await InstallFonts ();
+            //await InstallFonts ();
+            await BadgeAppearenceProvider.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
+                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
 
             MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
 

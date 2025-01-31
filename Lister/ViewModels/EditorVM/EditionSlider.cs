@@ -58,15 +58,6 @@ namespace Lister.ViewModels
         private int _scrollStepNumberStorage;
         private int _scrollStepIndex;
 
-        private SolidColorBrush _switcherForeground;
-        internal SolidColorBrush SwitcherForeground
-        {
-            get { return _switcherForeground; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _switcherForeground, value, nameof (SwitcherForeground));
-            }
-        }
 
         private ObservableCollection <string> _filterNames;
         internal ObservableCollection <string> FilterNames
@@ -313,7 +304,7 @@ namespace Lister.ViewModels
 
         private void SetUpSliderBlock ( int incorrectBadgesAmmount )
         {
-            SwitcherForeground = new SolidColorBrush (new Color (255, 0, 0, 255));
+            SwitcherForeground = _switcherAllForeground;
             SwitcherTip = _allTip;
 
             FilterNames = new ObservableCollection <string> () { _allFilter, _correctFilter, _incorrectFilter };

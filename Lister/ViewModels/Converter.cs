@@ -183,10 +183,8 @@ public class ConverterToPdf
             string text = textLine.Content;
 
             float paddingLeft = ( float ) textLine.LeftOffset;
-            float paddingTop = ( float ) (textLine.TopOffset - 1);
+            float paddingTop = ( float ) (textLine.TopOffset + 1.5*(textLine.Padding.Top));
 
-            //float paddingLeft = ( float ) textLine.LeftOffset + ( float ) textLine.Padding.Left;
-            //float paddingTop = ( float ) textLine.TopOffset + ( float ) textLine.Padding.Top/2;
             string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
@@ -279,27 +277,18 @@ public class ConverterToPdf
     }
 
 
-    private Pdf.Image ? GetImageByPath ( string uri )
+    private Pdf.Image ? GetImageByPath ( string path )
     {
-        string imagePath = string.Empty;
-
-        if ( uri.Length <= 8 ) 
-        {
-            return null;
-        }
-
-        imagePath = uri.Remove (0, 8);
-
         if ( App.OsName == "Linux" )
         {
-            imagePath = "/" + imagePath;
+            path = "/" + path;
         }
 
-        if ( ! pathToInsideImage.ContainsKey (imagePath) )
+        if ( ! pathToInsideImage.ContainsKey (path) )
         {
-            if ( File.Exists (imagePath) )
+            if ( File.Exists (path) )
             {
-                pathToInsideImage.Add (imagePath, Pdf.Image.FromFile (imagePath));
+                pathToInsideImage.Add (path, Pdf.Image.FromFile (path));
             }
             else 
             {
@@ -307,7 +296,7 @@ public class ConverterToPdf
             }
         }
 
-        return pathToInsideImage [imagePath];
+        return pathToInsideImage [path];
     }
 
 }

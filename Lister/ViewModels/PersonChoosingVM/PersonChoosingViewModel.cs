@@ -32,7 +32,6 @@ using Avalonia.Controls.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using DataGateway;
-using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Lister.ViewModels
 {
@@ -179,6 +178,7 @@ namespace Lister.ViewModels
             if ( ( InvolvedPeople. Count == 0 )   &&   ( PeopleStorage. Count > 0 ) )
             {
                 RecoverVisiblePeople ();
+                ShowDropDown ();
                 EntireFontWeight = FontWeight.Bold;
                 PlaceHolder = _placeHolder;
                 ChosenPerson = null;
@@ -408,11 +408,9 @@ namespace Lister.ViewModels
             TextboxIsReadOnly = false;
             TextboxIsFocusable = true;
 
-            PlaceHolder = _placeHolder;
-
             EntireFontWeight = FontWeight.Bold;
 
-            SetVisiblePeople (0);
+            SetVisiblePeopleStartingFrom (0);
         }
 
 
@@ -433,11 +431,11 @@ namespace Lister.ViewModels
 
             _focusedEdge = _edge;
 
-            SetVisiblePeople (0);
+            SetVisiblePeopleStartingFrom (0);
         }
 
 
-        private void SetVisiblePeople ( int scratch )
+        private void SetVisiblePeopleStartingFrom ( int scratch )
         {
             VisiblePeople.Clear ();
             int limit = Math.Min (InvolvedPeople.Count, _maxVisibleCount);
@@ -529,6 +527,7 @@ namespace Lister.ViewModels
             if ( ( input == string.Empty ) )
             {
                 RecoverVisiblePeople ();
+                ShowDropDown ();
                 return;
             }
 
@@ -578,7 +577,6 @@ namespace Lister.ViewModels
             }
 
             InvolvedPeople = recovered;
-            ShowDropDown ();
         }
 
 

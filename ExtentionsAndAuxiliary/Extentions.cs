@@ -6,43 +6,6 @@ namespace ExtentionsAndAuxiliary
 {
     public static class StringExtention
     {
-        public static string ExtractFileNameFromPath ( this string path )
-        {
-            string result;
-            var builder = new StringBuilder ();
-
-            for ( var charCounter = path.Length - 1;   charCounter >= 0;   charCounter-- )
-            {
-                if ( (path [charCounter] != '/')   &&   (path [charCounter] != '\\') )
-                {
-                    builder.Append (path [charCounter]);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            result = builder.ToString ().ReverseAndReturn ();
-            return result;
-        }
-
-
-        public static string ReverseAndReturn ( this string str )
-        {
-            string result;
-            var builder = new StringBuilder ();
-
-            for ( var charCounter = str.Length - 1;   charCounter >= 0;   charCounter-- )
-            {
-                builder.Append (str [charCounter]);
-            }
-
-            result = builder.ToString ();
-            return result;
-        }
-
-
         public static List<string> SeparateTail ( this string str )
         {
             List<string> result = new List<string> ();
@@ -71,107 +34,6 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SplitBySeparators ( this string str, List<char> separators )
-        {
-            List<string> result = new List<string> ();
-
-            if ( (separators == null)   ||   (separators.Count < 1)   ||   ( str == null ) ) 
-            {
-                return result;
-            }
-
-            string rest = string.Empty;
-            int splitedStartIndex = 0;
-            int splitedLength = 2;
-
-            for ( int index = 1;   index < str.Length - 1;   index++ )
-            {
-                if ( separators.Contains (str [index]))
-                {
-                    string splited = str.Substring (splitedStartIndex, splitedLength);
-                    rest = str.Substring (index + 1, str.Length - index - 1);
-                    splitedStartIndex = index + 1;
-                    splitedLength = 0;
-                    result.Add (splited);
-                }
-
-                splitedLength++;
-            }
-
-            result.Add (rest);
-            return result;
-        }
-
-
-        public static List<string> SeparateIntoMainAndTailViaLastSeparators ( this string str, List<char> separators )
-        {
-            List<string> result = new List<string> ();
-
-            if ( ( str == null ) || ( separators == null ) )
-            {
-                return result;
-            }
-
-            List<short> mask = GetMaskOf (separators);
-
-            for ( int index = str.Length - 1;   index >= 0;   index-- )
-            {
-                short shortPresentation = (short) str[index];
-
-                if ( shortPresentation == mask [shortPresentation] )
-                {
-                    int gapLength = 1;
-                    int endPartLength = str.Length - index - gapLength;
-                    string secondPart = str.Substring (index + 1, endPartLength);
-                    string firstPart = str.Substring (0, index);
-                    result.Add (firstPart);
-                    result.Add (secondPart);
-
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-
-        private static List<short> GetMaskOf ( List<char> chars ) 
-        {
-            List<short> result = new List<short>();
-            short counter = 0;
-
-            while ( counter < short.MaxValue ) 
-            {
-                result.Add (0);
-                counter++;
-            }
-
-            for ( int index = 0;   index < chars.Count;   index++ )
-            {
-                result [( short ) chars [index]] = ( short ) chars [index];
-            }
-
-            return result;
-        }
-
-
-        public static bool IsAllEmpty ( this string target, string [] parts )
-        {
-            bool result = true;
-
-            for ( int index = 0;   index < parts.Length;   index++ )
-            {
-                if ( ! string.IsNullOrWhiteSpace (parts [index]) )
-                {
-                    result = false;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-
         public static double TranslateToDoubleOrZeroIfNot ( this string possibleDouble )
         {
             double result = 0;
@@ -188,48 +50,6 @@ namespace ExtentionsAndAuxiliary
             catch ( FormatException ex )
             {
                 return 0;
-            }
-
-            return result;
-        }
-
-
-        public static List <int> TranslateIntoIntList ( this string possibleArray )
-        {
-            List<int> result = new List<int> ( );
-            int startPosition = 0;
-
-            if ( possibleArray == null ) 
-            {
-                return result;
-            }
-
-            for ( int index = 0;   index < possibleArray.Length;   index++ ) 
-            {
-                if ( (possibleArray [index] == ',')   ||    (index == possibleArray.Length - 1) ) 
-                {
-                    string subStr;
-
-                    if ( index == ( possibleArray.Length - 1 ) )
-                    {
-                        subStr = possibleArray.Substring (startPosition, ( ( index + 1 ) - startPosition ));
-                    }
-                    else 
-                    {
-                        subStr = possibleArray.Substring (startPosition, ( index - startPosition ));
-                    }
-
-                    try
-                    {
-                        int subResult = int.Parse (subStr);
-                        result.Add (subResult);
-                        startPosition = index + 1;
-                    }
-                    catch ( FormatException ex ) 
-                    {
-                        result.Add (0);
-                    }
-                }
             }
 
             return result;
@@ -272,84 +92,57 @@ namespace ExtentionsAndAuxiliary
 
             return beingProcessed;
         }
-    }
 
 
-
-    public static class ListExtensions
-    {
-        public static List<T []> SeparateIntoPairs<T> ( this List<T> items ) where T : class
+        public static List<string> SplitBySeparators ( this string str, char [] separators )
         {
-            List<T []> result = new List<T []> ();
-            int counterInPair = 0;
-            T [] pair = [null, null];
-            bool pairIsNotEmptyAlready = false;
+            List<string> result = new List<string> ();
 
-            for ( int itemCounter = 0; itemCounter < items.Count; itemCounter++ )
+            if ( ( separators == null )  ||  ( separators.Length < 1 )  ||  ( str == null ) )
             {
-                pair [counterInPair] = items [itemCounter];
-                pairIsNotEmptyAlready = true;
+                return result;
+            }
 
-                if ( counterInPair == 1 )
+            string [] separatorStrs = new string [separators.Length];
+
+            for ( int index = 0;   index < separators.Length;   index++ ) 
+            {
+                separatorStrs [index] = separators [index].ToString();
+            }
+
+            string rest = string.Empty;
+            int splitingStart = 0;
+            int splitingLength = 1;
+            bool shouldSplit = false;
+
+            for ( int index = 0;   index < str.Length - 1;   index++ )
+            {
+                if ( separators.Contains (str [index]) )
                 {
-                    result.Add (pair);
-                    pair = [null, null];
-                    counterInPair = 0;
-                    pairIsNotEmptyAlready = false;
+                    string splited = str.Substring (splitingStart, splitingLength);
+                    rest = str.Substring (index + 1, str.Length - index - 1);
+                    splitingStart = index + 1;
+                    splitingLength = 1;
+
+                    if ( splited != string.Empty   &&   ( ! separatorStrs.Contains(splited)) )
+                    {
+                        result.Add (splited);
+                    }
                 }
                 else
                 {
-                    counterInPair++;
-                }
-
-                bool isLastPair = ( itemCounter == items.Count - 1 );
-
-                if ( isLastPair && pairIsNotEmptyAlready )
-                {
-                    result.Add (pair);
+                    splitingLength++;
                 }
             }
 
+            result.Add (rest);
             return result;
         }
     }
 
 
 
-    public static class ArrayExtensions
-    {
-        public static T [] SubArray<T> ( this T [] array, int offset, int length )
-        {
-            T [] result = new T [length];
-            Array.Copy (array, offset, result, 0, length);
-            return result;
-        }
-
-
-        public static T [] ? ReplaceNullItem <T> ( this T [] array, T placeHolder )
-        {
-            if ( (array == null)   ||   (placeHolder == null) ) 
-            {
-                return null;
-            }
-
-            T [] result = new T [array.Length];
-
-            for ( int index = 0;   index < array.Length;   index++ ) 
-            {
-                if ( array [index] == null ) 
-                {
-                    result [index] = placeHolder;
-                }
-            }
-            
-            return result;
-        }
-    }
-
-
-
-    public class RusStringComparer <T> : IComparer <T>
+    public class RusStringComparer <T> : IComparer<T>
     {
         public int Compare ( T first, T second )
         {
@@ -363,11 +156,11 @@ namespace ExtentionsAndAuxiliary
                 string firstStr = firstPerson.StringPresentation;
                 string secondStr = secondPerson.StringPresentation;
 
-                for ( int index = 0;   index < firstStr.Length;   index++ )
+                for ( int index = 0; index < firstStr.Length; index++ )
                 {
                     char firstChar = firstStr [index];
 
-                    if ( index > (secondStr.Length - 1) ) 
+                    if ( index > ( secondStr.Length - 1 ) )
                     {
                         return 1;
                     }
@@ -397,11 +190,4 @@ namespace ExtentionsAndAuxiliary
         }
     }
 
-
-
-    public enum FileDialogMode
-    {
-        pick = 0,
-        save = 1
-    }
 }

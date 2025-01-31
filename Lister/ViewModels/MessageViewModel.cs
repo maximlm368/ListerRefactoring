@@ -43,39 +43,21 @@ namespace Lister.ViewModels
             }
         }
 
-        private List<string> _messageLines;
-        internal List<string> MessageLines
+        private string _message;
+        internal string Message
         {
-            get { return _messageLines; }
+            get { return _message; }
             set
             {
-                this.RaiseAndSetIfChanged (ref _messageLines, value, nameof (MessageLines));
-
-                foreach ( string line in MessageLines )
-                {
-                    _topMargin -= _lineHeight;
-                }
-
-                MessageMargin = new Thickness (18, _topMargin, 0, 0);
-            }
-        }
-
-        private Thickness _messageMargin;
-        internal Thickness MessageMargin
-        {
-            get { return _messageMargin; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _messageMargin, value, nameof (MessageMargin));
+                this.RaiseAndSetIfChanged (ref _message, value, nameof (Message));
             }
         }
 
 
         public MessageViewModel ()
         {
-            string correctnessIcon = App.ResourceDirectoryUri + _warnImageName;
-            Uri correctUri = new Uri (correctnessIcon);
-            WarnImage = ImageHelper.LoadFromResource (correctUri);
+            string correctnessIcon = App.ResourceFolderName + _warnImageName;
+            WarnImage = ImageHelper.LoadFromResource (correctnessIcon);
         }
 
 

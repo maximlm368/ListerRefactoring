@@ -73,6 +73,7 @@
 							<Label
 								Classes="narrow"
 								Width="420"
+								VerticalContentAlignment="Center"
 								Content="{Binding  Path=StringPresentation, Mode=OneWay}"/>
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
@@ -180,6 +181,15 @@
 				Margin ="0,-2,0,0"
 				Background = "#f0f0f0">
 
+				<Button
+					Name="printerSettings"
+					Classes="Primary"
+					Padding="15,4"
+					Canvas.Top="8"
+					Canvas.Left="8"
+					Content="Настройки принтера"
+					Command="{Binding  Path = OpenPrinterSettings}"/>
+				
 				<Button
 					Name="print"
 					Classes="Primary"

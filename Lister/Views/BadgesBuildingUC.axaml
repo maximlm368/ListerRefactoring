@@ -5,8 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="48"
              x:Class="Lister.Views.BadgesBuildingUserControl"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
-			 x:DataType="vm:BadgesBuildingViewModel"
-			 Width="830">
+			 x:DataType="vm:BadgesBuildingViewModel">
 	        
 
 	<Grid
@@ -77,8 +76,37 @@
 			Height="24"
 			CornerRadius="0,5,0,0"
 			Background="White">
-			
-			<Canvas>
+		</Border>
+
+		<Border
+			Grid.Column="2"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="5,0,0,0"
+			Background="White"/>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="0,0,0,0"
+			Background="White"/>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="0,0,5,5"
+			Background="#EEEEEE"/>
+
+	</Grid>
+  
+</UserControl>
+
+
+<!--
+
+<Canvas>
 				<Canvas
 					Canvas.Left="0"
 					Canvas.Top="0"
@@ -136,35 +164,8 @@
 					Background="#fefefe"/>
 				
 			</Canvas>
-			
-			
-		</Border>
 
-		<Border
-			Grid.Column="2"
-			Grid.Row="2"
-			Height="24"
-			CornerRadius="5,0,0,0"
-			Background="White"/>
-
-		<Border
-			Grid.Column="1"
-			Grid.Row="2"
-			Height="24"
-			CornerRadius="0,0,0,0"
-			Background="White"/>
-
-		<Border
-			Grid.Column="1"
-			Grid.Row="2"
-			Height="24"
-			CornerRadius="0,0,5,5"
-			Background="#EEEEEE"/>
-
-	</Grid>
-  
-</UserControl>
-
+-->
 
 
 

@@ -293,62 +293,18 @@ namespace Lister.Views
         }
 
 
-        //internal void HandlePersonListReductio ( object sender, KeyEventArgs args )
+        //private void RestrictInput ( string input )
         //{
-        //    string key = args.Key.ToString ();
-        //    bool keyIsUnimpacting = IsKeyUnimpacting (key);
-
-        //    if ( keyIsUnimpacting )
+        //    if ( input.Length >= _inputLimit )
         //    {
-        //        return;
+        //        personTextBox.Text = _previousText;
+        //        input = _previousText;
         //    }
-
-        //    _viewModel.ToZeroPersonSelection ();
-        //    TextBox textBox = ( TextBox ) sender;
-        //    string input = textBox.Text;
-
-        //    if ( input != null )
+        //    else 
         //    {
-        //        RestrictInput (input);
-
-        //        if ( ( input == string.Empty ) )
-        //        {
-        //            RecoverVisiblePeople ();
-        //            _personListIsDropped = true;
-        //            return;
-        //        }
-
-        //        List<VisiblePerson> foundVisiblePeople = new List<VisiblePerson> ();
-
-        //        foreach ( VisiblePerson person in _viewModel.PeopleStorage )
-        //        {
-        //            person.BorderColor = _unfocusedColor;
-        //            string entireName = person.Person.StringPresentation;
-
-        //            if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
-        //            {
-        //                foundVisiblePeople.Add (person);
-        //            }
-        //        }
-
-        //        _viewModel.SetInvolvedPeople (foundVisiblePeople);
-        //        _personListIsDropped = true;
+        //        _previousText = input;
         //    }
         //}
-
-
-        private void RestrictInput ( string input )
-        {
-            if ( input.Length >= _inputLimit )
-            {
-                personTextBox.Text = _previousText;
-                input = _previousText;
-            }
-            else
-            {
-                _previousText = input;
-            }
-        }
 
 
         private bool IsKeyUnimpacting ( string key )
@@ -365,12 +321,6 @@ namespace Lister.Views
             return keyIsUnimpacting;
         }
 
-
-        private void RecoverVisiblePeople ()
-        {
-            _viewModel.RecoverVisiblePeople ();
-            _personListIsDropped = true;
-        }
 
         #endregion PersonListReduction
 

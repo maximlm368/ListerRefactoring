@@ -81,8 +81,8 @@
 							FontSize="16"
 							BorderThickness="1"
 							ScrollViewer.VerticalScrollBarVisibility="Disabled"
-							ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							IsReadOnly="True"
+							Tapped="TappedPathForWholeSelection"
 							Text="{Binding  Path = ErrorsSource,  Mode=OneWay }">
 
 							<TextBox.ContextMenu>
@@ -177,6 +177,18 @@
 
 
 <!--
+
+							<TextBox.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Копировать    (Ctrl+C)" Command="{Binding $parent[TextBox].Copy}" IsEnabled="{Binding $parent[TextBox].CanCopy}"/>
+								</ContextMenu>
+							</TextBox.ContextMenu>
+
+
+
+
+
+
 
 							<SelectableTextBlock.ContextMenu>
 								<ContextMenu>

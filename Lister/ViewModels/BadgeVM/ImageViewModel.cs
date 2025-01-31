@@ -36,9 +36,7 @@ namespace Lister.ViewModels
 
             if ( ! NameToImage.ContainsKey (image.Path)   ||   ( NameToImage [image.Path] == null ) )
             {
-                Uri uri = new Uri (image.Path);
-                string absolutePath = uri.AbsolutePath;
-                NameToImage [image.Path] = ImageHelper.LoadFromResource (uri);
+                NameToImage [image.Path] = ImageHelper.LoadFromResource (image.Path);
             }
 
             Id = id;

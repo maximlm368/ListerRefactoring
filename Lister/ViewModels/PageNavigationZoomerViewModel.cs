@@ -1,5 +1,4 @@
 ﻿using ContentAssembler;
-using DocumentFormat.OpenXml.Math;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;

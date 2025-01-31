@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="310"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 xmlns:imageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
 			 x:DataType="vm:SceneViewModel"
              x:Class="Lister.Views.SceneUserControl">
 	
@@ -274,7 +275,7 @@
 																Canvas.Top="0"
 																Canvas.Left="0"
 																VerticalAlignment="Top"
-																Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+																Source="{Binding   Path = ImageBitmap,  Mode=OneWay }"
 																Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"
 																Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
 
@@ -305,6 +306,7 @@
 																			Height="{Binding  Path = FontSize,  Mode=OneWay}"
 																			FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 																			TextAlignment="Center"
+																			Padding="{Binding  Path = Padding,  Mode=OneWay}"
 																			FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 																			FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
 																			Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
@@ -435,4 +437,10 @@
 </UserControl>
 
 
+
+<!--
+
+   Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+
+-->
 

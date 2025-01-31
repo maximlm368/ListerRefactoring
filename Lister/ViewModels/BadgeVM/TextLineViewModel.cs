@@ -31,8 +31,7 @@ namespace Lister.ViewModels
     {
         private static readonly double _maxFontSizeLimit = 30;
         private static readonly double _minFontSizeLimit = 6;
-        private static readonly double _divider = 4;
-        private static readonly double _parentToChildCoeff = 2.5;
+        private static readonly double _divider = 8;
         private static TextBlock _textBlock;
 
         public string FontFile { get; private set; }
@@ -142,6 +141,7 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref _usefullWidth, value, nameof (UsefullWidth));
+                Width = value;
             }
         }
 
@@ -189,8 +189,6 @@ namespace Lister.ViewModels
 
             SolidColorBrush foreground = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
             Foreground = foreground;
-
-            double correctHeight = FontSize * _parentToChildCoeff;
 
             SetUsefullWidth ();
 
@@ -248,10 +246,10 @@ namespace Lister.ViewModels
 
         private Thickness GetPadding ()
         {
-            UsefullHeight = HeightWithBorder;
-            double paddingTop = ( Height - FontSize ) / 4;
+            //UsefullHeight = HeightWithBorder;
+            //double paddingTop = ( Height - FontSize ) / 4;
             
-            return new Thickness (0, -3);
+            return new Thickness (0, - FontSize / _divider);
         }
 
 
@@ -341,7 +339,12 @@ namespace Lister.ViewModels
 
         internal void Reduce ( double subtractable )
         {
+            double insideLeftRest = UsefullWidth - Math.Abs (LeftOffset);
+            double insideTopRest = Height - Math.Abs (TopOffset);
+            
+            double oldWidth = UsefullWidth;
             double oldFontSize = FontSize;
+
             FontSize -= subtractable;
 
             if ( Math.Round(FontSize / subtractable) < _minFontSizeLimit ) 
@@ -354,6 +357,20 @@ namespace Lister.ViewModels
             double proportion = oldFontSize / FontSize;
             Height /= proportion;
             Padding = GetPadding ();
+
+            double newInsideLeftRest = UsefullWidth - Math.Abs (LeftOffset);
+
+            if ( (LeftOffset < 0)   &&   (newInsideLeftRest < insideLeftRest) ) 
+            {
+                LeftOffset += ( insideLeftRest - newInsideLeftRest );
+            }
+
+            double newInsideTopRest = Height - Math.Abs (TopOffset);
+
+            if ( ( TopOffset < 0 )   &&   ( newInsideTopRest < insideTopRest) )
+            {
+                TopOffset += ( insideTopRest - newInsideTopRest );
+            }
         }
 
 
@@ -423,36 +440,3 @@ namespace Lister.ViewModels
         }
     }
 }
-
-
-//public static double CalculateWidth ( string content, TextualAtom demensions )
-//{
-//    //TextBlock tb = new TextBlock ();
-//    //tb.LetterSpacing = 0;
-//    //tb.Text = content;
-//    //tb.FontSize = demensions.FontSize;
-
-//    //tb.FontWeight = GetFontWeight (demensions.FontWeight);
-//    //string fontName = demensions.FontName;
-//    //tb.FontFamily = new FontFamily (fontName);
-
-//    //Avalonia.Size size = new Avalonia.Size (double.PositiveInfinity, double.PositiveInfinity);
-//    //tb.Measure (size);
-//    //tb.Arrange (new Rect ());
-
-
-//    FormattedText formatted = new FormattedText (content
-//                                               , System.Globalization.CultureInfo.CurrentCulture
-//                                               , FlowDirection.LeftToRight, Typeface.Default
-//                                               , demensions.FontSize, null);
-
-//    formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
-//    formatted.SetFontSize (demensions.FontSize);
-//    formatted.SetFontFamily ("Kramola");
-
-//    double wd = formatted.Width;
-
-//    return wd;
-
-//    //return tb.DesiredSize.Width;
-//}

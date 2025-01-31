@@ -24,23 +24,8 @@ namespace Lister.Views
             {
                 if ( value != null )
                 {
-                    List<string> lines = value.SplitBySeparators (new List<char> () { '.' });
-
-                    if ( lines.Count == 1 )
-                    {
-                        lines = new List<string> () { value };
-                    }
-
-                    List<string> pureLines = new List<string> ();
-
-                    foreach ( string line in lines )
-                    {
-                        string pureLine = line.Trim ();
-                        pureLines.Add (pureLine);
-                    }
-
-                    _vm.MessageLines = pureLines;
                     _message = value;
+                    _vm.Message = value;
                 }
             }
         }

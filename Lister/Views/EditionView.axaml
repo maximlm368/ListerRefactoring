@@ -207,7 +207,9 @@
 								Width="32"
 								Content="&#xf068;"
 								ToolTip.Tip="Уменьшить шрифт"
-								KeyDown="ToSide"
+								KeyDown="ChangeFocusedFontSize"
+								GotFocus="ZoomOnOutGotFocus"
+								LostFocus="ZoomOnOutLostFocus"
 								Command="{Binding  Path = ReduceFontSize}"
 								PointerPressed="SomeButtonPressed"
 								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
@@ -237,7 +239,9 @@
 								Width="32"
 								Content="&#x2b;"
 								ToolTip.Tip="Увеличить шрифт"
-								KeyDown="ToSide"
+								KeyDown="ChangeFocusedFontSize"
+								GotFocus="ZoomOnOutGotFocus"
+								LostFocus="ZoomOnOutLostFocus"
 								Command="{Binding  Path = IncreaseFontSize}"
 								PointerPressed="SomeButtonPressed"
 								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
@@ -261,6 +265,7 @@
 							Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
 							KeyDown="ToParticularBadge"
 							GotFocus="HandleGettingFocus"
+							LostFocus="TextEditorLostFocus"
 							TextChanged="HandleTextEdition"/>
 
 						<Button
@@ -395,7 +400,8 @@
 												<TextBlock
 													Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
 													VerticalAlignment="Center"
-													Height="{Binding  Path = FontSize,  Mode=OneWay}"
+													Padding="{Binding  Path = Padding,  Mode=OneWay}"
+													Height="{Binding  Path = Height,  Mode=OneWay}"
 													FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
 													FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
 													FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"

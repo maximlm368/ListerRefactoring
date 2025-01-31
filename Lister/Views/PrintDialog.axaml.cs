@@ -66,6 +66,7 @@ public partial class PrintDialog : BaseWindow
 
         Activated += delegate { cancel.Focus (NavigationMethod.Tab, KeyModifiers.None); };
 
+        printerSettings.FocusAdorner = null;
         print.FocusAdorner = null;
         cancel.FocusAdorner = null;
     }

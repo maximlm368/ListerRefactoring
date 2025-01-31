@@ -63,8 +63,7 @@ public static class ServiceCollectionExtensions
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
         IBadgeAppearenceProvider result =
-            new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceFolderName )
-                                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
+            new BadgeAppearenceProvider ();
 
         return result;
     }
@@ -75,8 +74,7 @@ public static class ServiceCollectionExtensions
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
         IBadLineColorProvider result =
-             new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceFolderName )
-                                                                , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
+             new BadgeAppearenceProvider ();
 
         return result;
     }
@@ -387,8 +385,7 @@ public class BadgeAppearenceServiceProvider : IServiceProvider
 
         if ( isAimService )
         {
-            result = new BadgeAppearenceProvider (App.ResourceDirectoryUri, ( App.WorkDirectoryPath + App.ResourceFolderName )
-                                                                      , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
+            result = new BadgeAppearenceProvider ();
         }
 
         return result;

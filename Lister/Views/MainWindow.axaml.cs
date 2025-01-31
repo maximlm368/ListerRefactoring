@@ -151,15 +151,20 @@ public partial class MainWindow : Window
 
     internal void ReleaseCaptured ( object sender, PointerReleasedEventArgs args )
     {
-        try
+        MainView mainView = Content  as  MainView;
+
+        if ( mainView != null )
         {
-            MainView mainView = ( MainView ) Content;
             mainView.ReleaseRunner ();
         }
-        catch ( InvalidCastException ex ) 
+        else 
         {
-            BadgeEditorView mainView = ( BadgeEditorView ) Content;
-            mainView.ReleaseCaptured ();
+            BadgeEditorView editorView = Content  as  BadgeEditorView;
+
+            if (editorView != null) 
+            {
+                editorView.ReleaseCaptured ();
+            }
         }
     }
 
