@@ -171,10 +171,47 @@ namespace Lister.Views
 
         internal void ChangeSize ( double widthDifference, double heightDifference )
         {
-            _viewModel.ChangeSize ( widthDifference, heightDifference);
+            ChangeShadowSize (widthDifference);
 
+            _viewModel.ChangeSize ( widthDifference, heightDifference);
             WaitingViewModel waitingVM = App.services.GetRequiredService <WaitingViewModel> ();
             waitingVM.ChangeSize ( heightDifference, widthDifference );
+        }
+
+
+        internal void ChangeShadowSize ( double widthDifference )
+        {
+            var leftChildren = leftShadow.Children;
+            var rightChildren = rightShadow.Children;
+
+            foreach ( var child in leftChildren )
+            {
+                if ( child.Width > 10 )
+                {
+                    child.Width -= widthDifference / 2;
+                }
+                else
+                {
+                    double left = child.GetValue (Canvas.LeftProperty);
+                    child.SetValue (Canvas.LeftProperty, left - widthDifference / 2);
+                }
+            }
+
+            foreach ( var child in rightChildren )
+            {
+                if ( child.Width > 10 )
+                {
+                    child.Width -= widthDifference / 2;
+                }
+            }
+
+            var logicChildren = simpleShadow.GetVisualChildren ();
+
+            foreach ( var child   in   logicChildren )
+            {
+                Rectangle rectangle = ( Rectangle ) child;
+                rectangle.Width -= widthDifference;
+            }
         }
 
 
@@ -202,6 +239,8 @@ namespace Lister.Views
             double heightDifference = Height - properHeight;
             Width = properWidth;
             Height = properHeight;
+
+            ChangeShadowSize ( widthDifference);
 
             if ( _widthIsChanged   ||   _heightIsChanged ) 
             {

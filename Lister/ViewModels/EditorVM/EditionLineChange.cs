@@ -161,7 +161,7 @@ namespace Lister.ViewModels
 
         private void EnableSplitting ( string content )
         {
-            string [] strings = content.Split ([' ', '-'], StringSplitOptions.RemoveEmptyEntries);
+            string [] strings = content.Split (new char [] {' ', '-'}, StringSplitOptions.RemoveEmptyEntries);
             bool lineIsSplitable = ( strings.Length > 1 );
 
             if ( lineIsSplitable )

@@ -1,0 +1,176 @@
+{
+  "TemplateName" : "Бейдж с фоном",
+  "BackgroundImagePath" : "doctors2.jpg",
+  "CommonDefaultFontFamily" : "Century Gothic",
+  "Width" : 350,
+  "Height" : 214,
+  "InsideSpan" : 
+  {
+    "Left": 10,
+    "Top": 10,
+    "Right": 16,
+    "Bottom": 10
+  },
+  
+  "IncorrectLineBackground": 
+  {
+	"Red": 200,
+	"Green": 200,
+	"Blue": 200
+  },
+
+  "FamilyName": {
+    "Width" : 210,
+    "Height" : 26,
+    "TopOffset" : 60,
+	"LeftOffset" : 124,
+    "Alignment" : "Right",
+    "FontSize" : 26,
+	"FontName": "Century Gothic",
+	"Foreground": 
+	{
+		"Red": 115,
+		"Green": 0,
+		"Blue": 0
+	},
+	"OutLineColor": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "FirstName": {
+    "Width": 210,
+    "Height": 15,
+    "TopOffset": 92,
+    "LeftOffset": 124,
+    "Alignment": "Right",
+    "FontSize": 15,
+	"FontName": "Century Gothic",
+	"Foreground": 
+	{
+		"Red": 115,
+		"Green": 0,
+		"Blue": 0
+	},
+	"OutLineColor": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "PatronymicName": {
+    "Width": 210,
+    "Height": 15,
+    "TopOffset": 92,
+    "LeftOffset": 124,
+    "Alignment": "Right",
+    "FontSize": 15,
+	"FontName": "Century Gothic",
+	"Foreground": 
+	{
+		"Red": 115,
+		"Green": 0,
+		"Blue": 0
+	},
+	"OutLineColor": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "Post": {
+    "Width": 210,
+    "Height": 11,
+    "TopOffset": 124,
+    "LeftOffset": 124,
+    "Alignment": "Right",
+    "FontSize": 11,
+	"FontName": "Century Gothic",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"OutLineColor": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": true
+  },
+
+  "Department": {
+    "Width": 210,
+    "Height": 11,
+    "TopOffset": 146,
+    "LeftOffset": 124,
+    "Alignment": "Right",
+    "FontSize": 11,
+	"FontName": "Century Gothic",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"OutLineColor": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": true
+  },
+
+  "UnitedTextBlocks" : {
+    "Items": [
+        {
+			"United": [
+			  "FirstName",
+			  "PatronymicName"
+			],
+			"Name": "FirstAndPatronymic",
+			"Number":1,
+			"Width": 210,
+			"Height": 15,
+			"TopOffset": 92,
+			"LeftOffset": 124,
+			"Alignment": "Right",
+			"FontSize": 15,
+			"FontName": "Century Gothic",
+			"Foreground": 
+			{
+				"Red": 115,
+				"Green": 0,
+				"Blue": 0
+			},
+			"OutLineColor": 
+			{
+				"Red": 0,
+				"Green": 0,
+				"Blue": 0
+			},
+			"FontWeight": "Bold",
+			"IsSplitable": false
+        }
+    ]
+  }
+  
+}

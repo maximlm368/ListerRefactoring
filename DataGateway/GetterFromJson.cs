@@ -8,14 +8,17 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using static System.Collections.Specialized.BitVector32;
 using ContentAssembler;
-//using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DataGateway
 {
     public static class GetterFromJson
     {
-        private static string configFilePath;
-        private static string attributeSection;
+        private static string _configFilePath;
+        private static string _attributeSection;
+        private static List<string> _incorrectJsons = [];
+
+        public static readonly char [] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 
         public static IConfigurationSection ? GetSection ( string jsonPath, List<string> keyPathOfSection )
@@ -39,18 +42,22 @@ namespace DataGateway
 
         public static bool CheckJsonCorrectness ( string jsonPath, out string error )
         {
+            if ( _incorrectJsons.Contains (jsonPath) )
+            {
+                error = string.Empty;
+            }
+
             bool sectionIsNotAvailable = (( jsonPath == null )   ||   ( jsonPath == string.Empty ));
 
             if ( sectionIsNotAvailable )
             {
                 error = string.Empty;
-
                 return false;
             }
 
             try
             {
-                JsonDocument doc = System.Text.Json.JsonDocument.Parse (File.ReadAllText (jsonPath));
+                JsonDocument doc = JsonDocument.Parse (File.ReadAllText (jsonPath));
                 error = string.Empty;
 
                 return true;
@@ -58,7 +65,7 @@ namespace DataGateway
             catch ( JsonException ex )
             {
                 error = ex.Message;
-                
+                _incorrectJsons.Add (jsonPath);
                 return false;
             }
         }
@@ -66,6 +73,11 @@ namespace DataGateway
 
         public static string GetSectionStrValue ( List<string> keyPathOfSection, string jsonPath )
         {
+            if ( _incorrectJsons.Contains (jsonPath) )
+            {
+                return string.Empty;
+            }
+
             bool sectionIsNotAvailable = ( keyPathOfSection == null )   ||   ( keyPathOfSection.Count < 1 ) 
                                         ||   ( jsonPath == null )   ||   ( jsonPath == string.Empty );
 
@@ -76,13 +88,14 @@ namespace DataGateway
 
             try
             {
-                JsonDocument doc = System.Text.Json.JsonDocument.Parse (File.ReadAllText (jsonPath));
+                JsonDocument doc = JsonDocument.Parse (File.ReadAllText (jsonPath));
             }
             catch ( JsonException ex )
             {
+                _incorrectJsons.Add (jsonPath);
             }
 
-            try 
+            try
             {
                 IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
 
@@ -101,11 +114,32 @@ namespace DataGateway
                 string result = section.Value;
 
                 return result;
-            } 
-            catch ( Exception ex ) 
+            }
+            catch ( Exception ex )
             {
+                string str = ex.ToString ();
+                string name = ex.GetType ().Name;
+
                 return string.Empty;
             }
+
+            //IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
+
+            //string sectionName = keyPathOfSection [0];
+            //IConfigurationSection section = configRoot.GetSection (sectionName);
+
+            //if ( keyPathOfSection.Count > 1 )
+            //{
+            //    for ( int step = 1; step < keyPathOfSection.Count; step++ )
+            //    {
+            //        sectionName = keyPathOfSection [step];
+            //        section = section.GetSection (sectionName);
+            //    }
+            //}
+
+            //string result = section.Value;
+
+            //return result;
         }
 
 
@@ -120,16 +154,8 @@ namespace DataGateway
                 return -1;
             }
 
-            try
-            {
-                int result = Int32.Parse(strResult);
-
-                return result;
-            }
-            catch ( System.IO.InvalidDataException ex )
-            {
-                return -1;
-            }
+            int result = Parse (strResult);
+            return result;
         }
 
 
@@ -172,7 +198,7 @@ namespace DataGateway
         public static IEnumerable <IConfigurationSection> GetIncludedItemsOfSection
                                                                           ( List<string> keyPathOfSection, string jsonPath )
         {
-            if ( (keyPathOfSection == null)   ||   (keyPathOfSection.Count < 1) ) 
+            if ( (keyPathOfSection == null)  ||  (keyPathOfSection.Count < 1 )  ||  ( _incorrectJsons.Contains (jsonPath) ) ) 
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }
@@ -199,6 +225,9 @@ namespace DataGateway
             }
             catch ( Exception ex ) 
             {
+                string str = ex.ToString ();
+                string name = ex.GetType ().Name;
+
                 return Enumerable.Empty<IConfigurationSection> ();
             }
         }
@@ -232,8 +261,25 @@ namespace DataGateway
             }
             catch ( Exception ex )
             {
+                string str = ex.ToString ();
+                string name = ex.GetType ().Name;
+
                 return Enumerable.Empty<IConfigurationSection> ();
             }
+        }
+
+
+        public static int Parse ( string parsable )
+        {
+            for ( int index = 0;   index < parsable.Length;   index++ )
+            {
+                if ( ! digits.Contains (parsable [index]) )
+                {
+                    return -1;
+                }
+            }
+
+            return int.Parse (parsable);
         }
 
 

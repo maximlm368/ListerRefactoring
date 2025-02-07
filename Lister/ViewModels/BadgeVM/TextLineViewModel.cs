@@ -34,7 +34,6 @@ namespace Lister.ViewModels
         private static readonly double _divider = 8;
         private static TextBlock _textBlock;
 
-        public string FontFile { get; private set; }
         public byte Red { get; private set; }
         public byte Green { get; private set; }
         public byte Blue { get; private set; }
@@ -171,8 +170,6 @@ namespace Lister.ViewModels
             }
 
             FontSize = text.FontSize;
-            FontFile = text.FontFile;
-
             FontWeight = GetFontWeight (text.FontWeight);
             string fontName = text.FontName;
             FontFamily = new Avalonia.Media.FontFamily (fontName);
@@ -210,7 +207,6 @@ namespace Lister.ViewModels
             DataSource = source.DataSource;
             FontSize = source.FontSize;
             FontFamily = source.FontFamily;
-            FontFile = source.FontFile;
             FontWeight = source.FontWeight;
             Content = source.Content;
             IsSplitable = source.IsSplitable;

@@ -25,7 +25,7 @@ namespace Lister.ViewModels
                 }
                 else 
                 {
-                    if ( EntirePersonListIsSelected )
+                    if ( EntireIsSelected )
                     {
                         EntireBackgroundColor = _selectedBackgroundColor;
                         EntireBorderColor = _selectedBorderColor;
@@ -39,32 +39,6 @@ namespace Lister.ViewModels
                     }
                 }
 
-            }
-        }
-
-        private bool _entireIsSelected;
-        internal bool EntirePersonListIsSelected
-        {
-            get { return _entireIsSelected; }
-            private set
-            {
-                _entireIsSelected = value;
-
-                if ( value )
-                {
-                    PlaceHolder = _placeHolder;
-                    EntireBackgroundColor = _selectedBackgroundColor;
-                    EntireBorderColor = _selectedBorderColor;
-                    EntireForegroundColor = _selectedForegroundColor;
-                    EntireFontWeight = Avalonia.Media.FontWeight.Bold;
-                }
-                else 
-                {
-                    EntireBackgroundColor = _defaultBackgroundColor;
-                    EntireBorderColor = _defaultBorderColor;
-                    EntireForegroundColor= _defaultForegroundColor;
-                    EntireFontWeight = Avalonia.Media.FontWeight.Normal;
-                }
             }
         }
 
@@ -301,6 +275,13 @@ namespace Lister.ViewModels
             }
             else
             {
+                if ( _choiceIsAbsent )
+                {
+                    EntireIsFocused = true;
+                    _choiceIsAbsent = false;
+                    return;
+                }
+
                 bool focusedIsInRange = ( _focusedNumber < ( InvolvedPeople. Count - 1 ) );
 
                 if ( focusedIsInRange )

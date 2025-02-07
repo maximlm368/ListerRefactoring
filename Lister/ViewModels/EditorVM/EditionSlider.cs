@@ -593,10 +593,8 @@ namespace Lister.ViewModels
 
             if ( goalBadge != null ) 
             {
-                result = new BadgeCorrectnessViewModel (goalBadge
-                                                        , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen);
+                result = new BadgeCorrectnessViewModel (goalBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                              , _correctnessWidthLimit, _filterIsOpen);
             }
 
             return result;
@@ -707,16 +705,14 @@ namespace Lister.ViewModels
         private void HighLightChosenIcon ( BadgeCorrectnessViewModel icon )
         {
             icon.BoundFontWeight = FontWeight.Bold;
-            icon.CalcStringPresentation ( _correctnessWidthLimit
-                                        , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+            icon.CalcStringPresentation ( _correctnessWidthLimit );
         }
 
 
         private void FadeIcon ( BadgeCorrectnessViewModel icon )
         {
             icon.BoundFontWeight = FontWeight.Normal;
-            icon.CalcStringPresentation ( _correctnessWidthLimit
-                                        , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+            icon.CalcStringPresentation ( _correctnessWidthLimit );
         }
 
 
@@ -773,10 +769,8 @@ namespace Lister.ViewModels
                 for ( int index = 0;   index < _visibleRange;   index++ )
                 {
                     BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
-                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge
-                                                  , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen);
+                    BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge , _extendedScrollableIconWidth
+                                                                   , _shrinkedIconWidth, _correctnessWidthLimit, _filterIsOpen);
                     VisibleIcons.Add (icon);
                     _visibleIconsStorage.Add (icon);
                     FadeIcon (icon);
@@ -789,14 +783,6 @@ namespace Lister.ViewModels
                 } 
             }
         }
-
-
-        //internal void RefreshSwitcher ( )
-        //{
-        //    SolidColorBrush brush = SwitcherForeground;
-        //    SwitcherForeground = null;
-        //    SwitcherForeground = brush;
-        //}
     }
 
 }

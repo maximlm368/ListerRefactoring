@@ -46,8 +46,36 @@ namespace Lister.ViewModels
         private int _focusedEdge;
         private int _topLimit;
         private bool _chosenPersonIsSetInSetter;
+        private bool _choiceIsAbsent;
         internal bool ScrollingIsOccured { get; set; }
         internal bool SinglePersonIsSelected { get; private set; }
+
+        private bool _entireIsSelected;
+        internal bool EntireIsSelected
+        {
+            get { return _entireIsSelected; }
+            private set
+            {
+                _entireIsSelected = value;
+
+                if ( _entireIsSelected   &&   !_choiceIsAbsent )
+                {
+                    PlaceHolder = _placeHolder;
+                    EntireBackgroundColor = _selectedBackgroundColor;
+                    EntireBorderColor = _selectedBorderColor;
+                    EntireForegroundColor = _selectedForegroundColor;
+                    EntireFontWeight = Avalonia.Media.FontWeight.Bold;
+                }
+                else
+                {
+                    EntireBackgroundColor = _defaultBackgroundColor;
+                    EntireBorderColor = _defaultBorderColor;
+                    EntireForegroundColor = _defaultForegroundColor;
+                    EntireFontWeight = Avalonia.Media.FontWeight.Normal;
+                }
+            }
+        }
+
         internal bool BuildingIsPossible { get; private set; }
         internal List <VisiblePerson> PeopleStorage { get; set; }
 
@@ -142,6 +170,7 @@ namespace Lister.ViewModels
             }
         }
 
+        private List<VisiblePerson> _sortedInvolvedPeople;
         private List <VisiblePerson> _involvedPeople;
         internal List <VisiblePerson> InvolvedPeople
         {
@@ -216,6 +245,17 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref _placeholder, value, nameof (PlaceHolder));
+                CaretIndex = PlaceHolder.Length;
+            }
+        }
+
+        private int _caretIndex;
+        internal int CaretIndex
+        {
+            get { return _caretIndex; }
+            set
+            {
+                this.RaiseAndSetIfChanged (ref _caretIndex, value, nameof (CaretIndex));
             }
         }
 

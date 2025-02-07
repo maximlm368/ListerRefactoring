@@ -154,13 +154,12 @@ namespace Lister.ViewModels
 
 
         internal BadgeCorrectnessViewModel ( BadgeViewModel boundBadge, double extendedScrollableWidth, double shortWidth
-                                            //, double mostExtendedWidth
-                                            , double widthLimit, int [] remotableGlyphRange, bool isExtended ) 
+                                            , double widthLimit, bool isExtended ) 
         {
             BoundBadge = boundBadge;
             BoundFontWeight = Avalonia.Media.FontWeight.Normal;
 
-            CalcStringPresentation ( widthLimit, remotableGlyphRange );
+            CalcStringPresentation ( widthLimit );
 
             if ( boundBadge.IsCorrect )
             {
@@ -174,7 +173,6 @@ namespace Lister.ViewModels
             }
 
             _extendedScrollableMaxIconWidth = extendedScrollableWidth;
-            //_mostExtendedMaxIconWidth = mostExtendedWidth;
             _shrinkedIconWidth = shortWidth;
 
             if ( isExtended )
@@ -203,27 +201,39 @@ namespace Lister.ViewModels
         }
 
 
-        internal void CalcStringPresentation ( double widthLimit, int [] remotableGlyphRange )
+        internal void CalcStringPresentation ( double widthLimit )
         {
-            string personPresentation = BoundBadge. BadgeModel. Person. StringPresentation;
+            string tail = "...";
+            string personPresentation = BoundBadge.BadgeModel.Person.StringPresentation;
 
-            int index = Math.Min (personPresentation.Length, remotableGlyphRange [1]);
+            FormattedText formatted = new FormattedText (personPresentation, System.Globalization.CultureInfo.CurrentCulture
+                                           , FlowDirection.LeftToRight, Typeface.Default, 16, null);
 
-            for ( ;   index > remotableGlyphRange [0];   index-- )
+            formatted.SetFontWeight (this.BoundFontWeight);
+
+            if ( formatted.Width <= widthLimit )
             {
-                FormattedText formatted = new FormattedText (personPresentation
-                                                           , System.Globalization.CultureInfo.CurrentCulture
+                BoundPersonName = personPresentation;
+                return;
+            }
+            else
+            {
+                personPresentation = personPresentation.Substring (0, personPresentation.Length - 1) + tail;
+            }
+
+            for ( int index = personPresentation.Length - 1;   index > 0;   index-- )
+            {
+                string subStr = personPresentation.Substring (0, (index - 4)) + tail;
+
+                formatted = new FormattedText (subStr, System.Globalization.CultureInfo.CurrentCulture
                                                            , FlowDirection.LeftToRight, Typeface.Default, 16, null);
 
                 formatted.SetFontWeight (this.BoundFontWeight);
 
                 if ( formatted.Width <= widthLimit )
                 {
+                    personPresentation = subStr;
                     break;
-                }
-                else
-                {
-                    personPresentation = personPresentation.Remove (index) + "...";
                 }
             }
 

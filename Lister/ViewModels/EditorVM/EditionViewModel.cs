@@ -22,11 +22,11 @@ namespace Lister.ViewModels
         internal readonly double _startScale = 1.5624;
         internal double _scale = 1.5624;
 
-        private double _viewWidth = 800;
-        private double _viewHeight = 480;
+        private double _viewWidth = 830;
+        private double _viewHeight = 500;
 
-        private double _workAreaWidth = 550;
-        private double _workAreaHeight = 392;
+        private double _workAreaWidth = 580;
+        private double _workAreaHeight = 410;
 
         private PageViewModel _firstPage;
         private Dictionary <BadgeViewModel, double> _scaleStorage;
@@ -248,6 +248,8 @@ namespace Lister.ViewModels
 
             FocusedFontSizeColor = _releasedFontSizeColor;
             FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
+
+            Margin = new Thickness (0, 8);
         }
 
 
@@ -259,7 +261,7 @@ namespace Lister.ViewModels
 
         internal void HandleDialogClosing ()
         {
-            Margin = new Thickness (0, 0);
+            Margin = new Thickness (0, 8);
         }
 
 

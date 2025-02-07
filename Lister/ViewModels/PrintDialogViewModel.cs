@@ -816,15 +816,15 @@ namespace Lister.ViewModels
         }
 
 
-        private ObservableCollection <PrinterPresentation> PreparePrintersListOnLinux ()
+        private ObservableCollection<PrinterPresentation> PreparePrintersListOnLinux ()
         {
-            ObservableCollection <PrinterPresentation> printersList = new ();
+            ObservableCollection<PrinterPresentation> printersList = new ();
 
             string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
 
             string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
 
-            string[] printers = printersLine.Split (['\n'], StringSplitOptions.RemoveEmptyEntries);
+            string [] printers = printersLine.Split (new char[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
 
             int counter = 0;
 

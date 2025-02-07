@@ -1,16 +1,20 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using ContentAssembler;
+using ExCSS;
 using ExtentionsAndAuxiliary;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Namotion.Reflection;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Lister.Views
 {
@@ -59,6 +63,34 @@ namespace Lister.Views
 
             _theme = ActualThemeVariant.Key.ToString ();
             _viewModel.ChangeAccordingTheme ( _theme );
+        }
+
+
+        internal void ChangeSize ( double widthDifference )
+        {
+            var leftChildren = leftShadow.Children;
+            var rightChildren = rightShadow.Children;
+
+            foreach ( var child   in   leftChildren )
+            {
+                if ( child.Width > 10 )
+                {
+                    child.Width -= widthDifference / 2;
+                }
+                else 
+                {
+                    double left = child.GetValue (Canvas.LeftProperty);
+                    child.SetValue (Canvas.LeftProperty, left - widthDifference / 2);
+                }
+            }
+
+            foreach ( var child   in   rightChildren )
+            {
+                if ( child.Width > 10 )
+                {
+                    child.Width -= widthDifference / 2;
+                }
+            }
         }
     }
 }

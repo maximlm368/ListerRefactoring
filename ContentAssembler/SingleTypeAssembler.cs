@@ -19,7 +19,9 @@ namespace ContentAssembler
 
         public Badge CreateSingleBadgeByModel (string badgeModelName, Person person);
 
-        public List <Person> GetPersons (string ? personsFilePath);
+        public List <Person> GetPersons ( string ? personsFilePath );
+
+        public bool SetPersonsFrom ( string ? personsFilePath, int settingLimit );
     }
 
 
@@ -82,13 +84,25 @@ namespace ContentAssembler
         }
 
 
-        public List <Person> GetPersons(string personsFilePath) 
+        public List <Person> GetPersons (string personsFilePath ) 
         {
-            IPeopleSource peopleSource = _peopleSourceFactory.GetPeopleSource ( personsFilePath );
-
-            _people = peopleSource.GetPersons(personsFilePath);
-            
             return _people;
+        }
+
+
+        public bool SetPersonsFrom ( string personsFilePath, int settingLimit )
+        {
+            IPeopleSource peopleSource = _peopleSourceFactory.GetPeopleSource (personsFilePath);
+
+            List <Person> people = peopleSource.GetPersons (personsFilePath, settingLimit);
+
+            if ( people != null ) 
+            {
+                _people = people;
+                return true;
+            }
+
+            return false;
         }
     }
 }

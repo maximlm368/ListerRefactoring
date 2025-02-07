@@ -15,10 +15,10 @@ namespace Lister.ViewModels
         private WaitingView ? _view;
         private double _canvasTop = 80;
         private double _canvasLeft = 265;
-        private double _canvasHeight = 486;
+        private double _canvasHeight = 506;
         private double _canvasWidth = 830;
-        private readonly double _canvasHiddenVerticalMargin = 4;
-        private double _canvasShownVerticalMargin = -482;
+        private readonly double _canvasHiddenVerticalMargin = 12;
+        private double _canvasShownVerticalMargin = -494;
         private double _imageHeight = 300;
 
         private AnimatedImageSource _gifSource;

@@ -31,7 +31,7 @@ namespace Lister.ViewModels
         private readonly double _buttonWidth = 32;
         private readonly double _extention = 170;
         private readonly double _buttonBlockWidth = 64;
-        private readonly double _workAreaLeftMargin = -72;
+        private readonly double _workAreaLeftMargin = -74;
         private readonly string _extentionToolTip;
         private readonly string _shrinkingToolTip;
         private readonly string _fileIsOpenMessage;
@@ -206,23 +206,6 @@ namespace Lister.ViewModels
     }
 }
 
-//private string ExtractPathWithoutFileName ( string wholePath )
-//{
-//    var builder = new StringBuilder ();
-//    string goalPath = string.Empty;
 
-//    for ( var index = wholePath.Length - 1;   index >= 0;   index-- )
-//    {
-//        bool fileNameIsAchieved = ( wholePath [index] == '/' ) || ( wholePath [index] == '\\' );
-
-//        if ( fileNameIsAchieved )
-//        {
-//            goalPath = wholePath.Substring (0, index);
-//            break;
-//        }
-//    }
-
-//    return goalPath;
-//}
 
 

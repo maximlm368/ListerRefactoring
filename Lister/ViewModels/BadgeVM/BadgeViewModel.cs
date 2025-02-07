@@ -43,7 +43,6 @@ public class BadgeViewModel : ViewModelBase
     internal double BottomSpan { get; private set; }
     internal Badge BadgeModel { get; private set; }
 
-    private Avalonia.Media.Imaging.Bitmap _bitMap = null;
     private Avalonia.Media.Imaging.Bitmap _imageBitmap;
     internal Avalonia.Media.Imaging.Bitmap ImageBitmap
     {
@@ -620,21 +619,14 @@ public class BadgeViewModel : ViewModelBase
 
     internal void Show ()
     {
-        if( _bitMap == null )
-        {
-            string path = BadgeModel. BackgroundImagePath;
+        string path = BadgeModel.BackgroundImagePath;
 
-            if ( ! _pathToImage.ContainsKey ( path ) ) 
-            {
-                _bitMap = ImageHelper.LoadFromResource (path);
-            }
-            else
-            {
-                _bitMap = _pathToImage [ path ];
-            }
+        if ( !_pathToImage.ContainsKey (path) )
+        {
+            _pathToImage.Add (path, ImageHelper.LoadFromResource (path));
         }
 
-        this.ImageBitmap = _bitMap;
+        this.ImageBitmap = _pathToImage[path];
     }
 
 
@@ -736,12 +728,12 @@ public class BadgeViewModel : ViewModelBase
 
         string content = ( string ) FocusedLine. Content;
 
-        List<string> pieces = content.SplitBySeparators ([' ', '-']);
+        List<string> pieces = content.SplitBySeparators ([' ', '-'], ['-']);
 
-        for ( int index = 0;   index < pieces.Count;   index++ ) 
-        {
-            pieces [index] = pieces [index].TrimLastSpaceOrQuoting ();
-        }
+        //for ( int index = 0;   index < pieces.Count;   index++ ) 
+        //{
+        //    pieces [index] = pieces [index].TrimLastSpaceOrQuoting ();
+        //}
 
         double layoutWidth = BadgeWidth;
         List <TextLineViewModel> splitted = FocusedLine.SplitYourself (pieces, scale, layoutWidth);

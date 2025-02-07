@@ -58,9 +58,11 @@ namespace Lister.ViewModels
             get { return _sourceFilePath; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof(SourceFilePath));
+                this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof (SourceFilePath));
             }
         }
+
+        internal readonly int personsLimitForSource;
 
         private bool _personsFileIsOpen;
         public bool FileIsOpen
@@ -92,10 +94,25 @@ namespace Lister.ViewModels
             }
         }
 
+        private bool _fileIsTooBig;
+        internal bool FileIsTooBig
+        {
+            get { return _fileIsTooBig; }
+            private set
+            {
+                if ( _fileIsTooBig == value )
+                {
+                    _fileIsTooBig = !_fileIsTooBig;
+                }
+
+                this.RaiseAndSetIfChanged (ref _fileIsTooBig, value, nameof (FileIsTooBig));
+            }
+        }
+
         internal string FilePath { get; private set; }
 
 
-        public PersonSourceViewModel ( List<string> args, List<string> patterns, List<string> xslxHeaders )
+        public PersonSourceViewModel ( List<string> args, List<string> patterns, List<string> xslxHeaders, int limit )
         {
             _pickerTitle = args [0];
             _sourcePathKeeper = args [1];
@@ -103,6 +120,7 @@ namespace Lister.ViewModels
 
             _patterns = patterns;
             _xslxHeaders = xslxHeaders;
+            personsLimitForSource = limit;
 
             _uniformAssembler = App.services.GetRequiredService<IUniformDocumentAssembler> ();
         }
@@ -150,7 +168,7 @@ namespace Lister.ViewModels
 
             if ( pathExists )
             {
-                CheckIfOpenOrIncorrectAndSave (path, false);
+                CheckIfOpenOrIncorrectAndUse (path, false);
             }
             else
             {
@@ -168,12 +186,12 @@ namespace Lister.ViewModels
             {
                 string path = files [0].Path. LocalPath;
 
-                CheckIfOpenOrIncorrectAndSave (path, true);
+                CheckIfOpenOrIncorrectAndUse (path, true);
             }
         }
 
 
-        private void CheckIfOpenOrIncorrectAndSave ( string path, bool shouldSave )
+        private void CheckIfOpenOrIncorrectAndUse ( string path, bool shouldSave )
         {
             FileInfo fileInfo = new FileInfo (path);
 
@@ -181,7 +199,7 @@ namespace Lister.ViewModels
             {
                 try
                 {
-                    FileStream stream = fileInfo.OpenRead ();
+                    FileStream stream = fileInfo.OpenWrite ();
                     stream.Close ();
                 }
                 catch ( IOException ex )
@@ -198,6 +216,12 @@ namespace Lister.ViewModels
                 DeclineIncorrectFile (path);
                 return;
             }
+            else if ( ! TryUse (path)) 
+            {
+                FilePath = path;
+                FileIsTooBig = true;
+                return;
+            }
             else if ( fileState == XlsxFileState.IsOpen )
             {
                 FileIsOpen = true;
@@ -207,7 +231,7 @@ namespace Lister.ViewModels
             {
                 SourceFilePath = path;
 
-                if ( shouldSave ) 
+                if ( shouldSave )
                 {
                     SavePath ();
                 }
@@ -265,6 +289,15 @@ namespace Lister.ViewModels
         }
 
 
+        private bool TryUse ( string path )
+        {
+            IUniformDocumentAssembler documentAssembler = App.services.GetRequiredService<IUniformDocumentAssembler>();
+            bool fileIsAcceptable = documentAssembler.SetPersonsFrom (path, personsLimitForSource);
+
+            return fileIsAcceptable;
+        }
+
+
         private void DeclineIncorrectFile ( string filePath )
         {
             FilePath = filePath;
@@ -293,7 +326,8 @@ namespace Lister.ViewModels
         {
             NotXlsxFile = 0,
             IsOpen = 1,
-            IsIncorrect = 2
+            IsIncorrect = 2,
+            IsTooBig = 3
         }
     }
 }

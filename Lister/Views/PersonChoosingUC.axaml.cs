@@ -64,7 +64,7 @@ namespace Lister.Views
             InitializeComponent ();
 
             DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
-            _viewModel = (PersonChoosingViewModel) DataContext;
+            _viewModel = ( PersonChoosingViewModel ) DataContext;
 
             Loaded += OnLoaded;
             
@@ -214,13 +214,6 @@ namespace Lister.Views
         }
 
 
-        //internal void DropOrPickUpPersons ( object sender, TappedEventArgs args )
-        //{
-        //    DropOrPickUp ();
-        //    personTextBox.Focus (NavigationMethod.Tab);
-        //}
-
-
         internal void ButtonPressed ( object sender, PointerPressedEventArgs args )
         {
             _dropdownButtonIsTapped = true;
@@ -291,20 +284,6 @@ namespace Lister.Views
             _personListIsDropped = true;
             _viewModel.ReductPersonList ( input );
         }
-
-
-        //private void RestrictInput ( string input )
-        //{
-        //    if ( input.Length >= _inputLimit )
-        //    {
-        //        personTextBox.Text = _previousText;
-        //        input = _previousText;
-        //    }
-        //    else 
-        //    {
-        //        _previousText = input;
-        //    }
-        //}
 
 
         private bool IsKeyUnimpacting ( string key )

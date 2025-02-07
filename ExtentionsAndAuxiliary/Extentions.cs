@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using ContentAssembler;
 
@@ -94,7 +95,7 @@ namespace ExtentionsAndAuxiliary
         }
 
 
-        public static List<string> SplitBySeparators ( this string str, char [] separators )
+        public static List<string> SplitBySeparators ( this string str, char [] separators, char [] onceUnremovableSeparators )
         {
             List<string> result = new List<string> ();
 
@@ -114,6 +115,8 @@ namespace ExtentionsAndAuxiliary
             int splitingStart = 0;
             int splitingLength = 1;
             bool shouldSplit = false;
+            bool isWaitingUnremovable = false;
+            bool unremovableIsEncountered = false;
 
             for ( int index = 0;   index < str.Length - 1;   index++ )
             {
@@ -124,19 +127,103 @@ namespace ExtentionsAndAuxiliary
                     splitingStart = index + 1;
                     splitingLength = 1;
 
-                    if ( splited != string.Empty   &&   ( ! separatorStrs.Contains(splited)) )
+                    if ( ( splited != string.Empty )   &&   ! separatorStrs.Contains (splited) )
                     {
                         result.Add (splited);
+                    }
+
+                    if ( onceUnremovableSeparators.Contains (str [index]) )
+                    {
+                        if ( result.Count > 0 ) 
+                        {
+                            string last = result.Last ();
+
+                            if ( isWaitingUnremovable   &&   ( last != null ) )
+                            {
+                                char lastGlyph = last.Last ();
+
+                                if ( separators.Contains(lastGlyph) ) 
+                                {
+                                    last = last.TrimEnd (lastGlyph);
+                                }
+
+                                last = last + str [index];
+                                result [result.Count - 1] = last;
+                            }
+                        }
+
+                        isWaitingUnremovable = false;
+                        unremovableIsEncountered = true;
+                    }
+                    else if ( ! onceUnremovableSeparators.Contains (str [index])   &&   ! unremovableIsEncountered )
+                    {
+                        isWaitingUnremovable = true;
                     }
                 }
                 else
                 {
                     splitingLength++;
+                    isWaitingUnremovable = false;
+                    unremovableIsEncountered = false;
                 }
             }
 
             result.Add (rest);
             return result;
+        }
+    }
+
+
+
+    public static class DigitalStringParser 
+    {
+        public static readonly char [] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+
+        public static int ParseToInt ( string parsable )
+        {
+            if (( parsable == null )   ||   parsable.ContainsNotDigit()) 
+            {
+                return 0;
+            }
+
+            return int.Parse (parsable);
+        }
+
+
+        public static short ParseToShort ( string parsable )
+        {
+            if ( ( parsable == null )   ||   parsable.ContainsNotDigit () )
+            {
+                return 0;
+            }
+
+            return short.Parse (parsable);
+        }
+
+
+        public static byte ParseToByte ( string parsable )
+        {
+            if ( (parsable == null)   ||   parsable.ContainsNotDigit () )
+            {
+                return 0;
+            }
+
+            return byte.Parse (parsable);
+        }
+
+
+        private static bool ContainsNotDigit ( this string parsable )
+        {
+            for ( int index = 0;   index < parsable.Length;   index++ )
+            {
+                if ( ! digits.Contains (parsable [index]) )
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

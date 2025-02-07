@@ -16,18 +16,18 @@ namespace DataGateway
 {
     public class PeopleXlsxSource : IPeopleSource, IRowSource
     {
-        public List <Person> GetPersons ( string? filePath )
+        public List <Person> GetPersons ( string ? filePath, int gettingLimit )
         {
-            List<Person> result = [];
-
-            if ( string.IsNullOrWhiteSpace (filePath) )
-            {
-                return result;
-            }
+            List <Person> result = [];
 
             using Stream stream = File.OpenRead (filePath);
             using IExcelDataReader reader = ExcelReaderFactory.CreateReader (stream);
-            int rowCounts = reader.RowCount;
+            int rowCount = reader.RowCount;
+
+            if ( rowCount > gettingLimit ) 
+            {
+                return null;
+            }
 
             var conf = new ExcelDataSetConfiguration
             {
@@ -40,11 +40,11 @@ namespace DataGateway
             var dataSet = reader.AsDataSet (conf);
             var dataTable = dataSet.Tables [0];
 
-            for ( var i = 0; i < dataTable.Rows.Count; i++ )
+            for ( var i = 1;   i < dataTable.Rows.Count;   i++ )
             {
                 List<string> rowData = [];
 
-                for ( var j = 0; j < dataTable.Columns.Count; j++ )
+                for ( var j = 0;   j < dataTable.Columns.Count;   j++ )
                 {
                     var data = dataTable.Rows [i] [j];
                     rowData.Add (data.ToString ());
@@ -57,9 +57,6 @@ namespace DataGateway
                     result.Add (person);
                 }
             }
-
-            IComparer <Person> comparer = new RusStringComparer<Person> ();
-            result.Sort (comparer);
 
             return result;
         }
@@ -109,19 +106,16 @@ namespace DataGateway
         public PeopleCsvSource () { }
 
 
-        public List <Person> GetPersons ( string ? filePath )
+        public List <Person> GetPersons ( string ? filePath, int gettingLimit )
         {
             List <Person> result = [];
-
-            if ( string.IsNullOrWhiteSpace (filePath) )
-            {
-                return result;
-            }
 
             Encoding encoding = Encoding.GetEncoding (1251);
             using StreamReader reader = new StreamReader (filePath, encoding, true);
             string line = string.Empty;
             char separator = ';';
+
+            int counter = 0;
 
             while ( ( line = reader.ReadLine () ) != null )
             {
@@ -133,13 +127,45 @@ namespace DataGateway
                 {
                     result.Add (person);
                 }
-            }
 
-            IComparer<Person> comparer = new RusStringComparer<Person> ();
-            result.Sort (comparer);
+                counter++;
+
+                if ( counter > gettingLimit ) 
+                {
+                    return null;
+                }
+            }
 
             return result;
         }
+
+
+        //public bool CheckSize ( string? filePath, int limit ) 
+        //{
+        //    if ( string.IsNullOrWhiteSpace (filePath) )
+        //    {
+        //        return false;
+        //    }
+
+        //    Encoding encoding = Encoding.GetEncoding (1251);
+        //    using StreamReader reader = new StreamReader (filePath, encoding, true);
+        //    string line = string.Empty;
+        //    char separator = ';';
+
+        //    int counter = 0;
+
+        //    while ( ( line = reader.ReadLine () ) != null )
+        //    {
+        //        counter++;
+
+        //        if ( counter > limit )
+        //        {
+        //            return false;
+        //        }
+        //    }
+
+        //    return true;
+        //}
     }
 
 

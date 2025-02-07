@@ -24,6 +24,7 @@ using Microsoft.Win32;
 using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using static SkiaSharp.HarfBuzz.SKShaper;
+using ExtentionsAndAuxiliary;
 
 namespace Lister;
 
@@ -62,8 +63,7 @@ public static class ServiceCollectionExtensions
     {
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
-        IBadgeAppearenceProvider result =
-            new BadgeAppearenceProvider ();
+        IBadgeAppearenceProvider result = new BadgeAppearenceProvider ();
 
         return result;
     }
@@ -97,6 +97,9 @@ public static class ServiceCollectionExtensions
         string fileIsOpenMessage =
         GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "fileIsOpenMessage" }, App.ConfigPath);
 
+        string fileIsTooBigMessage =
+        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "fileIsTooBig" }, App.ConfigPath);
+
         IEnumerable<IConfigurationSection> sections =
         GetterFromJson.GetChildren (new List<string> { "MainViewModel", "patterns" }, App.ConfigPath);
 
@@ -108,7 +111,7 @@ public static class ServiceCollectionExtensions
         }
 
         return new MainViewModel (App.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
-                                                                                           , fileIsOpenMessage);
+                                                                      , fileIsOpenMessage, fileIsTooBigMessage);
     }
 
 
@@ -148,7 +151,14 @@ public static class ServiceCollectionExtensions
             patterns.Add (section.Value);
         }
 
-        PersonSourceViewModel result = new PersonSourceViewModel (args, patterns, headers);
+        int badgeLimit = 0;
+
+        string badgeLimitStr =
+        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "badgeCountLimit" }, App.ConfigPath);
+        
+        badgeLimit = DigitalStringParser.ParseToInt (badgeLimitStr);
+
+        PersonSourceViewModel result = new PersonSourceViewModel (args, patterns, headers, badgeLimit);
         return result;
     }
 
@@ -202,15 +212,11 @@ public static class ServiceCollectionExtensions
         List<int> rgb = new () { 100, 100, 100 };
         int counter = 0;
 
-        foreach ( IConfigurationSection section in sections )
+        foreach ( IConfigurationSection section   in   sections )
         {
             int rgbIndex = 0;
 
-            try
-            {
-                rgbIndex = int.Parse (section.Value);
-            }
-            catch ( Exception ex ) { }
+            rgbIndex = DigitalStringParser.ParseToInt (section.Value);
 
             rgb [counter] = rgbIndex;
             counter++;
@@ -229,11 +235,7 @@ public static class ServiceCollectionExtensions
         string badgeLimitStr =
         GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "badgeCountLimit" }, App.ConfigPath);
 
-        try
-        {
-            badgeLimit = int.Parse (badgeLimitStr);
-        }
-        catch ( Exception ex ) { }
+        badgeLimit = DigitalStringParser.ParseToInt (badgeLimitStr);
 
         string extentionToolTip =
         GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "extentionToolTip" }, App.ConfigPath);
@@ -257,26 +259,18 @@ public static class ServiceCollectionExtensions
         GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "maxDepth" }, App.ConfigPath);
         short maxDepth = 3;
 
-        try
-        {
-            maxDepth = short.Parse (maxDepthStr);
-        }
-        catch ( Exception ex ) { }
-
-        string minDepthStr =
-        GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "minDepth" }, App.ConfigPath);
-        short minDepth = -3;
-
-        try
-        {
-            minDepth = short.Parse (minDepthStr);
-        }
-        catch ( Exception ex ) { }
+        maxDepth = DigitalStringParser.ParseToShort (maxDepthStr);
 
         if ( maxDepth < 1 )
         {
             maxDepth = 3;
         }
+
+        string minDepthStr =
+        GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "minDepth" }, App.ConfigPath);
+        short minDepth = -3;
+
+        minDepth = DigitalStringParser.ParseToShort (minDepthStr);
 
         if ( minDepth > -1 )
         {

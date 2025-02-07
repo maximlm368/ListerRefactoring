@@ -26,9 +26,9 @@ namespace Lister.Views
 
             set 
             {
-                if ( value != null ) 
+                if ( value != null )
                 {
-                    string [] lines = value.Split (['.'], StringSplitOptions.RemoveEmptyEntries);
+                    string [] lines = value.Split (new char[]{'.'}, StringSplitOptions.RemoveEmptyEntries);
 
                     if ( lines.Length == 1 ) 
                     {
@@ -87,7 +87,7 @@ namespace Lister.Views
                 return pureLines;
             }
 
-            string [] lines = message.Split (['.'], StringSplitOptions.RemoveEmptyEntries);
+            string [] lines = message.Split (new char[]{'.'}, StringSplitOptions.RemoveEmptyEntries);
 
             if ( lines.Length == 1 )
             {

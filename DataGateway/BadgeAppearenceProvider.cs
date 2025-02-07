@@ -31,7 +31,6 @@ namespace DataGateway
                 BadgeAppearenceProvider badgeAppearenceProvider = new BadgeAppearenceProvider ();
                 badgeAppearenceProvider.SetLayouts (resourceFolder, jsonSchemeFolder);
                 Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
-                //using XLWorkbook workbook = new XLWorkbook ("D:\\MML\\Памятка_Lister_JSON.xlsx");
             });
 
             task.Start ();
@@ -326,12 +325,9 @@ namespace DataGateway
                 string numberStr = GetterFromJson.GetSectionValue (item.GetSection ("Number"));
 
                 int number = 0;
+                number = DigitalStringParser.ParseToInt (numberStr);
 
-                try
-                {
-                    number = int.Parse (numberStr);
-                }
-                catch ( Exception ex ) 
+                if ( number == 0 ) 
                 {
                     number = 1;
                 }
@@ -393,7 +389,6 @@ namespace DataGateway
             double leftOffset = GetSectionIntValueOrDefault (new List<string> { atomName, "LeftOffset" }, jsonPath);
             string alignment = GetSectionStrValueOrDefault (new List<string> { atomName, "Alignment" }, jsonPath) ?? "";
             double fontSize = GetSectionIntValueOrDefault (new List<string> { atomName, "FontSize" }, jsonPath);
-            string fontFile = GetSectionStrValueOrDefault (new List<string> { atomName, "FontFile" }, jsonPath) ?? "";
             string fontName = GetSectionStrValueOrDefault (new List<string> { atomName, "FontName" }, jsonPath) ?? "";
 
             List<byte> foreground = new List<byte> ();
@@ -428,7 +423,7 @@ namespace DataGateway
             bool isShiftable = GetSectionBoolValueOrDefault (new List<string> { atomName, "IsSplitable" }, jsonPath);
 
             TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
-                                               , alignment, fontSize, fontFile, fontName, foreground
+                                               , alignment, fontSize, fontName, foreground
                                              , fontWeight, null, isShiftable, numberToLocate, outlineRGB);
 
             return atom;
@@ -458,9 +453,6 @@ namespace DataGateway
 
             childSection = section.GetSection ("FontSize");
             double fontSize = GetSectionIntValueOrDefault (childSection, jsonPath, "FontSize");
-
-            childSection = section.GetSection ("FontFile");
-            string fontFile = GetSectionStrValueOrDefault (childSection, jsonPath, "FontFile");
 
             childSection = section.GetSection ("FontName");
             string fontName = GetSectionStrValueOrDefault (childSection, jsonPath, "FontName");
@@ -492,16 +484,11 @@ namespace DataGateway
             string shiftableString = GetterFromJson.GetSectionValue (childSection) ?? _defaultSplitability;
             bool isShiftable = false;
 
-            try
-            {
-                int shiftableInt = Int32.Parse (shiftableString);
-                isShiftable = Convert.ToBoolean (shiftableInt);
-            }
-            catch ( Exception ex ) { }
-
+            int shiftableInt = DigitalStringParser.ParseToInt (shiftableString);
+            isShiftable = Convert.ToBoolean (shiftableInt);
 
             TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset , alignment, fontSize
-                                          , fontFile, fontName, foreground, fontWeight, united, isShiftable, numberToLocate
+                                          , fontName, foreground, fontWeight, united, isShiftable, numberToLocate
                                           , outlineRGB);
             return atom;
         }
@@ -548,12 +535,7 @@ namespace DataGateway
             childSection = section.GetSection ("OutLineThickness");
 
             int outlineThickness = 0;
-
-            try
-            {
-                outlineThickness = int.Parse (GetterFromJson.GetSectionValue (childSection));
-            }
-            catch ( Exception e ) { }
+            outlineThickness = DigitalStringParser.ParseToInt (GetterFromJson.GetSectionValue (childSection));
 
             childSection = section.GetSection ("FillColor");
             List<byte> fillColor = GetRGB (childSection);
@@ -609,13 +591,13 @@ namespace DataGateway
         {
             IConfigurationSection childSection = section.GetSection ("Red");
             string redStr = GetterFromJson.GetSectionValue (childSection) ?? "100";
-            byte red = byte.Parse (redStr);
+            byte red = DigitalStringParser.ParseToByte (redStr);
 
             childSection = section.GetSection ("Green");
-            byte green = byte.Parse (GetterFromJson.GetSectionValue (childSection) ?? "100");
+            byte green = DigitalStringParser.ParseToByte (GetterFromJson.GetSectionValue (childSection) ?? "100");
 
             childSection = section.GetSection ("Blue");
-            byte blue = byte.Parse (GetterFromJson.GetSectionValue (childSection) ?? "100");
+            byte blue = DigitalStringParser.ParseToByte (GetterFromJson.GetSectionValue (childSection) ?? "100");
 
             List<byte> rgb = new List<byte> () { red, green, blue };
 
@@ -628,7 +610,6 @@ namespace DataGateway
             Dictionary <BadgeLayout, KeyValuePair<string, List<string>>> layouts = new ();
             var schemeTask = JsonSchema.FromFileAsync (_schemeFile.FullName);
             schemeTask.Wait ();
-
 
             foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
             {
@@ -910,12 +891,7 @@ namespace DataGateway
                         List<string> keyPathToDefault = BuildPathToDefaultValue (steps);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                        try
-                        {
-                            return Int32.Parse (strValue);
-                        }
-                        catch ( Exception e ) 
-                        {}
+                        return DigitalStringParser.ParseToInt (strValue);
                     }
                 }
             }
@@ -924,7 +900,7 @@ namespace DataGateway
                 List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
                 string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                return Int32.Parse (strValue);
+                return DigitalStringParser.ParseToInt (strValue);
             }
 
             int result = GetterFromJson.GetSectionIntValue (keyPathInJson, jsonPath);
@@ -1046,7 +1022,7 @@ namespace DataGateway
                         List<string> keyPathToDefault = BuildPathToDefaultValue (section);
                         string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                        return Int32.Parse (strValue);
+                        return DigitalStringParser.ParseToInt (strValue);
                     }
                 }
             }
@@ -1055,20 +1031,10 @@ namespace DataGateway
                 List<string> keyPathToDefault = BuildPathToDefaultValue (section);
                 string strValue = GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
 
-                return Int32.Parse (strValue);
+                return DigitalStringParser.ParseToInt(strValue);
             }
 
-            int result = 0;
-
-            try
-            {
-                result = int.Parse (GetterFromJson.GetSectionValue (section));
-            }
-            catch ( Exception ex )
-            {
-            }
-
-            return result;
+            return DigitalStringParser.ParseToInt (GetterFromJson.GetSectionValue (section));
         }
 
 

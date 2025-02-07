@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="467"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="487"
 			 x:Class="Lister.Views.WaitingView"
 			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
 			 x:DataType="vm:WaitingViewModel"

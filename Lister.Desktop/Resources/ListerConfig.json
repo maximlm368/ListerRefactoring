@@ -1,0 +1,217 @@
+{
+	"SceneViewModel":
+	{
+		"badgeCountLimit":3000,
+		"extentionToolTip":"Развернуть панель",
+		"shrinkingToolTip":"Свернуть панель",
+		"fileIsOpenMessage":"Файл с таким именем открыт в другом приложении, закройте его и повторите попытку."
+	},
+	
+	"PersonChoosingViewModel":
+	{
+		"placeHolder":"Весь список",
+		
+		"entireListColor":
+		[
+			255,
+			182,
+			193
+		],
+		
+		"defaultBackgroundColor":
+		[
+			255,
+			255,
+			255
+		],
+		
+		"defaultBorderColor":
+		[
+			213,
+			232,
+			246
+		],
+		
+		"defaultForegroundColor":
+		[
+			0,
+			0,
+			0
+		],
+		
+		"focusedBackgroundColor":
+		[
+			227,
+			241,
+			252
+		],
+		
+		"focusedBorderColor":
+		[
+			213,
+			232,
+			246
+		],
+		
+		"hoveredBackgroundColor":
+		[
+			255,
+			255,
+			255
+		],
+		
+		"hoveredBorderColor":
+		[
+			74,
+			172,
+			254
+		],
+		
+		"selectedBackgroundColor":
+		[
+			227,
+			241,
+			252
+		],
+		
+		"selectedBorderColor":
+		[
+			213,
+			232,
+			246
+		],
+		
+		"selectedForegroundColor":
+		[
+			58,
+			90,
+			129
+		],
+		
+		"incorrectTemplateColor":
+		[
+			140,
+			140,
+			140
+		]
+	},
+	
+	"PersonSourceViewModel":
+	{	
+		"badgeCountLimit":3000,
+		"pickerTitle":"Источники данных",
+		"sourcePathKeeper":"keeper.txt",
+		"filePickerTitle":"Выбор файла",
+		
+		"xlsxHeaderNames":
+		[
+			"№",
+			"Фамилия",
+			"Имя",
+			"Отчество",
+			"Отделение",
+			"Должность"
+		],
+		
+		"sourceExtentions":
+		[
+			"*.csv",
+			"*.xlsx"
+		]
+	},
+
+	"NavigationZoomerViewModel":
+	{
+		"procentSymbol":"%",
+		"maxDepth": 5,
+		"minDepth": -5
+	},
+	
+	"MainViewModel":
+	{
+		"pdfFileName":"Badge",
+		"saveTitle":"Сохранение документа",
+		"incorrectXSLX":" - некорректный файл.",
+		"fileIsTooBig":" - превышает лимит построения ",
+		"limitIsExhaustedMessage":"Макет не будет построен.  Количество бейджей не должно превышать ",
+		"fileIsOpenMessage":"Файл с таким именем открыт в другом приложении. Закройте его и повторите попытку.",
+		
+		"patterns":
+		[
+			"*.pdf"
+		]
+	},
+	
+	"PrintDialogViewModel":
+	{
+		"warnImagePath":"Icons/warning-alert.ico",
+		"emptyCopies":"Количество копий не может быть пустым",
+		"emptyPages":"Список страниц не может быть пустым",
+		"emptyPrinters":"Список принтеров не может быть пустым"
+	},
+	
+	"EditorViewModel":
+	{
+		"extentionToolTip":"Развернуть панель",
+		"shrinkingToolTip":"Свернуть панель",
+		"correctnessIcon":"Icons/GreenCheckMarker.jpg",
+		"incorrectnessIcon":"Icons/RedCross.png",
+		"allFilter":"Все",
+		"incorrectFilter":"С ошибками",
+		"correctFilter":"Без ошибок",
+		"allTip":"Все бейджи",
+		"correctTip":"Бейджи без ошибок",
+		"incorrectTip":"Бейджи с ошибками",
+		
+		"focusedFontColor":
+		[
+			255,
+			255,
+			255
+		],
+		
+		"releasedFontColor":
+		[
+			175,
+			175,
+			175
+		],
+		
+		"focusedFontBorderColor":
+		[
+			50,
+			50,
+			50
+		],
+		
+		"releasedFontBorderColor":
+		[
+			150,
+			150,
+			150
+		]
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

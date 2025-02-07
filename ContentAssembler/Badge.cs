@@ -269,7 +269,6 @@ namespace ContentAssembler
         public int NumberToLocate { get; private set; }
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
-        public string FontFile { get; private set; }
         public string FontName { get; private set; }
         public List<byte> ForegroundRGB { get; private set; }
         public string FontWeight { get; private set; }
@@ -296,7 +295,7 @@ namespace ContentAssembler
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontFile, string fontName, List<byte> foreground
+                           , double fontSize, string fontName, List<byte> foreground
                            , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate
                            , List<byte> outLineRGB )
         {
@@ -309,7 +308,6 @@ namespace ContentAssembler
             LeftOffset = leftOffset;
             Alignment = alignment;
             FontSize = fontSize;
-            FontFile = fontFile;
             FontName = fontName;
 
             if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
@@ -345,7 +343,6 @@ namespace ContentAssembler
             LeftOffset = source.LeftOffset;
             Alignment = source.Alignment;
             FontSize = source.FontSize;
-            FontFile = source.FontFile;
             FontName = source.FontName;
             ForegroundRGB = source.ForegroundRGB;
             OutlineRGB = source.OutlineRGB;
@@ -359,7 +356,7 @@ namespace ContentAssembler
 
         internal TextualAtom Clone () 
         {
-            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize, FontFile
+            TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize
                                                  , FontName, ForegroundRGB, FontWeight, IncludedAtoms, IsSplitable
                                                  , NumberToLocate, OutlineRGB);
             return clone;

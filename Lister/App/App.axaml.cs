@@ -126,6 +126,18 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = mainWindow;
             desktop.MainWindow.Show ();
             splashWindow.Close ();
+
+            mainWindow.Closing += ( s, e ) =>
+            {
+                if ( MainViewModel.InWaitingState )
+                {
+                    e.Cancel = true;
+                }
+                else 
+                {
+                    e.Cancel = false;
+                }
+            };
         }
         else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
         {

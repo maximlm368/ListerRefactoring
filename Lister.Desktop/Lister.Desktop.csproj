@@ -20,6 +20,18 @@
 	
 	<PackRelease>true</PackRelease>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Assets\badge.ico" />
+    <None Remove="Assets\Font Awesome 6 Free-Solid-900.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\badge.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\Font Awesome 6 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
@@ -31,5 +43,38 @@
   <ItemGroup>
     <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
     <ProjectReference Include="..\Lister\Lister.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Doctor-release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Doctor2.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\doctors2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Icons\badge.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Icons\Loading.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Icons\warning-alert.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\JsonSchemes\Schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ListerConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Nurse-release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\nurses2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

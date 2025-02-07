@@ -280,18 +280,15 @@ namespace Lister.ViewModels
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
-                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                     , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                     , _filterIsOpen));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                  , _correctnessWidthLimit, _filterIsOpen));
 
                 counter++;
             }
 
             BeingProcessedBadge = AllNumbered.ElementAt (0);
             VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-            VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit
-                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+            VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit);
             ActiveIcon = VisibleIcons [0];
             FilterState = null;
         }
@@ -309,16 +306,13 @@ namespace Lister.ViewModels
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel (badge
-                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel (badge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                  , _correctnessWidthLimit, _filterIsOpen));
 
                 if ( existingCounter == 0 )
                 {
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
-                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit);
                     firstExistingCommonNumber = badge.Id;
                 }
 
@@ -347,16 +341,13 @@ namespace Lister.ViewModels
                     break;
                 }
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge
-                                                            , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                   , _correctnessWidthLimit, _filterIsOpen));
 
                 if ( existingCounter == 0 )
                 {
                     VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit
-                                                    , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength });
+                    VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit);
                     firstExistingCommonNumber = badge.Id;
                 }
 

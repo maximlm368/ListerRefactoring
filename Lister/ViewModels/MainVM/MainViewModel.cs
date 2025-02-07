@@ -27,9 +27,17 @@ namespace Lister.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {
+        private static bool _inWaitingState;
+        public static bool InWaitingState 
+        {
+            get { return _inWaitingState; }
+            private set { _inWaitingState = value; }
+        }
+
         private readonly string _suggestedFileNames;
         private readonly string _saveTitle;
         private readonly string _incorrectXSLX;
+        private readonly string _fileIsTooBigMessage;
         private readonly string _buildingLimitIsExhaustedMessage;
         private readonly string _fileIsOpenMessage;
 
@@ -70,7 +78,7 @@ namespace Lister.ViewModels
 
 
         public MainViewModel ( string osName, string suggestedFileNames, string saveTitle, string incorrectXSLX
-                             , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage )
+                             , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage, string fileIsTooBigMessage )
         {
             _osName = osName;
             _suggestedFileNames = suggestedFileNames;
@@ -78,6 +86,7 @@ namespace Lister.ViewModels
             _incorrectXSLX = incorrectXSLX;
             _buildingLimitIsExhaustedMessage = buildingLimitIsExhaustedMessage;
             _fileIsOpenMessage = fileIsOpenMessage;
+            _fileIsTooBigMessage = fileIsTooBigMessage;
 
             _pdfPrinter = App.services.GetRequiredService<PdfPrinter> ();
             _printDialogViewModel = App.services.GetRequiredService<PrintDialogViewModel> ();
@@ -100,31 +109,47 @@ namespace Lister.ViewModels
 
         private void PersonSourceChanged ( object ? sender, PropertyChangedEventArgs args )
         {
-            if ( args.PropertyName == "SourceFilePath" ) 
+            if ( args.PropertyName == "SourceFilePath" )
             {
                 PersonSourceViewModel personSource = ( PersonSourceViewModel ) sender;
                 _personChoosingViewModel.SetPersonsFromFile (personSource.SourceFilePath);
             }
-            else if ( args.PropertyName == "FileIsDeclined" )
+            else 
             {
-                string message = _personSourceViewModel.FilePath + _incorrectXSLX;
-                var messegeDialog = new MessageDialog (MainView.Instance, message);
-
-                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                waitingVM.Darken ();
-                messegeDialog.ShowDialog (App.MainWindow);
-            }
-            else if ( args.PropertyName == "FileIsOpen" )
-            {
-                if ( MainView.Instance == null ) 
+                if ( MainView.Instance == null )
                 {
                     return;
                 }
 
-                var messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
-                WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                waitingVM.Darken ();
-                messegeDialog.ShowDialog (MainWindow.Window);
+                if ( args.PropertyName == "FileIsDeclined" )
+                {
+                    string message = _personSourceViewModel.FilePath + _incorrectXSLX;
+                    MessageDialog messegeDialog = new MessageDialog (MainView.Instance, message);
+
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.Darken ();
+                    messegeDialog.ShowDialog (App.MainWindow);
+                }
+                else if ( args.PropertyName == "FileIsTooBig" )
+                {
+                    //string message = "Файл " + _personSourceViewModel.FilePath + _fileIsTooBigMessage 
+                    //                  + _personSourceViewModel. personsLimitForSource + ".";
+                    //var messegeDialog = new MessageDialog (MainView.Instance, message);
+
+                    string limit = _sceneViewModel.GetLimit ().ToString () + ".";
+                    MessageDialog messegeDialog = new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
+
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.Darken ();
+                    messegeDialog.ShowDialog (App.MainWindow);
+                }
+                else if ( args.PropertyName == "FileIsOpen" )
+                {
+                    MessageDialog messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.Darken ();
+                    messegeDialog.ShowDialog (MainWindow.Window);
+                }
             }
         }
 
@@ -143,7 +168,7 @@ namespace Lister.ViewModels
                 {
                     TemplateViewModel template = _personChoosingViewModel.ChosenTemplate;
 
-                    var messegeDialog =
+                    LargeMessageDialog messegeDialog =
                     new LargeMessageDialog (MainView.Instance, template.CorrectnessMessage, template.SourcePath);
 
                     _waitingViewModel.Darken ();
@@ -176,7 +201,7 @@ namespace Lister.ViewModels
                     List<string> message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
                     string path = _personChoosingViewModel.ChosenTemplate.SourcePath;
 
-                    var messegeDialog = new LargeMessageDialog (MainView.Instance, message, path);
+                    LargeMessageDialog messegeDialog = new LargeMessageDialog (MainView.Instance, message, path);
 
                     _waitingViewModel.Darken ();
                     messegeDialog.ShowDialog (MainWindow.Window);
@@ -213,7 +238,8 @@ namespace Lister.ViewModels
                     EndWaiting ();
 
                     string limit = _sceneViewModel.GetLimit ().ToString() + ".";
-                    var messegeDialog = new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
+                    MessageDialog messegeDialog = 
+                                              new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
 
                     WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                     waitingVM.Darken ();
@@ -224,7 +250,7 @@ namespace Lister.ViewModels
             {
                 MainView mainView = MainView.Instance;
                 mainView.EditIncorrectBadges (_sceneViewModel.ProcessableBadges, _sceneViewModel.PrintableBadges
-                                                                                , _sceneViewModel.AllPages [0]);
+                                                                                  , _sceneViewModel.VisiblePage);
             }
             else if ( args.PropertyName == "PdfIsWanted" )
             {
@@ -322,6 +348,8 @@ namespace Lister.ViewModels
         {
             _waitingViewModel.Show ();
             MainViewIsWaiting = true;
+
+            InWaitingState = true;
         }
 
 
@@ -330,6 +358,8 @@ namespace Lister.ViewModels
             _badgesBuildingViewModel.BuildingIsPossible = true;
             _waitingViewModel.Hide ();
             MainViewIsWaiting = false;
+
+            InWaitingState = false;
         }
 
 
@@ -341,7 +371,7 @@ namespace Lister.ViewModels
             options.Title = _saveTitle;
             options.FileTypeChoices = new ReadOnlyCollection <FilePickerFileType> (fileExtentions);
             options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString ();
-            IStorageFile chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync (FilePickerOptions);
+            IStorageFile chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync (options);
 
             bool savingCancelled = ( chosenFile == null );
 
@@ -353,6 +383,26 @@ namespace Lister.ViewModels
             PdfFileName = chosenFile.Path.ToString ();
             int uriTypeLength = App.ResourceUriType.Length;
             PdfFileName = PdfFileName.Substring (uriTypeLength, PdfFileName.Length - uriTypeLength);
+
+            FileInfo fileInfo = new FileInfo (PdfFileName);
+
+            if ( fileInfo.Exists )
+            {
+                try
+                {
+                    FileStream stream = fileInfo.OpenWrite ();
+                    stream.Close ();
+                }
+                catch ( IOException ex )
+                {
+                    var messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.Darken ();
+                    messegeDialog.ShowDialog (MainWindow.Window);
+
+                    return;
+                }
+            }
 
             PdfGenerationShouldStart = true;
             SetWaitingUpdatingLayout ();
@@ -422,7 +472,7 @@ namespace Lister.ViewModels
             }
             else
             {
-                var messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
+                MessageDialog messegeDialog = new MessageDialog (MainView.Instance, _fileIsOpenMessage);
                 WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
                 _waitingViewModel.Darken ();
                 messegeDialog.ShowDialog (MainWindow.Window);
@@ -446,13 +496,6 @@ namespace Lister.ViewModels
             PrintingShouldStart = true;
             SetWaitingUpdatingLayout ();
         }
-
-
-
-
-
-
-
 
 
         internal void LayoutUpdated ( )

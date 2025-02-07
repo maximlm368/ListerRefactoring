@@ -38,6 +38,7 @@ namespace Lister.ViewModels
     public partial class PersonChoosingViewModel : ViewModelBase
     {
         private readonly int _inputLimit = 50;
+        private bool _entireSelectionIsSet;
 
         private bool _fileNotFound;
         public bool FileNotFound
@@ -69,7 +70,7 @@ namespace Lister.ViewModels
             _focusedBackgroundColor = focusedColors [0];
             _focusedBorderColor = focusedColors [1];
 
-            VisiblePeople = new ObservableCollection<VisiblePerson> ();
+            VisiblePeople = new ObservableCollection <VisiblePerson> ();
             ScrollerCanvasLeft = _withScroll;
             PersonsScrollValue = _oneHeight;
             TextboxIsReadOnly = true;
@@ -150,7 +151,12 @@ namespace Lister.ViewModels
                     ChosenPerson = null;
                 }
 
-                PlaceHolder = _placeHolder;
+                if ( _choiceIsAbsent ) 
+                {
+                    EntireIsSelected = false;
+                }
+
+                //PlaceHolder = _placeHolder;
             }
             else
             {
@@ -212,10 +218,14 @@ namespace Lister.ViewModels
                 return;
             }
 
+            List <Person> sortablePersons = persons.Clone ();
+            IComparer <Person> comparer = new RusStringComparer <Person> ();
+            sortablePersons.Sort (comparer);
+
             List <VisiblePerson> peopleStorage = new ();
             List <VisiblePerson> involvedPeople = new ();
 
-            foreach ( Person person   in   persons )
+            foreach ( Person person   in   sortablePersons )
             {
                 if ( person.IsEmpty () )
                 {
@@ -236,6 +246,7 @@ namespace Lister.ViewModels
 
         internal void SetChosenPerson ( string personName )
         {
+            _choiceIsAbsent = false;
             Person person = FindPersonByStringPresentation (personName);
             int seekingScratch = _focusedNumber - _maxVisibleCount;
 
@@ -283,6 +294,8 @@ namespace Lister.ViewModels
 
         internal void SetEntireList ()
         {
+            _choiceIsAbsent = false;
+
             if ( _focused != null )
             {
                 _focused.IsFocused = false;
@@ -295,7 +308,7 @@ namespace Lister.ViewModels
                 _selected = null;
             }
 
-            EntirePersonListIsSelected = true;
+            EntireIsSelected = true;
             HideDropListWithChange ();
             _focusedNumber = _focusedEdge - _maxVisibleCount;
         }
@@ -303,14 +316,14 @@ namespace Lister.ViewModels
 
         private void SetPersonChoosingConsequences ()
         {
-            EntirePersonListIsSelected = false;
+            EntireIsSelected = false;
             SinglePersonIsSelected = true;
         }
 
 
         private void SetEntireListChoosingConsequences ()
         {
-            EntirePersonListIsSelected = true;
+            EntireIsSelected = true;
             SinglePersonIsSelected = false;
         }
 
@@ -401,14 +414,11 @@ namespace Lister.ViewModels
                 _focused = null;
             }
 
-            _entireIsSelected = true;
-            _focusedNumber = -1;
             _focusedEdge = _edge;
-
+            _focusedNumber = -1;
             TextboxIsReadOnly = false;
             TextboxIsFocusable = true;
-
-            EntireFontWeight = FontWeight.Bold;
+            EntireIsSelected = true;
 
             SetVisiblePeopleStartingFrom (0);
         }
@@ -421,7 +431,7 @@ namespace Lister.ViewModels
             _allListMustBe = false;
 
             _visibleHeightStorage = _oneHeight * Math.Min (_maxVisibleCount, personCount);
-            EntirePersonListIsSelected = false;
+            EntireIsSelected = false;
             PersonsScrollValue = 0;
 
             _focusedNumber = 0;
@@ -448,7 +458,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void SetInvolvedPeople ( List<VisiblePerson> involvedPeople )
+        internal void SetInvolvedPeople ( List <VisiblePerson> involvedPeople )
         {
             SetSelectedToNull ();
             InvolvedPeople = involvedPeople;
@@ -496,7 +506,8 @@ namespace Lister.ViewModels
         {
             if ( ( InvolvedPeople != null ) && ( InvolvedPeople.Count > 0 ) )
             {
-                bool areReady = ( SinglePersonIsSelected || EntirePersonListIsSelected ) && ( ChosenTemplate != null );
+                bool areReady = ( SinglePersonIsSelected || EntireIsSelected ) 
+                                && ( ChosenTemplate != null )   &&   !_choiceIsAbsent;
 
                 if ( areReady )
                 {
@@ -513,7 +524,7 @@ namespace Lister.ViewModels
         internal void ToZeroPersonSelection ()
         {
             SinglePersonIsSelected = false;
-            EntirePersonListIsSelected = false;
+            EntireIsSelected = false;
 
             AllAreReady = false;
         }
@@ -567,8 +578,12 @@ namespace Lister.ViewModels
         internal void RecoverVisiblePeople ()
         {
             SetSelectedToNull ();
+
+            _choiceIsAbsent = true;
+            SinglePersonIsSelected = false;
+
             _scrollValue = _scrollingScratch;
-            List<VisiblePerson> recovered = new List<VisiblePerson> ();
+            List <VisiblePerson> recovered = new List <VisiblePerson> ();
 
             foreach ( VisiblePerson person   in   PeopleStorage )
             {
@@ -577,6 +592,7 @@ namespace Lister.ViewModels
             }
 
             InvolvedPeople = recovered;
+            EntireIsSelected = false;
         }
 
 

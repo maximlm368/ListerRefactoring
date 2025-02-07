@@ -1,11 +1,14 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -134,6 +137,22 @@ namespace Lister.Views
 
             personChoosing.AdjustComboboxWidth (widthDifference, true);
             personChoosing.CloseCustomCombobox ();
+
+            badgeBuilding.ChangeSize (widthDifference);
+
+            ChangeSimpleShadow (widthDifference);
+        }
+
+
+        private void ChangeSimpleShadow ( double widthDifference )
+        {
+            var logicChildren = simpleShadow.GetVisualChildren ();
+
+            foreach ( var child   in   logicChildren )
+            {
+                Rectangle rectangle = ( Rectangle ) child;
+                rectangle.Width -= widthDifference;
+            }
         }
 
 
@@ -168,6 +187,9 @@ namespace Lister.Views
 
             scene.workArea.Width -= widthDifference;
             scene.workArea.Height -= heightDifference;
+
+            ChangeSimpleShadow (widthDifference);
+            badgeBuilding.ChangeSize (widthDifference);
 
             personChoosing.AdjustComboboxWidth (widthDifference, _widthIsChanged);
         }

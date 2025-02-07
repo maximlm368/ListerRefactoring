@@ -109,13 +109,12 @@ namespace Lister.ViewModels
             {
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
 
-                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
-                                                              , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                     , _correctnessWidthLimit, _filterIsOpen));
 
                 if ( index == 0 ) 
                 {
+                    BeingProcessedBadge.Hide ();
                     BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
                 }
             }
@@ -188,6 +187,7 @@ namespace Lister.ViewModels
                 _visibleRangeEnd--;
             }
 
+            BeingProcessedBadge.Hide ();
             BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
             SetToCorrectScale (BeingProcessedBadge);
             BeingProcessedBadge.Show ();
@@ -256,6 +256,7 @@ namespace Lister.ViewModels
                 _visibleRangeEnd++;
             }
 
+            BeingProcessedBadge.Hide ();
             BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
             BeingProcessedBadge.Show ();
             SetToCorrectScale (BeingProcessedBadge);
@@ -303,10 +304,8 @@ namespace Lister.ViewModels
             for ( int index = visibleCountBeforeEnd;   index < CurrentVisibleCollection.Count;   index++ )
             {
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
-                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge
-                                                             , _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit
-                                                  , new int [2] { _minCorrectnessTextLength, _maxCorrectnessTextLength }
-                                                  , _filterIsOpen));
+                VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                     , _correctnessWidthLimit, _filterIsOpen));
             }
 
             _numberAmongVisibleIcons = VisibleIcons. Count;
@@ -315,6 +314,7 @@ namespace Lister.ViewModels
 
             BeingProcessedNumber = CurrentVisibleCollection.Count;
             BeingProcessedNumber = GetAppropriateLastNumber ();
+            BeingProcessedBadge.Hide ();
             BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
             BeingProcessedBadge.Show ();
             SetToCorrectScale (BeingProcessedBadge);
@@ -381,7 +381,8 @@ namespace Lister.ViewModels
                 BeingProcessedNumber = destinationNumber;
                 int amongVisibleIconsDestinationNum = destinationNumber - _scrollStepIndex;
                 _numberAmongVisibleIcons = BeingProcessedNumber - _scrollStepIndex;
-                
+
+                BeingProcessedBadge.Hide ();
                 BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
 
                 bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _visibleRange );
