@@ -26,10 +26,6 @@ namespace Lister.Views
         private static SolidColorBrush _comboboxItemBackground;
         private static SolidColorBrush _comboboxItemBorderColor;
 
-        private MainView _parent;
-        private readonly int _inputLimit = 40;
-        private string _previousText;
-        private bool _cursorIsOverPersonList = false;
         private bool _personListIsDropped = false;
         private bool _dropdownButtonIsTapped = false;
         private bool _runnerIsCaptured = false;
@@ -39,7 +35,6 @@ namespace Lister.Views
         private double _shiftScratch = 0;
         private PersonChoosingViewModel _viewModel;
         private TemplateViewModel _chosenTemplate;
-        private string _textBoxText = string.Empty;
         private string _theme;
 
         private static IBrush _currentComboboxItemBackground;
@@ -51,8 +46,8 @@ namespace Lister.Views
         SolidColorBrush _borderFocused = new SolidColorBrush (new Color (255, 4, 111, 255));
         SolidColorBrush _backgroundFocused = new SolidColorBrush (new Color (255, 255, 255, 255));
 
-        SolidColorBrush _borderDisabled = new SolidColorBrush (new Color (255, 219, 202, 174));
-        SolidColorBrush _backgroundDisabled = new SolidColorBrush (new Color (255, 252, 242, 227));
+        //SolidColorBrush _borderDisabled = new SolidColorBrush (new Color (255, 219, 202, 174));
+        //SolidColorBrush _backgroundDisabled = new SolidColorBrush (new Color (255, 252, 242, 227));
 
         IBrush _borderDefault;
         SolidColorBrush _backgroundDefault = new SolidColorBrush (new Color (255, 255, 255, 255));
@@ -63,7 +58,7 @@ namespace Lister.Views
         {
             InitializeComponent ();
 
-            DataContext = App.services.GetRequiredService<PersonChoosingViewModel> ();
+            DataContext = App.services.GetRequiredService <PersonChoosingViewModel> ();
             _viewModel = ( PersonChoosingViewModel ) DataContext;
 
             Loaded += OnLoaded;

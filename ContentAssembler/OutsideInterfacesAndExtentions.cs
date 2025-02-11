@@ -18,7 +18,7 @@
 
     public interface IPeopleSource 
     {
-        public List <Person> GetPersons ( string ? personsFilePath, int gettingLimit );
+        public List <Person> ? GetPersons ( string ? personsFilePath, int gettingLimit );
     }
 
 

@@ -11,51 +11,66 @@ using ExcelDataReader;
 using ExcelDataReader.Core;
 //using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Data;
+using System.IO;
 
 namespace DataGateway
 {
     public class PeopleXlsxSource : IPeopleSource, IRowSource
     {
-        public List <Person> GetPersons ( string ? filePath, int gettingLimit )
+        public List <Person> ? GetPersons ( string ? filePath, int gettingLimit )
         {
             List <Person> result = [];
 
-            using Stream stream = File.OpenRead (filePath);
-            using IExcelDataReader reader = ExcelReaderFactory.CreateReader (stream);
-            int rowCount = reader.RowCount;
-
-            if ( rowCount > gettingLimit ) 
+            if ( filePath == null ) 
             {
                 return null;
             }
 
-            var conf = new ExcelDataSetConfiguration
+            FileInfo fileInfo = new FileInfo (filePath);
+
+            if( fileInfo.Exists )
             {
-                ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
+                using Stream stream = File.OpenRead (filePath);
+                using IExcelDataReader reader = ExcelReaderFactory.CreateReader (stream);
+                int rowCount = reader.RowCount;
+
+                if ( rowCount > gettingLimit )
                 {
-                    UseHeaderRow = false,
+                    return null;
                 }
-            };
 
-            var dataSet = reader.AsDataSet (conf);
-            var dataTable = dataSet.Tables [0];
+                var conf = new ExcelDataSetConfiguration
+                {
+                    ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
+                    {
+                        UseHeaderRow = false,
+                    }
+                };
 
-            for ( var i = 1;   i < dataTable.Rows.Count;   i++ )
+                var dataSet = reader.AsDataSet (conf);
+                var dataTable = dataSet.Tables [0];
+
+                for ( var i = 1;   i < dataTable.Rows.Count;   i++ )
+                {
+                    List<string> rowData = [];
+
+                    for ( var j = 0;   j < dataTable.Columns.Count;   j++ )
+                    {
+                        var data = dataTable.Rows [i] [j];
+                        rowData.Add (data.ToString ());
+                    }
+
+                    Person person = Person.Create (rowData.ToArray ());
+
+                    if ( person != null )
+                    {
+                        result.Add (person);
+                    }
+                }
+            }
+            else
             {
-                List<string> rowData = [];
-
-                for ( var j = 0;   j < dataTable.Columns.Count;   j++ )
-                {
-                    var data = dataTable.Rows [i] [j];
-                    rowData.Add (data.ToString ());
-                }
-
-                Person person = Person.Create (rowData.ToArray ());
-
-                if ( person != null )
-                {
-                    result.Add (person);
-                }
+                return null; 
             }
 
             return result;
@@ -106,66 +121,53 @@ namespace DataGateway
         public PeopleCsvSource () { }
 
 
-        public List <Person> GetPersons ( string ? filePath, int gettingLimit )
+        public List <Person> ? GetPersons ( string ? filePath, int gettingLimit )
         {
             List <Person> result = [];
 
             Encoding encoding = Encoding.GetEncoding (1251);
-            using StreamReader reader = new StreamReader (filePath, encoding, true);
-            string line = string.Empty;
-            char separator = ';';
 
-            int counter = 0;
-
-            while ( ( line = reader.ReadLine () ) != null )
+            if ( filePath == null ) 
             {
-                string [] parts = line.Split (separator, StringSplitOptions.TrimEntries);
+                return null;
+            }
 
-                Person person = Person.Create (parts);
+            FileInfo fileInfo = new FileInfo (filePath);
 
-                if ( person != null ) 
+            if( fileInfo.Exists )
+            {
+                using StreamReader reader = new StreamReader (filePath, encoding, true);
+                string line = string.Empty;
+                char separator = ';';
+
+                int counter = 0;
+
+                while ( ( line = reader.ReadLine () ) != null )
                 {
-                    result.Add (person);
-                }
+                    string [] parts = line.Split (separator, StringSplitOptions.TrimEntries);
 
-                counter++;
+                    Person person = Person.Create (parts);
 
-                if ( counter > gettingLimit ) 
-                {
-                    return null;
+                    if ( person != null )
+                    {
+                        result.Add (person);
+                    }
+
+                    counter++;
+
+                    if ( counter > gettingLimit )
+                    {
+                        return null;
+                    }
                 }
+            }
+            else
+            { 
+                return null; 
             }
 
             return result;
         }
-
-
-        //public bool CheckSize ( string? filePath, int limit ) 
-        //{
-        //    if ( string.IsNullOrWhiteSpace (filePath) )
-        //    {
-        //        return false;
-        //    }
-
-        //    Encoding encoding = Encoding.GetEncoding (1251);
-        //    using StreamReader reader = new StreamReader (filePath, encoding, true);
-        //    string line = string.Empty;
-        //    char separator = ';';
-
-        //    int counter = 0;
-
-        //    while ( ( line = reader.ReadLine () ) != null )
-        //    {
-        //        counter++;
-
-        //        if ( counter > limit )
-        //        {
-        //            return false;
-        //        }
-        //    }
-
-        //    return true;
-        //}
     }
 
 

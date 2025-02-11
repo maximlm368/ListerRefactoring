@@ -9,7 +9,8 @@
 	
 	"PersonChoosingViewModel":
 	{
-		"placeHolder":"Весь список",
+		"placeHolder": "Весь список",
+		"inputLimit": 50,
 		
 		"entireListColor":
 		[
@@ -149,47 +150,46 @@
 		"emptyPages":"Список страниц не может быть пустым",
 		"emptyPrinters":"Список принтеров не может быть пустым"
 	},
-	
-	"EditorViewModel":
-	{
-		"extentionToolTip":"Развернуть панель",
-		"shrinkingToolTip":"Свернуть панель",
-		"correctnessIcon":"Icons/GreenCheckMarker.jpg",
-		"incorrectnessIcon":"Icons/RedCross.png",
-		"allFilter":"Все",
-		"incorrectFilter":"С ошибками",
-		"correctFilter":"Без ошибок",
-		"allTip":"Все бейджи",
-		"correctTip":"Бейджи без ошибок",
-		"incorrectTip":"Бейджи с ошибками",
-		
-		"focusedFontColor":
-		[
+
+	"EditorViewModel": {
+		"extentionToolTip": "Развернуть панель",
+		"shrinkingToolTip": "Свернуть панель",
+		"correctnessIcon": "Icons/GreenCheckMarker.jpg",
+		"incorrectnessIcon": "Icons/RedCross.png",
+		"allFilter": "Все",
+		"incorrectFilter": "С ошибками",
+		"correctFilter": "Без ошибок",
+		"allTip": "Все бейджи",
+		"correctTip": "Бейджи без ошибок",
+		"incorrectTip": "Бейджи с ошибками",
+
+		"focusedFontColor": [
 			255,
 			255,
 			255
 		],
-		
-		"releasedFontColor":
-		[
+
+		"releasedFontColor": [
 			175,
 			175,
 			175
 		],
-		
-		"focusedFontBorderColor":
-		[
+
+		"focusedFontBorderColor": [
 			50,
 			50,
 			50
 		],
-		
-		"releasedFontBorderColor":
-		[
+
+		"releasedFontBorderColor": [
 			150,
 			150,
 			150
 		]
+	},
+
+	"WaitingViewModel": {
+		"gifName": "Icons/Loading.gif"
 	}
 }
 

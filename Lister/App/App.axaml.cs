@@ -10,7 +10,6 @@ using Lister.Views;
 using Splat;
 using Avalonia.Styling;
 using Avalonia.Controls;
-//using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Runtime.InteropServices;
 using Avalonia.Media;
 using static System.Net.Mime.MediaTypeNames;
@@ -30,24 +29,21 @@ public partial class App : Avalonia.Application
 {
     private static bool _runningOnWindow = false;
     private static bool _runningOnLinux = false;
+    private MainView _mainView;
 
-    public static MainWindow MainWindow { get; private set; }
 
     public static string JsonSchemeFolderName { get; private set; }
-    public static string ResourceFolderName { get; private set; }
-    public static string ResourceUriType { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
-    public static string ResourceDirectoryUri { get; private set; }
     public static string ImagesUri { get; private set; }
     public static string ConfigPath { get; private set; }
+
+
+
+    public static MainWindow MainWindow { get; private set; }
+    public static string ResourceFolderName { get; private set; }
+    public static string ResourceUriType { get; private set; }
+    public static string ResourceDirectoryUri { get; private set; }
     public static string OsName { get; private set; }
-
-    private MainView _mainView;
-    private MainViewModel _mainViewModel;
-    
-
-    public static IResourceDictionary AvailableResources { get; private set; }
-
     public static ServiceProvider services;
 
 
@@ -105,7 +101,6 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = splashWindow;
             splashWindow.Show ();
 
-            //await InstallFonts ();
             await BadgeAppearenceProvider.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
                                                , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
 

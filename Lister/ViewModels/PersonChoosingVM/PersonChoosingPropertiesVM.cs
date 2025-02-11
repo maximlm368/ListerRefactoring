@@ -194,11 +194,11 @@ namespace Lister.ViewModels
 
                 if ( ChosenPerson == null )
                 {
-                    SetEntireListChoosingConsequences ();
+                    SetEntireListChosenState ();
                 }
                 else
                 {
-                    SetPersonChoosingConsequences ();
+                    SetPersonChosenState ();
                 }
             }
         }

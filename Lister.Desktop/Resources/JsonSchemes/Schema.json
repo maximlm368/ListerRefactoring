@@ -201,24 +201,22 @@
 		}
       },
 	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-	  "default": {
-	  		"Width" : 210,
-			"Height" : 33,
-			"TopOffset" : 60,
-			"LeftOffset" : 130,
-			"Alignment" : "Right",
-			"FontSize" : 24,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
+		"default": {
+			"Width": 210,
+			"Height": 33,
+			"TopOffset": 60,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 24,
+			"FontName": "Century Gothic",
+			"Foreground": {
 				"Red": 0,
 				"Green": 0,
 				"Blue": 0
 			},
 			"FontWeight": "Bold",
 			"IsSplitable": false
- 	    }
+		}
     },
 	
 	"FirstName" : {
@@ -309,24 +307,22 @@
 		}
       },
 	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-	  "default": {
+		"default": {
 			"Width": 210,
 			"Height": 21,
 			"TopOffset": 92,
 			"LeftOffset": 130,
 			"Alignment": "Right",
 			"FontSize": 14,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
+			"FontName": "Century Gothic",
+			"Foreground": {
 				"Red": 0,
 				"Green": 0,
 				"Blue": 0
 			},
 			"FontWeight": "Bold",
 			"IsSplitable": false
- 	    }
+		}
     },
 	
 	"PatronymicName" : {
@@ -417,24 +413,22 @@
 		}
       },
 	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-	  "default": {
+		"default": {
 			"Width": 210,
 			"Height": 21,
 			"TopOffset": 92,
 			"LeftOffset": 130,
 			"Alignment": "Right",
 			"FontSize": 14,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
+			"FontName": "Century Gothic",
+			"Foreground": {
 				"Red": 0,
 				"Green": 0,
 				"Blue": 0
 			},
 			"FontWeight": "Bold",
 			"IsSplitable": false
- 	    }
+		}
     },
 	
 	"Post" : {
@@ -525,24 +519,22 @@
 		}
       },
 	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-	  "default": {
+		"default": {
 			"Width": 210,
 			"Height": 17,
 			"TopOffset": 122,
 			"LeftOffset": 130,
 			"Alignment": "Right",
 			"FontSize": 10,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
+			"FontName": "Century Gothic",
+			"Foreground": {
 				"Red": 0,
 				"Green": 0,
 				"Blue": 0
 			},
 			"FontWeight": "Bold",
 			"IsSplitable": true
- 	    }
+		}
     },
 	
 	"Department" : {
@@ -633,24 +625,22 @@
 		}
       },
 	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-	  "default": {
+		"default": {
 			"Width": 210,
 			"Height": 17,
 			"TopOffset": 146,
 			"LeftOffset": 130,
 			"Alignment": "Right",
 			"FontSize": 10,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
+			"FontName": "Century Gothic",
+			"Foreground": {
 				"Red": 0,
 				"Green": 0,
 				"Blue": 0
 			},
 			"FontWeight": "Bold",
 			"IsSplitable": true
- 	    }
+		}
     },
 	
 	"UnitedTextBlocks" : {
@@ -779,25 +769,23 @@
 					},
 					
 					"required":["United", "Name", "Number", "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName" 
-					            , "Foreground", "FontWeight", "IsSplitable" ],			
-					"default":{
-					
+					            , "Foreground", "FontWeight", "IsSplitable" ],
+					"default": {
+
 						"United": [
-						  "FirstName",
-						  "PatronymicName"
+							"FirstName",
+							"PatronymicName"
 						],
 						"Name": "FirstAndPatronymic",
-						"Number":1,
+						"Number": 1,
 						"Width": 210,
 						"Height": 21,
 						"TopOffset": 92,
 						"LeftOffset": 130,
 						"Alignment": "Right",
 						"FontSize": 14,
-						"FontFile": "Kramola.ttf",
-						"FontName": "Kramola",
-						"Foreground": 
-						{
+						"FontName": "Century Gothic",
+						"Foreground": {
 							"Red": 0,
 							"Green": 0,
 							"Blue": 0
@@ -813,28 +801,28 @@
 		    
 			"Items":
 			[
-				{"United": [
-				  "FirstName",
-				  "PatronymicName"
-				],
-				"Name": "FirstAndPatronymic",
-				"Number":1,
-				"Width": 210,
-				"Height": 21,
-				"TopOffset": 92,
-				"LeftOffset": 130,
-				"Alignment": "Right",
-				"FontSize": 14,
-				"FontFile": "Kramola.ttf",
-				"FontName": "Kramola",
-				"Foreground": 
 				{
-					"Red": 0,
-					"Green": 0,
-					"Blue": 0
-				},
-				"FontWeight": "Bold",
-				"IsSplitable": false}
+					"United": [
+						"FirstName",
+						"PatronymicName"
+					],
+					"Name": "FirstAndPatronymic",
+					"Number": 1,
+					"Width": 210,
+					"Height": 21,
+					"TopOffset": 92,
+					"LeftOffset": 130,
+					"Alignment": "Right",
+					"FontSize": 14,
+					"FontName": "Century Gothic",
+					"Foreground": {
+						"Red": 0,
+						"Green": 0,
+						"Blue": 0
+					},
+					"FontWeight": "Bold",
+					"IsSplitable": false
+				}
 			]
 		}
     }

@@ -49,12 +49,8 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton (typeof (PageNavigationZoomerViewModel), NavigationZoomerViewModelFactory);
         collection.AddSingleton (typeof (PrintDialogViewModel), PrintDialogViewModelFactory);
         collection.AddSingleton (typeof (EditorViewModelArgs), EditorViewModelArgsFactory);
-        collection.AddSingleton <BadgeViewModel> ();
-        collection.AddSingleton <ImageViewModel> ();
-        collection.AddSingleton <PageViewModel> ();
         collection.AddSingleton <BadgesBuildingViewModel> ();
-        collection.AddSingleton <TextLineViewModel> ();
-        collection.AddSingleton <WaitingViewModel> ();
+        collection.AddSingleton (typeof (WaitingViewModel), WaitingViewModelFactory);
         collection.AddSingleton <LargeMessageViewModel> ();
     }
 
@@ -170,6 +166,9 @@ public static class ServiceCollectionExtensions
 
         SolidColorBrush entireListColor = GetColor ("PersonChoosingViewModel", "entireListColor");
 
+        int inputLimit =
+            GetterFromJson.GetSectionIntValue (new List<string> { "PersonChoosingViewModel", "inputLimit" }, App.ConfigPath);
+
         SolidColorBrush incorrectTemplateColor = GetColor ("PersonChoosingViewModel", "incorrectTemplateColor");
 
         SolidColorBrush defaultBackgroundColor = GetColor ("PersonChoosingViewModel", "defaultBackgroundColor");
@@ -199,7 +198,7 @@ public static class ServiceCollectionExtensions
         PersonChoosingUserControl.SetComboboxHoveredItemColors (hoveredBackgroundColor, hoveredBorderColor);
         VisiblePerson.SetColors (defaultColors, focusedColors, selectedColors);
 
-        return new PersonChoosingViewModel (placeHolder, entireListColor, incorrectTemplateColor
+        return new PersonChoosingViewModel (placeHolder, entireListColor, inputLimit, incorrectTemplateColor
                                                   , defaultColors, focusedColors, selectedColors);
     }
 
@@ -355,6 +354,15 @@ public static class ServiceCollectionExtensions
         result.releasedFontSizeBorderColor = releasedFontBorderColor;
 
         return result;
+    }
+
+
+    private static WaitingViewModel WaitingViewModelFactory ( IServiceProvider serviceProvider )
+    {
+        string gifName =
+        GetterFromJson.GetSectionStrValue (new List<string> { "WaitingViewModel", "gifName" }, App.ConfigPath);
+
+        return new WaitingViewModel(gifName);
     }
 }
 

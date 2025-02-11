@@ -37,7 +37,7 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private readonly int _inputLimit = 50;
+        private readonly int _inputLimit;
         private bool _entireSelectionIsSet;
 
         private bool _fileNotFound;
@@ -51,10 +51,12 @@ namespace Lister.ViewModels
         }
 
 
-        public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor
+        public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor, int inputLimit
                                         , SolidColorBrush incorrectTemplateColor, List <SolidColorBrush> defaultColors
                                         , List <SolidColorBrush> focusedColors, List <SolidColorBrush> selectedColors )
         {
+            _inputLimit = inputLimit;
+
             _placeHolder = placeHolder;
             _entireListColor = entireListColor;
             _incorrectTemplateForeground = incorrectTemplateColor;
@@ -150,23 +152,12 @@ namespace Lister.ViewModels
                 {
                     ChosenPerson = null;
                 }
-
-                if ( _choiceIsAbsent ) 
-                {
-                    EntireIsSelected = false;
-                }
-
-                //PlaceHolder = _placeHolder;
             }
             else
             {
-                //if ( !_chosenPersonIsSetInSetter )
-                //{
-                //    ChosenPerson = _focused.Person;
-                //}
-                
                 ChosenPerson = _focused.Person;
                 PlaceHolder = ChosenPerson.StringPresentation;
+                _choiceIsAbsent = false;
 
                 _selected = _focused;
                 _selected.IsSelected = true;
@@ -181,19 +172,32 @@ namespace Lister.ViewModels
 
         internal void HideDropListWithoutChange ()
         {
-            if ( ( InvolvedPeople. Count == 0 )   &&   ( PeopleStorage. Count > 0 ) )
+            if ( (( InvolvedPeople. Count == 0 )   &&   ( PeopleStorage. Count > 0 ))   ||   _choiceIsAbsent )
             {
                 RecoverVisiblePeople ();
                 ShowDropDown ();
-                EntireFontWeight = FontWeight.Bold;
-                PlaceHolder = _placeHolder;
                 ChosenPerson = null;
+
+                ToStartState ();
             }
 
             DropDownOpacity = 0;
             VisibleHeight = 0;
             FirstItemHeight = 0;
             FirstIsVisible = false;
+        }
+
+
+        private void ToStartState ()
+        {
+            SetEntireListChosenState ();
+            PlaceHolder = _placeHolder;
+
+            EntireBackgroundColor = _focusedBackgroundColor;
+            EntireForegroundColor = _selectedForegroundColor;
+            EntireFontWeight = FontWeight.Bold;
+            _focusedNumber = -1;
+            _choiceIsAbsent = false;
         }
 
 
@@ -239,7 +243,6 @@ namespace Lister.ViewModels
 
             PeopleStorage = peopleStorage;
             InvolvedPeople = involvedPeople;
-            SinglePersonIsSelected = false;
             ChosenPerson = null;
         }
 
@@ -314,14 +317,14 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetPersonChoosingConsequences ()
+        private void SetPersonChosenState ()
         {
             EntireIsSelected = false;
             SinglePersonIsSelected = true;
         }
 
 
-        private void SetEntireListChoosingConsequences ()
+        private void SetEntireListChosenState ()
         {
             EntireIsSelected = true;
             SinglePersonIsSelected = false;
@@ -506,8 +509,7 @@ namespace Lister.ViewModels
         {
             if ( ( InvolvedPeople != null ) && ( InvolvedPeople.Count > 0 ) )
             {
-                bool areReady = ( SinglePersonIsSelected || EntireIsSelected ) 
-                                && ( ChosenTemplate != null )   &&   !_choiceIsAbsent;
+                bool areReady = ( SinglePersonIsSelected || EntireIsSelected )   &&   ( ChosenTemplate != null );
 
                 if ( areReady )
                 {
@@ -521,7 +523,7 @@ namespace Lister.ViewModels
         }
 
 
-        internal void ToZeroPersonSelection ()
+        private void ToZeroPersonSelection ()
         {
             SinglePersonIsSelected = false;
             EntireIsSelected = false;

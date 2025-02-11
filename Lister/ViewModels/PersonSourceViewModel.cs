@@ -208,6 +208,11 @@ namespace Lister.ViewModels
                     return;
                 }
             }
+            else 
+            {
+                SourceFilePath = null;
+                return;
+            }
 
             XlsxFileState fileState = CheckWhetherCorrectIfXSLX (path);
 

@@ -182,7 +182,7 @@ namespace ExtentionsAndAuxiliary
 
         public static int ParseToInt ( string parsable )
         {
-            if (( parsable == null )   ||   parsable.ContainsNotDigit()) 
+            if ( string.IsNullOrEmpty(parsable)   ||   parsable.ContainsNotDigit()   ||   parsable.HasZeroStart () ) 
             {
                 return 0;
             }
@@ -193,7 +193,7 @@ namespace ExtentionsAndAuxiliary
 
         public static short ParseToShort ( string parsable )
         {
-            if ( ( parsable == null )   ||   parsable.ContainsNotDigit () )
+            if ( string.IsNullOrEmpty (parsable)   ||   parsable.ContainsNotDigit ()   ||   parsable.HasZeroStart () )
             {
                 return 0;
             }
@@ -204,7 +204,7 @@ namespace ExtentionsAndAuxiliary
 
         public static byte ParseToByte ( string parsable )
         {
-            if ( (parsable == null)   ||   parsable.ContainsNotDigit () )
+            if ( string.IsNullOrEmpty (parsable)   ||   parsable.ContainsNotDigit ()   ||   parsable.HasZeroStart () )
             {
                 return 0;
             }
@@ -218,6 +218,25 @@ namespace ExtentionsAndAuxiliary
             for ( int index = 0;   index < parsable.Length;   index++ )
             {
                 if ( ! digits.Contains (parsable [index]) )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        private static bool HasZeroStart ( this string parsable )
+        {
+            if ( (parsable == null)   ||   (parsable.Length == 0) ) 
+            {
+                return false;
+            }
+
+            for ( int index = 0;   index < 1;   index++ )
+            {
+                if ( parsable [index] == '0' )
                 {
                     return true;
                 }

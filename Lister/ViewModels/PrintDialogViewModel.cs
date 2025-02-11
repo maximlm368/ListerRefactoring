@@ -512,10 +512,6 @@ namespace Lister.ViewModels
                         {
                             throw new ParsingException ("Некорректный интервал");
                         }
-                        //else
-                        //{
-                        //    throw new TransparentForTypingParsingException ("Некорректный интервал");
-                        //}
                     }
 
                     if ( isGlyphLast )
@@ -545,10 +541,6 @@ namespace Lister.ViewModels
                         {
                             throw new ParsingException ("Некорректный интервал");
                         }
-                        //else
-                        //{
-                        //    throw new TransparentForTypingParsingException ("Некорректный интервал");
-                        //}
                     }
 
                     if ( isGlyphLast )
@@ -754,25 +746,13 @@ namespace Lister.ViewModels
             PagesError = string.Empty;
 
             _printingAdjusting.Cancelled = true;
-            
-            //HandleDialogClosing ();
             NeedClose = true;
-
-            //_view.Close ();
         }
-
-
-        //private void HandleDialogClosing ()
-        //{
-        //    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-        //    waitingVM.HandleDialogClosing ();
-        //}
 
 
         public void Prepare ()
         {
             ObservableCollection <PrinterPresentation> printersList = null;
-            //SelectedIndex = -1;
 
             if ( App.OsName == "Windows" )
             {

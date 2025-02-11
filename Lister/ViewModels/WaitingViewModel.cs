@@ -21,6 +21,7 @@ namespace Lister.ViewModels
         private double _canvasShownVerticalMargin = -494;
         private double _imageHeight = 300;
 
+        private string _gifName;
         private AnimatedImageSource _gifSource;
         private AnimatedImageSource ? gS;
         public AnimatedImageSource ? GifSource
@@ -113,8 +114,9 @@ namespace Lister.ViewModels
         }
 
 
-        public WaitingViewModel () 
+        public WaitingViewModel ( string gifName ) 
         {
+            _gifName = gifName;
             Margin = new Thickness (0, _canvasHiddenVerticalMargin);
         }
 
@@ -145,7 +147,7 @@ namespace Lister.ViewModels
 
             if ( _gifSource == null )
             {
-                string waintingImageIriString = App.ResourceDirectoryUri + "Icons/Loading.gif";
+                string waintingImageIriString = App.ResourceDirectoryUri + _gifName;
                 _gifSource = new AnimatedImageSourceUri (new Uri (waintingImageIriString));
             }
 
