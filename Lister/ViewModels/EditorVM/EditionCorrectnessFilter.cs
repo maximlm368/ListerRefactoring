@@ -52,8 +52,6 @@ namespace Lister.ViewModels
         private readonly int _wideMinCorrectnessTextLength = 15;
         private readonly int _wideMaxCorrectnessTextLength = 21;
 
-        private string _correctnessIcon;
-        private string _incorrectnessIcon;
         private FilterChoosing _filterState = FilterChoosing.All;
         private double _correctnessWidthLimit;
         private int _minCorrectnessTextLength;
@@ -290,7 +288,6 @@ namespace Lister.ViewModels
             VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
             VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit);
             ActiveIcon = VisibleIcons [0];
-            FilterState = null;
         }
 
 
@@ -321,8 +318,6 @@ namespace Lister.ViewModels
 
             if ( firstExistingCommonNumber > -1 )
             {
-                string correctnessIcon = App.ResourceFolderName + _correctnessIcon;
-                FilterState = ImageHelper.LoadFromResource (correctnessIcon);
                 ActiveIcon = VisibleIcons [0];
                 BeingProcessedBadge = CorrectNumbered.ElementAt (0);
             }
@@ -356,8 +351,6 @@ namespace Lister.ViewModels
 
             if ( firstExistingCommonNumber > -1 )
             {
-                string correctnessIcon = App.ResourceFolderName + _incorrectnessIcon;
-                FilterState = ImageHelper.LoadFromResource (correctnessIcon);
                 ActiveIcon = VisibleIcons [0];
                 BeingProcessedBadge = IncorrectNumbered.ElementAt (0);
             }

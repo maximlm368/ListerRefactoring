@@ -183,18 +183,12 @@ public class ConverterToPdf
             string text = textLine.Content;
 
             float paddingLeft = ( float ) textLine.LeftOffset;
-            float paddingTop = ( float ) (textLine.TopOffset + 1.5*(textLine.Padding.Top));
+            float paddingTop = ( float ) ( textLine.TopOffset + 2 * ( textLine.Padding.Top ) );
 
             string fontName = textLine.FontFamily.Name;
             Avalonia.Media.FontWeight fontWeight = textLine.FontWeight;
             float fontSize = ( float ) textLine.FontSize;
             float maxWidth = ( float ) textLine.Width;
-
-            byte red = textLine.Red;
-            byte green = textLine.Green;
-            byte blue = textLine.Blue;
-
-            //string fontFilePath = App.WorkDirectoryPath + App.ResourceFolderName + textLine.FontFile;
 
             TextBlockDescriptor textBlock = layers
             .Layer ()
@@ -203,7 +197,7 @@ public class ConverterToPdf
             .Text (text)
             .ClampLines (1, ".")
             .FontFamily (fontName)
-            .FontColor (Pdf.Color.FromARGB (255, red, green, blue))
+            .FontColor (Pdf.Color.FromHex (textLine.DataSource.ForegroundHexStr))
             .FontSize (fontSize);
 
             if ( fontWeight == Avalonia.Media.FontWeight.Thin )
@@ -256,14 +250,22 @@ public class ConverterToPdf
                     ( canvas, size ) =>
                     {
                         using SKPaint paint = new SKPaint ();
-                        paint.Color = new SKColor (shape.Red, shape.Green, shape.Blue, 255);
 
-                        if ( shape.Kind == ShapeKind.rectangle )
+                        SKColor color;
+
+                        if ( ! SKColor.TryParse (shape.FillColorHexStr, out color) ) 
+                        {
+                            color = new SKColor (0, 0, 0, 255);
+                        }
+
+                        paint.Color = color;
+
+                        if ( shape.Type == ShapeType.rectangle )
                         {
                             canvas.DrawRect (( float ) shape.LeftOffset, ( float ) shape.TopOffset
                                             , ( float ) shape.Width, ( float ) shape.Height, paint);
                         }
-                        else if ( shape.Kind == ShapeKind.ellipse ) 
+                        else if ( shape.Type == ShapeType.ellipse ) 
                         {
                             float centerVerticalCoordinate = ( float ) ( shape.TopOffset + shape.Height / 2 );
                             float centerHorizontalCoordinate = ( float ) ( shape.LeftOffset + shape.Width / 2 );

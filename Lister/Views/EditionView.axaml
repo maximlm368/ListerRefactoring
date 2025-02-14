@@ -16,8 +16,7 @@
 	<StackPanel
 		Name="editionPanel"
 		ZIndex="1"
-		Focusable="True"
-		KeyDown="ToSide">
+		Focusable="True">
 
 		<Grid
 			Name="backBlock"
@@ -895,7 +894,8 @@
 								VerticalAlignment="Center"
 								HorizontalAlignment="Center"
 								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
-								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }">
+								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+								PointerPressed="CaptureBadge">
 
 								<Image
 									Name="backgroundImage"
@@ -904,7 +904,6 @@
 									Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
 									Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
 									VerticalAlignment="Top"
-									KeyDown="ToSide"
 									Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
 
 								<ItemsControl
@@ -931,8 +930,8 @@
 
 											<Border
 												Background="{Binding   Path = Background,  Mode=OneWay }"
-												BorderThickness="1"
-												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}"
+												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
+												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}"
 												Height="{Binding Path = HeightWithBorder,  Mode=OneWay}">
 
 												<TextBlock
@@ -949,7 +948,6 @@
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
 													PointerExited="SetArrowCursor"
-													KeyDown="ToSide"
 													IsEnabled="True"
 													Text="{Binding   Path = Content,  Mode=OneWay }" />
 
@@ -982,8 +980,9 @@
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
 											<Border
-												BorderThickness="1"
-												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
+												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}"
+												Height="{Binding Path = HeightWithBorder,  Mode=OneWay}">
 												
 												<Image
 													Source = "{Binding   Path = BitMap,  Mode=OneWay }"
@@ -991,8 +990,7 @@
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"
-													KeyDown="ToSide"/>
+													PointerExited="SetArrowCursor"/>
 											</Border>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
@@ -1022,8 +1020,8 @@
 											<Border
 												Width="{Binding  Path = WidthWithBorder,  Mode=OneWay}"
 												Height="{Binding  Path = HeightWithBorder,  Mode=OneWay}"
-												BorderThickness="1"
-												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
+												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}">
 											
 												<Rectangle
 													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
@@ -1033,8 +1031,7 @@
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"
-													KeyDown="ToSide"/>
+													PointerExited="SetArrowCursor"/>
 												</Border>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
@@ -1064,10 +1061,13 @@
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
 											<Border
-												BorderThickness="1"
-												BorderBrush="{Binding  Path = OutLineColor,  Mode=OneWay}">
+												Width="{Binding  Path = WidthWithBorder,  Mode=OneWay}"
+												Height="{Binding  Path = HeightWithBorder,  Mode=OneWay}"
+												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
+												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}">
 											
 												<Ellipse
+													Height="{Binding Path = Height,  Mode=OneWay}"
 													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
 													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
 													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
@@ -1075,8 +1075,7 @@
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"
-													KeyDown="ToSide"/>
+													PointerExited="SetArrowCursor"/>
 												</Border>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>

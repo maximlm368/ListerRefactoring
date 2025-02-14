@@ -37,7 +37,7 @@ namespace Lister.ViewModels
 {
     public partial class PersonChoosingViewModel : ViewModelBase
     {
-        private readonly int _inputLimit;
+        private readonly int _inputLimit = 50;
         private bool _entireSelectionIsSet;
 
         private bool _fileNotFound;
@@ -156,7 +156,7 @@ namespace Lister.ViewModels
             else
             {
                 ChosenPerson = _focused.Person;
-                PlaceHolder = ChosenPerson.StringPresentation;
+                PlaceHolder = ChosenPerson.FullName;
                 _choiceIsAbsent = false;
 
                 _selected = _focused;
@@ -550,7 +550,7 @@ namespace Lister.ViewModels
             {
                 person.IsFocused = false;
 
-                string entireName = person.Person.StringPresentation;
+                string entireName = person.Person.FullName;
 
                 if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
                 {

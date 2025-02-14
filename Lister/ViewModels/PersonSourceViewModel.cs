@@ -30,9 +30,10 @@ namespace Lister.ViewModels
     {
         private IReadOnlyList<string> _patterns;
         private readonly string _pickerTitle;
-        private readonly string _sourcePathKeeper;
         private readonly string _filePickerTitle;
         private IReadOnlyList<string> _xslxHeaders;
+
+        private string _sourcePathKeeper;
 
         private IUniformDocumentAssembler _uniformAssembler;
         private bool _isFirstTimeLoading = true;
@@ -58,6 +59,7 @@ namespace Lister.ViewModels
             get { return _sourceFilePath; }
             private set
             {
+                _sourcePathKeeper = value;
                 this.RaiseAndSetIfChanged (ref _sourceFilePath, value, nameof (SourceFilePath));
             }
         }
@@ -112,21 +114,23 @@ namespace Lister.ViewModels
         internal string FilePath { get; private set; }
 
 
-        public PersonSourceViewModel ( List<string> args, List<string> patterns, List<string> xslxHeaders, int limit )
+        public PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns
+                                                                    , List<string> xslxHeaders, int limit, string sourceKeeper )
         {
-            _pickerTitle = args [0];
-            _sourcePathKeeper = args [1];
-            _filePickerTitle = args [2];
+            _pickerTitle = pickerTitle;
+            _filePickerTitle = filePickerTitle;
 
             _patterns = patterns;
             _xslxHeaders = xslxHeaders;
             personsLimitForSource = limit;
 
+            _sourcePathKeeper = sourceKeeper;
+
             _uniformAssembler = App.services.GetRequiredService<IUniformDocumentAssembler> ();
         }
 
 
-        internal void OnLoaded ( )
+        internal void OnLoadedq ( )
         {
             if ( !_isFirstTimeLoading )
             {
@@ -155,6 +159,26 @@ namespace Lister.ViewModels
             else
             {
                 File.Create (keeper).Close ();
+                SetPath (null);
+            }
+
+            _isFirstTimeLoading = false;
+        }
+
+
+        internal void OnLoaded ()
+        {
+            if ( !_isFirstTimeLoading )
+            {
+                return;
+            }
+
+            try
+            {
+                SetPath (_sourcePathKeeper);
+            }
+            catch ( IndexOutOfRangeException ex )
+            {
                 SetPath (null);
             }
 
@@ -244,7 +268,7 @@ namespace Lister.ViewModels
         }
 
 
-        private void SavePath ()
+        private void SavePathq ()
         {
             string workDirectory = @"./";
             DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
@@ -258,6 +282,12 @@ namespace Lister.ViewModels
                 lines.Add (SourceFilePath);
                 File.WriteAllLines (keeperPath, lines);
             }
+        }
+
+
+        private void SavePath ()
+        {
+            SetterInJson.WritePersonSource ( App.ConfigPath, SourceFilePath );
         }
 
 

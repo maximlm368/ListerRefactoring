@@ -17,8 +17,8 @@ namespace Lister.Extentions
                 return 0;
             }
 
-            string xStringPresentation = x.BadgeModel.Person.StringPresentation;
-            string yStringPresentation = y.BadgeModel.Person.StringPresentation;
+            string xStringPresentation = x.BadgeModel.Person.FullName;
+            string yStringPresentation = y.BadgeModel.Person.FullName;
 
             int res = string.Compare (xStringPresentation, yStringPresentation);
 

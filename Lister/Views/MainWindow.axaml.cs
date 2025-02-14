@@ -17,6 +17,7 @@ using Avalonia.Styling;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Splat.ModeDetection;
 
 
 namespace Lister.Views;
@@ -69,6 +70,7 @@ public partial class MainWindow : Window
 
         this.PointerReleased += ReleaseCaptured;
         this.PositionChanged += HandlePositionChange;
+        PointerMoved += Moved;
 
         Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
@@ -151,11 +153,15 @@ public partial class MainWindow : Window
 
     internal void ReleaseCaptured ( object sender, PointerReleasedEventArgs args )
     {
+        PointerPoint point = args.GetCurrentPoint (sender as Control);
+        double x = point.Position.X;
+        double y = point.Position.Y;
+
         MainView mainView = Content  as  MainView;
 
         if ( mainView != null )
         {
-            mainView.ReleaseRunner ();
+            mainView.ReleaseCaptured ();
         }
         else 
         {
@@ -163,7 +169,27 @@ public partial class MainWindow : Window
 
             if (editorView != null) 
             {
-                editorView.ReleaseCaptured ();
+                editorView.ReleaseCaptured ( );
+            }
+        }
+    }
+
+
+    internal void Moved ( object sender, PointerEventArgs args )
+    {
+        MainView mainView = Content as MainView;
+
+        if ( mainView != null )
+        {
+            mainView.MovePage (args);
+        }
+        else
+        {
+            BadgeEditorView editorView = Content as BadgeEditorView;
+
+            if ( editorView != null )
+            {
+                editorView.MoveBadge (args);
             }
         }
     }

@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
 
         collection.AddSingleton (typeof (IBadgeAppearenceProvider), BadgeAppearenceFactory);
-        collection.AddSingleton (typeof (IBadLineColorProvider), BadLineFactory);
+        collection.AddSingleton (typeof (IMemberColorProvider), BadLineFactory);
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
         collection.AddSingleton (typeof (PersonChoosingViewModel), PersonChoosingViewModelFactory);
@@ -65,11 +65,11 @@ public static class ServiceCollectionExtensions
     }
 
 
-    private static IBadLineColorProvider BadLineFactory ( IServiceProvider serviceProvider )
+    private static IMemberColorProvider BadLineFactory ( IServiceProvider serviceProvider )
     {
         object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
 
-        IBadLineColorProvider result =
+        IMemberColorProvider result =
              new BadgeAppearenceProvider ();
 
         return result;
@@ -78,33 +78,12 @@ public static class ServiceCollectionExtensions
 
     private static MainViewModel MainViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string suggestedName =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "pdfFileName" }, App.ConfigPath);
-
-        string saveTitle =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "saveTitle" }, App.ConfigPath);
-
-        string incorrectXSLX =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "incorrectXSLX" }, App.ConfigPath);
-
-        string limitIsExhaustedMessage =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "limitIsExhaustedMessage" }, App.ConfigPath);
-
-        string fileIsOpenMessage =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "fileIsOpenMessage" }, App.ConfigPath);
-
-        string fileIsTooBigMessage =
-        GetterFromJson.GetSectionStrValue (new List<string> { "MainViewModel", "fileIsTooBig" }, App.ConfigPath);
-
-        IEnumerable<IConfigurationSection> sections =
-        GetterFromJson.GetChildren (new List<string> { "MainViewModel", "patterns" }, App.ConfigPath);
-
-        List<string> patterns = new ();
-
-        foreach ( IConfigurationSection section in sections )
-        {
-            patterns.Add (section.Value);
-        }
+        string suggestedName = MainViewConfigs.pdfFileName;
+        string saveTitle = MainViewConfigs.saveTitle;
+        string incorrectXSLX = MainViewConfigs.incorrectXSLX;
+        string limitIsExhaustedMessage = MainViewConfigs.limitIsExhaustedMessage;
+        string fileIsOpenMessage = MainViewConfigs.fileIsOpenMessage;
+        string fileIsTooBigMessage = MainViewConfigs.fileIsTooBig;
 
         return new MainViewModel (App.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
                                                                       , fileIsOpenMessage, fileIsTooBigMessage);
@@ -113,84 +92,53 @@ public static class ServiceCollectionExtensions
 
     private static PersonSourceViewModel PersonSourceViewModelFactory ( IServiceProvider serviceProvider )
     {
-        List<string> args = new ();
+        string pickerTitle = PersonSourceConfigs.pickerTitle;
+        string filePickerTitle = PersonSourceConfigs.filePickerTitle;
 
-        string pickerTitle =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PersonSourceViewModel", "pickerTitle" }, App.ConfigPath);
-        args.Add (pickerTitle);
+        List<string> headers = PersonSourceConfigs.xlsxHeaderNames.ToList();
+        List<string> patterns = PersonSourceConfigs.sourceExtentions.ToList();
+
+        int badgeLimit = PersonSourceConfigs.badgeCountLimit;
 
         string sourcePathKeeper =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PersonSourceViewModel", "sourcePathKeeper" }, App.ConfigPath);
-        args.Add (sourcePathKeeper);
+        GetterFromJson.GetSectionStrValue (new List<string> { "personSource" }, App.ConfigPath);
 
-        string fileIsOpenMessage =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PersonSourceViewModel", "filePickerTitle" }, App.ConfigPath);
-        args.Add (fileIsOpenMessage);
-
-        IEnumerable<IConfigurationSection> sections =
-            GetterFromJson.GetChildren (new List<string> { "PersonSourceViewModel", "xlsxHeaderNames" }, App.ConfigPath);
-
-        List<string> headers = new ();
-
-        foreach ( IConfigurationSection section in sections )
-        {
-            headers.Add (section.Value);
-        }
-
-        sections =
-            GetterFromJson.GetChildren (new List<string> { "PersonSourceViewModel", "sourceExtentions" }, App.ConfigPath);
-
-        List<string> patterns = new ();
-
-        foreach ( IConfigurationSection section in sections )
-        {
-            patterns.Add (section.Value);
-        }
-
-        int badgeLimit = 0;
-
-        string badgeLimitStr =
-        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "badgeCountLimit" }, App.ConfigPath);
-        
-        badgeLimit = DigitalStringParser.ParseToInt (badgeLimitStr);
-
-        PersonSourceViewModel result = new PersonSourceViewModel (args, patterns, headers, badgeLimit);
+        PersonSourceViewModel result = 
+                    new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper);
         return result;
     }
 
 
     private static PersonChoosingViewModel PersonChoosingViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string placeHolder =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PersonChoosingViewModel", "placeHolder" }, App.ConfigPath);
+        string placeHolder = PersonChoosingConfigs.placeHolder;
 
-        SolidColorBrush entireListColor = GetColor ("PersonChoosingViewModel", "entireListColor");
+        int inputLimit = PersonChoosingConfigs.inputLimit;
 
-        int inputLimit =
-            GetterFromJson.GetSectionIntValue (new List<string> { "PersonChoosingViewModel", "inputLimit" }, App.ConfigPath);
+        SolidColorBrush entireListColor = GetColor (PersonChoosingConfigs.entireListColor);
 
-        SolidColorBrush incorrectTemplateColor = GetColor ("PersonChoosingViewModel", "incorrectTemplateColor");
+        SolidColorBrush incorrectTemplateColor = GetColor (PersonChoosingConfigs.incorrectTemplateColor);
 
-        SolidColorBrush defaultBackgroundColor = GetColor ("PersonChoosingViewModel", "defaultBackgroundColor");
-        SolidColorBrush defaultBorderColor = GetColor ("PersonChoosingViewModel", "defaultBorderColor");
-        SolidColorBrush defaultForegroundColor = GetColor ("PersonChoosingViewModel", "defaultForegroundColor");
+        SolidColorBrush defaultBackgroundColor = GetColor (PersonChoosingConfigs.defaultBackgroundColor);
+        SolidColorBrush defaultBorderColor = GetColor (PersonChoosingConfigs.defaultBorderColor);
+        SolidColorBrush defaultForegroundColor = GetColor (PersonChoosingConfigs.defaultForegroundColor);
 
         List <SolidColorBrush> defaultColors = new List <SolidColorBrush> () { defaultBackgroundColor, defaultBorderColor 
                                                                               , defaultForegroundColor};
 
-        SolidColorBrush focusedBackgroundColor = GetColor ("PersonChoosingViewModel", "focusedBackgroundColor");
-        SolidColorBrush focusedBorderColor = GetColor ("PersonChoosingViewModel", "focusedBorderColor");
+        SolidColorBrush focusedBackgroundColor = GetColor (PersonChoosingConfigs.focusedBackgroundColor);
+        SolidColorBrush focusedBorderColor = GetColor (PersonChoosingConfigs.focusedBorderColor);
 
         List <SolidColorBrush> focusedColors = new List <SolidColorBrush> () { focusedBackgroundColor, focusedBorderColor };
 
-        SolidColorBrush hoveredBackgroundColor = GetColor ("PersonChoosingViewModel", "hoveredBackgroundColor");
-        SolidColorBrush hoveredBorderColor = GetColor ("PersonChoosingViewModel", "hoveredBorderColor");
+        SolidColorBrush hoveredBackgroundColor = GetColor (PersonChoosingConfigs.hoveredBackgroundColor);
+        SolidColorBrush hoveredBorderColor = GetColor (PersonChoosingConfigs.hoveredBorderColor);
 
         List <SolidColorBrush> hoveredColors = new List <SolidColorBrush> () { hoveredBackgroundColor, hoveredBorderColor };
 
-        SolidColorBrush selectedBackgroundColor = GetColor ("PersonChoosingViewModel", "selectedBackgroundColor");
-        SolidColorBrush selectedBorderColor = GetColor ("PersonChoosingViewModel", "selectedBorderColor");
-        SolidColorBrush selectedForegroundColor = GetColor ("PersonChoosingViewModel", "selectedForegroundColor");
+        SolidColorBrush selectedBackgroundColor = GetColor (PersonChoosingConfigs.selectedBackgroundColor);
+        SolidColorBrush selectedBorderColor = GetColor (PersonChoosingConfigs.selectedBorderColor);
+        SolidColorBrush selectedForegroundColor = GetColor (PersonChoosingConfigs.selectedForegroundColor);
 
         List <SolidColorBrush> selectedColors = new List <SolidColorBrush> () { selectedBackgroundColor, selectedBorderColor
                                                                             , selectedForegroundColor };
@@ -203,47 +151,26 @@ public static class ServiceCollectionExtensions
     }
 
 
-    private static SolidColorBrush GetColor ( string forWhat, string colorSectionName )
+    private static SolidColorBrush GetColor ( string hexColor )
     {
-        IEnumerable <IConfigurationSection> sections =
-        GetterFromJson.GetChildren (new List<string> { forWhat, colorSectionName }, App.ConfigPath);
+        Color color;
 
-        List<int> rgb = new () { 100, 100, 100 };
-        int counter = 0;
-
-        foreach ( IConfigurationSection section   in   sections )
+        if ( Color.TryParse(hexColor, out color) ) 
         {
-            int rgbIndex = 0;
-
-            rgbIndex = DigitalStringParser.ParseToInt (section.Value);
-
-            rgb [counter] = rgbIndex;
-            counter++;
-
-            if ( counter >= 3 ) break;
+            return new SolidColorBrush (color);
         }
 
-        return new SolidColorBrush (new Color (255, ( byte ) rgb [0], ( byte ) rgb [1], ( byte ) rgb [2]));
+
+        return new SolidColorBrush (new Color (255, 0, 0, 0));
     }
 
 
     private static SceneViewModel SceneViewModelFactory ( IServiceProvider serviceProvider )
     {
-        int badgeLimit = 0;
-
-        string badgeLimitStr =
-        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "badgeCountLimit" }, App.ConfigPath);
-
-        badgeLimit = DigitalStringParser.ParseToInt (badgeLimitStr);
-
-        string extentionToolTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "extentionToolTip" }, App.ConfigPath);
-
-        string shrinkingToolTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "shrinkingToolTip" }, App.ConfigPath);
-
-        string fileIsOpenMessage =
-        GetterFromJson.GetSectionStrValue (new List<string> { "SceneViewModel", "fileIsOpenMessage" }, App.ConfigPath);
+        int badgeLimit = SceneConfigs.badgeCountLimit;
+        string extentionToolTip = SceneConfigs.extentionToolTip;
+        string shrinkingToolTip = SceneConfigs.shrinkingToolTip;
+        string fileIsOpenMessage = SceneConfigs.fileIsOpenMessage;
 
         return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage);
     }
@@ -251,30 +178,11 @@ public static class ServiceCollectionExtensions
 
     private static PageNavigationZoomerViewModel NavigationZoomerViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string procentSymbol =
-        GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "procentSymbol" }, App.ConfigPath);
+        string procentSymbol = NavigationZoomerConfigs.procentSymbol;
 
-        string maxDepthStr =
-        GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "maxDepth" }, App.ConfigPath);
-        short maxDepth = 3;
+        short maxDepth = NavigationZoomerConfigs.maxDepth;
 
-        maxDepth = DigitalStringParser.ParseToShort (maxDepthStr);
-
-        if ( maxDepth < 1 )
-        {
-            maxDepth = 3;
-        }
-
-        string minDepthStr =
-        GetterFromJson.GetSectionStrValue (new List<string> { "NavigationZoomerViewModel", "minDepth" }, App.ConfigPath);
-        short minDepth = -3;
-
-        minDepth = DigitalStringParser.ParseToShort (minDepthStr);
-
-        if ( minDepth > -1 )
-        {
-            minDepth = -3;
-        }
+        short minDepth = NavigationZoomerConfigs.minDepth;
 
         return new PageNavigationZoomerViewModel (procentSymbol, maxDepth, minDepth);
     }
@@ -282,17 +190,10 @@ public static class ServiceCollectionExtensions
 
     private static PrintDialogViewModel PrintDialogViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string warnImagePath =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PrintDialogViewModel", "warnImagePath" }, App.ConfigPath);
-
-        string emptyCopies =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PrintDialogViewModel", "emptyCopies" }, App.ConfigPath);
-
-        string emptyPages =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PrintDialogViewModel", "emptyPages" }, App.ConfigPath);
-
-        string emptyPrinters =
-        GetterFromJson.GetSectionStrValue (new List<string> { "PrintDialogViewModel", "emptyPrinters" }, App.ConfigPath);
+        string warnImagePath = PrintDialogConfigs.warnImagePath;
+        string emptyCopies = PrintDialogConfigs.emptyCopies;
+        string emptyPages = PrintDialogConfigs.emptyPages;
+        string emptyPrinters = PrintDialogConfigs.emptyPrinters;
 
         return new PrintDialogViewModel (warnImagePath, emptyCopies, emptyPages, emptyPrinters);
     }
@@ -300,47 +201,28 @@ public static class ServiceCollectionExtensions
 
     private static EditorViewModelArgs EditorViewModelArgsFactory ( IServiceProvider serviceProvider )
     {
-        string extentionToolTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "extentionToolTip" }, App.ConfigPath);
+        string extentionToolTip = EditorConfigs.extentionToolTip;
+        string shrinkingToolTip = EditorConfigs.shrinkingToolTip;
+        string allFilter = EditorConfigs.allFilter;
+        string incorrectFilter = EditorConfigs.incorrectFilter;
 
-        string shrinkingToolTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "shrinkingToolTip" }, App.ConfigPath);
+        string correctFilter = EditorConfigs.correctFilter;
 
-        string correctnessIcon =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "correctnessIcon" }, App.ConfigPath);
+        string allTip = EditorConfigs.allTip;
 
-        string incorrectnessIcon =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectnessIcon" }, App.ConfigPath);
+        string correctTip = EditorConfigs.correctTip;
 
-        string allFilter =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "allFilter" }, App.ConfigPath);
+        string incorrectTip = EditorConfigs.incorrectTip;
 
-        string incorrectFilter =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectFilter" }, App.ConfigPath);
-
-        string correctFilter =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "correctFilter" }, App.ConfigPath);
-
-        string allTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "allTip" }, App.ConfigPath);
-
-        string correctTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "correctTip" }, App.ConfigPath);
-
-        string incorrectTip =
-        GetterFromJson.GetSectionStrValue (new List<string> { "EditorViewModel", "incorrectTip" }, App.ConfigPath);
-
-        SolidColorBrush focusedFontColor = GetColor ("EditorViewModel", "focusedFontColor");
-        SolidColorBrush releasedFontColor = GetColor ("EditorViewModel", "releasedFontColor");
-        SolidColorBrush focusedFontBorderColor = GetColor ("EditorViewModel", "focusedFontBorderColor");
-        SolidColorBrush releasedFontBorderColor = GetColor ("EditorViewModel", "releasedFontBorderColor");
+        SolidColorBrush focusedFontColor = GetColor (EditorConfigs.focusedFontColor);
+        SolidColorBrush releasedFontColor = GetColor (EditorConfigs.releasedFontColor);
+        SolidColorBrush focusedFontBorderColor = GetColor (EditorConfigs.focusedFontBorderColor);
+        SolidColorBrush releasedFontBorderColor = GetColor (EditorConfigs.releasedFontBorderColor);
 
         EditorViewModelArgs result = new ();
 
         result.extentionToolTip = extentionToolTip;
         result.shrinkingToolTip = shrinkingToolTip;
-        result.correctnessIcon = correctnessIcon;
-        result.incorrectnessIcon = incorrectnessIcon;
         result.allFilter = allFilter;
         result.correctFilter = correctFilter;
         result.incorrectFilter = incorrectFilter;
@@ -359,10 +241,7 @@ public static class ServiceCollectionExtensions
 
     private static WaitingViewModel WaitingViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string gifName =
-        GetterFromJson.GetSectionStrValue (new List<string> { "WaitingViewModel", "gifName" }, App.ConfigPath);
-
-        return new WaitingViewModel(gifName);
+        return new WaitingViewModel (WaitingConfigs.gifName);
     }
 }
 

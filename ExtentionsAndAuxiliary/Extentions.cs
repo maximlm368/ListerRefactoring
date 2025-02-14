@@ -177,72 +177,43 @@ namespace ExtentionsAndAuxiliary
 
     public static class DigitalStringParser 
     {
-        public static readonly char [] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
-
         public static int ParseToInt ( string parsable )
         {
-            if ( string.IsNullOrEmpty(parsable)   ||   parsable.ContainsNotDigit()   ||   parsable.HasZeroStart () ) 
+            if ( string.IsNullOrEmpty(parsable) ) 
             {
                 return 0;
             }
 
-            return int.Parse (parsable);
-        }
+            int result = 0;
 
+            bool isInt = int.TryParse( parsable, out result );
 
-        public static short ParseToShort ( string parsable )
-        {
-            if ( string.IsNullOrEmpty (parsable)   ||   parsable.ContainsNotDigit ()   ||   parsable.HasZeroStart () )
+            if ( ! isInt ) 
             {
                 return 0;
             }
 
-            return short.Parse (parsable);
+            return result;
         }
 
 
         public static byte ParseToByte ( string parsable )
         {
-            if ( string.IsNullOrEmpty (parsable)   ||   parsable.ContainsNotDigit ()   ||   parsable.HasZeroStart () )
+            if ( string.IsNullOrEmpty (parsable) )
             {
                 return 0;
             }
 
-            return byte.Parse (parsable);
-        }
+            byte result = 0;
 
+            bool isByte = byte.TryParse (parsable, out result);
 
-        private static bool ContainsNotDigit ( this string parsable )
-        {
-            for ( int index = 0;   index < parsable.Length;   index++ )
+            if ( ! isByte ) 
             {
-                if ( ! digits.Contains (parsable [index]) )
-                {
-                    return true;
-                }
+                return 0;
             }
 
-            return false;
-        }
-
-
-        private static bool HasZeroStart ( this string parsable )
-        {
-            if ( (parsable == null)   ||   (parsable.Length == 0) ) 
-            {
-                return false;
-            }
-
-            for ( int index = 0;   index < 1;   index++ )
-            {
-                if ( parsable [index] == '0' )
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return result;
         }
     }
 
@@ -259,8 +230,8 @@ namespace ExtentionsAndAuxiliary
                 Person firstPerson = first as Person;
                 Person secondPerson = second as Person;
 
-                string firstStr = firstPerson.StringPresentation;
-                string secondStr = secondPerson.StringPresentation;
+                string firstStr = firstPerson.FullName;
+                string secondStr = secondPerson.FullName;
 
                 for ( int index = 0; index < firstStr.Length; index++ )
                 {

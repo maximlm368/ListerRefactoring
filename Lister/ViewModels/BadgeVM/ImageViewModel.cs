@@ -44,10 +44,7 @@ namespace Lister.ViewModels
             Binding = image.BindingName;
             IsAboveOfBinding = image.IsAboveOfBinding;
 
-            Color color = new Color (255, image.OutlineRGB [0], image.OutlineRGB [1], image.OutlineRGB [2]);
-            SolidColorBrush brush = new SolidColorBrush (color);
-
-            SetYourself (image.Width, image.Height, image.TopOffset, image.LeftOffset, brush);
+            SetYourself (image.Width, image.Height, image.TopOffset, image.LeftOffset);
         }
 
 
@@ -59,8 +56,7 @@ namespace Lister.ViewModels
             Binding = prototype.Binding;
             IsAboveOfBinding = prototype.IsAboveOfBinding;
 
-            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset
-                                                                               , prototype.outlineColorStorage);
+            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset);
         }
 
 

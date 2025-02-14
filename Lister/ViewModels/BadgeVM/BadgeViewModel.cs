@@ -32,8 +32,13 @@ public class BadgeViewModel : ViewModelBase
 
     private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
     private readonly double _interLineAddition = 1;
-    private List<byte> _badLineColor;
-    private IBadLineColorProvider _badLineColorProvider;
+    private SolidColorBrush _incorrectLineBackground;
+    private SolidColorBrush _incorrectMemberBorderColor;
+    private SolidColorBrush _correctMemberBorderColor;
+    private Thickness _incorrectMemberBorderThickness;
+    private Thickness _correctMemberBorderThickness;
+    private SolidColorBrush _normMemberBorderColor;
+    private IMemberColorProvider _badLineColorProvider;
 
     internal int Id { get; set; }
     internal double Scale { get; private set; }
@@ -113,7 +118,7 @@ public class BadgeViewModel : ViewModelBase
         get { return _focusedLine; }
         private set 
         {
-            if ( ( value == null ) && ( _focusedLine != null ) )
+            if (( value == null ) && ( _focusedLine != null ))
             {
                 _focusedLine.BecomeUnFocused ();
                 _focusedLine = value;
@@ -121,10 +126,18 @@ public class BadgeViewModel : ViewModelBase
             else if ( value != null ) 
             {
                 _focusedLine = value;
-                _focusedLine.BecomeFocused ();
+
+                if ( _focusedLine.isBorderViolent   ||   _focusedLine.isOverLayViolent )
+                {
+                    _focusedLine.BecomeFocused (_incorrectMemberBorderColor, _incorrectMemberBorderThickness);
+                }
+                else 
+                {
+                    _focusedLine.BecomeFocused (_correctMemberBorderColor, _correctMemberBorderThickness);
+                }
             }
 
-            if ( (_focusedLine == null)   ||   (string.IsNullOrWhiteSpace(_focusedLine.Content)) )
+            if ((_focusedLine == null)   ||   string.IsNullOrWhiteSpace(_focusedLine.Content))
             {
                 FocusedText = string.Empty;
             }
@@ -171,7 +184,7 @@ public class BadgeViewModel : ViewModelBase
             else if ( value != null )
             {
                 _focusedImage = value;
-                _focusedImage.BecomeFocused ();
+                _focusedImage.BecomeFocused (_correctMemberBorderColor, _correctMemberBorderThickness);
             }
         }
     }
@@ -199,7 +212,7 @@ public class BadgeViewModel : ViewModelBase
             else if ( value != null )
             {
                 _focusedRect = value;
-                _focusedRect.BecomeFocused ();
+                _focusedRect.BecomeFocused (_correctMemberBorderColor, _correctMemberBorderThickness);
             }
         }
     }
@@ -227,7 +240,7 @@ public class BadgeViewModel : ViewModelBase
             else if ( value != null )
             {
                 _focusedEllipse = value;
-                _focusedEllipse.BecomeFocused ();
+                _focusedEllipse.BecomeFocused (_correctMemberBorderColor, _correctMemberBorderThickness);
             }
         }
     }
@@ -313,10 +326,26 @@ public class BadgeViewModel : ViewModelBase
 
         if ( _badLineColorProvider == null ) 
         {
-            _badLineColorProvider = App.services.GetRequiredService<IBadLineColorProvider> ();
+            _badLineColorProvider = App.services.GetRequiredService<IMemberColorProvider> ();
         }
 
-        _badLineColor = _badLineColorProvider.GetBadLineColor (badgeModel.BadgeLayout.TemplateName);
+        string incorrectLineBackgroundRGB = 
+                                    _badLineColorProvider.GetIncorrectLineBackgroundStr (badgeModel.BadgeLayout.TemplateName);
+        string incorrectMemberBorderRGB = 
+                                     _badLineColorProvider.GetIncorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
+        string correctMemberBorderRGB =
+                                     _badLineColorProvider.GetCorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
+        List<byte> incorrectMemberBorderThickness =
+                                 _badLineColorProvider.GetIncorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
+        List<byte> correctMemberBorderThickness =
+                                 _badLineColorProvider.GetCorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
+
+
+        _incorrectLineBackground = GetColor (incorrectLineBackgroundRGB);
+        _incorrectMemberBorderColor = GetColor (incorrectMemberBorderRGB);
+        _correctMemberBorderColor = GetColor (correctMemberBorderRGB);
+        _incorrectMemberBorderThickness = GetThickness (incorrectMemberBorderThickness);
+        _correctMemberBorderThickness = GetThickness (correctMemberBorderThickness);
 
         List <TextualAtom> atoms = layout.TextualFields;
         OrderTextlinesByVertical (atoms);
@@ -364,7 +393,11 @@ public class BadgeViewModel : ViewModelBase
         _borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
-        _badLineColor = badge._badLineColor;
+        _incorrectLineBackground = badge._incorrectLineBackground;
+        _incorrectMemberBorderColor = badge._incorrectMemberBorderColor;
+        _correctMemberBorderColor = badge._correctMemberBorderColor;
+        _incorrectMemberBorderThickness = badge._incorrectMemberBorderThickness;
+        _correctMemberBorderThickness = badge._correctMemberBorderThickness;
 
         foreach ( TextLineViewModel line   in   badge.TextLines )
         {
@@ -452,7 +485,11 @@ public class BadgeViewModel : ViewModelBase
         _borderThickness = 1;
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
-        _badLineColor = badge._badLineColor;
+        _incorrectLineBackground = badge._incorrectLineBackground;
+        _incorrectMemberBorderColor = badge._incorrectMemberBorderColor;
+        _correctMemberBorderColor = badge._correctMemberBorderColor;
+        _incorrectMemberBorderThickness = badge._incorrectMemberBorderThickness;
+        _correctMemberBorderThickness = badge._correctMemberBorderThickness;
 
         TextLines = new ();
         BorderViolentLines = new List <TextLineViewModel> ();
@@ -580,41 +617,41 @@ public class BadgeViewModel : ViewModelBase
     }
 
 
-    internal void SetFocusedMember <T> ( int id, ICollection <T> members ) where T : BoundToTextLine
-    {
-        foreach ( BoundToTextLine member   in   members )
-        {
-            if ( id == member.Id )
-            {
-                ShapeViewModel shape = member as ShapeViewModel;
+    //internal void SetFocusedMember <T> ( int id, ICollection <T> members ) where T : BoundToTextLine
+    //{
+    //    foreach ( BoundToTextLine member   in   members )
+    //    {
+    //        if ( id == member.Id )
+    //        {
+    //            ShapeViewModel shape = member as ShapeViewModel;
 
-                if ( shape != null )
-                {
-                    if ( shape.Kind == ShapeKind.rectangle )
-                    {
-                        FocusedEllipse = shape;
-                        FocusedEllipse.BecomeFocused ();
-                        break;
-                    }
-                    else if ( shape.Kind == ShapeKind.ellipse )
-                    {
-                        FocusedRect = shape;
-                        FocusedRect.BecomeFocused ();
-                        break;
-                    }
-                }
+    //            if ( shape != null )
+    //            {
+    //                if ( shape.Kind == ShapeKind.rectangle )
+    //                {
+    //                    FocusedEllipse = shape;
+    //                    FocusedEllipse.BecomeFocused (_correctMemberBorderColor);
+    //                    break;
+    //                }
+    //                else if ( shape.Kind == ShapeKind.ellipse )
+    //                {
+    //                    FocusedRect = shape;
+    //                    FocusedRect.BecomeFocused (_correctMemberBorderColor);
+    //                    break;
+    //                }
+    //            }
 
-                ImageViewModel image = member as ImageViewModel;
+    //            ImageViewModel image = member as ImageViewModel;
 
-                if ( image != null ) 
-                {
+    //            if ( image != null ) 
+    //            {
                     
-                }
+    //            }
 
 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
 
 
     internal void Show ()
@@ -730,11 +767,6 @@ public class BadgeViewModel : ViewModelBase
 
         List<string> pieces = content.SplitBySeparators ([' ', '-'], ['-']);
 
-        //for ( int index = 0;   index < pieces.Count;   index++ ) 
-        //{
-        //    pieces [index] = pieces [index].TrimLastSpaceOrQuoting ();
-        //}
-
         double layoutWidth = BadgeWidth;
         List <TextLineViewModel> splitted = FocusedLine.SplitYourself (pieces, scale, layoutWidth);
         ReplaceTextLine (FocusedLine, splitted);
@@ -757,7 +789,7 @@ public class BadgeViewModel : ViewModelBase
 
         if ( ! replaceble.isBorderViolent   &&   ! replaceble.isOverLayViolent ) 
         {
-            DeleteBadColor (replaceble);
+            MarkAsCorrect (replaceble);
         }
 
         TextLines.Remove (replaceble);
@@ -766,6 +798,7 @@ public class BadgeViewModel : ViewModelBase
         {
             CheckLineCorrectness ( line );
             TextLines.Add (line);
+            line.BecomeUnFocused ();
         }
 
         IsChanged = true;
@@ -940,14 +973,14 @@ public class BadgeViewModel : ViewModelBase
         {
             InsideShape shape = insideShapes [index];
 
-            if ( shape.Kind == ShapeKind.rectangle )
+            if ( shape.Type == ShapeType.rectangle )
             {
                 ShapeViewModel rectangle = new ShapeViewModel (rectId, shape);
                 rectId++;
                 InsideRectangles.Add (rectangle);
                 ShiftDownBelowMembersIfShould( rectangle );
             }
-            else if ( shape.Kind == ShapeKind.ellipse ) 
+            else if ( shape.Type == ShapeType.ellipse ) 
             {
                 ShapeViewModel ellipse = new ShapeViewModel (ellipseId, shape);
                 ellipseId++;
@@ -1050,7 +1083,8 @@ public class BadgeViewModel : ViewModelBase
             {
                 BorderViolentLines.Add ( line );
                 line.isBorderViolent = true;
-                SetBadColor ( line );
+                MarkAsIncorrect ( line );
+                line.BecomeUnFocused ();
                 IsCorrect = false;
             }
         }
@@ -1078,7 +1112,7 @@ public class BadgeViewModel : ViewModelBase
             TextLineViewModel line = OverlayViolentLines [0];
         }
 
-        IsCorrect = !( borderViolentsExist || overlayingExist );
+        IsCorrect = ! ( borderViolentsExist   ||   overlayingExist );
     }
 
 
@@ -1086,7 +1120,7 @@ public class BadgeViewModel : ViewModelBase
     {
         bool isBorderViolent = CheckInsideSpansViolation (checkable);
 
-        if ( !isBorderViolent )
+        if ( ! isBorderViolent )
         {
             if ( checkable.isBorderViolent )
             {
@@ -1096,17 +1130,17 @@ public class BadgeViewModel : ViewModelBase
         }
         else
         {
-            if ( !checkable.isBorderViolent )
+            if ( ! checkable.isBorderViolent )
             {
                 BorderViolentLines.Add (checkable);
                 checkable.isBorderViolent = true;
-                SetBadColor (checkable);
+                MarkAsIncorrect (checkable);
             }
         }
 
         bool isOverlayViolent = CheckSingleOverlayViolation (0, checkable);
 
-        if ( !isOverlayViolent )
+        if ( ! isOverlayViolent )
         {
             if ( checkable.isOverLayViolent )
             {
@@ -1120,61 +1154,155 @@ public class BadgeViewModel : ViewModelBase
             {
                 OverlayViolentLines.Add (checkable);
                 checkable.isOverLayViolent = true;
-                SetBadColor (checkable);
+                MarkAsIncorrect (checkable);
             }
         }
 
-        if ( !checkable.isBorderViolent && !checkable.isOverLayViolent )
+        if ( !checkable.isBorderViolent   &&   ! checkable.isOverLayViolent )
         {
-            DeleteBadColor (checkable);
+            MarkAsCorrect (checkable);
         }
     }
 
 
-    private void SetBadColor ( TextLineViewModel setable )
+    private void MarkAsIncorrect ( TextLineViewModel setable )
     {
-        if ( _badLineColor == null )
-        {
-            setable.Background = null;
-        }
-        else 
-        {
-            if ( _badLineColor.Count == 3 )
-            {
-                byte r = _badLineColor [0];
-                byte g = _badLineColor [1];
-                byte b = _badLineColor [2];
+        setable.Background = _incorrectLineBackground;
+        setable.Mark (_incorrectMemberBorderColor, _incorrectMemberBorderThickness);
+    }
 
-                IBrush brush;
+
+    private void MarkAsCorrect ( TextLineViewModel setable )
+    {
+        setable.Background = null;
+        setable.Mark (_correctMemberBorderColor, _correctMemberBorderThickness);
+    }
+
+
+    private SolidColorBrush ? GetColor ( List<byte> rgb )
+    {
+        if ( rgb == null )
+        {
+            return null;
+        }
+        else
+        {
+            if ( rgb.Count == 3 )
+            {
+                byte r = rgb [0];
+                byte g = rgb [1];
+                byte b = rgb [2];
+
+                SolidColorBrush brush;
+                Color color = new Color (255, r, g, b);
 
                 if ( MainViewModel.MainViewIsWaiting )
                 {
-                    var result = Dispatcher.UIThread.Invoke<IBrush>
-                    (() => 
-                    { 
-                        return new SolidColorBrush (new Avalonia.Media.Color (255, r, g, b)); 
+                    var result = Dispatcher.UIThread.Invoke
+                    (() =>
+                    {
+                        return new SolidColorBrush (color);
                     });
 
                     brush = result;
                 }
-                else 
+                else
                 {
-                    brush = new SolidColorBrush (new Avalonia.Media.Color (255, r, g, b));
+                    brush = new SolidColorBrush (color);
                 }
 
-                setable.Background = brush;
+                return brush;
             }
-            else 
+            else
             {
-                setable.Background = null;
+                return null;
             }
         }
     }
 
 
-    private void DeleteBadColor ( TextLineViewModel setable )
+    private SolidColorBrush ? GetColor ( string hexColor )
     {
-        setable.Background = null;
+        if ( hexColor == null )
+        {
+            return null;
+        }
+        else
+        {
+            if ( hexColor.Length == 7 )
+            {
+                SolidColorBrush brush;
+                Color color;
+
+                if ( ! Color.TryParse (hexColor, out color) )
+                {
+                    return null;
+                }
+
+                if ( MainViewModel.MainViewIsWaiting )
+                {
+                    var result = Dispatcher.UIThread.Invoke
+                    (() =>
+                    {
+                        return new SolidColorBrush (color);
+                    });
+
+                    brush = result;
+                }
+                else
+                {
+                    brush = new SolidColorBrush (color);
+                }
+
+                return brush;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+
+    private Thickness GetThickness ( List<byte> ltrb )
+    {
+        if ( ltrb == null )
+        {
+            return new Thickness (0, 0, 0, 0);
+        }
+        else
+        {
+            if ( ltrb.Count == 4 )
+            {
+                double left = ltrb [0];
+                double top = ltrb [1];
+                double right = ltrb [2];
+                double bottom = ltrb [3];
+
+                Thickness thickness;
+
+                if ( MainViewModel.MainViewIsWaiting )
+                {
+                    var result = Dispatcher.UIThread.Invoke
+                    (() =>
+                    {
+                        return new Thickness (left, top, right, bottom);
+                    });
+
+                    thickness = result;
+                }
+                else
+                {
+                    thickness = new Thickness (left, top, right, bottom);
+                }
+
+                return thickness;
+            }
+            else
+            {
+                return new Thickness (0, 0, 0, 0);
+            }
+        }
     }
 
 
@@ -1241,7 +1369,7 @@ public class BadgeViewModel : ViewModelBase
                 {
                     OverlayViolentLines.Add (overlaying);
                     overlaying.isOverLayViolent = true;
-                    SetBadColor ( overlaying );
+                    MarkAsIncorrect ( overlaying );
                 }
 
                 break;

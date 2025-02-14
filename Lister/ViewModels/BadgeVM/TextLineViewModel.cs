@@ -24,6 +24,8 @@ using SkiaSharp;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Web.Services.Description;
+using System.Diagnostics;
+using static QuestPDF.Helpers.Colors;
 
 namespace Lister.ViewModels
 {
@@ -33,11 +35,6 @@ namespace Lister.ViewModels
         private static readonly double _minFontSizeLimit = 6;
         private static readonly double _divider = 8;
         private static TextBlock _textBlock;
-
-        public byte Red { get; private set; }
-        public byte Green { get; private set; }
-        public byte Blue { get; private set; }
-
         private string _alignmentName;
 
         internal TextualAtom DataSource { get; private set; }
@@ -177,23 +174,19 @@ namespace Lister.ViewModels
             Content = text.Content;
             IsSplitable = text.IsSplitable;
 
-            byte red = text.ForegroundRGB [0];
-            byte green = text.ForegroundRGB [1];
-            byte blue = text.ForegroundRGB [2];
-            Red = red;
-            Green = green;
-            Blue = blue;
+            Avalonia.Media.Color color;
+            bool isColor = Avalonia.Media.Color.TryParse (text.ForegroundHexStr, out color);
 
-            SolidColorBrush foreground = new SolidColorBrush (new Avalonia.Media.Color (255, red, green, blue));
+            if ( ! Avalonia.Media.Color.TryParse (text.ForegroundHexStr, out color) )
+            {
+                color = new Avalonia.Media.Color (255, 200, 200, 200);
+            }
+
+            SolidColorBrush foreground = new SolidColorBrush (color);
             Foreground = foreground;
 
             SetUsefullWidth ();
-
-            Avalonia.Media.Color color = 
-                               new Avalonia.Media.Color (255, text.OutlineRGB [0], text.OutlineRGB [1], text.OutlineRGB [2]);
-            SolidColorBrush brush = new SolidColorBrush (color);
-
-            SetYourself (text.Width, FontSize, text.TopOffset, text.LeftOffset, brush);
+            SetYourself (text.Width, FontSize, text.TopOffset, text.LeftOffset);
             SetAlignment (text.Alignment);
 
             Height = text.Height;
@@ -214,13 +207,9 @@ namespace Lister.ViewModels
             UsefullWidth = source.UsefullWidth;
             UsefullHeight = source.UsefullHeight;
             Foreground = source.Foreground;
-            Red = source.Red;
-            Green = source.Green;
-            Blue = source.Blue;
             Background = source.Background;
 
-            SetYourself (source.UsefullWidth, source.Height, source.TopOffset
-                                                                  , source.LeftOffset, source.outlineColorStorage);
+            SetYourself (source.UsefullWidth, source.Height, source.TopOffset, source.LeftOffset);
             Padding = GetPadding ();
         }
 
@@ -242,9 +231,6 @@ namespace Lister.ViewModels
 
         private Thickness GetPadding ()
         {
-            //UsefullHeight = HeightWithBorder;
-            //double paddingTop = ( Height - FontSize ) / 4;
-            
             return new Thickness (0, - FontSize / _divider);
         }
 

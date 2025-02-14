@@ -9,15 +9,19 @@ using System.Text;
 
 namespace DataGateway
 {
-    public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IBadLineColorProvider
+    public class BadgeAppearenceProvider : IBadgeAppearenceProvider, IMemberColorProvider
     {
         private static string _resourceFolder;
         private static FileInfo _schemeFile;
 
         private static readonly string _defaultSplitability = "0";
         
-        private static Dictionary<string, string> _nameAndJson;
-        private static Dictionary<string, List<byte>> _nameAndColor;
+        private static Dictionary<string, string> _templateNameToJson;
+        private static Dictionary<string, string> _templateToIncorrectLineBackground;
+        private static Dictionary<string, string> _templateToIncorrectMemberBorderColor;
+        private static Dictionary<string, string> _templateToCorrectMemberBorderColor;
+        private static Dictionary<string, List<byte>> _templateToIncorrectMemberBorderThickness;
+        private static Dictionary<string, List<byte>> _templateToCorrectMemberBorderThickness;
         private static Dictionary<string, BadgeLayout> _badgeLayouts;
         private static Dictionary<string, ICollection <ValidationError>> _jsonAndErrors;
         private static Dictionary<string, string> _incorrectJsonAndError;
@@ -44,8 +48,12 @@ namespace DataGateway
             _resourceFolder = resourceFolder;
 
             _badgeLayouts = new Dictionary<string, BadgeLayout> ();
-            _nameAndJson = new ();
-            _nameAndColor = new ();
+            _templateNameToJson = new ();
+            _templateToIncorrectLineBackground = new ();
+            _templateToIncorrectMemberBorderColor = new ();
+            _templateToCorrectMemberBorderColor = new ();
+            _templateToIncorrectMemberBorderThickness = new ();
+            _templateToCorrectMemberBorderThickness = new ();
             _jsonAndErrors = new ();
             _incorrectJsonAndError = new ();
 
@@ -69,19 +77,18 @@ namespace DataGateway
                     string templateName = GetSectionStrValue (new List<string> { "TemplateName" }, jsonPath);
 
                     bool nameShouldBeAdded = ! string.IsNullOrEmpty (templateName)
-                                          && !_nameAndJson.ContainsKey (templateName);
+                                          && !_templateNameToJson.ContainsKey (templateName);
 
                     if ( nameShouldBeAdded )
                     {
-                        _nameAndJson.Add (templateName, jsonPath);
+                        _templateNameToJson.Add (templateName, jsonPath);
                     }
 
                     bool colorShouldBeAdded = ( nameShouldBeAdded   &&   ! string.IsNullOrEmpty (templateName) );
 
                     if ( colorShouldBeAdded )
                     {
-                        List<byte> color = CreateColor (jsonPath);
-                        _nameAndColor.Add (templateName, color);
+                        SetBadgeComponetMarkers (jsonPath, templateName);
                     }
                 }
                 else
@@ -92,30 +99,91 @@ namespace DataGateway
                     if ( isTemplate ) 
                     {
                         _incorrectJsonAndError.Add(jsonPath, TranslateIncorrectJsonMessage(validationMessage));
-                        _nameAndJson.Add (templateName, jsonPath);
+                        _templateNameToJson.Add (templateName, jsonPath);
 
-                        List<byte> color = CreateColor (jsonPath);
-                        _nameAndColor.Add (templateName, color);
+                        SetBadgeComponetMarkers (jsonPath, templateName);
                     }
                 }
             }
         }
 
 
-        private List<byte> CreateColor ( string jsonPath )
+        private void SetBadgeComponetMarkers ( string jsonPath, string templateName )
         {
-            List<byte> color = new ();
+            string background = GetIncorrectMemberBackground (jsonPath);
+            _templateToIncorrectLineBackground.Add (templateName, background);
 
-            byte red = (byte) GetSectionIntValueOrDefault (new List<string> { "IncorrectLineBackground", "Red" }, jsonPath);
-            color.Add (red);
+            string incorrectBorderColor = GetIncorrectMemberBorderColor (jsonPath);
+            _templateToIncorrectMemberBorderColor.Add (templateName, incorrectBorderColor);
 
-            byte green = (byte) GetSectionIntValueOrDefault (new List<string> { "IncorrectLineBackground", "Green" }, jsonPath);
-            color.Add (green);
+            string correctBorderColor = GetCorrectMemberBorderColor (jsonPath);
+            _templateToCorrectMemberBorderColor.Add (templateName, correctBorderColor);
 
-            byte blue = (byte) GetSectionIntValueOrDefault (new List<string> { "IncorrectLineBackground", "Blue" }, jsonPath);
-            color.Add (blue);
+            List<byte> incorrectBorderThickness = GetIncorrectBorderThickness (jsonPath);
+            _templateToIncorrectMemberBorderThickness.Add (templateName, incorrectBorderThickness);
 
-            return color;
+            List<byte> correctBorderThickness = GetCorrectBorderThickness (jsonPath);
+            _templateToCorrectMemberBorderThickness.Add (templateName, correctBorderThickness);
+        }
+
+
+        private string GetIncorrectMemberBackground ( string jsonPath )
+        {
+            return GetSectionStrValueOrDefault (new List<string> { "IncorrectMemberSettings", "Background" }, jsonPath);
+        }
+
+
+        private string GetIncorrectMemberBorderColor ( string jsonPath )
+        {
+            return GetBorderColor (jsonPath, "IncorrectMemberSettings");
+        }
+
+
+        private string GetCorrectMemberBorderColor ( string jsonPath )
+        {
+            return GetBorderColor (jsonPath, "CorrectMemberSettings");
+        }
+
+
+        private List<byte> GetIncorrectBorderThickness ( string jsonPath )
+        {
+            return GetThickness (jsonPath, "IncorrectMemberSettings");
+        }
+
+
+        private List<byte> GetCorrectBorderThickness ( string jsonPath )
+        {
+            return GetThickness(jsonPath, "CorrectMemberSettings");
+        }
+
+
+        private List<byte> GetThickness ( string jsonPath, string tag )
+        {
+            List<byte> thickness = new ();
+
+            byte left = ( byte ) GetSectionIntValueOrDefault
+                (new List<string> { tag, "BorderThickness", "Left" }, jsonPath);
+            thickness.Add (left);
+
+            byte top = ( byte ) GetSectionIntValueOrDefault
+                (new List<string> { tag, "BorderThickness", "Top" }, jsonPath);
+            thickness.Add (top);
+
+            byte right = ( byte ) GetSectionIntValueOrDefault
+                (new List<string> { tag, "BorderThickness", "Right" }, jsonPath);
+            thickness.Add (right);
+
+            byte bottom = ( byte ) GetSectionIntValueOrDefault 
+                (new List<string> { tag, "BorderThickness", "Bottom" }, jsonPath);
+            thickness.Add (bottom);
+
+            return thickness;
+        }
+
+
+        private string GetBorderColor ( string jsonPath, string tag )
+        {
+            return GetSectionStrValueOrDefault (new List<string> { tag, "BorderColor" }, jsonPath);
         }
 
 
@@ -239,16 +307,40 @@ namespace DataGateway
 
         public string GetBadgeImageUri ( string templateName )
         {
-            string fileName = _nameAndJson [ templateName ];
+            string fileName = _templateNameToJson [ templateName ];
             fileName = GetSectionStrValueOrDefault ( new List<string> { "BackgroundImagePath" }, fileName) ?? "";
             string fileUri = _resourceFolder + fileName;
             return fileUri;
         }
 
 
-        public List<byte> GetBadLineColor ( string templateName )
+        public string GetIncorrectLineBackgroundStr ( string templateName )
         {
-            return _nameAndColor [templateName];
+            return _templateToIncorrectLineBackground [templateName];
+        }
+
+
+        public string GetIncorrectMemberBorderStr ( string templateName )
+        {
+            return _templateToIncorrectMemberBorderColor [templateName];
+        }
+
+
+        public string GetCorrectMemberBorderStr ( string templateName )
+        {
+            return _templateToCorrectMemberBorderColor [templateName];
+        }
+
+
+        public List<byte> GetIncorrectMemberBorderThickness ( string templateName )
+        {
+            return _templateToIncorrectMemberBorderThickness [templateName];
+        }
+
+
+        public List<byte> GetCorrectMemberBorderThickness ( string templateName )
+        {
+            return _templateToCorrectMemberBorderThickness [templateName];
         }
 
 
@@ -259,23 +351,23 @@ namespace DataGateway
                 return _badgeLayouts [templateName];
             }
 
-            string jsonPath = _nameAndJson [ templateName ];
+            string jsonPath = _templateNameToJson [ templateName ];
 
             double badgeWidth = GetSectionIntValueOrDefault ( new List<string> { "Width" }, jsonPath );
             double badgeHeight = GetSectionIntValueOrDefault (new List<string> { "Height" }, jsonPath);
 
             List<double> spans = new List<double> ();
 
-            double leftSpan = GetSectionIntValueOrDefault (new List<string> { "InsideSpan", "Left" }, jsonPath);
+            double leftSpan = GetSectionIntValueOrDefault (new List<string> { "Padding", "Left" }, jsonPath);
             spans.Add (leftSpan);
 
-            double topSpan = GetSectionIntValueOrDefault (new List<string> { "InsideSpan", "Top" }, jsonPath);
+            double topSpan = GetSectionIntValueOrDefault (new List<string> { "Padding", "Top" }, jsonPath);
             spans.Add(topSpan);
 
-            double rightSpan = GetSectionIntValueOrDefault (new List<string> { "InsideSpan", "Right" }, jsonPath);
+            double rightSpan = GetSectionIntValueOrDefault (new List<string> { "Padding", "Right" }, jsonPath);
             spans.Add (rightSpan);
 
-            double bottomSpan = GetSectionIntValueOrDefault (new List<string> { "InsideSpan", "Bottom" }, jsonPath);
+            double bottomSpan = GetSectionIntValueOrDefault (new List<string> { "Padding", "Bottom" }, jsonPath);
             spans.Add (bottomSpan);
 
             List <TextualAtom> atoms = GetAtoms ( jsonPath );
@@ -391,40 +483,14 @@ namespace DataGateway
             double fontSize = GetSectionIntValueOrDefault (new List<string> { atomName, "FontSize" }, jsonPath);
             string fontName = GetSectionStrValueOrDefault (new List<string> { atomName, "FontName" }, jsonPath) ?? "";
 
-            List<byte> foreground = new List<byte> ();
-
-            byte foregroundRed = 
-                (byte) GetSectionIntValueOrDefault (new List<string> { atomName, "Foreground", "Red" }, jsonPath);
-            foreground.Add (foregroundRed);
-
-            byte foregroundGreen = 
-                (byte) GetSectionIntValueOrDefault (new List<string> { atomName, "Foreground", "Green" }, jsonPath);
-            foreground.Add (foregroundGreen);
-
-            byte foregroundBlue = 
-                (byte) GetSectionIntValueOrDefault (new List<string> { atomName, "Foreground", "Blue" }, jsonPath);
-            foreground.Add (foregroundBlue);
-
-            List<byte> outlineRGB = [];
-
-            //byte outlineRed =
-            //( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Red" }, jsonPath);
-            //outlineRGB.Add (foregroundRed);
-
-            //byte outlineGreen =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Green" }, jsonPath);
-            //outlineRGB.Add (foregroundGreen);
-
-            //byte outlineBlue =
-            //    ( byte ) GetSectionIntValueOrDefault (new List<string> { atomName, "OutLineColor", "Blue" }, jsonPath);
-            //outlineRGB.Add (foregroundBlue);
-
+            string foreground = GetSectionStrValueOrDefault (new List<string> { atomName, "Foreground" }, jsonPath);
+            
             string fontWeight = GetSectionStrValueOrDefault (new List<string> { atomName, "FontWeight" }, jsonPath) ?? "";
             bool isShiftable = GetSectionBoolValueOrDefault (new List<string> { atomName, "IsSplitable" }, jsonPath);
 
             TextualAtom atom = new TextualAtom (atomName, width, height, topOffset, leftOffset
                                                , alignment, fontSize, fontName, foreground
-                                             , fontWeight, null, isShiftable, numberToLocate, outlineRGB);
+                                             , fontWeight, null, isShiftable, numberToLocate);
 
             return atom;
         }
@@ -458,24 +524,7 @@ namespace DataGateway
             string fontName = GetSectionStrValueOrDefault (childSection, jsonPath, "FontName");
 
             childSection = section.GetSection ("Foreground");
-            childSection = childSection.GetSection ("Red");
-            byte red = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Red");
-
-            childSection = section.GetSection ("Foreground");
-            childSection = childSection.GetSection ("Green");
-            byte green = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Green");
-
-            childSection = section.GetSection ("Foreground");
-            childSection = childSection.GetSection ("Blue");
-            byte blue = ( byte ) GetSectionIntValueOrDefault (childSection, jsonPath, "Blue");
-
-            List<byte> foreground = new List<byte> () { red, green, blue };
-
-            //childSection = section.GetSection ("OutLineColor");
-            //List<byte> outlineRGB = GetRGB (childSection);
-
-            List<byte> outlineRGB = [];
-
+            string foreground = GetSectionStrValueOrDefault (childSection, jsonPath, "Foreground");
 
             childSection = section.GetSection ("FontWeight");
             string fontWeight = GetSectionStrValueOrDefault (childSection, jsonPath, "FontWeight");
@@ -488,8 +537,7 @@ namespace DataGateway
             isShiftable = Convert.ToBoolean (shiftableInt);
 
             TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset , alignment, fontSize
-                                          , fontName, foreground, fontWeight, united, isShiftable, numberToLocate
-                                          , outlineRGB);
+                                          , fontName, foreground, fontWeight, united, isShiftable, numberToLocate);
             return atom;
         }
 
@@ -515,12 +563,8 @@ namespace DataGateway
                 isAboveOfBinding = true;
             }
 
-            childSection = section.GetSection ("OutLineColor");
-            List<byte> outLineColor = GetRGB (childSection);
-
-
             InsideImage image = new InsideImage (fileUri, commonData [0], commonData [1], commonData [2], commonData [3]
-                                               , bindingObjectName, isAboveOfBinding, outLineColor);
+                                               , bindingObjectName, isAboveOfBinding);
             return image;
         }
 
@@ -529,16 +573,11 @@ namespace DataGateway
         {
             List<double> commonData = GetCommonData (section);
 
-            IConfigurationSection childSection = section.GetSection ("Kind");
+            IConfigurationSection childSection = section.GetSection ("Type");
             string kind = GetterFromJson.GetSectionValue (childSection) ?? "";
 
-            childSection = section.GetSection ("OutLineThickness");
-
-            int outlineThickness = 0;
-            outlineThickness = DigitalStringParser.ParseToInt (GetterFromJson.GetSectionValue (childSection));
-
             childSection = section.GetSection ("FillColor");
-            List<byte> fillColor = GetRGB (childSection);
+            string fillColor = GetterFromJson.GetSectionValue (childSection) ?? "#000000";
 
             childSection = section.GetSection ("BindingObject");
             string bindingObjectName = GetterFromJson.GetSectionValue (childSection) ?? "";
@@ -553,12 +592,9 @@ namespace DataGateway
                 isAboveOfBinding = true;
             }
 
-            childSection = section.GetSection ("OutLineColor");
-            List<byte> outLineColor = GetRGB (childSection);
-
             InsideShape shape = new InsideShape (commonData [0], commonData [1], commonData [2], commonData [3]
-                                               , outlineThickness, fillColor, kind
-                                               , bindingObjectName, isAboveOfBinding, outLineColor);
+                                               , fillColor, kind
+                                               , bindingObjectName, isAboveOfBinding);
             return shape;
         }
 
@@ -587,31 +623,13 @@ namespace DataGateway
         }
 
 
-        private List<byte> GetRGB ( IConfigurationSection section )
-        {
-            IConfigurationSection childSection = section.GetSection ("Red");
-            string redStr = GetterFromJson.GetSectionValue (childSection) ?? "100";
-            byte red = DigitalStringParser.ParseToByte (redStr);
-
-            childSection = section.GetSection ("Green");
-            byte green = DigitalStringParser.ParseToByte (GetterFromJson.GetSectionValue (childSection) ?? "100");
-
-            childSection = section.GetSection ("Blue");
-            byte blue = DigitalStringParser.ParseToByte (GetterFromJson.GetSectionValue (childSection) ?? "100");
-
-            List<byte> rgb = new List<byte> () { red, green, blue };
-
-            return rgb;
-        }
-
-
         public Dictionary <BadgeLayout, KeyValuePair <string, List<string>>> GetBadgeLayouts ()
         {
             Dictionary <BadgeLayout, KeyValuePair<string, List<string>>> layouts = new ();
             var schemeTask = JsonSchema.FromFileAsync (_schemeFile.FullName);
             schemeTask.Wait ();
 
-            foreach ( KeyValuePair<string, string> template   in   _nameAndJson )
+            foreach ( KeyValuePair<string, string> template   in   _templateNameToJson )
             {
                 string jsonPath = template.Value;
 
@@ -823,6 +841,15 @@ namespace DataGateway
                     break;
                 case ValidationErrorKind.PropertyRequired:
                     errKind = "Не найдено обязательное поле.";
+                    break;
+                case ValidationErrorKind.PatternMismatch:
+                    errKind = "Некорректное значение цвета Присутствуют недопустимые символы.";
+                    break;
+                case ValidationErrorKind.StringTooLong:
+                    errKind = "Некорректное значение цвета Слишком длинное.";
+                    break;
+                case ValidationErrorKind.StringTooShort:
+                    errKind = "Некорректное значение цвета. Слишком короткое";
                     break;
 
                 default:

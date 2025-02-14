@@ -46,7 +46,9 @@ namespace Lister.Views
         private bool _capturedImageExists;
         private bool _capturedShapeExists;
         private bool _pointerIsPressed;
-        private Point _pointerPosition;
+        private bool _badgeIsCaptured;
+        private Point _pointerOnBadgeComponent;
+        private Point _pointerOnBadge;
         private MainView _back;
         private BadgeEditorViewModel _viewModel;
         private bool _isReleaseLocked;
@@ -475,7 +477,7 @@ namespace Lister.Views
 
             if ( shapeViewModel != null )
             {
-                _viewModel.FocusShape (shapeViewModel.Kind, shapeViewModel.Id);
+                _viewModel.FocusShape (shapeViewModel.Type, shapeViewModel.Id);
             }
 
             _focusedShape = shape;
@@ -507,7 +509,7 @@ namespace Lister.Views
 
             if ( shouldMove ) 
             {
-                Point newPosition = _pointerPosition;
+                Point newPosition = _pointerOnBadgeComponent;
 
                 if ( _capturedTextExists )
                 {
@@ -522,8 +524,8 @@ namespace Lister.Views
                     newPosition = args.GetPosition (_focusedShape);
                 }
 
-                double verticalDelta = _pointerPosition.Y - newPosition.Y;
-                double horizontalDelta = _pointerPosition.X - newPosition.X;
+                double verticalDelta = _pointerOnBadgeComponent.Y - newPosition.Y;
+                double horizontalDelta = _pointerOnBadgeComponent.X - newPosition.X;
                 Point delta = new Point (horizontalDelta, verticalDelta);
                 _viewModel.MoveCaptured (delta);
             }
@@ -532,7 +534,7 @@ namespace Lister.Views
 
         internal void ToSide ( object sender, KeyEventArgs args )
         {
-            if ( _isTextEditorFocused   ||   _isZoomOnOutFocused ) 
+            if ( _isTextEditorFocused || _isZoomOnOutFocused )
             {
                 return;
             }
@@ -563,7 +565,7 @@ namespace Lister.Views
 
             if ( (_focusedText != null)   &&   (textBlock == _focusedText) )
             {
-                _pointerPosition = args.GetPosition (textBlock);
+                _pointerOnBadgeComponent = args.GetPosition (textBlock);
                 _capturedTextExists = true;
             }
 
@@ -571,7 +573,7 @@ namespace Lister.Views
 
             if ( ( _focusedImage != null ) && ( image == _focusedImage ) )
             {
-                _pointerPosition = args.GetPosition (image);
+                _pointerOnBadgeComponent = args.GetPosition (image);
                 _capturedImageExists = true;
             }
 
@@ -579,7 +581,7 @@ namespace Lister.Views
 
             if ( ( _focusedShape != null ) && ( shape == _focusedShape ) )
             {
-                _pointerPosition = args.GetPosition (shape);
+                _pointerOnBadgeComponent = args.GetPosition (shape);
                 _capturedShapeExists = true;
             }
         }
@@ -589,17 +591,27 @@ namespace Lister.Views
         {
             bool focusedExists = ( ( _focusedText != null ) || ( _focusedImage != null ) || ( _focusedShape != null ) );
 
-            if ( _capturedTextExists  ||  _capturedImageExists  ||  _capturedShapeExists )
+            if ( _badgeIsCaptured )
+            {
+                _badgeIsCaptured = false;
+
+                if ( ! focusedExists ) 
+                {
+                    Cursor = new Cursor (StandardCursorType.Arrow);
+                }
+            }
+
+            if ( _capturedTextExists || _capturedImageExists || _capturedShapeExists )
             {
                 Release ();
             }
-            else if ( focusedExists   &&   (_focusTime != null) )
+            else if ( focusedExists && ( _focusTime != null ) )
             {
-                if ( ! _isReleaseLocked )
+                if ( !_isReleaseLocked )
                 {
                     Release ();
                 }
-                else 
+                else
                 {
                     _focusTime.Stop ();
                     TimeSpan timeSpan = _focusTime.Elapsed;
@@ -788,6 +800,45 @@ namespace Lister.Views
 
         #endregion
 
+
+        internal void CaptureBadge ( object sender, PointerPressedEventArgs args )
+        {
+            if ( _capturedTextExists   ||   _capturedImageExists   ||   _capturedShapeExists ) 
+            {
+                Cursor = new Cursor (StandardCursorType.SizeAll);
+                return;
+            }
+
+            PointerPoint point = args.GetCurrentPoint (sender as Control);
+
+            if ( point.Properties.IsLeftButtonPressed )
+            {
+                Cursor = new Cursor (StandardCursorType.Hand);
+                _badgeIsCaptured = true;
+                _pointerOnBadge = args.GetPosition (badge);
+            }
+        }
+
+
+        internal void MoveBadge ( PointerEventArgs args )
+        {
+            bool shouldMoveBadge = ! ( ( _capturedTextExists ) || ( _capturedImageExists ) || ( _capturedShapeExists ) )
+                                   &&   _badgeIsCaptured;
+
+            if ( shouldMoveBadge )
+            {
+                Point newPosition = args.GetPosition (badge);
+
+                double verticalDelta = _pointerOnBadge.Y - newPosition.Y;
+                double horizontalDelta = _pointerOnBadge.X - newPosition.X;
+                _pointerOnBadge = new Point (newPosition.X, newPosition.Y);
+
+                double horizontalOffset = scroller.Offset.X;
+                double verticalOffset = scroller.Offset.Y;
+
+                scroller.Offset = new Vector ( horizontalOffset - horizontalDelta/2, verticalOffset - verticalDelta/2);
+            }
+        }
     }
 
 

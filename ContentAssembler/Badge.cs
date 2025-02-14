@@ -192,7 +192,7 @@ namespace ContentAssembler
         public string Path { get; private set; }
 
         public InsideImage ( string path, double Width, double Height , double topShiftOnBackground
-                          , double leftShiftOnBackground, string ? bindingName, bool isAboveOfBinding, List<byte> outlineRGB )
+                          , double leftShiftOnBackground, string ? bindingName, bool isAboveOfBinding )
         {
             Path = path;
             this.Width = Width;
@@ -201,7 +201,6 @@ namespace ContentAssembler
             LeftOffset = leftShiftOnBackground;
             BindingName = bindingName;
             IsAboveOfBinding = isAboveOfBinding;
-            OutlineRGB = outlineRGB;
         }
     }
 
@@ -209,28 +208,24 @@ namespace ContentAssembler
 
     public class InsideShape : BindableToAnother
     {
-        public int StrokeThickness { get; private set; }
-        public List<byte> FillRGB { get; private set; }
-        public ShapeKind Kind { get; private set; }
+        public string FillHexStr { get; private set; }
+        public ShapeType Type { get; private set; }
 
         public InsideShape ( double outlineWidth, double outlineHeight
                            , double topShiftOnBackground, double leftShiftOnBackground
-                           , int outlineThickness, List<byte> fillRGB, string kind
-                           , string ? bindingName, bool isAboveOfBinding, List<byte> outlineRGB )
+                           , string fillHexStr, string kind, string ? bindingName, bool isAboveOfBinding)
         {
             Width = outlineWidth;
             Height = outlineHeight;
             TopOffset = topShiftOnBackground;
             LeftOffset = leftShiftOnBackground;
-            OutlineRGB = outlineRGB;
-            StrokeThickness = outlineThickness;
-            FillRGB = fillRGB;
+            FillHexStr = fillHexStr;
             BindingName = bindingName;
             IsAboveOfBinding = isAboveOfBinding;
 
-            Kind = TranslateStrToShapeKind (kind);
+            Type = TranslateStrToShapeType (kind);
 
-            if ( Kind == ShapeKind.nothing ) Trash ();
+            if ( Type == ShapeType.nothing ) Trash ();
         }
 
 
@@ -241,23 +236,23 @@ namespace ContentAssembler
         }
 
 
-        private ShapeKind TranslateStrToShapeKind ( string kind ) 
+        private ShapeType TranslateStrToShapeType ( string kind ) 
         {
             if ( string.IsNullOrWhiteSpace(kind) ) 
             {
-                return ShapeKind.nothing;
+                return ShapeType.nothing;
             }
 
             if ( (kind == "rectangle")   ||   ( kind == "Rectangle" ) ) 
             {
-                return ShapeKind.rectangle;
+                return ShapeType.rectangle;
             }
             else if ( ( kind == "ellipse" ) || ( kind == "Ellipse" ) )
             {
-                return ShapeKind.ellipse;
+                return ShapeType.ellipse;
             }
 
-            return ShapeKind.nothing;
+            return ShapeType.nothing;
         }
     }
 
@@ -270,7 +265,7 @@ namespace ContentAssembler
         public string Alignment { get; private set; }
         public double FontSize { get; private set; }
         public string FontName { get; private set; }
-        public List<byte> ForegroundRGB { get; private set; }
+        public string ForegroundHexStr { get; private set; }
         public string FontWeight { get; private set; }
         private string _content;
         public string Content
@@ -295,9 +290,8 @@ namespace ContentAssembler
 
 
         public TextualAtom ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                           , double fontSize, string fontName, List<byte> foreground
-                           , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate
-                           , List<byte> outLineRGB )
+                           , double fontSize, string fontName, string foregroundHexStr
+                           , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate )
         {
             _content = "";
             ContentIsSet = false;
@@ -310,19 +304,7 @@ namespace ContentAssembler
             FontSize = fontSize;
             FontName = fontName;
 
-            if ( foreground.Count < 3   ||   foreground.Count > 3 ) 
-            {
-                foreground = new List<byte> { 0,0,0 };
-            }
-
-            ForegroundRGB = foreground;
-
-            if ( outLineRGB.Count < 3   ||   outLineRGB.Count > 3 )
-            {
-                outLineRGB = new List<byte> { 100, 100, 100 };
-            }
-
-            OutlineRGB = outLineRGB;
+            ForegroundHexStr = foregroundHexStr;
 
             FontWeight = fontWeight;
             IncludedAtoms = includedAtoms ?? new List<string> ();
@@ -344,8 +326,7 @@ namespace ContentAssembler
             Alignment = source.Alignment;
             FontSize = source.FontSize;
             FontName = source.FontName;
-            ForegroundRGB = source.ForegroundRGB;
-            OutlineRGB = source.OutlineRGB;
+            ForegroundHexStr = source.ForegroundHexStr;
             FontWeight = source.FontWeight;
             IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
             IsSplitable = source.IsSplitable;
@@ -357,8 +338,8 @@ namespace ContentAssembler
         internal TextualAtom Clone () 
         {
             TextualAtom clone = new TextualAtom (Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize
-                                                 , FontName, ForegroundRGB, FontWeight, IncludedAtoms, IsSplitable
-                                                 , NumberToLocate, OutlineRGB);
+                                                 , FontName, ForegroundHexStr, FontWeight, IncludedAtoms, IsSplitable
+                                                 , NumberToLocate);
             return clone;
         }
 
@@ -383,7 +364,6 @@ namespace ContentAssembler
         public double Height { get; protected set; }
         public double TopOffset { get; set; }
         public double LeftOffset { get; set; }
-        public List<byte> OutlineRGB { get; protected set; }
     }
 
 
@@ -415,7 +395,7 @@ namespace ContentAssembler
 
 
 
-    public enum ShapeKind
+    public enum ShapeType
     {
         rectangle = 0,
         ellipse = 1,

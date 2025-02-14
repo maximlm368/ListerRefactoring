@@ -12,17 +12,7 @@ namespace Lister.ViewModels
 {
     public class ShapeViewModel : BoundToTextLine
     {
-        internal ShapeKind Kind { get; private set; }
-
-        private Thickness _outlineThickness;
-        internal Thickness OutlineThickness
-        {
-            get { return _outlineThickness; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _outlineThickness, value, nameof (OutlineThickness));
-            }
-        }
+        internal ShapeType Type { get; private set; }
 
         private SolidColorBrush _fillColor;
         internal SolidColorBrush FillColor
@@ -30,66 +20,45 @@ namespace Lister.ViewModels
             get { return _fillColor; }
             private set
             {
-                if ( value != null )
-                {
-                    Red = value.Color.R;
-                    Green = value.Color.G;
-                    Blue = value.Color.B;
-                }
-
                 this.RaiseAndSetIfChanged (ref _fillColor, value, nameof (FillColor));
             }
         }
 
-        private byte _red;
-        internal byte Red
-        {
-            get { return _red; }
-            private set { _red = value; }
-        }
+        internal string FillColorHexStr { get; private set; }
 
-        private byte _green;
-        internal byte Green
-        {
-            get { return _green; }
-            private set { _green = value; }
-        }
-
-        private byte _blue;
-        internal byte Blue
-        {
-            get { return _blue; }
-            private set { _blue = value; }
-        }
-
-
+       
         public ShapeViewModel ( int id, InsideShape shape )
         {
             Id = id;
-            Kind = shape.Kind;
-            OutlineThickness = new Thickness (shape.StrokeThickness, shape.StrokeThickness);
-            FillColor = new SolidColorBrush (new Color (255, shape.FillRGB [0], shape.FillRGB [1], shape.FillRGB [2]));
+            Type = shape.Type;
+
+            Color color;
+            string hexStr = shape.FillHexStr;
+
+            if ( ! Color.TryParse(shape.FillHexStr, out color) ) 
+            {
+                color = new Color (255, 0, 0, 0);
+                hexStr = "#000000";
+            }
+
+            FillColorHexStr = hexStr;
+            FillColor = new SolidColorBrush (color);
             Binding = shape.BindingName;
             IsAboveOfBinding = shape.IsAboveOfBinding;
 
-            Color color = new Color (255, shape.OutlineRGB [0], shape.OutlineRGB [1], shape.OutlineRGB [2]);
-            SolidColorBrush brush = new SolidColorBrush (color);
-
-            SetYourself (shape.Width, shape.Height, shape.TopOffset, shape.LeftOffset, brush);
+            SetYourself (shape.Width, shape.Height, shape.TopOffset, shape.LeftOffset);
         }
 
 
         public ShapeViewModel ( ShapeViewModel prototype )
         {
             Id = prototype.Id;
-            Kind = prototype.Kind;
-            OutlineThickness = prototype.OutlineThickness;
-            FillColor = new SolidColorBrush (new Color (255, prototype.Red, prototype.Blue, prototype.Green));
+            Type = prototype.Type;
+            FillColor = prototype.FillColor;
             Binding = prototype.Binding;
             IsAboveOfBinding = prototype.IsAboveOfBinding;
 
-            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset
-                                                                        , prototype.outlineColorStorage);
+            SetYourself (prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset);
         }
 
 

@@ -12,7 +12,7 @@ namespace ContentAssembler
         public string Department { get; private set; }
         public string Post { get; private set; }
 
-        public string StringPresentation
+        public string FullName
         {
             get
             { string view = string.Empty;
@@ -131,13 +131,14 @@ namespace ContentAssembler
                 return false;
             }
 
-            bool isMatching = (stringPresentation == this.StringPresentation);
+            bool isMatching = (stringPresentation == this.FullName);
             return isMatching;
         }
 
 
         private void AppendNameInView ( string namePart, ref string view ) 
         {
+
             if ( ! string.IsNullOrWhiteSpace (namePart) )
             {
                 if ( ! string.IsNullOrWhiteSpace (view) )

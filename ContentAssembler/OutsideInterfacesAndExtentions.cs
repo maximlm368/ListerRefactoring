@@ -10,9 +10,17 @@
     }
 
 
-    public interface IBadLineColorProvider
+    public interface IMemberColorProvider
     {
-        public List<byte> GetBadLineColor ( string templateName );
+        public string GetIncorrectLineBackgroundStr ( string templateName );
+
+        public string GetIncorrectMemberBorderStr ( string templateName );
+
+        public string GetCorrectMemberBorderStr ( string templateName );
+
+        public List<byte> GetIncorrectMemberBorderThickness ( string templateName );
+
+        public List<byte> GetCorrectMemberBorderThickness ( string templateName );
     }
 
 

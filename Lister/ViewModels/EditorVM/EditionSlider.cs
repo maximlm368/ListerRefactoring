@@ -119,16 +119,6 @@ namespace Lister.ViewModels
             }
         }
 
-        private Bitmap _filterStatePicture;
-        internal Bitmap FilterState
-        {
-            get { return _filterStatePicture; }
-            private set
-            {
-                this.RaiseAndSetIfChanged (ref _filterStatePicture, value, nameof (FilterState));
-            }
-        }
-
         private ObservableCollection <BadgeCorrectnessViewModel> _visibleIconsStorage;
         private ObservableCollection <BadgeCorrectnessViewModel> _visibleIcons;
         internal ObservableCollection <BadgeCorrectnessViewModel> VisibleIcons
@@ -359,7 +349,6 @@ namespace Lister.ViewModels
             UpDownWidth = _upDownWidth;
             SliderCollectionWidth = _extendedScrollableIconWidth;
             CalcRunner (badgesAmount);
-            FilterState = null;
         }
 
 

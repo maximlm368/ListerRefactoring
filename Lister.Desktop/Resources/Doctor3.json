@@ -1,294 +1,227 @@
 {
-  "TemplateName" : "Бейдж с фоном3",
-  "BackgroundImagePath" : "doctors2.jpg",
-  "CommonDefaultFontFamily" : "Kramola",
-  "Width" : 350,
-  "Height" : 214,
-  "InsideSpan" : 
-  {
-    "Left": 11,
-    "Top": 11,
-    "Right": 11,
-    "Bottom": 11
-  },
-  
-  "IncorrectLineBackground": 
-  {
-	"Red": 200,
-	"Green": 200,
-	"Blue": 200
-  },
+	"TemplateName": "Бейдж с фоном3",
+	"BackgroundImagePath": "doctors2.jpg",
+	"CommonDefaultFontFamily": "Kramola",
+	"Width": 350,
+	"Height": 214,
+	"Padding": {
+		"Left": 11,
+		"Top": 11,
+		"Right": 11,
+		"Bottom": 11
+	},
 
-  "FamilyName": {
-    "Width" : 210,
-    "Height" : 24,
-    "TopOffset" : 60,
-	"LeftOffset" : 130,
-    "Alignment" : "Right",
-    "FontSize" : 24,
-    "FontFile": "",
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 20000,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
+	"CorrectMemberSettings": {
 
-  "FirstName": {
-    "Width": 210,
-    "Height": 14,
-    "TopOffset": 92,
-    "LeftOffset": 130,
-    "Alignment": "Right",
-    "FontSize": 14,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
+		"BorderColor": {
+			"Red": 0,
+			"Green": 254,
+			"Blue": 254
+		},
 
-  "PatronymicName": {
-    "Width": 210,
-    "Height": 14,
-    "TopOffset": 92,
-    "LeftOffset": 130,
-    "Alignment": "Right",
-    "FontSize": 14,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
+		"BorderThickness": {
+			"Left": 3,
+			"Top": 3,
+			"Right": 3,
+			"Bottom": 3
+		}
 	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
 
-  "Post": {
-    "Width": 210,
-    "Height": 10,
-    "TopOffset": 122,
-    "LeftOffset": 130,
-    "Alignment": "Right",
-    "FontSize": 10,
-	"FontFile": "Pushkin.ttf",
-	"FontName": "Pushkin",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": true
-  },
+	"IncorrectMemberSettings": {
 
-  "Department": {
-    "Width": 210,
-    "Height": 10,
-    "TopOffset": 146,
-    "LeftOffset": 130,
-    "Alignment": "Right",
-    "FontSize": 10,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": true
-  },
+		"Background": {
+			"Red": 200,
+			"Green": 200,
+			"Blue": 200
+		},
 
-  "UnitedTextBlocks" : {
-    "Items": [
-        {
-			"United": [
-			  "FirstName",
-			  "PatronymicName"
-			],
-			"Name": "FirstAndPatronymic",
-			"Number":1,
-			"Width": 210,
-			"Height": 14,
-			"TopOffset": 92,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 14,
-			"FontFile": "Kramola.ttf",
-			"FontName": "Kramola",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-        }
-    ]
-  },
+		"BorderColor": {
+			"Red": 74,
+			"Green": 172,
+			"Blue": 254
+		},
 
-  "InsideImages" : {
-    "Items" : 
-	[
-        {
-			"Path": "RedCross.png",
-			"Width": 16,
-			"TopOffset": 18,
-			"LeftOffset": 212,
-			"OutLineColor": 
+		"BorderThickness": {
+			"Left": 1,
+			"Top": 1,
+			"Right": 1,
+			"Bottom": 1
+		}
+	},
+
+	"FamilyName": {
+		"Width": 210,
+		"Height": 24,
+		"TopOffset": 60,
+		"LeftOffset": 130,
+		"Alignment": "Right",
+		"FontSize": 24,
+		"FontName": "Century Gothic",
+		"Foreground": {
+			"Red": 0,
+			"Green": 20000,
+			"Blue": 0
+		},
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"FirstName": {
+		"Width": 210,
+		"Height": 14,
+		"TopOffset": 92,
+		"LeftOffset": 130,
+		"Alignment": "Right",
+		"FontSize": 14,
+		"FontName": "Kramola",
+		"Foreground": {
+			"Red": 0,
+			"Green": 0,
+			"Blue": 0
+		},
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"PatronymicName": {
+		"Width": 210,
+		"Height": 14,
+		"TopOffset": 92,
+		"LeftOffset": 130,
+		"Alignment": "Right",
+		"FontSize": 14,
+		"FontName": "Kramola",
+		"Foreground": {
+			"Red": 0,
+			"Green": 0,
+			"Blue": 0
+		},
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"Post": {
+		"Width": 210,
+		"Height": 10,
+		"TopOffset": 122,
+		"LeftOffset": 130,
+		"Alignment": "Right",
+		"FontSize": 10,
+		"FontName": "Pushkin",
+		"Foreground": {
+			"Red": 0,
+			"Green": 0,
+			"Blue": 0
+		},
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"Department": {
+		"Width": 210,
+		"Height": 10,
+		"TopOffset": 146,
+		"LeftOffset": 130,
+		"Alignment": "Right",
+		"FontSize": 10,
+		"FontName": "Kramola",
+		"Foreground": {
+			"Red": 0,
+			"Green": 0,
+			"Blue": 0
+		},
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"UnitedTextBlocks": {
+		"Items": [
 			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"BindingObject":"FamilyName1",
-			"IsAboveOfBinding":"no"
-        },
-		
-		{
-			"Path": "GreenCheckMarker.jpg",
-			"Width": 18,
-			"TopOffset": 10,
-			"LeftOffset": 182,
-			"OutLineColor": 
+				"United": [
+					"FirstName",
+					"PatronymicName"
+				],
+				"Name": "FirstAndPatronymic",
+				"Number": 1,
+				"Width": 210,
+				"Height": 14,
+				"TopOffset": 92,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 14,
+				"FontFile": "Kramola.ttf",
+				"FontName": "Kramola",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		]
+	},
+
+	"InsideImages": {
+		"Items": [
 			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
+				"Path": "RedCross.png",
+				"Width": 16,
+				"TopOffset": 18,
+				"LeftOffset": 212,
+				"BindingObject": "FamilyName1",
+				"IsAboveOfBinding": "no"
 			},
-			"BindingObject":"FamilyName1",
-			"IsAboveOfBinding":"no"
-        }
-    ]
-  },
- 
-  "InsideShapes" : {
-    "Items" : 
-	[
-        {
-			"Kind": "Rectangle",
-			"OutLineThickness":2,
-			"OutLineColor": 
+
 			{
-				"Red": 255,
-				"Green": 255,
-				"Blue": 255
-			},
-			"FillColor": 
+				"Path": "GreenCheckMarker.jpg",
+				"Width": 18,
+				"TopOffset": 10,
+				"LeftOffset": 182,
+				"BindingObject": "FamilyName1",
+				"IsAboveOfBinding": "no"
+			}
+		]
+	},
+
+	"InsideShapes": {
+		"Items": [
 			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
+				"Type": "Rectangle",
+				"FillColor": "#000000",
+				"Width": 120,
+				"Height": 1,
+				"TopOffset": 0,
+				"LeftOffset": 200,
+				"BindingObject": "FirstAndPatronymic",
+				"IsAboveOfBinding": "no"
 			},
-			"Width": 120,
-			"Height": 1,
-			"TopOffset": 0,
-			"LeftOffset": 200,
-			"BindingObject":"FirstAndPatronymic",
-			"IsAboveOfBinding":"no"
-        },
-		
-		{
-			"Kind": "Rectangle",
-			"OutLineThickness":2,
-			"OutLineColor": 
+
 			{
-				"Red": 255,
-				"Green": 255,
-				"Blue": 255
+				"Type": "Rectangle",
+				"FillColor": "#ff0000",
+				"Width": 200,
+				"Height": 2,
+				"TopOffset": 50,
+				"LeftOffset": 100,
+				"BindingObject": "FamilyName",
+				"IsAboveOfBinding": "yes"
 			},
-			"FillColor": 
+
 			{
-				"Red": 255,
-				"Green": 0,
-				"Blue": 0
-			},
-			"Width": 200,
-			"Height": 2,
-			"TopOffset": 50,
-			"LeftOffset": 100,
-			"BindingObject":"FamilyName",
-			"IsAboveOfBinding":"yes"
-        },
-		
-		{
-			"Kind": "Ellipse",
-			"OutLineThickness":1,
-			"OutLineColor": 
-			{
-				"Red": 255,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FillColor": 
-			{
-				"Red": 100,
-				"Green": 100,
-				"Blue": 100
-			},
-			"Width": 80,
-			"Height": 10,
-			"TopOffset": 0,
-			"LeftOffset": 212,
-			"BindingObject":"Department1",
-			"IsAboveOfBinding":"no"
-        }
-    ]
-  }
-  
-  
-  
-  
+				"Type": "Ellipse",
+				"FillColor": "#888888",
+				"Width": 80,
+				"Height": 10,
+				"TopOffset": 0,
+				"LeftOffset": 212,
+				"BindingObject": "Department1",
+				"IsAboveOfBinding": "no"
+			}
+		]
+	}
+
+
+
+
 }

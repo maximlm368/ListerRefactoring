@@ -234,7 +234,8 @@
 							VerticalAlignment="Top"
 							Width="{Binding  Path = PageWidth,  Mode=OneWay}"
 							Height="{Binding  Path = PageHeight,  Mode=OneWay}"
-							Background="White">
+							Background="White"
+							PointerPressed="PagePressed">
 
 							<ItemsControl
 								Name="lines"

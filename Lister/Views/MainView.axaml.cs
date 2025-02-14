@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Input;
@@ -7,8 +8,10 @@ using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using Avalonia.Remote.Protocol.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using ContentAssembler;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -113,9 +116,10 @@ namespace Lister.Views
         }
 
 
-        internal void ReleaseRunner () 
+        internal void ReleaseCaptured () 
         {
             personChoosing.ReleaseScrollingLeverage ();
+            scene.ReleasePage ();
         }
 
 
@@ -247,6 +251,12 @@ namespace Lister.Views
             );
 
             task.Start ();
+        }
+
+
+        internal void MovePage ( PointerEventArgs args )
+        {
+            scene.MovePage ( args );
         }
     }
 }

@@ -216,8 +216,6 @@ namespace Lister.ViewModels
 
             _extentionToolTip = settingArgs.extentionToolTip;
             _shrinkingToolTip = settingArgs.shrinkingToolTip;
-            _correctnessIcon = settingArgs.correctnessIcon;
-            _incorrectnessIcon = settingArgs.incorrectnessIcon;
             _allFilter = settingArgs.allFilter;
             _correctFilter = settingArgs.correctFilter;
             _incorrectFilter = settingArgs.incorrectFilter;
@@ -468,8 +466,6 @@ namespace Lister.ViewModels
     {
         public string extentionToolTip;
         public string shrinkingToolTip;
-        public string correctnessIcon;
-        public string incorrectnessIcon;
         public string allFilter;
         public string incorrectFilter;
         public string correctFilter;

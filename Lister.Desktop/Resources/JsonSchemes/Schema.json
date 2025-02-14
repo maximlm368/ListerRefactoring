@@ -1,777 +1,758 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "properties": {
-    "TemplateName" : {
-      "type": "string",
-	  "default": null
-    },
-	"BackgroundImagePath" : {
-      "type": "string",
-	  "default": "doctors2.jpg"
-    },
-	"CommonDefaultFontFamily" : {
-      "type": "string",
-	  "default": "Century Gothic"
-    },
-	"Width" : {
-      "type": "integer",
-	  "format": "int32",
-	  "minimum": 0,
-	  "maximum": 350,
-	  "default": 350
-    },
-	"Height" : {
-      "type": "integer",
-	  "format": "int32",
-	  "minimum": 0,
-	  "maximum": 214,
-	  "default": 214
-    },
-	"InsideSpan" : {
-		"type": "object",
-		
-		"properties":
-		{
-			"Left": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 20,
-				"default": 10
-			},
-			"Top": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 20,
-				"default": 10
-			},
-			"Right": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 20,
-				"default": 10
-			},
-			"Bottom": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 20,
-				"default": 10
-			}
+	"properties": {
+		"TemplateName": {
+			"type": "string",
+			"default": null
 		},
-		"required":["Left", "Top", "Right", "Bottom"],
-		"default":{
-		    "Left": 11,
-			"Top": 11,
-			"Right": 11,
-			"Bottom": 11
-		}
-    },
-	"IncorrectLineBackground" : {
-      "type": "object",
-	  
-	  "properties":
-	  {
-	  	"Red": 
-		{
+		"BackgroundImagePath": {
+			"type": "string",
+			"default": "doctors2.jpg"
+		},
+		"CommonDefaultFontFamily": {
+			"type": "string",
+			"default": "Century Gothic"
+		},
+		"Width": {
 			"type": "integer",
 			"format": "int32",
 			"minimum": 0,
-			"maximum": 255,
-		    "default": 200
+			"maximum": 350,
+			"default": 350
 		},
-		"Green": 
-		{
+		"Height": {
 			"type": "integer",
 			"format": "int32",
 			"minimum": 0,
-			"maximum": 255,
-		    "default": 200
+			"maximum": 214,
+			"default": 214
 		},
-		"Blue": 
-		{
-			"type": "integer",
-			"format": "int32",
-			"minimum": 0,
-			"maximum": 255,
-		    "default": 200
-		}
-	  },
-		"required":["Red", "Green", "Blue"],
-		"default":{
-			"Red": 200,
-			"Green": 200,
-			"Blue": 200
-		}
-    },
-	
-	"FamilyName" : {
-      "type": "object",
-	  
-	  "properties": {
-        "Width": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 210
-		},
-		"Height": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 40,
-		  "default": 33
-		},
-		"TopOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 200,
-		  "default": 60
-		},
-		"LeftOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 130
-		},
-		"Alignment": {
-		  "type": "string",
-		  "default": "Right"
-		},
-		"FontSize": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 6,
-		  "maximum": 30,
-		  "default": 24
-		},
-		"FontName": {
-		  "type": "string",
-		  "default": "Century Gothic"
-		},
-		"Foreground": {
-		  "type": "object",
-		  
-		  "properties":
-		  {
-			"Red": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
+		"Padding": {
+			"type": "object",
+
+			"properties": {
+				"Left": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 20,
+					"default": 10
+				},
+				"Top": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 20,
+					"default": 10
+				},
+				"Right": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 20,
+					"default": 10
+				},
+				"Bottom": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 0,
+					"maximum": 20,
+					"default": 10
+				}
 			},
-			"Green": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Blue": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
+			"required": [ "Left", "Top", "Right", "Bottom" ],
+			"default": {
+				"Left": 11,
+				"Top": 11,
+				"Right": 11,
+				"Bottom": 11
 			}
-		  },
-		  "required":["Red","Green","Blue"]
 		},
-		"FontWeight": {
-		  "type": "string",
-		  "default": "Bold"
-		},
-		"IsSplitable": {
-		  "type": "boolean",
-		  "default": false
-		}
-      },
-	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-		"default": {
-			"Width": 210,
-			"Height": 33,
-			"TopOffset": 60,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 24,
-			"FontName": "Century Gothic",
-			"Foreground": {
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		}
-    },
-	
-	"FirstName" : {
-      "type": "object",
-	  
-	  "properties": {
-        "Width": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 210
-		},
-		"Height": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 40,
-		  "default": 21
-		},
-		"TopOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 200,
-		  "default": 92
-		},
-		"LeftOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 130
-		},
-		"Alignment": {
-		  "type": "string",
-		  "default": "Right"
-		},
-		"FontSize": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 6,
-		  "maximum": 30,
-		  "default": 14
-		},
-		"FontName": {
-		  "type": "string",
-		  "default": "Century Gothic"
-		},
-		"Foreground": {
-		  "type": "object",
-		  
-		  "properties":
-		  {
-			"Red": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Green": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Blue": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			}
-		  }
-		},
-		"FontWeight": {
-		  "type": "string",
-		  "default": "Bold"
-		},
-		"IsSplitable": {
-		  "type": "boolean",
-		  "default": false
-		}
-      },
-	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-		"default": {
-			"Width": 210,
-			"Height": 21,
-			"TopOffset": 92,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 14,
-			"FontName": "Century Gothic",
-			"Foreground": {
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		}
-    },
-	
-	"PatronymicName" : {
-      "type": "object",
-	  
-	  "properties": {
-        "Width": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 210
-		},
-		"Height": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 40,
-		  "default": 21
-		},
-		"TopOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 200,
-		  "default": 92
-		},
-		"LeftOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 130
-		},
-		"Alignment": {
-		  "type": "string",
-		  "default": "Right"
-		},
-		"FontSize": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 6,
-		  "maximum": 30,
-		  "default": 14
-		},
-		"FontName": {
-		  "type": "string",
-		  "default": "Century Gothic"
-		},
-		"Foreground": {
-		  "type": "object",
-		  
-		  "properties":
-		  {
-			"Red": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Green": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Blue": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			}
-		  }
-		},
-		"FontWeight": {
-		  "type": "string",
-		  "default": "Bold"
-		},
-		"IsSplitable": {
-		  "type": "boolean",
-		  "default": false
-		}
-      },
-	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-		"default": {
-			"Width": 210,
-			"Height": 21,
-			"TopOffset": 92,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 14,
-			"FontName": "Century Gothic",
-			"Foreground": {
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		}
-    },
-	
-	"Post" : {
-      "type": "object",
-	  
-	  "properties": {
-        "Width": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 210
-		},
-		"Height": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 400,
-		  "default": 17
-		},
-		"TopOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 200,
-		  "default": 122
-		},
-		"LeftOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 130
-		},
-		"Alignment": {
-		  "type": "string",
-		  "default": "Right"
-		},
-		"FontSize": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 6,
-		  "maximum": 30,
-		  "default": 10
-		},
-		"FontName": {
-		  "type": "string",
-		  "default": "Century Gothic"
-		},
-		"Foreground": {
-		  "type": "object",
-		  
-		  "properties":
-		  {
-			"Red": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Green": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Blue": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			}
-		  }
-		},
-		"FontWeight": {
-		  "type": "string",
-		  "default": "Bold"
-		},
-		"IsSplitable": {
-		  "type": "boolean",
-		  "default": true
-		}
-      },
-	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-		"default": {
-			"Width": 210,
-			"Height": 17,
-			"TopOffset": 122,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 10,
-			"FontName": "Century Gothic",
-			"Foreground": {
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": true
-		}
-    },
-	
-	"Department" : {
-      "type": "object",
-	  
-	  "properties": {
-        "Width": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 210
-		},
-		"Height": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 40,
-		  "default": 17
-		},
-		"TopOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 200,
-		  "default": 146
-		},
-		"LeftOffset": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 10,
-		  "maximum": 300,
-		  "default": 130
-		},
-		"Alignment": {
-		  "type": "string",
-		  "default": "Right"
-		},
-		"FontSize": {
-		  "type": "integer",
-		  "format": "int32",
-		  "minimum": 6,
-		  "maximum": 30,
-		  "default": 10
-		},
-		"FontName": {
-		  "type": "string",
-		  "default": "Century Gothic"
-		},
-		"Foreground": {
-		  "type": "object",
-		  
-		  "properties":
-		  {
-			"Red": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Green": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			},
-			"Blue": 
-			{
-				"type": "integer",
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 255,
-				"default": 0
-			}
-		  }
-		},
-		"FontWeight": {
-		  "type": "string",
-		  "default": "Bold"
-		},
-		"IsSplitable": {
-		  "type": "boolean",
-		  "default": true
-		}
-      },
-	  "required":["Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable"],
-		"default": {
-			"Width": 210,
-			"Height": 17,
-			"TopOffset": 146,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 10,
-			"FontName": "Century Gothic",
-			"Foreground": {
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": true
-		}
-    },
-	
-	"UnitedTextBlocks" : {
-        "type": "object",
-	  
-	    "properties" :{
-			"Items": {
-			  "type": "array",
-			  
-			  "items": {
+
+		"CorrectMemberSettings": {
+			"type": "object",
+
+			"properties": {
+
+				"BorderColor": {
+					"type": "string",
+					"default": "#000000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+
+				"BorderThickness": {
 					"type": "object",
-				  
+
 					"properties": {
-					
-						"United": {
-						    "type": "array",
-						  
-						    "items": {
-					            "type": "string"
-						    },
-							"default": ["FirstName", "PatronymicName"]
-						},
-						
-						"Name": {
-						  "type": "string",
-						  "default": "FirstAndPatronymic"
-						},
-						"Number": {
-						  "type": "integer",
-						  "format": "int32",
-						  "minimum": 0,
-						  "maximum": 10,
-						  "default": 1
-						},
-						"Width": {
-						  "type": "integer",
-						  "format": "int32",
-						  "minimum": 10,
-						  "maximum": 300,
-						  "default": 210
-						},
-						"Height": {
-						  "type": "integer",
-						  "format": "int32",
-						  "minimum": 10,
-						  "maximum": 40,
-						  "default": 17
-						},
-						"TopOffset": {
-						  "type": "integer",
-						  "format": "int32",
-						  "minimum": 10,
-						  "maximum": 200,
-						  "default": 146
-						},
-						"LeftOffset": {
-						  "type": "integer",
-						  "format": "int32",
-						  "minimum": 10,
-						  "maximum": 300,
-						  "default": 130
-						},
-						"Alignment": {
-							"type": "string",
-							"default": "Right"
-						},
-						"FontSize": {
+						"Left": {
 							"type": "integer",
 							"format": "int32",
-							"minimum": 6,
-							"maximum": 30,
-							"default": 14
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
 						},
-						"FontName": {
-							"type": "string",
-							"default": "Century Gothic"
+						"Top": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
 						},
-						"Foreground": {
-						  "type": "object",
-						  
-						  "properties":
-						  {
-							"Red": 
-							{
-								"type": "integer",
-								"format": "int32",
-								"minimum": 0,
-								"maximum": 255,
-								"default": 0
-							},
-							"Green": 
-							{
-								"type": "integer",
-								"format": "int32",
-								"minimum": 0,
-								"maximum": 255,
-								"default": 0
-							},
-							"Blue": 
-							{
-								"type": "integer",
-								"format": "int32",
-								"minimum": 0,
-								"maximum": 255,
-								"default": 0
-							}
-						  },
-						  
-						  "default":
-						  {
-							"Red": 0,
-							"Green": 0,
-							"Blue": 0
-						  },
-						  
-						  "required":[ "Red", "Green", "Blue" ]
+						"Right": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
 						},
-						"FontWeight": {
-							"type": "string",
-							"default": "Bold"
-						},
-						"IsSplitable": {
-							"type": "boolean",
-							"default": true
+						"Bottom": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
 						}
 					},
-					
-					"required":["United", "Name", "Number", "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName" 
-					            , "Foreground", "FontWeight", "IsSplitable" ],
+					"required": [ "Left", "Top", "Right", "Bottom" ],
 					"default": {
+						"Left": 2,
+						"Top": 2,
+						"Right": 2,
+						"Bottom": 2
+					}
+				}
+			},
 
+			"required": [
+				"BorderColor",
+				"BorderThickness"
+			]
+		},
+
+		"IncorrectMemberSettings": {
+			"type": "object",
+
+			"properties": {
+
+				"Background": {
+					"type": "string",
+					"default": "#ffffff",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+
+				"BorderColor": {
+					"type": "string",
+					"default": "#000000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+
+				"BorderThickness": {
+					"type": "object",
+
+					"properties": {
+						"Left": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
+						},
+						"Top": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
+						},
+						"Right": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
+						},
+						"Bottom": {
+							"type": "integer",
+							"format": "int32",
+							"minimum": 0,
+							"maximum": 5,
+							"default": 2
+						}
+					},
+					"required": [ "Left", "Top", "Right", "Bottom" ],
+					"default": {
+						"Left": 2,
+						"Top": 2,
+						"Right": 2,
+						"Bottom": 2
+					}
+				}
+			},
+
+			"required": [
+				"Background",
+				"BorderColor",
+				"BorderThickness"
+			]
+		},
+
+		"FamilyName": {
+			"type": "object",
+
+			"properties": {
+				"Width": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 210
+				},
+				"Height": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 40,
+					"default": 33
+				},
+				"TopOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 200,
+					"default": 60
+				},
+				"LeftOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 130
+				},
+				"Alignment": {
+					"type": "string",
+					"default": "Right"
+				},
+				"FontSize": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 6,
+					"maximum": 30,
+					"default": 24
+				},
+				"FontName": {
+					"type": "string",
+					"default": "Century Gothic"
+				},
+				"Foreground": {
+					"type": "string",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7,
+					"default": "#730000"
+				},
+				"FontWeight": {
+					"type": "string",
+					"default": "Bold"
+				},
+				"IsSplitable": {
+					"type": "boolean",
+					"default": false
+				}
+			},
+			"required": [ "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable" ],
+			"default": {
+				"Width": 210,
+				"Height": 33,
+				"TopOffset": 60,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 24,
+				"FontName": "Century Gothic",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		},
+
+		"FirstName": {
+			"type": "object",
+
+			"properties": {
+				"Width": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 210
+				},
+				"Height": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 40,
+					"default": 21
+				},
+				"TopOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 200,
+					"default": 92
+				},
+				"LeftOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 130
+				},
+				"Alignment": {
+					"type": "string",
+					"default": "Right"
+				},
+				"FontSize": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 6,
+					"maximum": 30,
+					"default": 14
+				},
+				"FontName": {
+					"type": "string",
+					"default": "Century Gothic"
+				},
+				"Foreground": {
+					"type": "string",
+					"default": "#730000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+				"FontWeight": {
+					"type": "string",
+					"default": "Bold"
+				},
+				"IsSplitable": {
+					"type": "boolean",
+					"default": false
+				}
+			},
+			"required": [ "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable" ],
+			"default": {
+				"Width": 210,
+				"Height": 21,
+				"TopOffset": 92,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 14,
+				"FontName": "Century Gothic",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		},
+
+		"PatronymicName": {
+			"type": "object",
+
+			"properties": {
+				"Width": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 210
+				},
+				"Height": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 40,
+					"default": 21
+				},
+				"TopOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 200,
+					"default": 92
+				},
+				"LeftOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 130
+				},
+				"Alignment": {
+					"type": "string",
+					"default": "Right"
+				},
+				"FontSize": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 6,
+					"maximum": 30,
+					"default": 14
+				},
+				"FontName": {
+					"type": "string",
+					"default": "Century Gothic"
+				},
+
+				"Foreground": {
+					"type": "string",
+					"default": "#730000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+
+				"FontWeight": {
+					"type": "string",
+					"default": "Bold"
+				},
+				"IsSplitable": {
+					"type": "boolean",
+					"default": false
+				}
+			},
+			"required": [ "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable" ],
+			"default": {
+				"Width": 210,
+				"Height": 21,
+				"TopOffset": 92,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 14,
+				"FontName": "Century Gothic",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		},
+
+		"Post": {
+			"type": "object",
+
+			"properties": {
+				"Width": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 210
+				},
+				"Height": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 400,
+					"default": 17
+				},
+				"TopOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 200,
+					"default": 122
+				},
+				"LeftOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 130
+				},
+				"Alignment": {
+					"type": "string",
+					"default": "Right"
+				},
+				"FontSize": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 6,
+					"maximum": 30,
+					"default": 10
+				},
+				"FontName": {
+					"type": "string",
+					"default": "Century Gothic"
+				},
+				"Foreground": {
+					"type": "string",
+					"default": "#000000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+				"FontWeight": {
+					"type": "string",
+					"default": "Bold"
+				},
+				"IsSplitable": {
+					"type": "boolean",
+					"default": true
+				}
+			},
+			"required": [ "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable" ],
+			"default": {
+				"Width": 210,
+				"Height": 17,
+				"TopOffset": 122,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 10,
+				"FontName": "Century Gothic",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": true
+			}
+		},
+
+		"Department": {
+			"type": "object",
+
+			"properties": {
+				"Width": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 210
+				},
+				"Height": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 40,
+					"default": 17
+				},
+				"TopOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 200,
+					"default": 146
+				},
+				"LeftOffset": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 10,
+					"maximum": 300,
+					"default": 130
+				},
+				"Alignment": {
+					"type": "string",
+					"default": "Right"
+				},
+				"FontSize": {
+					"type": "integer",
+					"format": "int32",
+					"minimum": 6,
+					"maximum": 30,
+					"default": 10
+				},
+				"FontName": {
+					"type": "string",
+					"default": "Century Gothic"
+				},
+				"Foreground": {
+					"type": "string",
+					"default": "#000000",
+					"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+					"maxLength": 7,
+					"minLength": 7
+				},
+				"FontWeight": {
+					"type": "string",
+					"default": "Bold"
+				},
+				"IsSplitable": {
+					"type": "boolean",
+					"default": true
+				}
+			},
+			"required": [ "Width", "Height", "TopOffset", "LeftOffset", "Alignment", "FontSize", "FontName", "Foreground", "FontWeight", "IsSplitable" ],
+			"default": {
+				"Width": 210,
+				"Height": 17,
+				"TopOffset": 146,
+				"LeftOffset": 130,
+				"Alignment": "Right",
+				"FontSize": 10,
+				"FontName": "Century Gothic",
+				"Foreground": {
+					"Red": 0,
+					"Green": 0,
+					"Blue": 0
+				},
+				"FontWeight": "Bold",
+				"IsSplitable": true
+			}
+		},
+
+		"UnitedTextBlocks": {
+			"type": "object",
+
+			"properties": {
+				"Items": {
+					"type": "array",
+
+					"items": {
+						"type": "object",
+
+						"properties": {
+
+							"United": {
+								"type": "array",
+
+								"items": {
+									"type": "string"
+								},
+								"default": [ "FirstName", "PatronymicName" ]
+							},
+
+							"Name": {
+								"type": "string",
+								"default": "FirstAndPatronymic"
+							},
+							"Number": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 0,
+								"maximum": 10,
+								"default": 1
+							},
+							"Width": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 10,
+								"maximum": 300,
+								"default": 210
+							},
+							"Height": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 10,
+								"maximum": 40,
+								"default": 17
+							},
+							"TopOffset": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 10,
+								"maximum": 200,
+								"default": 146
+							},
+							"LeftOffset": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 10,
+								"maximum": 300,
+								"default": 130
+							},
+							"Alignment": {
+								"type": "string",
+								"default": "Right"
+							},
+							"FontSize": {
+								"type": "integer",
+								"format": "int32",
+								"minimum": 6,
+								"maximum": 30,
+								"default": 14
+							},
+							"FontName": {
+								"type": "string",
+								"default": "Century Gothic"
+							},
+							"Foreground": {
+								"type": "string",
+								"default": "#730000",
+								"pattern": "^[#](0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|A|B|C|D|E|F){6}",
+								"maxLength": 7,
+								"minLength": 7
+							},
+							"FontWeight": {
+								"type": "string",
+								"default": "Bold"
+							},
+							"IsSplitable": {
+								"type": "boolean",
+								"default": true
+							}
+						},
+
+						"required": [
+							"United",
+							"Name",
+							"Number",
+							"Width",
+							"Height",
+							"TopOffset",
+							"LeftOffset",
+							"Alignment",
+							"FontSize",
+							"FontName",
+							"Foreground",
+							"FontWeight",
+							"IsSplitable"
+						],
+						"default": {
+
+							"United": [
+								"FirstName",
+								"PatronymicName"
+							],
+							"Name": "FirstAndPatronymic",
+							"Number": 1,
+							"Width": 210,
+							"Height": 21,
+							"TopOffset": 92,
+							"LeftOffset": 130,
+							"Alignment": "Right",
+							"FontSize": 14,
+							"FontName": "Century Gothic",
+							"Foreground": {
+								"Red": 0,
+								"Green": 0,
+								"Blue": 0
+							},
+							"FontWeight": "Bold",
+							"IsSplitable": false
+						}
+					}
+				}
+			},
+			"required": [ "Items" ],
+			"default": {
+
+				"Items": [
+					{
 						"United": [
 							"FirstName",
 							"PatronymicName"
@@ -785,22 +766,133 @@
 						"Alignment": "Right",
 						"FontSize": 14,
 						"FontName": "Century Gothic",
-						"Foreground": {
-							"Red": 0,
-							"Green": 0,
-							"Blue": 0
-						},
+						"Foreground": "#730000",
 						"FontWeight": "Bold",
 						"IsSplitable": false
 					}
+				]
+			}
+		}
+	},
+
+	"required": [
+		"TemplateName",
+		"BackgroundImagePath",
+		"CommonDefaultFontFamily",
+		"Width",
+		"Height",
+		"Padding",
+		"CorrectMemberSettings",
+		"IncorrectMemberSettings",
+		"FamilyName",
+		"FirstName",
+		"PatronymicName",
+		"Post",
+		"Department",
+		"UnitedTextBlocks"
+	],
+
+	"default": {
+		"BackgroundImagePath": "doctors2.jpg",
+		"CommonDefaultFontFamily": "Century Gothic",
+		"Width": 350,
+		"Height": 214,
+
+		"Padding": {
+			"Left": 10,
+			"Top": 10,
+			"Right": 10,
+			"Bottom": 10
+		},
+
+		"CorrectMemberSettings": {
+				"BorderColor": "#00eeee",
+				"BorderThickness": {
+					"Left": 1,
+					"Top": 1,
+					"Right": 1,
+					"Bottom": 1
 				}
-		    }
-	    },
-		"required":[ "Items" ],
-		"default":{
-		    
-			"Items":
-			[
+		},
+
+		"IncorrectMemberSettings": {
+			"Background": "#aaaaaa",
+			"BorderColor": "#00ee00",
+			"BorderThickness": {
+				"Left": 2,
+				"Top": 2,
+				"Right": 2,
+				"Bottom": 2
+			}
+		},
+
+		"FamilyName": {
+			"Width": 210,
+			"Height": 33,
+			"TopOffset": 60,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 24,
+			"FontName": "Century Gothic",
+			"Foreground": "#730000",
+			"FontWeight": "Bold",
+			"IsSplitable": false
+		},
+
+		"FirstName": {
+			"Width": 210,
+			"Height": 21,
+			"TopOffset": 92,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 14,
+			"FontName": "Century Gothic",
+			"Foreground": "#730000",
+			"FontWeight": "Bold",
+			"IsSplitable": false
+		},
+
+		"PatronymicName": {
+			"Width": 210,
+			"Height": 21,
+			"TopOffset": 92,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 14,
+			"FontName": "Century Gothic",
+			"Foreground": "#730000",
+			"FontWeight": "Bold",
+			"IsSplitable": false
+		},
+
+		"Post": {
+			"Width": 210,
+			"Height": 17,
+			"TopOffset": 122,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 10,
+			"FontName": "Century Gothic",
+			"Foreground": "#000000",
+			"FontWeight": "Bold",
+			"IsSplitable": true
+		},
+
+		"Department": {
+			"Width": 210,
+			"Height": 17,
+			"TopOffset": 146,
+			"LeftOffset": 130,
+			"Alignment": "Right",
+			"FontSize": 10,
+			"FontName": "Century Gothic",
+			"Foreground": "#000000",
+			"FontWeight": "Bold",
+			"IsSplitable": true
+		},
+
+		"UnitedTextBlocks": {
+			"Items": [
 				{
 					"United": [
 						"FirstName",
@@ -815,209 +907,11 @@
 					"Alignment": "Right",
 					"FontSize": 14,
 					"FontName": "Century Gothic",
-					"Foreground": {
-						"Red": 0,
-						"Green": 0,
-						"Blue": 0
-					},
+					"Foreground": "#730000",
 					"FontWeight": "Bold",
 					"IsSplitable": false
 				}
 			]
-		}
-    }
-  },
-  
-  "required":[ "TemplateName", "BackgroundImagePath", "CommonDefaultFontFamily", "Width", "Height", "InsideSpan", "IncorrectLineBackground"
-              , "FamilyName", "FirstName", "PatronymicName", "Post", "Department", "UnitedTextBlocks"],
-			  
-	"default":
-	{
-		"BackgroundImagePath" : "doctors2.jpg",
-		"CommonDefaultFontFamily" : "Century Gothic",
-		"Width" : 350,
-		"Height" : 214,
-		"InsideSpan" : 
-		{
-			"Left": 10,
-			"Top": 10,
-			"Right": 10,
-			"Bottom": 10
-		},
-		"IncorrectLineBackground": 
-		{
-			"Red": 200,
-			"Green": 200,
-			"Blue": 200
-		},
-
-		"FamilyName": {
-			"Width" : 210,
-			"Height" : 33,
-			"TopOffset" : 60,
-			"LeftOffset" : 130,
-			"Alignment" : "Right",
-			"FontSize" : 24,
-			"FontName": "Century Gothic",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		},
-
-		"FirstName": {
-			"Width": 210,
-			"Height": 21,
-			"TopOffset": 92,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 14,
-			"FontName": "Century Gothic",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		},
-
-		"PatronymicName": {
-			"Width": 210,
-			"Height": 21,
-			"TopOffset": 92,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 14,
-			"FontName": "Century Gothic",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-		},
-
-		"Post": {
-			"Width": 210,
-			"Height": 17,
-			"TopOffset": 122,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 10,
-			"FontName": "Century Gothic",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": true
-		},
-		  
-		"Department": {
-			"Width": 210,
-			"Height": 17,
-			"TopOffset": 146,
-			"LeftOffset": 130,
-			"Alignment": "Right",
-			"FontSize": 10,
-			"FontName": "Century Gothic",
-			"Foreground": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": true
-		},
-
-		"UnitedTextBlocks" : {
-			"Items": [
-				{
-					"United": [
-					  "FirstName",
-					  "PatronymicName"
-					],
-					"Name": "FirstAndPatronymic",
-					"Number":1,
-					"Width": 210,
-					"Height": 21,
-					"TopOffset": 92,
-					"LeftOffset": 130,
-					"Alignment": "Right",
-					"FontSize": 14,
-					"FontName": "Century Gothic",
-					"Foreground": 
-					{
-						"Red": 0,
-						"Green": 0,
-						"Blue": 0
-					},
-					"OutLineColor": 
-					{
-						"Red": 0,
-						"Green": 0,
-						"Blue": 0
-					},
-					"FontWeight": "Bold",
-					"IsSplitable": false
-				}
-			]
-		},
-
-		"InsideImages" : {
-			"Items" : [
-				{
-					"ImagePath": "",
-					"GeometricElementName": "Rectangle",
-					"Color": "Brown",
-					"Width": 80,
-					"Height": 1,
-					"TopOffset": 138,
-					"LeftOffset": 212
-				}
-			]
-
 		}
 	}		  
 }

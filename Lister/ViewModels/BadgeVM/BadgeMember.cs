@@ -1,4 +1,5 @@
-﻿using Avalonia.Media;
+﻿using Avalonia;
+using Avalonia.Media;
 using AvaloniaEdit.Highlighting;
 using ReactiveUI;
 using System;
@@ -32,7 +33,7 @@ namespace Lister.ViewModels
             protected set
             {
                 this.RaiseAndSetIfChanged (ref _height, value, nameof (Height));
-                HeightWithBorder = Height + 2;
+                HeightWithBorder = Height + BorderThickness.Top + BorderThickness.Bottom;
             }
         }
 
@@ -56,6 +57,19 @@ namespace Lister.ViewModels
             }
         }
 
+        private Thickness _borderThickness;
+        public Thickness BorderThickness
+        {
+            get { return _borderThickness; }
+            protected set
+            {
+                this.RaiseAndSetIfChanged (ref _borderThickness, value, nameof (BorderThickness));
+                LeftOffsetWithBorder = LeftOffset - BorderThickness.Left;
+                TopOffsetWithBorder = TopOffset - BorderThickness.Top;
+                HeightWithBorder = Height + BorderThickness.Top + BorderThickness.Bottom;
+            }
+        }
+
         private double _topOffset;
         public double TopOffset
         {
@@ -63,7 +77,7 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref _topOffset, value, nameof (TopOffset));
-                TopOffsetWithBorder = TopOffset - 1;
+                TopOffsetWithBorder = TopOffset - BorderThickness.Top;
             }
         }
 
@@ -74,7 +88,7 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref _leftOffset, value, nameof (LeftOffset));
-                LeftOffsetWithBorder = LeftOffset - 1;
+                LeftOffsetWithBorder = LeftOffset - BorderThickness.Left;
             }
         }
 
@@ -98,46 +112,50 @@ namespace Lister.ViewModels
             }
         }
 
-        protected SolidColorBrush outlineColorStorage;
-        private SolidColorBrush _outLineColor;
-        public SolidColorBrush OutLineColor
+        private SolidColorBrush _borderColor;
+        public SolidColorBrush BorderColor
         {
-            get { return _outLineColor; }
+            get { return _borderColor; }
             private set
             {
-                //if ( value != null ) 
-                //{
-                //    Red = value.Color.R;
-                //    Green = value.Color.G;
-                //    Blue = value.Color.B;
-                //}
-
-                this.RaiseAndSetIfChanged (ref _outLineColor, value, nameof (OutLineColor));
+                this.RaiseAndSetIfChanged (ref _borderColor, value, nameof (BorderColor));
             }
         }
 
 
-        protected void SetYourself ( double width, double height, double topOffset, double leftOffset
-                                                                                  , SolidColorBrush outLineColor ) 
+        protected void SetYourself ( double width, double height, double topOffset, double leftOffset ) 
         {
             Width = width;
             Height = height;
             TopOffset = topOffset;
             LeftOffset = leftOffset;
-            OutLineColor = null;
-            outlineColorStorage = outLineColor;
         }
 
 
-        public void BecomeFocused ( )
+        public void BecomeFocused ( SolidColorBrush borderColor, Thickness borderThickness )
         {
-            OutLineColor = outlineColorStorage;
+            BorderColor = borderColor;
+
+            if ( borderColor == null ) 
+            {
+                BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
+            }
+
+            BorderThickness = borderThickness;
         }
 
 
         public void BecomeUnFocused ()
         {
-            OutLineColor = null;
+            BorderColor = null;
+            BorderThickness = new Thickness (0, 0, 0, 0);
+        }
+
+
+        public void Mark ( SolidColorBrush borderColor, Thickness borderThickness )
+        {
+            BorderColor = borderColor;
+            BorderThickness = borderThickness;
         }
 
 
@@ -148,6 +166,11 @@ namespace Lister.ViewModels
             Height *= coefficient;
             TopOffset *= coefficient;
             LeftOffset *= coefficient;
+
+            //LeftOffset = Math.Round (LeftOffset * coefficient, 0);
+
+        //    BorderThickness =
+        //new Thickness (BorderThickness.Left * coefficient, BorderThickness.Top, BorderThickness.Right, BorderThickness.Bottom);
         }
 
 
@@ -158,6 +181,11 @@ namespace Lister.ViewModels
             Height /= coefficient;
             TopOffset /= coefficient;
             LeftOffset /= coefficient;
+
+            //LeftOffset = Math.Round (LeftOffset / coefficient, 0);
+
+            //   BorderThickness =
+            //new Thickness (BorderThickness.Left / coefficient, BorderThickness.Top, BorderThickness.Right, BorderThickness.Bottom);
         }
 
 

@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
-using static System.Collections.Specialized.BitVector32;
-using ContentAssembler;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DataGateway
 {
@@ -17,8 +14,6 @@ namespace DataGateway
         private static string _configFilePath;
         private static string _attributeSection;
         private static List<string> _incorrectJsons = [];
-
-        public static readonly char [] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 
         public static IConfigurationSection ? GetSection ( string jsonPath, List<string> keyPathOfSection )
@@ -122,24 +117,6 @@ namespace DataGateway
 
                 return string.Empty;
             }
-
-            //IConfigurationRoot configRoot = GetConfigRoot (jsonPath);
-
-            //string sectionName = keyPathOfSection [0];
-            //IConfigurationSection section = configRoot.GetSection (sectionName);
-
-            //if ( keyPathOfSection.Count > 1 )
-            //{
-            //    for ( int step = 1; step < keyPathOfSection.Count; step++ )
-            //    {
-            //        sectionName = keyPathOfSection [step];
-            //        section = section.GetSection (sectionName);
-            //    }
-            //}
-
-            //string result = section.Value;
-
-            //return result;
         }
 
 
@@ -271,15 +248,16 @@ namespace DataGateway
 
         public static int Parse ( string parsable )
         {
-            for ( int index = 0;   index < parsable.Length;   index++ )
+            int result = -1;
+
+            bool isInt = int.TryParse (parsable, out result);
+
+            if ( ! isInt ) 
             {
-                if ( ! digits.Contains (parsable [index]) )
-                {
-                    return -1;
-                }
+                return -1;
             }
 
-            return int.Parse (parsable);
+            return result;
         }
 
 

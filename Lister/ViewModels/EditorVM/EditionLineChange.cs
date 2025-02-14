@@ -89,15 +89,15 @@ namespace Lister.ViewModels
         }
 
 
-        internal void FocusShape ( ShapeKind kindName, int shapeId )
+        internal void FocusShape ( ShapeType kindName, int shapeId )
         {
             MakeBackUp ();
 
-            if ( kindName == ShapeKind.rectangle )
+            if ( kindName == ShapeType.rectangle )
             {
                 BeingProcessedBadge.SetFocusedRectangle (shapeId);
             }
-            else if ( kindName == ShapeKind.ellipse ) 
+            else if ( kindName == ShapeType.ellipse ) 
             {
                 BeingProcessedBadge.SetFocusedEllipse (shapeId);
             }

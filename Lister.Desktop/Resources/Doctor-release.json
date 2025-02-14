@@ -1,176 +1,140 @@
 {
-  "TemplateName" : "Бейдж с фоном",
-  "BackgroundImagePath" : "doctors2.jpg",
-  "CommonDefaultFontFamily" : "Century Gothic",
-  "Width" : 350,
-  "Height" : 214,
-  "InsideSpan" : 
-  {
-    "Left": 10,
-    "Top": 10,
-    "Right": 16,
-    "Bottom": 10
-  },
-  
-  "IncorrectLineBackground": 
-  {
-	"Red": 200,
-	"Green": 200,
-	"Blue": 200
-  },
+	"TemplateName": "Бейдж с фоном",
+	"BackgroundImagePath": "doctors2.jpg",
+	"CommonDefaultFontFamily": "Century Gothic",
+	"Width": 350,
+	"Height": 214,
+	"Padding": {
+		"Left": 10,
+		"Top": 10,
+		"Right": 16,
+		"Bottom": 10
+	},
 
-  "FamilyName": {
-    "Width" : 210,
-    "Height" : 26,
-    "TopOffset" : 60,
-	"LeftOffset" : 124,
-    "Alignment" : "Right",
-    "FontSize" : 26,
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 115,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
+	"CorrectMemberSettings": {
 
-  "FirstName": {
-    "Width": 210,
-    "Height": 15,
-    "TopOffset": 92,
-    "LeftOffset": 124,
-    "Alignment": "Right",
-    "FontSize": 15,
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 115,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
+		"BorderColor": "#00ef00",
 
-  "PatronymicName": {
-    "Width": 210,
-    "Height": 15,
-    "TopOffset": 92,
-    "LeftOffset": 124,
-    "Alignment": "Right",
-    "FontSize": 15,
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 115,
-		"Green": 0,
-		"Blue": 0
+		"BorderThickness": {
+			"Left": 1,
+			"Top": 1,
+			"Right": 1,
+			"Bottom": 1
+		}
 	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": false
-  },
 
-  "Post": {
-    "Width": 210,
-    "Height": 11,
-    "TopOffset": 124,
-    "LeftOffset": 124,
-    "Alignment": "Right",
-    "FontSize": 11,
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": true
-  },
+	"IncorrectMemberSettings": {
 
-  "Department": {
-    "Width": 210,
-    "Height": 11,
-    "TopOffset": 146,
-    "LeftOffset": 124,
-    "Alignment": "Right",
-    "FontSize": 11,
-	"FontName": "Century Gothic",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"OutLineColor": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
-    "IsSplitable": true
-  },
+		"Background": "#c8c8c8",
 
-  "UnitedTextBlocks" : {
-    "Items": [
-        {
-			"United": [
-			  "FirstName",
-			  "PatronymicName"
-			],
-			"Name": "FirstAndPatronymic",
-			"Number":1,
-			"Width": 210,
-			"Height": 15,
-			"TopOffset": 92,
-			"LeftOffset": 124,
-			"Alignment": "Right",
-			"FontSize": 15,
-			"FontName": "Century Gothic",
-			"Foreground": 
+		"BorderColor": "#a4acff",
+
+		"BorderThickness": {
+			"Left": 5,
+			"Top": 5,
+			"Right": 5,
+			"Bottom": 5
+		}
+	},
+
+	"FamilyName": {
+		"Width": 210,
+		"Height": 26,
+		"TopOffset": 60,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 26,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#7300++--",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"FirstName": {
+		"Width": 210,
+		"Height": 15,
+		"TopOffset": 92,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 15,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#730000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"PatronymicName": {
+		"Width": 210,
+		"Height": 15,
+		"TopOffset": 92,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 15,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#730000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"Post": {
+		"Width": 210,
+		"Height": 11,
+		"TopOffset": 124,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 11,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#000000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"Department": {
+		"Width": 210,
+		"Height": 11,
+		"TopOffset": 146,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 11,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#000000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"UnitedTextBlocks": {
+		"Items": [
 			{
-				"Red": 115,
-				"Green": 0,
-				"Blue": 0
-			},
-			"OutLineColor": 
-			{
-				"Red": 0,
-				"Green": 0,
-				"Blue": 0
-			},
-			"FontWeight": "Bold",
-			"IsSplitable": false
-        }
-    ]
-  }
-  
+				"United": [
+					"FirstName",
+					"PatronymicName"
+				],
+				"Name": "FirstAndPatronymic",
+				"Number": 1,
+				"Width": 210,
+				"Height": 15,
+				"TopOffset": 92,
+				"LeftOffset": 124,
+				"Alignment": "Right",
+				"FontSize": 15,
+				"FontName": "Century Gothic",
+
+				"Foreground": "#730000",
+
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		]
+	}
+
 }
