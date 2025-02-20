@@ -430,12 +430,10 @@ namespace Lister.ViewModels
 
                     if ( _focused != null )
                     {
-                        //_focused.BorderColor = _unfocusedBorderColor;
                         _focused.IsFocused = false;
                     }
 
                     _focused = InvolvedPeople [_focusedNumber];
-                    //_focused.BorderColor = _focusedBorderColor;
                     _focused.IsFocused = true;
 
                     if ( _focusedNumber > _focusedEdge )
@@ -494,11 +492,11 @@ namespace Lister.ViewModels
 
         private void UpRunner ( double runnerStep )
         {
-            RunnerTopCoordinate -= runnerStep;
+            RunnerYCoordinate -= runnerStep;
 
-            if ( RunnerTopCoordinate < _upperHeight )
+            if ( RunnerYCoordinate < _upperHeight )
             {
-                RunnerTopCoordinate = _upperHeight;
+                RunnerYCoordinate = _upperHeight;
             }
 
             TopSpanHeight -= runnerStep;
@@ -530,13 +528,13 @@ namespace Lister.ViewModels
                 TopSpanHeight = maxHeight;
             }
 
-            RunnerTopCoordinate += runnerStep;
+            RunnerYCoordinate += runnerStep;
 
             double maxRunnerTopCoord = _upperHeight + TopSpanHeight;
 
-            if ( RunnerTopCoordinate > maxRunnerTopCoord )
+            if ( RunnerYCoordinate > maxRunnerTopCoord )
             {
-                RunnerTopCoordinate = maxRunnerTopCoord;
+                RunnerYCoordinate = maxRunnerTopCoord;
             }
 
             BottomSpanHeight -= runnerStep;

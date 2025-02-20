@@ -35,9 +35,16 @@ namespace Lister.ViewModels;
 
 public class ConverterToPdf 
 {
+    private readonly string _osName;
     private Dictionary <string, Pdf.Image> pathToInsideImage = new ();
     public IEnumerable <byte []> bytes = null;
     public List <string> intermidiateFiles = new ();
+
+
+    public ConverterToPdf ( string osName ) 
+    {
+        _osName = osName;
+    }
 
 
     internal bool ConvertToExtention ( List <PageViewModel> pages, string ? filePathToSave
@@ -281,7 +288,7 @@ public class ConverterToPdf
 
     private Pdf.Image ? GetImageByPath ( string path )
     {
-        if ( App.OsName == "Linux" )
+        if ( _osName == "Linux" )
         {
             path = "/" + path;
         }

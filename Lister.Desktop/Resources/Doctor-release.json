@@ -1,5 +1,5 @@
 {
-	"TemplateName": "Бейдж с фоном",
+	"TemplateName":"Бейдж с фоном",
 	"BackgroundImagePath": "doctors2.jpg",
 	"CommonDefaultFontFamily": "Century Gothic",
 	"Width": 350,
@@ -13,13 +13,13 @@
 
 	"CorrectMemberSettings": {
 
-		"BorderColor": "#00ef00",
+		"BorderColor": "#4aacfe",
 
 		"BorderThickness": {
-			"Left": 1,
-			"Top": 1,
-			"Right": 1,
-			"Bottom": 1
+			"Left": 2,
+			"Top": 2,
+			"Right": 2,
+			"Bottom": 2
 		}
 	},
 
@@ -27,13 +27,13 @@
 
 		"Background": "#c8c8c8",
 
-		"BorderColor": "#a4acff",
+		"BorderColor": "#d23650",
 
 		"BorderThickness": {
-			"Left": 5,
-			"Top": 5,
-			"Right": 5,
-			"Bottom": 5
+			"Left": 2,
+			"Top": 2,
+			"Right": 2,
+			"Bottom": 2
 		}
 	},
 
@@ -46,7 +46,7 @@
 		"FontSize": 26,
 		"FontName": "Century Gothic",
 
-		"Foreground": "#7300++--",
+		"Foreground": "#730000",
 
 		"FontWeight": "Bold",
 		"IsSplitable": false

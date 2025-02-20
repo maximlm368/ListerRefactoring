@@ -15,8 +15,7 @@
 	
 	<StackPanel
 		Name="editionPanel"
-		ZIndex="1"
-		Focusable="True">
+		ZIndex="1">
 
 		<Grid
 			Name="backBlock"
@@ -973,25 +972,27 @@
 										<Style Selector="ItemsControl ContentPresenter">
 											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
 											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Width" Value="{Binding Path = Width,  Mode=OneWay}" />
 										</Style>
 									</ItemsControl.Styles>
 
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
+
 											<Border
 												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
 												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}"
-												Height="{Binding Path = HeightWithBorder,  Mode=OneWay}">
-												
+												Width="{Binding Path = WidthWithBorder,  Mode=OneWay}">
+
 												<Image
 													Source = "{Binding   Path = BitMap,  Mode=OneWay }"
+													Width="{Binding Path = Width,  Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
 													PointerExited="SetArrowCursor"/>
 											</Border>
+												
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
@@ -1053,8 +1054,6 @@
 										<Style Selector="ItemsControl ContentPresenter">
 											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
 											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Width" Value="{Binding Path = Width,  Mode=OneWay}" />
-											<Setter Property="Height" Value="{Binding Path = Height,  Mode=OneWay}" />
 										</Style>
 									</ItemsControl.Styles>
 
@@ -1068,6 +1067,7 @@
 											
 												<Ellipse
 													Height="{Binding Path = Height,  Mode=OneWay}"
+													Width="{Binding Path = Width,  Mode=OneWay}"
 													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
 													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
 													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
@@ -1133,6 +1133,7 @@
 								Height="32"
 								Margin="1,2"
 								Padding="3,3"
+								Focusable="{Binding  Path=FilterIsShrinked,  Mode=OneWay}"
 								ToolTip.Tip="{Binding  Path=SwitcherTip,  Mode=OneWay}"
 								Command="{Binding  Path = Filter}"
 								PointerPressed="SomeButtonPressed">
@@ -1161,6 +1162,7 @@
 								Margin="10,-4"
 								Padding="4,1"
 								MaxDropDownHeight="200"
+								Focusable="{Binding  Path=FilterIsExtended,  Mode=OneWay}"
 								IsEnabled="{Binding  Path=IsComboboxEnabled,  Mode=OneWay}"
 								SelectedIndex="{Binding  Path=FilterSelectedIndex,  Mode=OneWay}"
 								IsDropDownOpen="{Binding  Path=IsDropDownOpen,  Mode=OneWayToSource}"
@@ -1277,7 +1279,7 @@
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Padding="2,2"
 								Content="&#xF077;"
-								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+								Focusable="{Binding   Path = FilterIsExtended,   Mode=OneWay}"
 								Command="{Binding Path=ScrollUp}"
 								PointerPressed="SomeButtonPressed"/>
 
@@ -1312,7 +1314,7 @@
 								Grid.Row="2"
 								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
 								Padding="2,2"
-								Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+								Focusable="{Binding   Path = FilterIsExtended,   Mode=OneWay}"
 								Content="&#xF078;"
 								Command="{Binding Path=ScrollDown}"
 								PointerPressed="SomeButtonPressed"/>

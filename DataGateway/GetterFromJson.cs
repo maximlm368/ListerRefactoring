@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
+using System.Collections;
 
 namespace DataGateway
 {
@@ -52,6 +53,17 @@ namespace DataGateway
 
             try
             {
+                //Stream stream = File.OpenRead (jsonPath);
+                //byte [] buffer = new byte [4096];
+                //int length = stream.Read (buffer, 0, 1000);
+                //string result = System.Text.Encoding.UTF8.GetString (buffer, 0, length);
+
+
+                string [] lines = File.ReadAllLines (jsonPath);
+
+
+
+
                 JsonDocument doc = JsonDocument.Parse (File.ReadAllText (jsonPath));
                 error = string.Empty;
 
@@ -61,6 +73,7 @@ namespace DataGateway
             {
                 error = ex.Message;
                 _incorrectJsons.Add (jsonPath);
+
                 return false;
             }
         }

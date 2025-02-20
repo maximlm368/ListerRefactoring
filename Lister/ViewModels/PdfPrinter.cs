@@ -69,26 +69,6 @@ namespace Lister.ViewModels
         }
 
 
-        //private string ExtractPathWithoutFileName ( string wholePath )
-        //{
-        //    var builder = new StringBuilder ();
-        //    string goalPath = string.Empty;
-
-        //    for ( var index = wholePath.Length - 1; index >= 0; index-- )
-        //    {
-        //        bool fileNameIsAchieved = ( wholePath [index] == '/' ) || ( wholePath [index] == '\\' );
-
-        //        if ( fileNameIsAchieved )
-        //        {
-        //            goalPath = wholePath.Substring (0, index);
-        //            break;
-        //        }
-        //    }
-
-        //    return goalPath;
-        //}
-
-
         private bool GeneratePdf ( string fileToSave, List <PageViewModel> printables )
         {
             IEnumerable<byte []> intermediateBytes = null;

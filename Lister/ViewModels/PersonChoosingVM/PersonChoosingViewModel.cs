@@ -51,14 +51,13 @@ namespace Lister.ViewModels
         }
 
 
-        public PersonChoosingViewModel ( string placeHolder, SolidColorBrush entireListColor, int inputLimit
+        public PersonChoosingViewModel ( string placeHolder, int inputLimit
                                         , SolidColorBrush incorrectTemplateColor, List <SolidColorBrush> defaultColors
                                         , List <SolidColorBrush> focusedColors, List <SolidColorBrush> selectedColors )
         {
             _inputLimit = inputLimit;
 
             _placeHolder = placeHolder;
-            _entireListColor = entireListColor;
             _incorrectTemplateForeground = incorrectTemplateColor;
 
             _defaultBackgroundColor = defaultColors [0];
@@ -177,7 +176,6 @@ namespace Lister.ViewModels
                 RecoverVisiblePeople ();
                 ShowDropDown ();
                 ChosenPerson = null;
-
                 ToStartState ();
             }
 
@@ -193,7 +191,7 @@ namespace Lister.ViewModels
             SetEntireListChosenState ();
             PlaceHolder = _placeHolder;
 
-            EntireBackgroundColor = _focusedBackgroundColor;
+            EntireBackgroundColor = _selectedBackgroundColor;
             EntireForegroundColor = _selectedForegroundColor;
             EntireFontWeight = FontWeight.Bold;
             _focusedNumber = -1;
@@ -489,7 +487,7 @@ namespace Lister.ViewModels
                     RunnerHeight = _minRunnerHeight;
                 }
 
-                RunnerTopCoordinate = _upperHeight;
+                RunnerYCoordinate = _upperHeight;
                 TopSpanHeight = 0;
                 BottomSpanHeight = scrollerWorkAreaHeight - RunnerHeight;
                 _runnerStep = BottomSpanHeight / ( InvolvedPeople.Count - _maxVisibleCount );

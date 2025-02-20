@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <IServiceProvider, BadgeAppearenceServiceProvider> ();
         collection.AddSingleton <IPeopleSourceFactory, PeopleSourceFactory> ();
         collection.AddSingleton <IRowSource, PeopleXlsxSource> ();
-        collection.AddSingleton <Lister.ViewModels.ConverterToPdf> ();
+        collection.AddSingleton (typeof (ConverterToPdf), ConverterToPdfFactory);
         collection.AddSingleton <Lister.ViewModels.PdfPrinter> ();
         collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
 
@@ -52,6 +52,12 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <BadgesBuildingViewModel> ();
         collection.AddSingleton (typeof (WaitingViewModel), WaitingViewModelFactory);
         collection.AddSingleton <LargeMessageViewModel> ();
+    }
+
+
+    private static ConverterToPdf ConverterToPdfFactory ( IServiceProvider serviceProvider )
+    {
+        return new ConverterToPdf (App.OsName);
     }
 
 
@@ -112,10 +118,7 @@ public static class ServiceCollectionExtensions
     private static PersonChoosingViewModel PersonChoosingViewModelFactory ( IServiceProvider serviceProvider )
     {
         string placeHolder = PersonChoosingConfigs.placeHolder;
-
         int inputLimit = PersonChoosingConfigs.inputLimit;
-
-        SolidColorBrush entireListColor = GetColor (PersonChoosingConfigs.entireListColor);
 
         SolidColorBrush incorrectTemplateColor = GetColor (PersonChoosingConfigs.incorrectTemplateColor);
 
@@ -146,7 +149,7 @@ public static class ServiceCollectionExtensions
         PersonChoosingUserControl.SetComboboxHoveredItemColors (hoveredBackgroundColor, hoveredBorderColor);
         VisiblePerson.SetColors (defaultColors, focusedColors, selectedColors);
 
-        return new PersonChoosingViewModel (placeHolder, entireListColor, inputLimit, incorrectTemplateColor
+        return new PersonChoosingViewModel (placeHolder, inputLimit, incorrectTemplateColor
                                                   , defaultColors, focusedColors, selectedColors);
     }
 
@@ -195,7 +198,7 @@ public static class ServiceCollectionExtensions
         string emptyPages = PrintDialogConfigs.emptyPages;
         string emptyPrinters = PrintDialogConfigs.emptyPrinters;
 
-        return new PrintDialogViewModel (warnImagePath, emptyCopies, emptyPages, emptyPrinters);
+        return new PrintDialogViewModel (warnImagePath, emptyCopies, emptyPages, emptyPrinters, App.OsName);
     }
 
 

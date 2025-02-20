@@ -110,7 +110,7 @@ namespace Lister.ViewModels
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                     , _correctnessWidthLimit, _filterIsOpen));
+                                                                                     , _correctnessWidthLimit, FilterIsExtended));
 
                 if ( index == 0 ) 
                 {
@@ -305,7 +305,7 @@ namespace Lister.ViewModels
             {
                 BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                     , _correctnessWidthLimit, _filterIsOpen));
+                                                                                     , _correctnessWidthLimit, FilterIsExtended));
             }
 
             _numberAmongVisibleIcons = VisibleIcons. Count;
@@ -525,7 +525,7 @@ namespace Lister.ViewModels
             }
             else
             {
-                if ( _filterIsOpen )
+                if ( FilterIsExtended )
                 {
                     UpDownIsVisible = false;
                     SliderMargin = new Thickness (12, 40);
@@ -547,7 +547,7 @@ namespace Lister.ViewModels
 
             if ( enablingRange <= scrollerItemsCount )
             {
-                if ( _filterIsOpen )
+                if ( FilterIsExtended )
                 {
                     SliderCollectionWidth = _mostExtendedIconWidth;
 
@@ -559,7 +559,7 @@ namespace Lister.ViewModels
             }
             else
             {
-                if ( _filterIsOpen )
+                if ( FilterIsExtended )
                 {
                     SliderCollectionWidth = _extendedScrollableIconWidth;
 

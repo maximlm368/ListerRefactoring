@@ -52,7 +52,6 @@ namespace Lister.ViewModels
         private double _mostExtendedIconWidth = 224;
         private double _shrinkedIconWidth = 24;
         private double _iconWidthIncreasing = 20;
-        private bool _filterIsOpen;
         private double _doubleRest;
         private int _visibleRange;
         private int _scrollStepNumberStorage;
@@ -288,6 +287,30 @@ namespace Lister.ViewModels
                     _nextOnSliderIsEnable = value;
                     this.RaisePropertyChanged (nameof (NextOnSliderIsEnable));
                 }
+            }
+        }
+
+        private bool _filterIsExtended;
+        internal bool FilterIsExtended 
+        {
+            get { return _filterIsExtended; }
+
+            private set 
+            {
+                this.RaiseAndSetIfChanged (ref _filterIsExtended, value, nameof (FilterIsExtended));
+                FilterIsShrinked = ! value;
+                UpDownIsFocusable = ! value;
+            }
+        }
+
+        private bool _filterIsShrinked;
+        internal bool FilterIsShrinked
+        {
+            get { return _filterIsShrinked; }
+
+            private set
+            {
+                this.RaiseAndSetIfChanged (ref _filterIsShrinked, value, nameof (FilterIsShrinked));
             }
         }
 
@@ -583,7 +606,7 @@ namespace Lister.ViewModels
             if ( goalBadge != null ) 
             {
                 result = new BadgeCorrectnessViewModel (goalBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                              , _correctnessWidthLimit, _filterIsOpen);
+                                                                              , _correctnessWidthLimit, FilterIsExtended);
             }
 
             return result;
@@ -759,7 +782,7 @@ namespace Lister.ViewModels
                 {
                     BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
                     BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge , _extendedScrollableIconWidth
-                                                                   , _shrinkedIconWidth, _correctnessWidthLimit, _filterIsOpen);
+                                                                   , _shrinkedIconWidth, _correctnessWidthLimit, FilterIsExtended);
                     VisibleIcons.Add (icon);
                     _visibleIconsStorage.Add (icon);
                     FadeIcon (icon);

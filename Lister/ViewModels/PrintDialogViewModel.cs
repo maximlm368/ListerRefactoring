@@ -41,6 +41,8 @@ namespace Lister.ViewModels
         private readonly List<char> _copiesCountAcceptables
                                    = new List<char> () { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
+        private readonly string _osName;
+
         private List<char> _numAsChars;
         private List<int> _pageNumbers;
         private List<int> _currentRange;
@@ -283,12 +285,14 @@ namespace Lister.ViewModels
         }
 
 
-        public PrintDialogViewModel ( string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters )
+        public PrintDialogViewModel ( string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters
+                                    , string osName )
         {
             _warnImagePath = warnImagePath;
             _emptyCopies = emptyCopies;
             _emptyPages = emptyPages;
             _emptyPrinters = emptyPrinters;
+            _osName = osName;
 
             string correctnessIcon = App.ResourceFolderName + _warnImagePath;
             WarnImage = ImageHelper.LoadFromResource (correctnessIcon);
@@ -346,15 +350,17 @@ namespace Lister.ViewModels
 
         public void OpenPrinterSettings ()
         {
-            string printerName = Printers [SelectedIndex].StringPresentation;
-            System.Diagnostics.Process process = new System.Diagnostics.Process ();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo ();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + printerName + "\"";
-
-            process.StartInfo = startInfo;
-            process.Start ();
+            if ( _osName == "Windows" ) 
+            {
+                string printerName = Printers [SelectedIndex].StringPresentation;
+                System.Diagnostics.Process process = new System.Diagnostics.Process ();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo ();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + printerName + "\"";
+                process.StartInfo = startInfo;
+                process.Start ();
+            }
         }
 
 
@@ -754,11 +760,11 @@ namespace Lister.ViewModels
         {
             ObservableCollection <PrinterPresentation> printersList = null;
 
-            if ( App.OsName == "Windows" )
+            if ( _osName == "Windows" )
             {
                 printersList = PreparePrintersListOnWindows ();
             }
-            else if ( App.OsName == "Linux" )
+            else if ( _osName == "Linux" )
             {
                 printersList = PreparePrintersListOnLinux ();
             }
@@ -800,9 +806,9 @@ namespace Lister.ViewModels
         {
             ObservableCollection<PrinterPresentation> printersList = new ();
 
-            string defaultPrinterName = App.ExecuteBashCommand (_linuxGetDefaultPrinterBash);
+            string defaultPrinterName = TerminalCommandExecuter.ExecuteCommand (_linuxGetDefaultPrinterBash);
 
-            string printersLine = App.ExecuteBashCommand (_linuxGetPrintersBash);
+            string printersLine = TerminalCommandExecuter.ExecuteCommand (_linuxGetPrintersBash);
 
             string [] printers = printersLine.Split (new char[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
 

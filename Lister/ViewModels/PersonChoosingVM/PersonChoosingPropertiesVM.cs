@@ -21,7 +21,6 @@ namespace Lister.ViewModels
         private readonly double _oneHeight = 32;
         private readonly int _edge = 3;
 
-        private SolidColorBrush _entireListColor;
         private SolidColorBrush _incorrectTemplateForeground;
 
         private static SolidColorBrush _defaultBorderColor;
@@ -371,13 +370,13 @@ namespace Lister.ViewModels
             }
         }
 
-        private double _runnerTopCoordinate;
-        internal double RunnerTopCoordinate
+        private double _runnerYCoordinate;
+        internal double RunnerYCoordinate
         {
-            get { return _runnerTopCoordinate; }
+            get { return _runnerYCoordinate; }
             private set
             {
-                this.RaiseAndSetIfChanged (ref _runnerTopCoordinate, value, nameof (RunnerTopCoordinate));
+                this.RaiseAndSetIfChanged (ref _runnerYCoordinate, value, nameof (RunnerYCoordinate));
             }
         }
 

@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.Drawing.Text;
+using ExtentionsAndAuxiliary;
 
 
 namespace Lister;
@@ -256,7 +257,7 @@ public partial class App : Avalonia.Application
                 else if ( _runningOnLinux )
                 {
                     string fontInstallingCommand = "fc-cache -f -v";
-                    App.ExecuteBashCommand (fontInstallingCommand);
+                    TerminalCommandExecuter.ExecuteCommand (fontInstallingCommand);
                 }
 
                 string filePath = sourceDir + fontFile;

@@ -102,7 +102,7 @@ public partial class App : Avalonia.Application
             splashWindow.Show ();
 
             await BadgeAppearenceProvider.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
-                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ));
+                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ), OsName);
 
             MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
 
@@ -140,59 +140,6 @@ public partial class App : Avalonia.Application
         }
 
         base.OnFrameworkInitializationCompleted ();
-    }
-
-
-    //public override void OnFrameworkInitializationCompleted ()
-    //{
-    //    if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
-    //    {
-    //        MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
-
-    //        MainView mainView = new MainView ()
-    //        {
-    //            DataContext = mainViewModel
-    //        };
-
-    //        MainWindow mainWindow = new MainWindow ()
-    //        {
-    //            DataContext = new MainWindowViewModel (),
-    //            Content = mainView
-    //        };
-
-    //        App.MainWindow = mainWindow;
-    //        desktop.MainWindow = mainWindow;
-    //    }
-    //    else if ( ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform )
-    //    {
-    //        singleViewPlatform.MainView = _mainView;
-    //    }
-
-    //    base.OnFrameworkInitializationCompleted ();
-    //}
-
-
-    public static string ExecuteBashCommand ( string command )
-    {
-        using ( Process process = new Process () )
-        {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            process.Start ();
-
-            string result = process.StandardOutput.ReadToEnd ();
-
-            process.WaitForExit ();
-
-            return result;
-        }
     }
 
 

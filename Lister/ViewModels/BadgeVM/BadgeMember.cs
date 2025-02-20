@@ -22,7 +22,7 @@ namespace Lister.ViewModels
             protected set
             {
                 this.RaiseAndSetIfChanged (ref _width, value, nameof (Width));
-                WidthWithBorder = Width + 2;
+                WidthWithBorder = Width + BorderThickness.Left + BorderThickness.Right;
             }
         }
 
@@ -67,6 +67,7 @@ namespace Lister.ViewModels
                 LeftOffsetWithBorder = LeftOffset - BorderThickness.Left;
                 TopOffsetWithBorder = TopOffset - BorderThickness.Top;
                 HeightWithBorder = Height + BorderThickness.Top + BorderThickness.Bottom;
+                WidthWithBorder = Width + BorderThickness.Left + BorderThickness.Right;
             }
         }
 

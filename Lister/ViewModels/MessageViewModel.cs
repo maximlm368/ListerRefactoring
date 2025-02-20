@@ -56,8 +56,8 @@ namespace Lister.ViewModels
 
         public MessageViewModel ()
         {
-            string correctnessIcon = App.ResourceFolderName + _warnImageName;
-            WarnImage = ImageHelper.LoadFromResource (correctnessIcon);
+            string warningIconPath = App.ResourceFolderName + _warnImageName;
+            WarnImage = ImageHelper.LoadFromResource (warningIconPath);
         }
 
 

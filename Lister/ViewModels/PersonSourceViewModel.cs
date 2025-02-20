@@ -35,7 +35,6 @@ namespace Lister.ViewModels
 
         private string _sourcePathKeeper;
 
-        private IUniformDocumentAssembler _uniformAssembler;
         private bool _isFirstTimeLoading = true;
         private string _declinedFilePath;
 
@@ -125,44 +124,6 @@ namespace Lister.ViewModels
             personsLimitForSource = limit;
 
             _sourcePathKeeper = sourceKeeper;
-
-            _uniformAssembler = App.services.GetRequiredService<IUniformDocumentAssembler> ();
-        }
-
-
-        internal void OnLoadedq ( )
-        {
-            if ( !_isFirstTimeLoading )
-            {
-                return;
-            }
-
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directory = containingDirectory.FullName;
-            string keeper = directory + _sourcePathKeeper;
-            FileInfo fileInf = new FileInfo (keeper);
-
-            if ( fileInf.Exists )
-            {
-                string [] lines = File.ReadAllLines (keeper);
-
-                try
-                {
-                    SetPath (lines [0]);
-                }
-                catch ( IndexOutOfRangeException ex )
-                {
-                    SetPath (null);
-                }
-            }
-            else
-            {
-                File.Create (keeper).Close ();
-                SetPath (null);
-            }
-
-            _isFirstTimeLoading = false;
         }
 
 
@@ -186,6 +147,37 @@ namespace Lister.ViewModels
         }
 
 
+        internal async void ChooseFile ()
+        {
+            IReadOnlyList<IStorageFile> files =
+                await MainWindow.CommonStorageProvider.OpenFilePickerAsync (FilePickerOptions);
+
+            if ( ( files.Count == 1 ) && ( files [0] is not null ) )
+            {
+                string path = files [0].Path.LocalPath;
+
+                CheckIfOpenOrIncorrectAndUse (path, true);
+            }
+        }
+
+
+        internal void DeclineKeepedFileIfIncorrect ()
+        {
+            if ( string.IsNullOrWhiteSpace (_declinedFilePath) )
+            {
+                return;
+            }
+
+            DeclineIncorrectFile (_declinedFilePath);
+        }
+
+
+        internal void EmptySourcePath ()
+        {
+            SourceFilePath = string.Empty;
+        }
+
+
         private void SetPath ( string ? path )
         {
             bool pathExists = (( path != null )   &&   ( path != string.Empty ));
@@ -197,20 +189,6 @@ namespace Lister.ViewModels
             else
             {
                 SourceFilePath = null;
-            }
-        }
-
-
-        internal async void ChooseFile ()
-        {
-            IReadOnlyList <IStorageFile> files = 
-                await MainWindow.CommonStorageProvider.OpenFilePickerAsync (FilePickerOptions);
-
-            if ((files.Count == 1)   &&   ( files [0] is not null ))
-            {
-                string path = files [0].Path. LocalPath;
-
-                CheckIfOpenOrIncorrectAndUse (path, true);
             }
         }
 
@@ -238,7 +216,7 @@ namespace Lister.ViewModels
                 return;
             }
 
-            XlsxFileState fileState = CheckWhetherCorrectIfXSLX (path);
+            XlsxFileState fileState = CheckCorrectnessIfXSLX (path);
 
             if ( fileState == XlsxFileState.IsIncorrect )
             {
@@ -268,30 +246,13 @@ namespace Lister.ViewModels
         }
 
 
-        private void SavePathq ()
-        {
-            string workDirectory = @"./";
-            DirectoryInfo containingDirectory = new DirectoryInfo (workDirectory);
-            string directoryPath = containingDirectory.FullName;
-            string keeperPath = directoryPath + _sourcePathKeeper;
-            FileInfo fileInfo = new FileInfo (keeperPath);
-
-            if ( fileInfo.Exists )
-            {
-                List<string> lines = new List<string> ();
-                lines.Add (SourceFilePath);
-                File.WriteAllLines (keeperPath, lines);
-            }
-        }
-
-
         private void SavePath ()
         {
             SetterInJson.WritePersonSource ( App.ConfigPath, SourceFilePath );
         }
 
 
-        private XlsxFileState CheckWhetherCorrectIfXSLX ( string path )
+        private XlsxFileState CheckCorrectnessIfXSLX ( string path )
         {
             XlsxFileState fileState = XlsxFileState.NotXlsxFile;
 
@@ -302,7 +263,7 @@ namespace Lister.ViewModels
                     IRowSource headersSource = App.services.GetService<IRowSource> ();
                     List<string> headers = headersSource.GetRow (path, 0);
 
-                    for ( int index = 0; index < _xslxHeaders.Count; index++ )
+                    for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
                     {
                         bool isNotCoincident = ( headers [index] != _xslxHeaders [index] );
 
@@ -337,23 +298,6 @@ namespace Lister.ViewModels
         {
             FilePath = filePath;
             FileIsDeclined = true;
-        }
-
-
-        internal void DeclineKeepedFileIfIncorrect ( )
-        {
-            if ( string.IsNullOrWhiteSpace(_declinedFilePath) ) 
-            {
-                return;
-            }
-
-            DeclineIncorrectFile (_declinedFilePath);
-        }
-
-
-        internal void EmptySourcePath ()
-        {
-            SourceFilePath = string.Empty;
         }
 
 

@@ -150,7 +150,7 @@
 								Name="runner"
 								Classes="Runner"
 								Canvas.Left="0"
-								Canvas.Top="{Binding   Path = RunnerTopCoordinate,  Mode=OneWay}"
+								Canvas.Top="{Binding   Path = RunnerYCoordinate,  Mode=OneWay}"
 								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
 								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
 								ZIndex="3"

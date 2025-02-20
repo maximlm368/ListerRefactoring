@@ -450,25 +450,25 @@ namespace Lister.ViewModels
         {
             if ( _pdfPrinter.PdfGenerationSuccesseeded )
             {
-                if ( App.OsName == "Windows" )
+                string procName = string.Empty;
+
+                Process fileExplorer = new Process ();
+                string pdfFileName = ExtractPathWithoutFileName (PdfFileName);
+
+                if ( _osName == "Windows" )
                 {
-                    Process fileExplorer = new Process ();
-                    fileExplorer.StartInfo.FileName = "explorer.exe";
-                    string pdfFileName = ExtractPathWithoutFileName (PdfFileName);
+                    procName = "explorer.exe";
                     pdfFileName = pdfFileName.Replace ('/', '\\');
-                    fileExplorer.StartInfo.Arguments = pdfFileName;
-                    fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                    fileExplorer.Start ();
                 }
-                else if ( App.OsName == "Linux" )
+                else if ( _osName == "Linux" )
                 {
-                    Process fileExplorer = new Process ();
-                    fileExplorer.StartInfo.FileName = "nautilus";
-                    string pdfFileName = ExtractPathWithoutFileName (PdfFileName);
-                    fileExplorer.StartInfo.Arguments = pdfFileName;
-                    fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-                    fileExplorer.Start ();
+                    procName = "nautilus";
                 }
+
+                fileExplorer.StartInfo.FileName = procName;
+                fileExplorer.StartInfo.Arguments = pdfFileName;
+                fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+                fileExplorer.Start ();
             }
             else
             {

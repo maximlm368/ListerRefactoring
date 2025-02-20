@@ -23,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
+using Lister.Extentions;
 
 namespace Lister.Views
 {
@@ -815,7 +816,7 @@ namespace Lister.Views
             {
                 Cursor = new Cursor (StandardCursorType.Hand);
                 _badgeIsCaptured = true;
-                _pointerOnBadge = args.GetPosition (badge);
+                _pointerOnBadge = args.GetPosition (scroller);
             }
         }
 
@@ -827,7 +828,7 @@ namespace Lister.Views
 
             if ( shouldMoveBadge )
             {
-                Point newPosition = args.GetPosition (badge);
+                Point newPosition = args.GetPosition (scroller);
 
                 double verticalDelta = _pointerOnBadge.Y - newPosition.Y;
                 double horizontalDelta = _pointerOnBadge.X - newPosition.X;
@@ -836,7 +837,7 @@ namespace Lister.Views
                 double horizontalOffset = scroller.Offset.X;
                 double verticalOffset = scroller.Offset.Y;
 
-                scroller.Offset = new Vector ( horizontalOffset - horizontalDelta/2, verticalOffset - verticalDelta/2);
+                scroller.Offset = new Vector ( horizontalOffset + horizontalDelta, verticalOffset + verticalDelta);
             }
         }
     }

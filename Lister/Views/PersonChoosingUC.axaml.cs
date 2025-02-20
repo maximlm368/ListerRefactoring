@@ -51,7 +51,8 @@ namespace Lister.Views
 
         IBrush _borderDefault;
         SolidColorBrush _backgroundDefault = new SolidColorBrush (new Color (255, 255, 255, 255));
-
+        SolidColorBrush _backgroundSelected = new SolidColorBrush (new Color (255, 227, 241, 252));
+        private readonly SolidColorBrush _selectedBorderColor = new SolidColorBrush (new Color (255, 213, 232, 246));
 
 
         public PersonChoosingUserControl ()
@@ -102,6 +103,7 @@ namespace Lister.Views
 
         internal void AcceptEntirePersonList ( object sender, PointerPressedEventArgs args )
         {
+            _personListIsDropped = false;
             MainView.SomeControlPressed = true;
             _viewModel.SetEntireList ();
         }
@@ -241,6 +243,12 @@ namespace Lister.Views
             {
                 _personListIsDropped = true;
                 _viewModel.ShowDropDown ();
+
+                if ( _viewModel.EntireIsSelected ) 
+                {
+                    allPersonsSign.Background = _backgroundSelected;
+                    allPersonsSign.BorderBrush = _selectedBorderColor;
+                }
             }
         }
 
@@ -300,24 +308,6 @@ namespace Lister.Views
 
         #region ChoosingAndItemHovering
 
-        internal void HoverCustomComboboxItem ( object sender, PointerEventArgs args )
-        {
-            Label hovered = sender as Label;
-            _currentComboboxItemBackground = hovered.Background;
-            _currentComboboxItemBorderColor = hovered.BorderBrush;
-            hovered.Background = _comboboxItemBackground;
-            hovered.BorderBrush = _comboboxItemBorderColor;
-        }
-
-
-        internal void ExitCustomComboboxItem ( object sender, PointerEventArgs args )
-        {
-            Label hovered = sender as Label;
-            hovered.Background = _currentComboboxItemBackground;
-            hovered.BorderBrush = _currentComboboxItemBorderColor;
-        }
-
-
         internal void HoverComboboxItem ( object sender, PointerEventArgs args )
         {
             Label hovered = sender as Label;
@@ -330,7 +320,7 @@ namespace Lister.Views
 
         internal void ExitComboboxItem ( object sender, PointerEventArgs args )
         {
-            if ( _personListIsDropped ) 
+            if ( _personListIsDropped )
             {
                 Label hovered = sender as Label;
                 hovered.Background = _currentComboboxItemBackground;

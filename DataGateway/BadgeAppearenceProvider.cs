@@ -25,9 +25,18 @@ namespace DataGateway
         private static Dictionary<string, BadgeLayout> _badgeLayouts;
         private static Dictionary<string, ICollection <ValidationError>> _jsonAndErrors;
         private static Dictionary<string, string> _incorrectJsonAndError;
+        private static string _osName;
+
+        private enum States
+        {
+            BeforeColon = 0,
+            AfterColon = 1,
+            BeforeName = 2,
+            InName = 3
+        }
 
 
-        public static Task SetUp ( string resourceFolder, string jsonSchemeFolder )
+        public static Task SetUp ( string resourceFolder, string jsonSchemeFolder, string osName )
         {
             Task task = new Task
             (() =>
@@ -35,6 +44,7 @@ namespace DataGateway
                 BadgeAppearenceProvider badgeAppearenceProvider = new BadgeAppearenceProvider ();
                 badgeAppearenceProvider.SetLayouts (resourceFolder, jsonSchemeFolder);
                 Encoding.RegisterProvider (CodePagesEncodingProvider.Instance);
+                _osName = osName;
             });
 
             task.Start ();
@@ -67,9 +77,7 @@ namespace DataGateway
             foreach ( FileInfo fileInfo   in   fileInfos )
             {
                 string jsonPath = fileInfo.FullName;
-
                 string validationMessage = null;
-
                 bool jsonIsValid = GetterFromJson.CheckJsonCorrectness (jsonPath, out validationMessage);
 
                 if ( jsonIsValid )
@@ -219,7 +227,7 @@ namespace DataGateway
             {
                 States states = States.BeforeColon;
 
-                int scratch = incomingIndex + lenght + 1;
+                int scratch = incomingIndex + lenght;
 
                 for ( int index = scratch;   index < jsonText.Length;   index++ ) 
                 {
@@ -293,15 +301,6 @@ namespace DataGateway
 
             templateName = string.Empty;
             return false;
-        }
-
-
-        private enum States 
-        {
-            BeforeColon = 0,
-            AfterColon = 1,
-            BeforeName = 2,
-            InName = 3
         }
 
 
@@ -636,8 +635,6 @@ namespace DataGateway
                 try
                 {
                     string json = File.ReadAllText (jsonPath);
-
-
                     var result = schemeTask.Result;
 
                     if ( result != null )
@@ -657,9 +654,9 @@ namespace DataGateway
                         else 
                         {
                             ICollection <ValidationError> errors = validator.Validate (json, schema);
-                            bool templateIsInCorrect = ( errors.Count != 0 );
+                            bool templateIsIncorrect = ( errors.Count != 0 );
 
-                            if ( templateIsInCorrect )
+                            if ( templateIsIncorrect )
                             {
                                 List <ValidationError> children = new ();
 
@@ -692,17 +689,27 @@ namespace DataGateway
                                 foreach ( ValidationError err   in   errors )
                                 {
                                     string messageLine = string.Empty;
-
                                     string errKind = TranslateErrorKindToRuss (err.Kind);
-                                    messageLine += errKind + " Ошибка в свойстве ";
-                                    string propertyPath = err.Path;
+                                    messageLine += errKind;
 
-                                    propertyPath = TrimWaste (propertyPath);
+                                    if ( err.Kind != ValidationErrorKind.PropertyRequired )
+                                    {
+                                        messageLine += " Ошибка в свойстве ";
+                                        string propertyPath = err.Path;
+                                        propertyPath = TrimWaste (propertyPath);
+                                        messageLine += propertyPath + " на строке номер ";
+                                        string lineNumber = err.LineNumber.ToString ();
+                                        messageLine += lineNumber;
+                                    }
+                                    else
+                                    {
+                                        if ( err.Path != null   &&   err.Path.Length > 2 ) 
+                                        {
+                                            messageLine += err.Path.Substring(2, err.Path.Length - 2);
+                                        }
+                                    }
 
-                                    messageLine += propertyPath + " на строке номер ";
-                                    string lineNumber = err.LineNumber.ToString ();
-                                    messageLine += ( lineNumber + ";");
-
+                                    messageLine += ";";
                                     message.Add (messageLine);
                                 }
 
@@ -713,7 +720,7 @@ namespace DataGateway
                             }
                         }
 
-                        List<string> uninstalledFonts = CheckUninstalledFonts (jsonPath);
+                        List<string> uninstalledFonts = GetUninstalledFontsFrom (jsonPath);
 
                         foreach ( string uninstalledFont   in   uninstalledFonts ) 
                         {
@@ -735,7 +742,7 @@ namespace DataGateway
         }
 
 
-        private List<string> CheckUninstalledFonts ( string jsonPath )
+        private List<string> GetUninstalledFontsFrom ( string jsonPath )
         {
             List<string> fontNames = new ();
             fontNames.Add (GetterFromJson.GetSectionStrValue (new List<string> { "CommonDefaultFontFamily" }, jsonPath));
@@ -760,23 +767,41 @@ namespace DataGateway
 
         private List<string> GetUninstalledFontsFrom ( List<string> fontNames )
         {
-            InstalledFontCollection ifc = new InstalledFontCollection ();
-
-            System.Drawing.FontFamily [] families = ifc.Families;
-            List<string> names = new List<string> ();
-
-            foreach ( var family   in   families )
+            if ( _osName == "Windows" )
             {
-                names.Add (family.Name);
+                InstalledFontCollection ifc = new InstalledFontCollection ();
+                System.Drawing.FontFamily [] families = ifc.Families;
+                List<string> installed = new List<string> ();
+
+                foreach ( var family   in   families )
+                {
+                    installed.Add (family.Name);
+                }
+
+                return GetUninstalled ( installed, fontNames );
+            }
+            else if ( _osName == "Linux" ) 
+            {
+                string fontInstallingCommand = "fc-list : family | sort | uniq";
+                string result = TerminalCommandExecuter.ExecuteCommand (fontInstallingCommand);
+                List <string> installed = result.Split ('\n').ToList();
+
+                return GetUninstalled (installed, fontNames);
             }
 
-            List <string> uninstalled = new ();
+            return new List<string> ();
+        }
 
-            foreach ( var name   in   fontNames )
+
+        private List<string> GetUninstalled ( List<string> installed, List<string> checkebles )
+        {
+            List<string> uninstalled = new ();
+
+            foreach ( var name   in   checkebles )
             {
                 bool isExisting = ! string.IsNullOrWhiteSpace (name);
 
-                if ( isExisting   &&   ! names.Contains (name) )
+                if ( isExisting   &&   ! installed.Contains (name) )
                 {
                     uninstalled.Add (name);
                 }
@@ -840,16 +865,16 @@ namespace DataGateway
                     errKind = "Ошибка в элементе массива.";
                     break;
                 case ValidationErrorKind.PropertyRequired:
-                    errKind = "Не найдено обязательное поле.";
+                    errKind = "Не найдено обязательное поле ";
                     break;
                 case ValidationErrorKind.PatternMismatch:
-                    errKind = "Некорректное значение цвета Присутствуют недопустимые символы.";
+                    errKind = "Некорректное значение цвета. Присутствуют недопустимые символы.";
                     break;
                 case ValidationErrorKind.StringTooLong:
-                    errKind = "Некорректное значение цвета Слишком длинное.";
+                    errKind = "Некорректное значение цвета. Слишком длинное.";
                     break;
                 case ValidationErrorKind.StringTooShort:
-                    errKind = "Некорректное значение цвета. Слишком короткое";
+                    errKind = "Некорректное значение цвета. Слишком короткое.";
                     break;
 
                 default:
@@ -894,7 +919,7 @@ namespace DataGateway
 
             if ( errorsAbsentButSectionNotFound ) 
             {
-                List<string> keyPathToDefault = GetKeyPathToDefault (keyPathInJson);
+                List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
                 result = GetterFromJson.GetSectionStrValue (keyPathToDefault, _schemeFile.FullName);
             }
 
@@ -935,7 +960,7 @@ namespace DataGateway
 
             if ( errorsAbsentButSectionNotFound ) 
             {
-                List<string> keyPathToDefault = GetKeyPathToDefault (keyPathInJson);
+                List<string> keyPathToDefault = BuildPathToDefaultValue (keyPathInJson);
                 result = GetterFromJson.GetSectionIntValue (keyPathToDefault, _schemeFile.FullName);
             }
 
@@ -987,20 +1012,6 @@ namespace DataGateway
             }
 
             return GetterFromJson.GetSectionBoolValue (keyPathInJson, jsonPath);
-        }
-
-
-        private List<string> GetKeyPathToDefault ( List<string> keyPathInJson )
-        {
-            string propertyPathRoot = keyPathInJson [0];
-            List<string> keyPathToDefault = new () { "properties", propertyPathRoot, "default" };
-
-            for ( int index = 1; index < keyPathInJson.Count; index++ )
-            {
-                keyPathToDefault.Add (keyPathInJson [index]);
-            }
-
-            return keyPathToDefault;
         }
 
 

@@ -279,7 +279,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                  , _correctnessWidthLimit, _filterIsOpen));
+                                                                                  , _correctnessWidthLimit, FilterIsExtended));
 
                 counter++;
             }
@@ -304,7 +304,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel (badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                  , _correctnessWidthLimit, _filterIsOpen));
+                                                                                  , _correctnessWidthLimit, FilterIsExtended));
 
                 if ( existingCounter == 0 )
                 {
@@ -337,7 +337,7 @@ namespace Lister.ViewModels
                 }
 
                 VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                   , _correctnessWidthLimit, _filterIsOpen));
+                                                                                   , _correctnessWidthLimit, FilterIsExtended));
 
                 if ( existingCounter == 0 )
                 {
@@ -472,10 +472,10 @@ namespace Lister.ViewModels
 
         internal void ExtendOrShrinkCollectionManagement ()
         {
-            if ( _filterIsOpen )
+            if ( FilterIsExtended )
             {
                 FilterBlockMargin = new Thickness (_collectionFilterMarginLeft, 0);
-                _filterIsOpen = false;
+                FilterIsExtended = false;
                 ExtenderContent = "\uF060";
                 SwitcherWidth = _switcherWidth;
                 FilterLabelWidth = 0;
@@ -488,7 +488,7 @@ namespace Lister.ViewModels
             else
             {
                 FilterBlockMargin = new Thickness (0, 0);
-                _filterIsOpen = true;
+                FilterIsExtended = true;
                 ExtenderContent = "\uF061";
                 SwitcherWidth = 0;
                 FilterLabelWidth = _filterLabelWidth;
@@ -505,7 +505,7 @@ namespace Lister.ViewModels
         {
             double width;
 
-            if ( _filterIsOpen )
+            if ( FilterIsExtended )
             {
                 double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
 
