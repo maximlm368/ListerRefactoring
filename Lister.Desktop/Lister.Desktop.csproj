@@ -23,12 +23,16 @@
   <ItemGroup>
     <None Remove="Assets\badge.ico" />
     <None Remove="Assets\Font Awesome 6 Free-Solid-900.otf" />
+    <None Remove="Assets\fontawesome-webfont.ttf" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\badge.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\Font Awesome 6 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\fontawesome-webfont.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
   </ItemGroup>

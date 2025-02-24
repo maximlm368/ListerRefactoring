@@ -31,9 +31,9 @@
 		<AvaloniaNameGeneratorFilterByNamespace>*</AvaloniaNameGeneratorFilterByNamespace>
 		<AvaloniaNameGeneratorViewFileNamingStrategy>NamespaceAndClassName</AvaloniaNameGeneratorViewFileNamingStrategy>
 	</PropertyGroup>
-	
 
-	
+
+
 	
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -72,10 +72,10 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
   </ItemGroup>
 
-	
-  <ItemGroup>
-    <ProjectReference Include="..\ContentAssembler\Core.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Core\Core.csproj" />
+	</ItemGroup>
 
 	
   <ItemGroup>
