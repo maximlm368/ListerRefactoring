@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class SplashViewModel : ViewModelBase
+    public class SplashViewModel : ReactiveObject
     {
 
     }

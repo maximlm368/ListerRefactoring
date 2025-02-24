@@ -41,8 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExtentionsAndAuxiliary\ExtentionsAndAuxiliary.csproj" />
-    <ProjectReference Include="..\Lister\Lister.csproj" />
+    <ProjectReference Include="..\Lister\View.csproj" />
   </ItemGroup>
 
   <ItemGroup>

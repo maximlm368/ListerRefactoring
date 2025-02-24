@@ -6,7 +6,7 @@ using Lister.Extentions;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         private int _numberAmongVisibleIcons = 1;
 

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="42"
              x:Class="Lister.Views.PageNavigationZoomer"
-			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=View"
 			 x:DataType="vm:PageNavigationZoomerViewModel">
 
 	<Border >

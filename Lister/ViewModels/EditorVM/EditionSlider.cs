@@ -1,36 +1,12 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ContentAssembler;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.ObjectModel;
+﻿using Avalonia;
 using Avalonia.Media;
-using System.Globalization;
-using System.Reflection.Metadata;
-using ExtentionsAndAuxiliary;
-using Microsoft.VisualBasic;
-using Avalonia.Media.Imaging;
-using Lister.Extentions;
-using System.Linq.Expressions;
-using Lister.Views;
-using System.Windows.Input;
-using Avalonia.Platform.Storage;
+using ReactiveUI;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Threading;
-using System.Reflection;
-using System.Diagnostics;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         private readonly double _minRunnerHeight = 10;
         private readonly double _upDownButtonHeightWigth = 15;

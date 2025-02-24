@@ -1,21 +1,22 @@
-﻿using Avalonia;
-using Avalonia.Threading;
-using ContentAssembler;
-using Lister.Extentions;
-using Lister.Views;
+﻿using Avalonia.Threading;
+using Core.BadgesProvider;
+using Core.Models;
+using Core.Models.Badge;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
 namespace Lister.ViewModels
 {
-    public partial class SceneViewModel : ViewModelBase
+    public partial class SceneViewModel : ReactiveObject
     {
         private readonly int _badgeCountLimit;
         private readonly double _scalabilityCoefficient = 1.25;
 
         public static bool EntireListBuildingIsChosen { get; private set; }
 
-        private IUniformDocumentAssembler _docAssembler;
+        public static bool IsSingleBuildingPossible { get; private set; }
+
+        private BadgesGetter _docAssembler;
         private double _documentScale;
 
         private List <PageViewModel> _allPages;
@@ -247,7 +248,7 @@ namespace Lister.ViewModels
 
             SetButtonBlock ();
 
-            _docAssembler = App.services.GetService<IUniformDocumentAssembler> ();
+            _docAssembler = App.services.GetService<BadgesGetter> ();
             _documentScale = 1;
             AllPages = new List <PageViewModel> ();
             _printablePages = new List <PageViewModel> ();
@@ -262,7 +263,7 @@ namespace Lister.ViewModels
             ProcessableBadges = new List <BadgeViewModel> ();
             PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
-            PageCount = 1;
+            PageCount = 0;
         }
 
 
@@ -295,7 +296,6 @@ namespace Lister.ViewModels
             else
             {
                 BuildSingleBadge ();
-                EnableButtons ();
             }
         }
 
@@ -318,8 +318,6 @@ namespace Lister.ViewModels
                 () =>
                 {
                     bool buildingIsCompleted = BuildAllBadges (_templateForBuilding);
-
-                    EnableButtons ();
 
                     _buildingIsLocked = false;
                     EntireListBuildingIsChosen = false;
@@ -350,7 +348,7 @@ namespace Lister.ViewModels
 
         private bool BuildAllBadges ( string templateName )
         {
-            List <Badge> requiredBadges = _docAssembler.CreateBadgesByModel (templateName);
+            List <Badge> requiredBadges = _docAssembler.CreateBadgesByTemplate (templateName);
 
             if ( (BadgeCount + requiredBadges.Count) >= _badgeCountLimit ) 
             {
@@ -411,9 +409,17 @@ namespace Lister.ViewModels
                 Dispatcher.UIThread.Invoke 
                 (() => 
                 {
-                    VisiblePage = AllPages [VisiblePageNumber - 1];
-                    PageCount = AllPages.Count;
-                    VisiblePage.Show ();
+                    if ( allBadges.Count > 0 )
+                    {
+                        VisiblePage = AllPages [VisiblePageNumber - 1];
+                        PageCount = AllPages.Count;
+                        EnableButtons ();
+                        VisiblePage.Show ();
+                    }
+                    else 
+                    {
+                        PageCount = 0;
+                    }
                 });
             }
 
@@ -436,7 +442,15 @@ namespace Lister.ViewModels
                 return false;
             }
 
-            Badge requiredBadge = _docAssembler.CreateSingleBadgeByModel (templateName, _chosenPerson);
+            Badge requiredBadge = _docAssembler.CreateSingleBadgeByTemplate (templateName, _chosenPerson);
+
+            if ( requiredBadge == null ) 
+            {
+                IsSingleBuildingPossible = false;
+                DisableButtons ();
+                return false;
+            }
+
             BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
             BadgeViewModel printableBadge = goalVMBadge.Clone();
 
@@ -477,6 +491,8 @@ namespace Lister.ViewModels
             VisiblePageNumber = AllPages.Count;
             PageCount = AllPages.Count;
             goalVMBadge.Show ();
+            IsSingleBuildingPossible = true;
+            EnableButtons ();
 
             return true;
         }
@@ -500,7 +516,7 @@ namespace Lister.ViewModels
             _printablePages.Add (_lastPrintablePage);
 
             VisiblePageNumber = 1;
-            PageCount = 1;
+            PageCount = 0;
             BadgeCount = 0;
             IncorrectBadgeCount = 0;
 

@@ -43,11 +43,6 @@ public class BadgesBuildingViewModel : ReactiveObject
     }
 
 
-    public BadgesBuildingViewModel ( )
-    {
-    }
-
-
     internal void TryToEnableBadgeCreation ( bool shouldEnable )
     {
         BuildingIsPossible = shouldEnable;

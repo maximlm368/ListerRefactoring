@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using ContentAssembler;
+using Core.BadgesProvider;
 using Avalonia;
 using ReactiveUI;
 using System.ComponentModel;
@@ -20,7 +20,7 @@ using System.Collections.Generic;
 
 namespace Lister.ViewModels;
 
-public class PageViewModel : ViewModelBase
+public class PageViewModel : ReactiveObject
 {
     private static double _topOffsetOfContent;
     private static double _leftOffsetOfContent;

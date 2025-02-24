@@ -1,31 +1,7 @@
-﻿using Avalonia;
-using Avalonia.ReactiveUI;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using ContentAssembler;
-using DataGateway;
-using Microsoft.Extensions.DependencyInjection;
-using Lister.ViewModels;
-using Lister.Views;
-using Splat;
-using Avalonia.Styling;
-using Avalonia.Controls;
-//using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Runtime.InteropServices;
-using Avalonia.Media;
-using static System.Net.Mime.MediaTypeNames;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Media.Fonts;
-using Avalonia.Platform;
-using SkiaSharp;
-using System.Globalization;
-using System.Diagnostics;
-using Microsoft.Win32;
-using Microsoft.Extensions.Configuration;
-using System.Runtime.CompilerServices;
-using System.Drawing;
-using System.Drawing.Text;
+﻿using Core.DataAccess.JsonHandlers;
 using ExtentionsAndAuxiliary;
+using Microsoft.Extensions.Configuration;
+using System.Drawing.Text;
 
 
 namespace Lister;

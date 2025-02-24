@@ -12,7 +12,7 @@ using Lister.Views;
 
 namespace Lister.ViewModels
 {
-    public class DialogViewModel : ViewModelBase
+    public class DialogViewModel : ReactiveObject
     {
         private static string _warnImageName = "Icons/warning-alert.ico";
 

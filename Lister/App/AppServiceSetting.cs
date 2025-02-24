@@ -1,30 +1,10 @@
-﻿using Avalonia;
-using Avalonia.ReactiveUI;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using ContentAssembler;
-using DataGateway;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Avalonia.Media;
+using Core.DataAccess.JsonHandlers;
+using Core.BadgesProvider;
+using Core.DataAccess.PeopleSource;
 using Lister.ViewModels;
 using Lister.Views;
-using Splat;
-using Avalonia.Styling;
-using Avalonia.Controls;
-//using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Runtime.InteropServices;
-using Avalonia.Media;
-using static System.Net.Mime.MediaTypeNames;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Media.Fonts;
-using Avalonia.Platform;
-using SkiaSharp;
-using System.Globalization;
-using System.Diagnostics;
-using Microsoft.Win32;
-using Microsoft.Extensions.Configuration;
-using System.Runtime.CompilerServices;
-using static SkiaSharp.HarfBuzz.SKShaper;
-using ExtentionsAndAuxiliary;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister;
 
@@ -32,15 +12,10 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        collection.AddSingleton <IServiceProvider, BadgeAppearenceServiceProvider> ();
-        collection.AddSingleton <IPeopleSourceFactory, PeopleSourceFactory> ();
-        collection.AddSingleton <IRowSource, PeopleXlsxSource> ();
+        collection.AddSingleton <PeopleXlsxSource> ();
         collection.AddSingleton (typeof (ConverterToPdf), ConverterToPdfFactory);
         collection.AddSingleton <Lister.ViewModels.PdfPrinter> ();
-        collection.AddSingleton <IUniformDocumentAssembler, UniformDocAssembler> ();
-
-        collection.AddSingleton (typeof (IBadgeAppearenceProvider), BadgeAppearenceFactory);
-        collection.AddSingleton (typeof (IMemberColorProvider), BadLineFactory);
+        collection.AddSingleton <BadgesGetter> ();
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
         collection.AddSingleton (typeof (PersonChoosingViewModel), PersonChoosingViewModelFactory);
@@ -58,27 +33,6 @@ public static class ServiceCollectionExtensions
     private static ConverterToPdf ConverterToPdfFactory ( IServiceProvider serviceProvider )
     {
         return new ConverterToPdf (App.OsName);
-    }
-
-
-    private static IBadgeAppearenceProvider BadgeAppearenceFactory ( IServiceProvider serviceProvider )
-    {
-        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
-
-        IBadgeAppearenceProvider result = new BadgeAppearenceProvider ();
-
-        return result;
-    }
-
-
-    private static IMemberColorProvider BadLineFactory ( IServiceProvider serviceProvider )
-    {
-        object service = serviceProvider.GetService (typeof (BadgeAppearenceProvider));
-
-        IMemberColorProvider result =
-             new BadgeAppearenceProvider ();
-
-        return result;
     }
 
 
@@ -110,7 +64,8 @@ public static class ServiceCollectionExtensions
         GetterFromJson.GetSectionStrValue (new List<string> { "personSource" }, App.ConfigPath);
 
         PersonSourceViewModel result = 
-                    new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper);
+        new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper);
+
         return result;
     }
 
@@ -245,33 +200,5 @@ public static class ServiceCollectionExtensions
     private static WaitingViewModel WaitingViewModelFactory ( IServiceProvider serviceProvider )
     {
         return new WaitingViewModel (WaitingConfigs.gifName);
-    }
-}
-
-
-
-public class BadgeAppearenceServiceProvider : IServiceProvider
-{
-    public object? GetService ( Type serviceType )
-    {
-        if ( serviceType == null )
-        {
-            return null;
-        }
-
-        object result = null;
-
-        bool isAimService = ( serviceType.FullName == "ContentAssembler .IBadgeAppearenceProvider" )
-                            ||
-                            ( serviceType.FullName == "ContentAssembler.IBadLineColorProvider" )
-                            ||
-                            ( serviceType.FullName == "ContentAssembler.IFontFileProvider" );
-
-        if ( isAimService )
-        {
-            result = new BadgeAppearenceProvider ();
-        }
-
-        return result;
     }
 }

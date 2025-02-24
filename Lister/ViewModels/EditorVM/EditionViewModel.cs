@@ -10,7 +10,7 @@ using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         public static event BackingToMainViewHandler BackingToMainViewEvent;
 

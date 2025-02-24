@@ -5,7 +5,7 @@
 			 xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="487"
 			 x:Class="Lister.Views.WaitingView"
-			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=View"
 			 x:DataType="vm:WaitingViewModel"
 			 Margin="{Binding  Path=Margin,  Mode=OneWay}">
 

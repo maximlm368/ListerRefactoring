@@ -1,34 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Drawing;
+﻿using Core.Models.Badge;
 using QuestPDF;
-using QuestPDF.Drawing;
-using QuestPDF.Elements;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Pdf = QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using SkiaSharp;
-using static System.Net.Mime.MediaTypeNames;
-using ContentAssembler;
-using System.Reflection.Metadata;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media.Imaging;
-using System.Data.Common;
-using Lister.Extentions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Controls.Shapes;
-using ExtentionsAndAuxiliary;
 using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Avalonia.Threading;
-using ExCSS;
-using static QuestPDF.Helpers.Colors;
-using HarfBuzzSharp;
 using System.Text;
+using Pdf = QuestPDF.Infrastructure;
 
 
 namespace Lister.ViewModels;

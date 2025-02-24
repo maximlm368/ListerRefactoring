@@ -1,32 +1,18 @@
 ﻿using Avalonia;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using ContentAssembler;
-using ReactiveUI;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using static QuestPDF.Helpers.Colors;
-using Lister.Extentions;
-using System.Collections.ObjectModel;
 using Avalonia.Media;
-using Avalonia.Layout;
-using System.Globalization;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using ExtentionsAndAuxiliary;
-using Avalonia.Controls.Shapes;
-using System;
-using DataGateway;
-using Microsoft.Extensions.DependencyInjection;
-using QuestPDF.Fluent;
-using System.Threading.Tasks;
 using Avalonia.Threading;
+using Core.Models.Badge;
+using Core.DataAccess;
+using ExtentionsAndAuxiliary;
+using Lister.Extentions;
+using ReactiveUI;
+using System.Collections.ObjectModel;
 
 
 namespace Lister.ViewModels;
 
 
-public class BadgeViewModel : ViewModelBase
+public class BadgeViewModel : ReactiveObject
 {
     private static Dictionary<string, Avalonia.Media.Imaging.Bitmap> _pathToImage;
 
@@ -38,7 +24,6 @@ public class BadgeViewModel : ViewModelBase
     private Thickness _incorrectMemberBorderThickness;
     private Thickness _correctMemberBorderThickness;
     private SolidColorBrush _normMemberBorderColor;
-    private IMemberColorProvider _badLineColorProvider;
 
     internal int Id { get; set; }
     internal double Scale { get; private set; }
@@ -299,17 +284,17 @@ public class BadgeViewModel : ViewModelBase
         Id = id;
 
         BadgeModel = badgeModel;
-        BadgeLayout layout = badgeModel.BadgeLayout;
+        Layout layout = badgeModel.BadgeLayout;
 
-        LeftSpan = layout.LeftSpan;
-        TopSpan = layout.TopSpan;
-        RightSpan = layout.RightSpan;
-        BottomSpan = layout.BottomSpan;
+        LeftSpan = layout.PaddingLeft;
+        TopSpan = layout.PaddingTop;
+        RightSpan = layout.PaddignRight;
+        BottomSpan = layout.PaddingBottom;
 
-        BadgeWidth = layout.OutlineWidth;
+        BadgeWidth = layout.Width;
         BorderWidth = BadgeWidth + 2;
         _widht = BadgeWidth;
-        BadgeHeight = layout.OutlineHeight;
+        BadgeHeight = layout.Height;
         BorderHeight = BadgeHeight + 2;
         _height = BadgeHeight;
         TextLines = new ObservableCollection<TextLineViewModel> ();
@@ -324,26 +309,21 @@ public class BadgeViewModel : ViewModelBase
         BorderThickness = new Avalonia.Thickness (_borderThickness);
         FocusedFontSize = string.Empty;
 
-        if ( _badLineColorProvider == null ) 
-        {
-            _badLineColorProvider = App.services.GetRequiredService<IMemberColorProvider> ();
-        }
-
-        string incorrectLineBackgroundRGB = 
-                                    _badLineColorProvider.GetIncorrectLineBackgroundStr (badgeModel.BadgeLayout.TemplateName);
-        string incorrectMemberBorderRGB = 
-                                     _badLineColorProvider.GetIncorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
-        string correctMemberBorderRGB =
-                                     _badLineColorProvider.GetCorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
+        string incorrectLineBackgroundHexStr = 
+                         BadgeAppearence.GetIncorrectLineBackgroundStr (badgeModel.BadgeLayout.TemplateName);
+        string incorrectMemberBorderHexStr =
+                         BadgeAppearence.GetIncorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
+        string correctMemberBorderHexStr =
+                         BadgeAppearence.GetCorrectMemberBorderStr (badgeModel.BadgeLayout.TemplateName);
         List<byte> incorrectMemberBorderThickness =
-                                 _badLineColorProvider.GetIncorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
+                         BadgeAppearence.GetIncorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
         List<byte> correctMemberBorderThickness =
-                                 _badLineColorProvider.GetCorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
+                         BadgeAppearence.GetCorrectMemberBorderThickness (badgeModel.BadgeLayout.TemplateName);
 
 
-        _incorrectLineBackground = GetColor (incorrectLineBackgroundRGB);
-        _incorrectMemberBorderColor = GetColor (incorrectMemberBorderRGB);
-        _correctMemberBorderColor = GetColor (correctMemberBorderRGB);
+        _incorrectLineBackground = GetColor (incorrectLineBackgroundHexStr);
+        _incorrectMemberBorderColor = GetColor (incorrectMemberBorderHexStr);
+        _correctMemberBorderColor = GetColor (correctMemberBorderHexStr);
         _incorrectMemberBorderThickness = GetThickness (incorrectMemberBorderThickness);
         _correctMemberBorderThickness = GetThickness (correctMemberBorderThickness);
 
@@ -370,7 +350,7 @@ public class BadgeViewModel : ViewModelBase
         Id = badge.Id;
 
         BadgeModel = badge.BadgeModel;
-        BadgeLayout layout = BadgeModel.BadgeLayout;
+        Layout layout = BadgeModel.BadgeLayout;
 
         LeftSpan = badge.LeftSpan;
         TopSpan = badge.TopSpan;

@@ -1,23 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Templates;
-using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
 using Avalonia.Media;
-using Avalonia.Remote.Protocol.Input;
-using Avalonia.VisualTree;
-using ContentAssembler;
-using DynamicData;
 using Lister.ViewModels;
-using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
-using QuestPDF.Helpers;
-using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq.Expressions;
 
 namespace Lister.Views
 {

@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
              x:Class="Lister.Views.PersonChoosingUserControl"
 			 xmlns:uc="clr-namespace:Lister.Views"
-			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=Lister"
+			 xmlns:vm="clr-namespace:Lister.ViewModels;assembly=View"
 			 x:DataType="vm:PersonChoosingViewModel">
 
 	<Grid Name="personChoosingBlock"

@@ -1,14 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using ContentAssembler;
-using Lister.Views;
-using Microsoft.Extensions.DependencyInjection;
+using Core.Models;
+using Core.Models.Badge;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
 namespace Lister.ViewModels
 {
-    public partial class PersonChoosingViewModel : ViewModelBase
+    public partial class PersonChoosingViewModel : ReactiveObject
     {
         private readonly string _placeHolder;
 
@@ -35,7 +34,7 @@ namespace Lister.ViewModels
         private static SolidColorBrush _focusedBackgroundColor;
 
 
-        private Dictionary<BadgeLayout, KeyValuePair<string, List<string>>> _badgeLayouts;
+        private Dictionary<Layout, KeyValuePair<string, List<string>>> _badgeLayouts;
         private bool _allListMustBe = false;
         private double _widthDelta;
         private Timer _timer;

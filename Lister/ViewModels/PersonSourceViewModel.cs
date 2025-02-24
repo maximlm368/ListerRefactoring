@@ -1,28 +1,10 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using Avalonia.Input;
-using Avalonia.Platform.Storage;
-using ContentAssembler;
+﻿using Avalonia.Platform.Storage;
+using Core.DataAccess.JsonHandlers;
+using Core.DataAccess.PeopleSource;
+using Core.BadgesProvider;
 using Lister.Views;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static QuestPDF.Helpers.Colors;
-using MessageBox.Avalonia.Views;
-using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
-using DataGateway;
-using static SkiaSharp.HarfBuzz.SKShaper;
-using DynamicData;
-using ExCSS;
-using Avalonia;
-using Avalonia.Interactivity;
+using ReactiveUI;
 
 namespace Lister.ViewModels
 {
@@ -114,7 +96,7 @@ namespace Lister.ViewModels
 
 
         public PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns
-                                                                    , List<string> xslxHeaders, int limit, string sourceKeeper )
+                                             , List<string> xslxHeaders, int limit, string sourceKeeper )
         {
             _pickerTitle = pickerTitle;
             _filePickerTitle = filePickerTitle;
@@ -260,7 +242,7 @@ namespace Lister.ViewModels
             {
                 try 
                 {
-                    IRowSource headersSource = App.services.GetService<IRowSource> ();
+                    PeopleXlsxSource headersSource = App.services.GetService<PeopleXlsxSource> ();
                     List<string> headers = headersSource.GetRow (path, 0);
 
                     for ( int index = 0;   index < _xslxHeaders.Count;   index++ )
@@ -287,8 +269,8 @@ namespace Lister.ViewModels
 
         private bool TryUse ( string path )
         {
-            IUniformDocumentAssembler documentAssembler = App.services.GetRequiredService<IUniformDocumentAssembler>();
-            bool fileIsAcceptable = documentAssembler.SetPersonsFrom (path, personsLimitForSource);
+            BadgesGetter documentAssembler = App.services.GetRequiredService<BadgesGetter> ();
+            bool fileIsAcceptable = documentAssembler.TrySetPeopleFrom (path, personsLimitForSource);
 
             return fileIsAcceptable;
         }

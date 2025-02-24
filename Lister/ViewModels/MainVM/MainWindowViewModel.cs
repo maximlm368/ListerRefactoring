@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace Lister.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ReactiveObject
     {
         public MainWindowViewModel ()
         {

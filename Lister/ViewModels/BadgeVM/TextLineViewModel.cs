@@ -8,7 +8,6 @@ using System.Xml.Linq;
 using System.Globalization;
 using Avalonia.Media;
 using ReactiveUI;
-using ContentAssembler;
 using QuestPDF.Infrastructure;
 using ExtentionsAndAuxiliary;
 using System.Reflection;
@@ -26,6 +25,7 @@ using System.Drawing;
 using System.Web.Services.Description;
 using System.Diagnostics;
 using static QuestPDF.Helpers.Colors;
+using Core.Models.Badge;
 
 namespace Lister.ViewModels
 {

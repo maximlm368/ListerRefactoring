@@ -1,31 +1,11 @@
-﻿using ContentAssembler;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.ObjectModel;
+﻿using Avalonia;
 using Avalonia.Media;
-using System.Globalization;
-using System.Reflection.Metadata;
-using ExtentionsAndAuxiliary;
-using Microsoft.VisualBasic;
-using Avalonia.Media.Imaging;
-using Lister.Extentions;
-using System.Linq.Expressions;
-using Lister.Views;
-using System.Windows.Input;
-using Avalonia.Platform.Storage;
-using System.Reactive.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Threading;
-using System.Reflection;
-using ExCSS;
-using System;
-using AvaloniaEdit.Utils;
-using System.Collections.Immutable;
 using ReactiveUI;
-using Avalonia;
+using System.Reactive.Linq;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         private readonly double _switcherWidth = 32;
         private readonly double _filterLabelWidth = 70;

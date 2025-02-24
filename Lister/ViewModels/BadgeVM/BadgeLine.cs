@@ -1,16 +1,10 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class BadgeLine : ViewModelBase
+    internal class BadgeLine : ReactiveObject
     {
         internal double _restWidth;
         private double _heightConstraint;

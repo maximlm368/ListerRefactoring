@@ -1,27 +1,10 @@
-﻿using Avalonia;
-using Avalonia.ReactiveUI;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ContentAssembler;
-using DataGateway;
-using Microsoft.Extensions.DependencyInjection;
+using Core.DataAccess;
 using Lister.ViewModels;
 using Lister.Views;
-using Splat;
-using Avalonia.Styling;
-using Avalonia.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
-using Avalonia.Media;
-using static System.Net.Mime.MediaTypeNames;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Media.Fonts;
-using Avalonia.Platform;
-using SkiaSharp;
-using System.Globalization;
-using System.Diagnostics;
-using Microsoft.Win32;
-using Microsoft.Extensions.Configuration;
-using System.Runtime.CompilerServices;
 
 namespace Lister;
 
@@ -96,12 +79,12 @@ public partial class App : Avalonia.Application
         if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
             SplashWindow splashWindow = new SplashWindow ();
-            SplashViewModel splashViewModel = new SplashViewModel ();
-            splashWindow.DataContext = splashViewModel;
+            //SplashViewModel splashViewModel = new SplashViewModel ();
+            //splashWindow.DataContext = splashViewModel;
             desktop.MainWindow = splashWindow;
             splashWindow.Show ();
 
-            await BadgeAppearenceProvider.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
+            await BadgeAppearence.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
                                                , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ), OsName);
 
             MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
@@ -141,33 +124,4 @@ public partial class App : Avalonia.Application
 
         base.OnFrameworkInitializationCompleted ();
     }
-
-
-    [DllImport ("user32.dll")]
-    static extern void keybd_event ( byte bvk, byte bScan, int flag, ulong extraInfo );
-
 }
-
-
-//Stopwatch sw = new Stopwatch ();
-//sw.Start ();
-
-//for ( int index = 0;   index < 100;   index++ )
-//{
-//    keybd_event (0x09, 0x45, 0x0001, 0);
-
-//    int aaa = 0;
-
-//    for ( int ind = 0;   ind < 10_000_000;   ind++ ) 
-//    {
-//        aaa += 1;
-//    }
-//}
-
-
-
-//keybd_event (0x09, 0x45, 0x0001, 0);
-//Thread.Sleep (1000);
-//keybd_event (0x09, 0x45, 0x0001, 0);
-
-//keybd_event (0x0d, 0x45, 0x0001, 0);

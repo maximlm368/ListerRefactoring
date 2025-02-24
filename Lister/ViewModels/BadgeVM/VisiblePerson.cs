@@ -1,15 +1,10 @@
 ﻿using Avalonia.Media;
-using ContentAssembler;
+using Core.Models;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class VisiblePerson : ViewModelBase
+    internal class VisiblePerson : ReactiveObject
     {
         private static bool _colorsIsSet = false;
 

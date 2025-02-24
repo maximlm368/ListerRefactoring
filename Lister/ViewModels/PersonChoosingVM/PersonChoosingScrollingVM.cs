@@ -1,8 +1,8 @@
-﻿using Avalonia.Media;
+﻿using ReactiveUI;
 
 namespace Lister.ViewModels
 {
-    public partial class PersonChoosingViewModel : ViewModelBase
+    public partial class PersonChoosingViewModel : ReactiveObject
     {
         #region Scrolling
 

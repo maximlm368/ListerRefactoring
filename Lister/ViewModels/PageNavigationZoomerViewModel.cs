@@ -1,4 +1,4 @@
-﻿using ContentAssembler;
+﻿using Core.BadgesProvider;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class PageNavigationZoomerViewModel : ViewModelBase
+    public class PageNavigationZoomerViewModel : ReactiveObject
     {
         private readonly double _scalabilityCoefficient = 1.25;
         private readonly string _procentSymbol;

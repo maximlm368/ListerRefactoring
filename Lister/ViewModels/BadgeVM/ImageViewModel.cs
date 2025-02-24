@@ -1,15 +1,7 @@
-﻿using Avalonia;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Threading;
-using ContentAssembler;
+﻿using Avalonia.Media.Imaging;
+using Core.Models.Badge;
 using Lister.Extentions;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {

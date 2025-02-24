@@ -63,22 +63,5 @@ namespace Lister.Extentions
 
             return bitmap;
         }
-
-
-        public static async Task <Bitmap ?> LoadFromWeb (Uri url)
-        {
-            using var httpClient = new HttpClient();
-            try
-            {
-                var response = await httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                var data = await response.Content.ReadAsByteArrayAsync();
-                return new Bitmap(new MemoryStream(data));
-            }
-            catch (HttpRequestException ex)
-            {
-                return null;
-            }
-        }
     }
 }

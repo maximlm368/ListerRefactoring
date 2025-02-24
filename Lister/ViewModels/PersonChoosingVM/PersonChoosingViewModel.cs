@@ -1,41 +1,19 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using System.Drawing;
-using Avalonia;
-using ContentAssembler;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Controls;
+﻿using Avalonia;
 using Avalonia.Media;
-using System.Windows.Input;
-using System.Text;
-using System.Net.WebSockets;
-using System.ComponentModel;
-using Lister.Views;
-using Lister.Extentions;
-using System.Collections.ObjectModel;
-using static QuestPDF.Helpers.Colors;
-using Avalonia.Controls.Shapes;
+using Core.BadgesProvider;
+using Core.Models;
+using Core.Models.Badge;
+using Core.DataAccess;
 using DynamicData;
-using ReactiveUI;
-using Avalonia.Input;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Buffers.Binary;
-using System.Reflection;
-using Microsoft.Win32;
 using ExtentionsAndAuxiliary;
-using Avalonia.Controls.Primitives;
+using Lister.Extentions;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using DataGateway;
+using ReactiveUI;
+using System.Collections.ObjectModel;
 
 namespace Lister.ViewModels
 {
-    public partial class PersonChoosingViewModel : ViewModelBase
+    public partial class PersonChoosingViewModel : ReactiveObject
     {
         private readonly int _inputLimit = 50;
         private bool _entireSelectionIsSet;
@@ -79,11 +57,9 @@ namespace Lister.ViewModels
 
             _focusedEdge = _edge;
 
-            IBadgeAppearenceProvider badgeAppearenceProvider = App.services.GetRequiredService<IBadgeAppearenceProvider> ();
-
             if ( _badgeLayouts == null )
             {
-                _badgeLayouts = badgeAppearenceProvider.GetBadgeLayouts ();
+                _badgeLayouts = BadgeAppearence.GetBadgeLayouts ();
             }
 
             ChosenTemplatePadding = new Thickness (4, 0);
@@ -105,11 +81,11 @@ namespace Lister.ViewModels
 
             if ( valueIsSuitable )
             {
-                IUniformDocumentAssembler documentAssembler = App.services.GetService<IUniformDocumentAssembler> ();
+                BadgesGetter badgesGetter = App.services.GetService<BadgesGetter> ();
 
                 try
                 {
-                    List <Person> persons = documentAssembler.GetPersons (path);
+                    List <Person> persons = badgesGetter.GetPersons (path);
                     SetPersonsFromNewSource (persons);
                     SwitchPersonChoosingEnabling (true);
                 }
@@ -213,34 +189,22 @@ namespace Lister.ViewModels
         #endregion
 
 
-        private void SetPersonsFromNewSource ( List <Person> ? persons )
+        private void SetPersonsFromNewSource ( List<Person>? people )
         {
-            if ( persons == null )
+            if ( people == null )
             {
                 return;
             }
 
-            List <Person> sortablePersons = persons.Clone ();
-            IComparer <Person> comparer = new RusStringComparer <Person> ();
-            sortablePersons.Sort (comparer);
+            List<VisiblePerson> visiblePeople = people.Clone ()
+                 .Where (person => !person.IsEmpty ())
+                 .Select (person => new VisiblePerson (person))
+                 .OrderBy (person => person.Person.FullName)
+                 .ToList ();
 
-            List <VisiblePerson> peopleStorage = new ();
-            List <VisiblePerson> involvedPeople = new ();
+            PeopleStorage = visiblePeople;
+            InvolvedPeople = visiblePeople;
 
-            foreach ( Person person   in   sortablePersons )
-            {
-                if ( person.IsEmpty () )
-                {
-                    continue;
-                }
-
-                VisiblePerson visiblePerson = new VisiblePerson (person);
-                peopleStorage.Add (visiblePerson);
-                involvedPeople.Add (visiblePerson);
-            }
-
-            PeopleStorage = peopleStorage;
-            InvolvedPeople = involvedPeople;
             ChosenPerson = null;
         }
 
@@ -619,7 +583,7 @@ namespace Lister.ViewModels
 
             ObservableCollection <TemplateViewModel> templates = new ();
 
-            foreach ( KeyValuePair<BadgeLayout, KeyValuePair<string, List<string>>> layout   in   _badgeLayouts )
+            foreach ( KeyValuePair<Layout, KeyValuePair<string, List<string>>> layout   in   _badgeLayouts )
             {
                 KeyValuePair<string, List<string>> sourceAndErrors = layout.Value;
                 bool correctLayoutHasEmptyMessage = ( sourceAndErrors.Value.Count < 1 );
@@ -651,7 +615,7 @@ namespace Lister.ViewModels
 
 
 
-    public class TemplateViewModel : ViewModelBase
+    public class TemplateViewModel : ReactiveObject
     {
         private TemplateName TemplateName { get; set; }
         public string SourcePath { get; private set; }

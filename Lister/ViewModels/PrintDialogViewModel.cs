@@ -22,7 +22,7 @@ using ExtentionsAndAuxiliary;
 
 namespace Lister.ViewModels
 {
-    public partial class PrintDialogViewModel : ViewModelBase
+    public partial class PrintDialogViewModel : ReactiveObject
     {
         private readonly string _warnImagePath;
 
@@ -423,7 +423,7 @@ namespace Lister.ViewModels
                 return result;
             }
 
-            _state = ParserStates.BeforeBetweenAfter;
+            _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
             _numAsChars = new ();
             _pageNumbers = new ();
 
@@ -459,9 +459,9 @@ namespace Lister.ViewModels
             {
                 int num = Int32.Parse (glyph.ToString ());
 
-                if ( ( _state == ParserStates.BeforeBetweenAfter )  ||  ( _state == ParserStates.InsideIntegerOrFirstInRange ) )
+                if ( ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )  ||  ( _state == ParserStates.InsideIntegerOrFirstInRange ) )
                 {
-                    if ( ( _state == ParserStates.BeforeBetweenAfter )   &&   ( glyph == '0' ) )
+                    if ( ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )   &&   ( glyph == '0' ) )
                     {
                         throw new ParsingException ("Число не может начинаться с ноля");
                     }
@@ -594,7 +594,7 @@ namespace Lister.ViewModels
                             }
 
                             _numAsChars = new ();
-                            _state = ParserStates.BeforeBetweenAfter;
+                            _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
                         }
 
                         break;
@@ -609,7 +609,7 @@ namespace Lister.ViewModels
                                 throw new TransparentForTypingParsingException ("Тире не может быть последним в строке");
                             }
                         }
-                        else if ( _state == ParserStates.BeforeBetweenAfter )
+                        else if ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )
                         {
                             if ( _pageNumbers.Count < 1 )
                             {
@@ -647,7 +647,7 @@ namespace Lister.ViewModels
 
                             _pageNumbers.Add (integer);
 
-                            _state = ParserStates.BeforeBetweenAfter;
+                            _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
 
                             if ( isGlyphLast )
                             {
@@ -676,14 +676,14 @@ namespace Lister.ViewModels
                             }
 
                             _numAsChars = new ();
-                            _state = ParserStates.BeforeBetweenAfter;
+                            _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
 
                             if ( isGlyphLast )
                             {
                                 throw new TransparentForTypingParsingException ("Запятая не может быть последней в строке");
                             }
                         }
-                        else if ( _state == ParserStates.BeforeBetweenAfter )
+                        else if ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )
                         {
                             if ( _pageNumbers.Count < 1 )
                             {
@@ -858,7 +858,7 @@ namespace Lister.ViewModels
 
         private enum ParserStates 
         {
-            BeforeBetweenAfter = 0,
+            BeforeOrBetweenOrAfterGlyph = 0,
             InsideIntegerOrFirstInRange = 1,
             InRange = 2,
             AfterInteger = 3,
@@ -889,7 +889,7 @@ namespace Lister.ViewModels
 
 
 
-    public class PrinterPresentation : ViewModelBase 
+    public class PrinterPresentation : ReactiveObject
     {
         private string sP;
         public string StringPresentation

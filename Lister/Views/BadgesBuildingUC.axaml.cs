@@ -1,20 +1,7 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Platform.Storage;
-using Avalonia.ReactiveUI;
-using ContentAssembler;
-using ExCSS;
-using ExtentionsAndAuxiliary;
 using Lister.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Namotion.Reflection;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace Lister.Views
 {

@@ -1,27 +1,11 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Data.Core;
-using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using Avalonia.VisualTree;
-using ColorTextBlock.Avalonia;
-using ContentAssembler;
+﻿using Avalonia.Platform.Storage;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing.Printing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace Lister.ViewModels
 {
@@ -237,13 +221,16 @@ namespace Lister.ViewModels
                 {
                     EndWaiting ();
 
-                    string limit = _sceneViewModel.GetLimit ().ToString() + ".";
-                    MessageDialog messegeDialog = 
-                                              new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
+                    if ( SceneViewModel.IsSingleBuildingPossible ) 
+                    {
+                        string limit = _sceneViewModel.GetLimit ().ToString () + ".";
+                        MessageDialog messegeDialog =
+                                                  new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
 
-                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                    waitingVM.Darken ();
-                    messegeDialog.ShowDialog (MainWindow.Window);
+                        WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                        waitingVM.Darken ();
+                        messegeDialog.ShowDialog (MainWindow.Window);
+                    }
                 }
             }
             else if ( args.PropertyName == "EditIncorrectsIsSelected" )

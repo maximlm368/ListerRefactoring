@@ -1,30 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using ContentAssembler;
-using Lister.Views;
-using Microsoft.Extensions.DependencyInjection;
-using QuestPDF.Helpers;
+﻿using Avalonia;
 using ReactiveUI;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using System.Management;
-using System.Runtime.Intrinsics.Arm;
 
 namespace Lister.ViewModels
 {
-    public partial class SceneViewModel : ViewModelBase
+    public partial class SceneViewModel : ReactiveObject
     {
         public static int TappedPrintButton { get; set; }
 

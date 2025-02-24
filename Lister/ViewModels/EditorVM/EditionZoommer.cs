@@ -1,34 +1,8 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ContentAssembler;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.ObjectModel;
-using Avalonia.Media;
-using System.Globalization;
-using System.Reflection.Metadata;
-using ExtentionsAndAuxiliary;
-using Microsoft.VisualBasic;
-using Avalonia.Media.Imaging;
-using Lister.Extentions;
-using System.Linq.Expressions;
-using Lister.Views;
-using System.Windows.Input;
-using Avalonia.Platform.Storage;
-using System.Reactive.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Avalonia.Threading;
-using System.Reflection;
+﻿using ReactiveUI;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         public readonly double _scalabilityCoefficient = 1.25;
         private short _scalabilityDepth = 2;

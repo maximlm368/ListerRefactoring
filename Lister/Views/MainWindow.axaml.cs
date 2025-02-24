@@ -1,23 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Platform.Storage;
-using ContentAssembler;
-using DataGateway;
-using Lister.ViewModels;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using System.Threading.Tasks;
-using Avalonia.Interactivity;
-using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform;
-using Avalonia.Input.Platform;
-using Avalonia.Styling;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using System.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
-using Splat.ModeDetection;
+using Avalonia.Platform.Storage;
 
 
 namespace Lister.Views;

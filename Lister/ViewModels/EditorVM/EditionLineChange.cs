@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using ContentAssembler;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.ObjectModel;
 using Avalonia.Media;
@@ -18,10 +17,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Avalonia.Threading;
 using System.Reflection;
 using ReactiveUI;
+using Core.Models.Badge;
 
 namespace Lister.ViewModels
 {
-    public partial class BadgeEditorViewModel : ViewModelBase
+    public partial class BadgeEditorViewModel : ReactiveObject
     {
         private readonly SolidColorBrush _focusedFontSizeColor;
         private readonly SolidColorBrush _releasedFontSizeColor;

@@ -10,7 +10,7 @@ using Avalonia;
 
 namespace Lister.ViewModels
 {
-    public partial class WaitingViewModel : ViewModelBase
+    public partial class WaitingViewModel : ReactiveObject
     {
         private WaitingView ? _view;
         private double _canvasTop = 80;

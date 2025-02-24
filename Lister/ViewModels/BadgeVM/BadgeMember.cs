@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    abstract public class BadgeMember : ViewModelBase
+    abstract public class BadgeMember : ReactiveObject
     {
         protected double _scale = 1;
 

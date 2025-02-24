@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    internal class BadgeCorrectnessViewModel : ViewModelBase
+    internal class BadgeCorrectnessViewModel : ReactiveObject
     {
         private static readonly string _correctIcon;
         private static readonly string _incorrectIcon;

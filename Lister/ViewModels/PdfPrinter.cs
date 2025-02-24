@@ -10,7 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using ContentAssembler;
+using Core.BadgesProvider;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Helpers;
@@ -24,7 +24,7 @@ using System.Runtime.Intrinsics.Arm;
 
 namespace Lister.ViewModels
 {
-    public partial class PdfPrinter : ViewModelBase
+    public partial class PdfPrinter : ReactiveObject
     {
         private ConverterToPdf _converter;
         private PrintAdjustingData _printAdjusting;
