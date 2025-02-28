@@ -221,23 +221,19 @@ namespace Lister.ViewModels
                 {
                     EndWaiting ();
 
-                    if ( SceneViewModel.IsSingleBuildingPossible ) 
-                    {
-                        string limit = _sceneViewModel.GetLimit ().ToString () + ".";
-                        MessageDialog messegeDialog =
-                                                  new MessageDialog (MainView.Instance, _buildingLimitIsExhaustedMessage + limit);
+                    string limit = _sceneViewModel.GetLimit ().ToString () + ".";
+                    MessageDialog messegeDialog =
+                                     new MessageDialog ( MainView.Instance, _buildingLimitIsExhaustedMessage + limit );
 
-                        WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
-                        waitingVM.Darken ();
-                        messegeDialog.ShowDialog (MainWindow.Window);
-                    }
+                    WaitingViewModel waitingVM = App.services.GetRequiredService<WaitingViewModel> ();
+                    waitingVM.Darken ();
+                    messegeDialog.ShowDialog ( MainWindow.Window );
                 }
             }
             else if ( args.PropertyName == "EditIncorrectsIsSelected" )
             {
                 MainView mainView = MainView.Instance;
-                mainView.EditIncorrectBadges (_sceneViewModel.ProcessableBadges, _sceneViewModel.PrintableBadges
-                                                                                  , _sceneViewModel.VisiblePage);
+                mainView.EditIncorrectBadges (_sceneViewModel.ProcessableBadges, _sceneViewModel.VisiblePage);
             }
             else if ( args.PropertyName == "PdfIsWanted" )
             {

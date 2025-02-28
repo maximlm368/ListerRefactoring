@@ -5,6 +5,7 @@ using Core.DataAccess.PeopleSource;
 using Lister.ViewModels;
 using Lister.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Core.DocumentBuilder;
 
 namespace Lister;
 
@@ -15,7 +16,8 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton <PeopleXlsxSource> ();
         collection.AddSingleton (typeof (ConverterToPdf), ConverterToPdfFactory);
         collection.AddSingleton <Lister.ViewModels.PdfPrinter> ();
-        collection.AddSingleton <BadgesGetter> ();
+
+        collection.AddSingleton ( typeof ( DocumentBuilder ), DocumentBuilderFactory );
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
         collection.AddSingleton (typeof (PersonChoosingViewModel), PersonChoosingViewModelFactory);
@@ -33,6 +35,12 @@ public static class ServiceCollectionExtensions
     private static ConverterToPdf ConverterToPdfFactory ( IServiceProvider serviceProvider )
     {
         return new ConverterToPdf (App.OsName);
+    }
+
+
+    private static DocumentBuilder DocumentBuilderFactory ( IServiceProvider serviceProvider )
+    {
+        return new DocumentBuilder ( TextWidthMeasurer.GetMesurer() );
     }
 
 
@@ -130,7 +138,8 @@ public static class ServiceCollectionExtensions
         string shrinkingToolTip = SceneConfigs.shrinkingToolTip;
         string fileIsOpenMessage = SceneConfigs.fileIsOpenMessage;
 
-        return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage);
+        return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
+                                                             , new DocumentBuilder (TextWidthMeasurer.GetMesurer ()) );
     }
 
 

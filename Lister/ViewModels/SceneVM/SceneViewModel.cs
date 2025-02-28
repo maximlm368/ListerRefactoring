@@ -1,9 +1,12 @@
 ﻿using Avalonia.Threading;
 using Core.BadgesProvider;
+using Core.DocumentBuilder;
 using Core.Models;
 using Core.Models.Badge;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using Svg;
 
 namespace Lister.ViewModels
 {
@@ -11,20 +14,14 @@ namespace Lister.ViewModels
     {
         private readonly int _badgeCountLimit;
         private readonly double _scalabilityCoefficient = 1.25;
+        private bool _areButtonsEnabled;
 
         public static bool EntireListBuildingIsChosen { get; private set; }
 
         public static bool IsSingleBuildingPossible { get; private set; }
 
-        private BadgesGetter _docAssembler;
+        private DocumentBuilder _docBuilder;
         private double _documentScale;
-
-        private List <PageViewModel> _allPages;
-        internal List <PageViewModel> AllPages 
-        {
-            get { return _allPages; }
-            private set { _allPages = value; }
-        }
 
         private List <PageViewModel> _printablePages;
         
@@ -37,7 +34,7 @@ namespace Lister.ViewModels
 
         private bool _buildingIsLocked;
 
-
+        internal List<PageViewModel> AllPages { get; private set; }
 
         private PageViewModel _visiblePage;
         internal PageViewModel VisiblePage
@@ -95,7 +92,7 @@ namespace Lister.ViewModels
         }
 
         internal List <BadgeViewModel> ProcessableBadges { get; private set; }
-        internal List <BadgeViewModel> PrintableBadges { get; private set; }
+        //internal List <BadgeViewModel> PrintableBadges { get; private set; }
 
         private string _zoomDegreeInView;
         internal string ZoomDegreeInView
@@ -236,10 +233,11 @@ namespace Lister.ViewModels
         }
 
         private BadgesBuildingViewModel _templateChoosingVM;
+        private bool _isEntireListBuilding;
 
 
         public SceneViewModel ( int badgeCountLimit, string extentionToolTip, string shrinkingToolTip
-                                                                            , string fileIsOpenMessage ) 
+                              , string fileIsOpenMessage, DocumentBuilder docBuilder ) 
         {
             _badgeCountLimit = badgeCountLimit;
             _extentionToolTip = extentionToolTip;
@@ -248,7 +246,9 @@ namespace Lister.ViewModels
 
             SetButtonBlock ();
 
-            _docAssembler = App.services.GetService<BadgesGetter> ();
+            _docBuilder = docBuilder;
+            _docBuilder.ComplatedPage += HandlePageCompleting;
+
             _documentScale = 1;
             AllPages = new List <PageViewModel> ();
             _printablePages = new List <PageViewModel> ();
@@ -261,9 +261,25 @@ namespace Lister.ViewModels
             _printablePages.Add (_lastPrintablePage);
             VisiblePageNumber = 1;
             ProcessableBadges = new List <BadgeViewModel> ();
-            PrintableBadges = new List <BadgeViewModel> ();
+           // PrintableBadges = new List <BadgeViewModel> ();
             EditionMustEnable = false;
             PageCount = 0;
+        }
+
+
+        internal void HandlePageCompleting ( Page complated, bool lastIsReplacable )
+        {
+            if ( !_isEntireListBuilding ) return;
+
+            Dispatcher.UIThread.Invoke
+            ( () =>
+            {
+                PageViewModel newPage = new PageViewModel ( complated, _documentScale );
+                AllPages.Add ( newPage );
+                ProcessableBadges.AddRange ( newPage.GetBadges () );
+                BadgeCount += complated.BadgeCount;
+                IncorrectBadgeCount = _docBuilder.IncorrectBadgeCount;
+            } );
         }
 
 
@@ -346,151 +362,93 @@ namespace Lister.ViewModels
         }
 
 
+        private void BuildSingleBadge ()
+        {
+            _buildingIsLocked = true;
+            BuildingIsOccured = BuildSingleBadge ( _templateForBuilding );
+            _buildingIsLocked = false;
+        }
+
+
         private bool BuildAllBadges ( string templateName )
         {
-            List <Badge> requiredBadges = _docAssembler.CreateBadgesByTemplate (templateName);
+            _isEntireListBuilding = true;
+            int futureVisiblePageNumber = AllPages.Count;
+            int futureBadgeCount = 0;
 
-            if ( (BadgeCount + requiredBadges.Count) >= _badgeCountLimit ) 
+            if ( futureVisiblePageNumber == 0 ) 
+            {
+                futureVisiblePageNumber = 1;
+            }
+
+            if ( AllPages.Count > 0 ) 
+            {
+                PageViewModel last = AllPages.Last ();
+                List<BadgeViewModel> lastBadges = last.GetBadges ();
+                ProcessableBadges.RemoveRange ( ProcessableBadges.Count - lastBadges.Count, lastBadges.Count );
+                AllPages.Remove ( last );
+                futureBadgeCount = ProcessableBadges.Count;
+            }
+
+            List <Page> builtPages = _docBuilder.BuildAllPages (templateName, _badgeCountLimit);
+
+            if ( builtPages.Count < 1 ) 
             {
                 return false;
             }
 
-            if ( requiredBadges.Count > 0 )
+            _lastPage = AllPages.Last ();
+
+            Dispatcher.UIThread.Invoke
+            ( () =>
             {
-                List <BadgeViewModel> allBadges = new ();
-                List <BadgeViewModel> allPrintableBadges = new ();
-
-                for ( int index = 0;   index < requiredBadges.Count;   index++ )
-                {
-                    Person person = requiredBadges [index].Person;
-
-                    if ( person.IsEmpty () )
-                    {
-                        continue;
-                    }
-
-                    BadgeViewModel badge = new BadgeViewModel (requiredBadges [index], BadgeCount);
-                    allBadges.Add (badge);
-
-                    BadgeViewModel printableBadge = badge.Clone();
-                    allPrintableBadges.Add (printableBadge);
-
-                    ProcessableBadges.Add (badge);
-
-                    if ( ! badge.IsCorrect )
-                    {
-                        IncorrectBadgeCount++;
-                    }
-
-                    BadgeCount++;
-                }
-
-                List <PageViewModel> newPages = PageViewModel.PlaceIntoPages (allBadges, _documentScale, _lastPage);
-                
-                List <PageViewModel> printablePages = 
-                                       PageViewModel.PlaceIntoPages (allPrintableBadges, _documentScale, _lastPrintablePage);
-                
-                bool placingStartedOnLastPage = ( _lastPage != null )   &&   _lastPage.Equals (newPages [0]);
-
-                if ( placingStartedOnLastPage )
-                {
-                    Dispatcher.UIThread.Invoke (() => { VisiblePageNumber = AllPages.Count; });
-                    newPages.RemoveAt (0);
-                    printablePages.RemoveAt (0);
-                }
-
-                AllPages.AddRange (newPages);
-                _printablePages.AddRange (printablePages);
-                _lastPage = AllPages.Last ();
-                _lastPrintablePage = _printablePages.Last ();
-
-                PrintableBadges.AddRange (allPrintableBadges);
-
-                Dispatcher.UIThread.Invoke 
-                (() => 
-                {
-                    if ( allBadges.Count > 0 )
-                    {
-                        VisiblePage = AllPages [VisiblePageNumber - 1];
-                        PageCount = AllPages.Count;
-                        EnableButtons ();
-                        VisiblePage.Show ();
-                    }
-                    else 
-                    {
-                        PageCount = 0;
-                    }
-                });
-            }
+                VisiblePageNumber = futureVisiblePageNumber;
+                BadgeCount = ProcessableBadges.Count;
+                VisiblePage = AllPages [VisiblePageNumber - 1];
+                PageCount = AllPages.Count;
+                EnableButtons ();
+                VisiblePage.Show ();
+            } );
 
             return true;
         }
 
 
-        private void BuildSingleBadge ()
-        {
-            _buildingIsLocked = true;
-            BuildingIsOccured = BuildSingleBadge (_templateForBuilding);
-            _buildingIsLocked = false;
-        }
-
-
         private bool BuildSingleBadge ( string templateName )
         {
+            _isEntireListBuilding = false;
+
             if ( ( BadgeCount + 1 ) >= _badgeCountLimit )
             {
                 return false;
             }
 
-            Badge requiredBadge = _docAssembler.CreateSingleBadgeByTemplate (templateName, _chosenPerson);
+            List<Page> resultPages =_docBuilder.BuildInBadge (templateName, _chosenPerson);
 
-            if ( requiredBadge == null ) 
+            if ( resultPages.Count > AllPages.Count )
             {
-                IsSingleBuildingPossible = false;
-                DisableButtons ();
-                return false;
+                AllPages.Add ( new PageViewModel ( resultPages.Last (), _documentScale ) );
+            }
+            else 
+            {
+                AllPages [AllPages.Count - 1] = new PageViewModel ( resultPages.Last (), _documentScale );
             }
 
-            BadgeViewModel goalVMBadge = new BadgeViewModel (requiredBadge, BadgeCount);
-            BadgeViewModel printableBadge = goalVMBadge.Clone();
+            BadgeViewModel added = AllPages [AllPages.Count - 1].GetBadges ().Last ();
+            ProcessableBadges.Add ( added );
+            _lastPage = AllPages [AllPages.Count - 1];
 
-            ProcessableBadges.Add (goalVMBadge);
+            VisiblePage.Hide ();
+            VisiblePage = _lastPage;
+            VisiblePage.Show ();
 
-            if ( ! goalVMBadge.IsCorrect )
-            {
-                IncorrectBadgeCount++;
-            }
-
-            PrintableBadges.Add (printableBadge);
-            bool placingStartedAfterEntireListAddition = ! _lastPage.Equals (VisiblePage);
-
-            if ( placingStartedAfterEntireListAddition )
-            {
-                VisiblePage.Hide ();
-                VisiblePage = _lastPage;
-                VisiblePage.Show ();
-            }
-
-            PageViewModel possibleNewVisiblePage = _lastPage.AddBadge (goalVMBadge);
-            PageViewModel possibleNewLastPrintablePage = _lastPrintablePage.AddBadge (printableBadge);
-
-            bool timeToIncrementVisiblePageNumber = ! possibleNewVisiblePage.Equals (_lastPage);
-
-            if ( timeToIncrementVisiblePageNumber )
-            {
-                VisiblePage.Hide ();
-                VisiblePage = possibleNewVisiblePage;
-                _lastPage = VisiblePage;
-                _lastPrintablePage = possibleNewLastPrintablePage;
-                AllPages.Add (possibleNewVisiblePage);
-                _printablePages.Add (_lastPrintablePage);
-                VisiblePage.Show ();
-            }
+            //PrintableBadges.Add (printableBadge);
 
             BadgeCount++;
             VisiblePageNumber = AllPages.Count;
             PageCount = AllPages.Count;
-            goalVMBadge.Show ();
+            IncorrectBadgeCount = _docBuilder.IncorrectBadgeCount;
+            added.Show ();
             IsSingleBuildingPossible = true;
             EnableButtons ();
 
@@ -500,20 +458,17 @@ namespace Lister.ViewModels
 
         internal void ClearAllPages ()
         {
-            if ( AllPages.Count <= 0 )
+            if ( AllPages.Count == 0 )
             {
                 return;
             }
+
+            _docBuilder.ClearAll ();
 
             AllPages = new List <PageViewModel> ();
             VisiblePage = new PageViewModel (_documentScale);
             _lastPage = VisiblePage;
             AllPages.Add (_lastPage);
-
-            _printablePages = new List <PageViewModel> ();
-            PrintableBadges = new List <BadgeViewModel> ();
-            _lastPrintablePage = new PageViewModel (_documentScale);
-            _printablePages.Add (_lastPrintablePage);
 
             VisiblePageNumber = 1;
             PageCount = 0;

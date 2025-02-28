@@ -62,7 +62,7 @@ namespace Lister.ViewModels
                 _badgeLayouts = BadgeAppearence.GetBadgeLayouts ();
             }
 
-            ChosenTemplatePadding = new Thickness (4, 0);
+            ChosenTemplatePadding = new Avalonia.Thickness (4, 0);
         }
 
 
@@ -77,30 +77,25 @@ namespace Lister.ViewModels
 
         internal void SetPersonsFromFile ( string ? path )
         {
-            bool valueIsSuitable = ! string.IsNullOrWhiteSpace (path);
+            BadgesGetter badgesGetter = BadgesGetter.GetInstance ();
 
-            if ( valueIsSuitable )
+            try
             {
-                BadgesGetter badgesGetter = App.services.GetService<BadgesGetter> ();
+                List <Person> people = badgesGetter.GetPersons ( path );
+                UsePeople ( people, true );
+            }
+            catch ( Exception ex )
+            {
+                FileNotFound = true;
+                UsePeople ( null, false );
+            }
+        }
 
-                try
-                {
-                    List <Person> persons = badgesGetter.GetPersons (path);
-                    SetPersonsFromNewSource (persons);
-                    SwitchPersonChoosingEnabling (true);
-                }
-                catch ( Exception ex ) 
-                {
-                    FileNotFound = true;
-                    SetPersonsFromNewSource (null);
-                    SwitchPersonChoosingEnabling (false);
-                }
-            }
-            else
-            {
-                SetPersonsFromNewSource (null);
-                SwitchPersonChoosingEnabling (false);
-            }
+
+        private void UsePeople ( List<Person> ? people, bool peopleExist )
+        {
+            SetPersonsFromNewSource ( people );
+            SwitchPersonChoosingEnabling ( peopleExist );
         }
 
 
@@ -189,7 +184,7 @@ namespace Lister.ViewModels
         #endregion
 
 
-        private void SetPersonsFromNewSource ( List<Person>? people )
+        private void SetPersonsFromNewSource ( List<Person> ? people )
         {
             if ( people == null )
             {
@@ -197,7 +192,7 @@ namespace Lister.ViewModels
             }
 
             List<VisiblePerson> visiblePeople = people.Clone ()
-                 .Where (person => !person.IsEmpty ())
+                 .Where (person => ! person.IsEmpty ())
                  .Select (person => new VisiblePerson (person))
                  .OrderBy (person => person.Person.FullName)
                  .ToList ();

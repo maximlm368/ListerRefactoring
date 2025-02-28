@@ -1,4 +1,7 @@
 ﻿using Avalonia;
+using Avalonia.Controls.Shapes;
+using Core.Models.Badge;
+using Core.DocumentBuilder;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
@@ -6,8 +9,7 @@ namespace Lister.ViewModels
 {
     internal class BadgeLine : ReactiveObject
     {
-        internal double _restWidth;
-        private double _heightConstraint;
+        //private double _heightConstraint;
         internal double _scale;
 
         private ObservableCollection <BadgeViewModel> badges;
@@ -20,8 +22,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Thickness margin;
-        internal Thickness Margin
+        private Avalonia.Thickness margin;
+        internal Avalonia.Thickness Margin
         {
             get { return margin; }
             set
@@ -50,88 +52,71 @@ namespace Lister.ViewModels
         }
 
 
-        internal BadgeLine( double width, double scale, double heightConstraint, bool isFirst ) 
+        internal BadgeLine ( double scale, double heightConstraint, bool isFirst ) 
         {
             Badges = new ObservableCollection <BadgeViewModel> ();
 
             if ( isFirst )
             {
-                Margin = new Thickness (0, 0, 0, 0);
+                Margin = new Avalonia.Thickness (0, 0, 0, 0);
             }
             else 
             {
-                Margin = new Thickness (0, -1, 0, 0);
+                Margin = new Avalonia.Thickness (0, -1, 0, 0);
             }
             
             _scale = scale;
-            _restWidth = width;
-            _heightConstraint = heightConstraint;
         }
 
 
-        private BadgeLine ( BadgeLine line )
+        internal BadgeLine ( Core.DocumentBuilder.BadgeLine model, double scale )
         {
-            Badges = new ObservableCollection <BadgeViewModel> ();
-            Margin = line.Margin;
-            _scale = line._scale;
-            _restWidth = line._restWidth / _scale;
-            _heightConstraint = line._heightConstraint / _scale;
+            Badges = new ();
 
-            foreach ( BadgeViewModel badge   in   line.Badges ) 
+            foreach ( Badge badge   in   model.Badges ) 
             {
-                Badges.Add ( badge.GetDimensionalOriginal() );
+                BadgeViewModel addable = new BadgeViewModel (badge);
+                addable.SetCorrectScale (scale);
+
+                Badges.Add ( addable );
             }
+
+
+            //if ( isFirst )
+            //{
+            //    Margin = new Thickness ( 0, 0, 0, 0 );
+            //}
+            //else
+            //{
+            //    Margin = new Thickness ( 0, -1, 0, 0 );
+            //}
+
+            _scale = scale;
         }
 
 
-        internal BadgeLine GetDimensionalOriginal () 
-        {
-            BadgeLine original = new BadgeLine (this);
-            return original;
-        }
+        //private BadgeLine ( BadgeLine line )
+        //{
+        //    Badges = new ObservableCollection <BadgeViewModel> ();
+        //    Margin = line.Margin;
+        //    _scale = line._scale;
+
+        //    foreach ( BadgeViewModel badge   in   line.Badges ) 
+        //    {
+        //        Badges.Add ( badge.GetDimensionalOriginal() );
+        //    }
+        //}
 
 
-        internal ActionSuccess AddBadge ( BadgeViewModel badge, bool shouldScale ) 
-        {
-            if ( shouldScale ) 
-            {
-                badge.SetCorrectScale (_scale);
-            }
-
-            bool isFailureByWidth = ( _restWidth < badge.BadgeWidth );
-            bool isFailureByHeight = ( _heightConstraint < badge.BadgeHeight );
-
-            if ( isFailureByWidth )
-            {
-                return ActionSuccess.FailureByWidth;
-            }
-            else if ( isFailureByHeight )
-            {
-                return ActionSuccess.FailureByHeight;
-            }
-            else
-            {
-                if ( Badges. Count == 0 )
-                {
-                    badge.Margin = new Thickness (0, 0, 0, 0);
-                }
-                else 
-                {
-                    badge.Margin = new Thickness (-1, 0, 0, 0);
-                }
-
-                Badges.Add (badge);
-                _restWidth -= badge.BadgeWidth;
-
-                return ActionSuccess.Success;
-            }
-        }
+        //internal BadgeLine GetDimensionalOriginal () 
+        //{
+        //    BadgeLine original = new BadgeLine (this);
+        //    return original;
+        //}
 
 
         internal void ZoomOn ( double scaleCoefficient ) 
         {
-            _heightConstraint *= scaleCoefficient;
-            _restWidth *= scaleCoefficient;
             _scale *= scaleCoefficient;
             Height *= scaleCoefficient;
 
@@ -144,8 +129,6 @@ namespace Lister.ViewModels
 
         internal void ZoomOut ( double scaleCoefficient )
         {  
-            _heightConstraint /= scaleCoefficient;
-            _restWidth /= scaleCoefficient;
             _scale /= scaleCoefficient;
             Height /= scaleCoefficient;
 
@@ -170,15 +153,6 @@ namespace Lister.ViewModels
             for ( int index = 0;   index < Badges. Count;   index++ )
             {
                 Badges [index].Hide ();
-            }
-        }
-
-
-        internal void Clone ()
-        {
-            for ( int index = 0;   index < Badges.Count;   index++ )
-            {
-                Badges [index].Clone ();
             }
         }
 

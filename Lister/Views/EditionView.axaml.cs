@@ -252,10 +252,9 @@ namespace Lister.Views
         }
 
 
-        internal void SetProcessableBadges ( List <BadgeViewModel> processables
-                                          , List <BadgeViewModel> allPrintable, PageViewModel firstPage ) 
+        internal void SetProcessableBadges ( List <BadgeViewModel> processables, PageViewModel firstPage ) 
         {
-            _viewModel.SetProcessables (processables, allPrintable, firstPage);
+            _viewModel.SetProcessables (processables, firstPage);
         }
 
 

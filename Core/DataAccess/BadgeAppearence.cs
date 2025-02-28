@@ -6,6 +6,7 @@ using NJsonSchema;
 using NJsonSchema.Validation;
 using System.Drawing.Text;
 using System.Text;
+using static System.Collections.Specialized.BitVector32;
 
 
 namespace Core.DataAccess
@@ -370,7 +371,7 @@ namespace Core.DataAccess
             double bottomSpan = GetSectionIntValueOrDefault ( new List<string> { "Padding", "Bottom" }, jsonPath );
             spans.Add ( bottomSpan );
 
-            List<TextualAtom> atoms = GetAtoms ( jsonPath );
+            List<TextLine> atoms = GetAtoms ( jsonPath );
             SetUnitingAtoms ( atoms, jsonPath );
 
             List<InsideImage> images = GetImages ( jsonPath );
@@ -382,9 +383,9 @@ namespace Core.DataAccess
         }
 
 
-        private static List<TextualAtom> GetAtoms ( string jsonPath )
+        private static List<TextLine> GetAtoms ( string jsonPath )
         {
-            List<TextualAtom> atoms = new ();
+            List<TextLine> atoms = new ();
 
             atoms.Add ( BuildTextualAtom ( "FamilyName", jsonPath, 0 ) );
             atoms.Add ( BuildTextualAtom ( "FirstName", jsonPath, 1 ) );
@@ -396,7 +397,7 @@ namespace Core.DataAccess
         }
 
 
-        private static void SetUnitingAtoms ( List<TextualAtom> atoms, string jsonPath )
+        private static void SetUnitingAtoms ( List<TextLine> atoms, string jsonPath )
         {
             IEnumerable<IConfigurationSection> items =
                           GetterFromJson.GetIncludedItemsOfSection ( new List<string> { "UnitedTextBlocks" }, jsonPath );
@@ -433,7 +434,7 @@ namespace Core.DataAccess
                     unitedAtomsNames.Add ( name.Value );
                 }
 
-                TextualAtom unitingAtom = BuildTextualAtom ( item, jsonPath, unitedAtomsNames, number );
+                TextLine unitingAtom = BuildTextualAtom ( item, jsonPath, unitedAtomsNames, number );
                 atoms.Add ( unitingAtom );
             }
         }
@@ -473,7 +474,7 @@ namespace Core.DataAccess
         }
 
 
-        private static TextualAtom BuildTextualAtom ( string atomName, string jsonPath, int numberToLocate )
+        private static TextLine BuildTextualAtom ( string atomName, string jsonPath, int numberToLocate )
         {
             double width = GetSectionIntValueOrDefault ( new List<string> { atomName, "Width" }, jsonPath );
             double height = GetSectionIntValueOrDefault ( new List<string> { atomName, "Height" }, jsonPath );
@@ -488,7 +489,7 @@ namespace Core.DataAccess
             string fontWeight = GetSectionStrValueOrDefault ( new List<string> { atomName, "FontWeight" }, jsonPath ) ?? "";
             bool isShiftable = GetSectionBoolValueOrDefault ( new List<string> { atomName, "IsSplitable" }, jsonPath );
 
-            TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset
+            TextLine atom = new TextLine ( atomName, width, height, topOffset, leftOffset
                                                , alignment, fontSize, fontName, foreground
                                              , fontWeight, null, isShiftable, numberToLocate );
 
@@ -496,7 +497,7 @@ namespace Core.DataAccess
         }
 
 
-        private static TextualAtom BuildTextualAtom
+        private static TextLine BuildTextualAtom
                         ( IConfigurationSection section, string jsonPath, List<string> united, int numberToLocate )
         {
             IConfigurationSection childSection = section.GetSection ( "Name" );
@@ -535,7 +536,7 @@ namespace Core.DataAccess
             int shiftableInt = DigitalStringParser.ParseToInt ( shiftableString );
             isShiftable = Convert.ToBoolean ( shiftableInt );
 
-            TextualAtom atom = new TextualAtom ( atomName, width, height, topOffset, leftOffset, alignment, fontSize
+            TextLine atom = new TextLine ( atomName, width, height, topOffset, leftOffset, alignment, fontSize
                                           , fontName, foreground, fontWeight, united, isShiftable, numberToLocate );
             return atom;
         }
@@ -740,11 +741,11 @@ namespace Core.DataAccess
                 fontNames.Add ( fontNameSection.Value );
             }
 
-            return GetUninstalledFontsFrom ( fontNames );
+            return GetUninstalledFontsAmong ( fontNames );
         }
 
 
-        private static List<string> GetUninstalledFontsFrom ( List<string> fontNames )
+        private static List<string> GetUninstalledFontsAmong ( List<string> fontNames )
         {
             if ( _osName == "Windows" )
             {
@@ -776,11 +777,11 @@ namespace Core.DataAccess
         {
             List<string> uninstalled = new ();
 
-            foreach ( var name in checkebles )
+            foreach ( var name   in   checkebles )
             {
-                bool isExisting = !string.IsNullOrWhiteSpace ( name );
+                bool isExisting = ! string.IsNullOrWhiteSpace ( name );
 
-                if ( isExisting && !installed.Contains ( name ) )
+                if ( isExisting   &&   ! installed.Contains ( name ) )
                 {
                     uninstalled.Add ( name );
                 }
@@ -949,12 +950,10 @@ namespace Core.DataAccess
 
         private static bool GetSectionBoolValueOrDefault ( List<string> keyPathInJson, string jsonPath )
         {
-            bool result = false;
-
             if ( _jsonAndErrors.ContainsKey ( jsonPath ) )
             {
 
-                ICollection<ValidationError> errors = _jsonAndErrors [jsonPath];
+                ICollection <ValidationError> errors = _jsonAndErrors [jsonPath];
 
                 foreach ( ValidationError err in errors )
                 {
@@ -964,50 +963,45 @@ namespace Core.DataAccess
 
                     if ( keyPathInJson.SequenceEqual<string> ( steps ) )
                     {
-                        List<string> keyPathToDefault = BuildPathToDefaultValue ( steps );
-
-                        string strValue = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
-
-                        if ( strValue == "True" )
-                        {
-                            result = true;
-                        }
-
-                        return result;
+                        return GetSectionDefaultBoolValue ( steps );
                     }
                 }
             }
             else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
             {
-                List<string> keyPathToDefault = BuildPathToDefaultValue ( keyPathInJson );
-                string strValue = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
-
-                if ( strValue == "True" )
-                {
-                    result = true;
-                }
-
-                return result;
+                return GetSectionDefaultBoolValue ( keyPathInJson );
             }
 
             return GetterFromJson.GetSectionBoolValue ( keyPathInJson, jsonPath );
         }
 
 
-        private static string GetSectionStrValueOrDefault ( IConfigurationSection section, string jsonPath, string propertyName )
+        private static bool GetSectionDefaultBoolValue ( ICollection<string> keyPathInJson ) 
+        {
+            List<string> keyPathToDefault = BuildPathToDefaultValue ( keyPathInJson );
+            string strValue = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
+
+            if ( strValue == "True" )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        private static string GetSectionStrValueOrDefault ( IConfigurationSection section, string jsonPath
+                                                                                          , string propertyName )
         {
             if ( _jsonAndErrors.ContainsKey ( jsonPath ) )
             {
                 ICollection<ValidationError> errors = _jsonAndErrors [jsonPath];
 
-                foreach ( ValidationError err in errors )
+                foreach ( ValidationError err   in   errors )
                 {
                     if ( PathesEqual ( section, err ) )
                     {
-                        List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
-                        string strValue = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
-
-                        return strValue;
+                        return GetDefaultStrValue ( section );
                     }
                 }
             }
@@ -1016,10 +1010,19 @@ namespace Core.DataAccess
                 List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
                 string strValue = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
 
-                return strValue;
+                return GetDefaultStrValue ( section );
             }
 
             return section?.Value;
+        }
+
+
+        private static string GetDefaultStrValue ( IConfigurationSection section )
+        {
+            List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
+            string defaultStr = GetSectionStrValue ( keyPathToDefault, _schemeFile.FullName );
+
+            return defaultStr;
         }
 
 

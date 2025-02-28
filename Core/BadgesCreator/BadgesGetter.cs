@@ -10,8 +10,12 @@ namespace Core.BadgesProvider
 {
     public class BadgesGetter
     {
-        private List<Person> _people;
+        private static BadgesGetter _instance;
+
+        private List <Person> _people;
         private Layout _badgeLayout;
+        private string _backgroundPath;
+        private string _template;
 
 
         public BadgesGetter ()
@@ -20,53 +24,42 @@ namespace Core.BadgesProvider
         }
 
 
-        public List<Badge> CreateBadgesByTemplate ( string templateName )
+        public static BadgesGetter GetInstance ()
         {
-            bool argumentIsNull = string.IsNullOrEmpty ( templateName );
-
-            if ( argumentIsNull )
+            if ( _instance == null )
             {
-                throw new ArgumentNullException ( "arguments must be not null" );
+                _instance = new BadgesGetter ();
             }
 
-            List<Badge> badges = new ();
-            string backgroundPath = BadgeAppearence.GetBadgeImageUri ( templateName );
-            _badgeLayout = BadgeAppearence.GetBadgeLayout ( templateName );
-
-            foreach ( var person in _people )
-            {
-                Layout badgeLayout = _badgeLayout.Clone ();
-                Badge item = Badge.GetBadge ( person, backgroundPath, badgeLayout );
-
-                if ( item == null )
-                {
-                    continue;
-                }
-
-                badges.Add ( item );
-            }
-
-            return badges;
+            return _instance;
         }
 
 
-        public Badge? CreateSingleBadgeByTemplate ( string templateName, Person person )
+        public Badge ? CreateSingleBadgeByTemplate ( string templateName, Person person )
         {
-            bool argumentIsNull = string.IsNullOrEmpty ( templateName ) || ( person == null );
-
-            if ( argumentIsNull )
+            if ( string.IsNullOrWhiteSpace ( templateName ) )
             {
-                throw new ArgumentNullException ( "arguments must be not null" );
+                return null;
             }
 
-            Layout badgeLayout = BadgeAppearence.GetBadgeLayout ( templateName );
-            string backgroundPath = BadgeAppearence.GetBadgeImageUri ( templateName );
+            if ( _template != templateName ) 
+            {
+                _badgeLayout = BadgeAppearence.GetBadgeLayout ( templateName );
+                _backgroundPath = BadgeAppearence.GetBadgeImageUri ( templateName );
+                _template = templateName;
+            }
 
-            return Badge.GetBadge ( person, backgroundPath, badgeLayout );
+            return Badge.GetBadge ( person, _backgroundPath, _badgeLayout.Clone(true) );
         }
 
 
         public List<Person> GetPersons ( string personsFilePath )
+        {
+            return _people;
+        }
+
+
+        public List<Person> GetCurrentPeople ()
         {
             return _people;
         }

@@ -26,7 +26,7 @@ namespace Lister.Views
 
         internal BadgeEditorView EditorView { get; private set; }
         private List <BadgeViewModel> _processableBadges;
-        private List <BadgeViewModel> _allPrintableBadges;
+        //private List <BadgeViewModel> _allPrintableBadges;
         private PageViewModel _firstPage;
 
 
@@ -194,11 +194,10 @@ namespace Lister.Views
         }
 
 
-        internal void EditIncorrectBadges ( List <BadgeViewModel> processableBadges
-                                          , List <BadgeViewModel> allPrintableBadges, PageViewModel firstPage )
+        internal void EditIncorrectBadges ( List <BadgeViewModel> processableBadges, PageViewModel firstPage )
         {
             _processableBadges = processableBadges;
-            _allPrintableBadges = allPrintableBadges;
+            //_allPrintableBadges = allPrintableBadges;
             _firstPage = firstPage;
             MainView mainView = this;
             MainWindow window = MainWindow.GetMainWindow ();
@@ -223,7 +222,7 @@ namespace Lister.Views
             (
                 () =>
                 {
-                    EditorView.SetProcessableBadges (_processableBadges, _allPrintableBadges, _firstPage);
+                    EditorView.SetProcessableBadges (_processableBadges, _firstPage);
                     EditorView.PassBackPoint (this);
 
                     Dispatcher.UIThread.Invoke

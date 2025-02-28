@@ -1,12 +1,14 @@
 ﻿namespace Core.Models.Badge
 {
-    public class TextualAtomComparer<T> : IComparer<T> where T : TextualAtom
+    public class TextLineComparer<T> : IComparer<T> where T : TextLine
     {
         public int Compare ( T first, T second )
         {
             int result = -1;
 
-            bool comparingShouldBe = first != null && second != null;
+            bool comparingShouldBe = first != null
+                                     &&
+                                     second != null;
 
             if ( comparingShouldBe )
             {

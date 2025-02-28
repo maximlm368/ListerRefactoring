@@ -77,7 +77,6 @@ namespace Lister.ViewModels
 
         internal void FocusTextLine ( string focusedContent, int elementNumber )
         {
-            MakeBackUp ();
             BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
 
             if ( BeingProcessedBadge. FocusedLine != null )
@@ -91,8 +90,6 @@ namespace Lister.ViewModels
 
         internal void FocusShape ( ShapeType kindName, int shapeId )
         {
-            MakeBackUp ();
-
             if ( kindName == ShapeType.rectangle )
             {
                 BeingProcessedBadge.SetFocusedRectangle (shapeId);
@@ -106,17 +103,7 @@ namespace Lister.ViewModels
 
         internal void FocusImage ( int id )
         {
-            MakeBackUp ();
             BeingProcessedBadge.SetFocusedImage (id);
-        }
-
-
-        private void MakeBackUp ()
-        {
-            if ( ! BeingProcessedBadge.IsChanged   &&   ( BackupNumbered [BeingProcessedBadge.Id] == null ) )
-            {
-                BackupNumbered [BeingProcessedBadge.Id] = BeingProcessedBadge.Clone ();
-            }
         }
 
 
@@ -138,9 +125,6 @@ namespace Lister.ViewModels
 
                 ResetActiveIcon ();
             }
-
-            BadgeViewModel result = Printable [BeingProcessedBadge.Id];
-            result.CopyFrom (BeingProcessedBadge);
 
             BeingProcessedBadge.ReleaseFocused ();
         }

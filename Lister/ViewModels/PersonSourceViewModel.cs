@@ -269,7 +269,7 @@ namespace Lister.ViewModels
 
         private bool TryUse ( string path )
         {
-            BadgesGetter documentAssembler = App.services.GetRequiredService<BadgesGetter> ();
+            BadgesGetter documentAssembler = BadgesGetter.GetInstance ();
             bool fileIsAcceptable = documentAssembler.TrySetPeopleFrom (path, personsLimitForSource);
 
             return fileIsAcceptable;

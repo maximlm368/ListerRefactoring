@@ -45,8 +45,8 @@ public class ConverterToPdf
                 container.Page (page =>
                 {
                     PageViewModel currentPage = pages [pageNumber];
-                    float width = (float) PageViewModel.PageSize.Width;
-                    float height = (float) PageViewModel.PageSize.Height;
+                    float width = (float) PageViewModel.Size.Width;
+                    float height = (float) PageViewModel.Size.Height;
 
                     page.Size (width, height, Unit.Point);
                     page.MarginLeft (0, Unit.Point);
@@ -132,7 +132,7 @@ public class ConverterToPdf
         catch ( Exception ex ){ }
 
         float badgeHeight = ( float ) beingRendered.BadgeHeight;
-        string imagePath = beingRendered.BadgeModel. BackgroundImagePath;
+        string imagePath = beingRendered.Model. BackgroundImagePath;
 
         Pdf.Image image = GetImageByPath (imagePath);
 
@@ -181,7 +181,7 @@ public class ConverterToPdf
             .Text (text)
             .ClampLines (1, ".")
             .FontFamily (fontName)
-            .FontColor (Pdf.Color.FromHex (textLine.DataSource.ForegroundHexStr))
+            .FontColor (Pdf.Color.FromHex (textLine.Model.ForegroundHexStr))
             .FontSize (fontSize);
 
             if ( fontWeight == Avalonia.Media.FontWeight.Thin )

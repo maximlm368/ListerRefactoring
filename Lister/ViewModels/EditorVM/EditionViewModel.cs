@@ -116,7 +116,7 @@ namespace Lister.ViewModels
         internal List <BadgeViewModel> IncorrectNumbered { get; private set; }
         internal List <BadgeViewModel> CorrectNumbered { get; private set; }
         internal Dictionary <int, BadgeViewModel> BackupNumbered { get; private set; }
-        internal List <BadgeViewModel> Printable { get; private set; }
+        //internal List <BadgeViewModel> Printable { get; private set; }
 
         private int _incorrectBadgesCount;
         internal int IncorrectBadgesCount
@@ -286,14 +286,13 @@ namespace Lister.ViewModels
             SplitterIsEnable = false;
             ZoommerIsEnable = false;
 
-            BeingProcessedBadge.CopyFrom (BackupNumbered [BeingProcessedBadge. Id]);
+            BeingProcessedBadge.CancelChanges ();
 
             ResetActiveIcon ();
         }
 
 
-        internal void SetProcessables ( List <BadgeViewModel> processables
-                                     , List <BadgeViewModel> allPrintable, PageViewModel firstPage )
+        internal void SetProcessables ( List <BadgeViewModel> processables, PageViewModel firstPage )
         {
             bool isNullOrEmpty = ( processables == null )   ||   ( processables.Count == 0 );
 
@@ -307,7 +306,7 @@ namespace Lister.ViewModels
             IncorrectNumbered = new ();
             CorrectNumbered = new ();
             BackupNumbered = new ();
-            Printable = allPrintable;
+            //Printable = allPrintable;
             _scaleStorage = new ();
 
             int counter = 0;

@@ -1,22 +1,7 @@
-﻿using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Core.BadgesProvider;
-using Avalonia;
+﻿using Avalonia;
+using Core.DocumentBuilder;
 using ReactiveUI;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using static QuestPDF.Helpers.Colors;
-using Lister.Extentions;
 using System.Collections.ObjectModel;
-using Avalonia.Media;
-using Avalonia.Layout;
-using System.Globalization;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using SkiaSharp;
-using QuestPDF.Helpers;
-using DynamicData;
-using System.Collections.Generic;
 
 namespace Lister.ViewModels;
 
@@ -24,7 +9,7 @@ public class PageViewModel : ReactiveObject
 {
     private static double _topOffsetOfContent;
     private static double _leftOffsetOfContent;
-    internal static Size PageSize { get; private set; }
+    internal static Size Size { get; private set; }
 
     private bool _isShown;
     private int _badgeCount;
@@ -32,22 +17,22 @@ public class PageViewModel : ReactiveObject
     private BadgeLine _fillableLine;
 
     private double _pageWidth;
-    internal double PageWidth
+    internal double Width
     {
         get { return _pageWidth; }
         set
         {
-            this.RaiseAndSetIfChanged (ref _pageWidth, value, nameof (PageWidth));
+            this.RaiseAndSetIfChanged (ref _pageWidth, value, nameof (Width));
         }
     }
 
     private double _pageHeight;
-    internal double PageHeight
+    internal double Height
     {
         get { return _pageHeight; }
         set
         {
-            this.RaiseAndSetIfChanged (ref _pageHeight, value, nameof (PageHeight));
+            this.RaiseAndSetIfChanged (ref _pageHeight, value, nameof (Height));
         }
     }
 
@@ -104,7 +89,7 @@ public class PageViewModel : ReactiveObject
 
     static PageViewModel () 
     {
-        PageSize = new Size (794, 1123);
+        Size = new Size (794, 1123);
         _topOffsetOfContent = 20;
         _leftOffsetOfContent = 45;
     }
@@ -112,156 +97,185 @@ public class PageViewModel : ReactiveObject
 
     public PageViewModel ( double desiredScale )
     {
-        Lines = new ObservableCollection<BadgeLine> ();
+        Lines = new ObservableCollection <BadgeLine> ();
         _scale = desiredScale;
         _badgeCount = 0;
-        PageWidth = PageSize. Width;
-        PageHeight = PageSize. Height;
+
+        Width = Size.Width;
+        Height = Size.Height;
         ContentTopOffset = _topOffsetOfContent;
         ContentLeftOffset = _leftOffsetOfContent;
-        double usefullHeight = PageHeight - 20;
-        BorderHeight = PageHeight + 2;
-        BorderWidth = PageWidth + 2;
+        double usefullHeight = Height - 20;
+        BorderHeight = Height + 2;
+        BorderWidth = Width + 2;
 
         SetCorrectScale ();
 
-        _fillableLine = new BadgeLine ( PageWidth , _scale , usefullHeight, true );
-        Lines.Add ( _fillableLine );
+        //_fillableLine = new BadgeLine ( Width , _scale , usefullHeight, true );
+        //Lines.Add ( _fillableLine );
     }
 
 
-    private PageViewModel ( PageViewModel page )
+    public PageViewModel ( Page source, double desiredScale )
     {
         Lines = new ObservableCollection <BadgeLine> ();
-        _scale = 1;
-        _badgeCount = page._badgeCount;
-        PageWidth = PageSize. Width;
-        PageHeight = PageSize. Height;
-        ContentTopOffset = _topOffsetOfContent;
-        ContentLeftOffset = _leftOffsetOfContent;
-        BorderHeight = PageHeight + 2;
-        BorderWidth = PageWidth + 2;
-
-        foreach ( BadgeLine line   in   page.Lines ) 
-        {
-            BadgeLine originalLine = line.GetDimensionalOriginal ();
-            Lines.Add (originalLine);
-        }
-    }
-
-
-    internal PageViewModel GetDimendionalOriginalClone () 
-    {
-        return new PageViewModel ( this );
-    }
-
-
-    internal static List <PageViewModel> ? PlaceIntoPages ( List <BadgeViewModel> placebleBadges,
-                                                            double desiredScale, PageViewModel ? scratchPage )
-    {
-        bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, desiredScale);
-
-        if ( areArgumentsInvalid )
-        {
-            return null;
-        }
-        
-        //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
-
-        PageViewModel fillablePage = DefineFillablePage(scratchPage, desiredScale);
-        List <PageViewModel> pages = Place (placebleBadges, desiredScale, fillablePage);
-
-        return pages;
-    }
-
-
-    internal PageViewModel AddBadge ( BadgeViewModel badge )
-    {
-        PageViewModel beingProcessedPage = this;
-        bool shouldScaleBadge = (badge.Scale != this._scale);
-        ActionSuccess additionSuccess = _fillableLine.AddBadge (badge, shouldScaleBadge);
-
-        if ( additionSuccess == ActionSuccess.FailureByWidth ) 
-        {
-            double restHeight = GetRestHeight ();
-            bool isFirstLine = (Lines. Count == 0);
-            BadgeLine newLine = new BadgeLine (PageWidth, _scale, restHeight, isFirstLine);
-            additionSuccess = newLine.AddBadge (badge, false);
-
-            if ( additionSuccess == ActionSuccess.FailureByWidth )
-            {
-                throw new PageException ();
-            }
-            else if ( additionSuccess == ActionSuccess.FailureByHeight ) 
-            {
-                beingProcessedPage = new PageViewModel (_scale);
-                beingProcessedPage.AddBadge (badge);
-            }
-
-            beingProcessedPage.Lines.Add (newLine);
-            beingProcessedPage._fillableLine = newLine;
-        }
-
-        if ( additionSuccess == ActionSuccess.FailureByHeight )
-        {
-            bool isPageBlank = (beingProcessedPage.Lines. Count < 2);
-
-            if ( isPageBlank ) 
-            {
-                throw new PageException ();
-            }
-
-            beingProcessedPage = new PageViewModel (_scale);
-            beingProcessedPage.AddBadge (badge);
-        }
-
-        beingProcessedPage._badgeCount++;
-        return beingProcessedPage;
-    }
-
-
-    private bool IsTimeForNewPage () 
-    {
-        double restHeight = GetRestHeight ();
-        bool itIsTime = restHeight > _fillableLine.Height;
-        return itIsTime;
-    }
-
-
-    private double GetRestHeight ( ) 
-    {
-        double summaryHeight = 0;
-
-        foreach ( BadgeLine line   in   Lines )
-        {
-            summaryHeight += line.Height;
-        }
-
-        double restHeight = PageHeight - summaryHeight;
-        return restHeight;
-    }
-
-
-    internal void Clear ()
-    {
+        _scale = desiredScale;
         _badgeCount = 0;
 
-        foreach( BadgeLine line   in   Lines ) 
+        List<Core.DocumentBuilder.BadgeLine> sourceLines = source.Lines;
+
+        foreach ( Core.DocumentBuilder.BadgeLine line   in   sourceLines ) 
         {
-            line.Clear ();
+            Lines.Add ( new BadgeLine ( line, _scale ) );
         }
+
+        Width = source. Width;
+        Height = source. Height;
+        ContentTopOffset = _topOffsetOfContent;
+        ContentLeftOffset = _leftOffsetOfContent;
+        double usefullHeight = Height - 20;
+        BorderHeight = Height + 2;
+        BorderWidth = Width + 2;
+
+        SetCorrectScale ();
+
+        //_fillableLine = new BadgeLine ( Width , _scale , usefullHeight, true );
+        //Lines.Add ( _fillableLine );
     }
+
+
+    //private PageViewModel ( PageViewModel page )
+    //{
+    //    Lines = new ObservableCollection <BadgeLine> ();
+    //    _scale = 1;
+    //    _badgeCount = page._badgeCount;
+    //    Width = Size. Width;
+    //    Height = Size. Height;
+    //    ContentTopOffset = _topOffsetOfContent;
+    //    ContentLeftOffset = _leftOffsetOfContent;
+    //    BorderHeight = Height + 2;
+    //    BorderWidth = Width + 2;
+
+    //    foreach ( BadgeLine line   in   page.Lines ) 
+    //    {
+    //        BadgeLine originalLine = line.GetDimensionalOriginal ();
+    //        Lines.Add (originalLine);
+    //    }
+    //}
+
+
+    //internal PageViewModel GetDimendionalOriginalClone () 
+    //{
+    //    return new PageViewModel ( this );
+    //}
+
+
+    //internal static List <PageViewModel> ? PlaceIntoPages ( List <BadgeViewModel> placebleBadges,
+    //                                                        double desiredScale, PageViewModel ? scratchPage )
+    //{
+    //    bool areArgumentsInvalid = AreArgumentsInvalid (placebleBadges, desiredScale);
+
+    //    if ( areArgumentsInvalid )
+    //    {
+    //        return null;
+    //    }
+        
+    //    //PageViewModel fillablePage = scratchPage ?? new PageViewModel (pageSize, badgeExample, desiredScale);
+
+    //    PageViewModel fillablePage = DefineFillablePage(scratchPage, desiredScale);
+    //    List <PageViewModel> pages = Place (placebleBadges, desiredScale, fillablePage);
+
+    //    return pages;
+    //}
+
+
+    //internal PageViewModel AddBadge ( BadgeViewModel badge )
+    //{
+    //    PageViewModel beingProcessedPage = this;
+    //    bool shouldScaleBadge = (badge.Scale != this._scale);
+    //    ActionSuccess additionSuccess = _fillableLine.AddBadge (badge, shouldScaleBadge);
+
+    //    if ( additionSuccess == ActionSuccess.FailureByWidth ) 
+    //    {
+    //        double restHeight = GetRestHeight ();
+    //        bool isFirstLine = (Lines. Count == 0);
+    //        BadgeLine newLine = new BadgeLine (Width, _scale, restHeight, isFirstLine);
+    //        additionSuccess = newLine.AddBadge (badge, false);
+
+    //        if ( additionSuccess == ActionSuccess.FailureByWidth )
+    //        {
+    //            throw new PageException ();
+    //        }
+    //        else if ( additionSuccess == ActionSuccess.FailureByHeight ) 
+    //        {
+    //            beingProcessedPage = new PageViewModel (_scale);
+    //            beingProcessedPage.AddBadge (badge);
+    //        }
+
+    //        beingProcessedPage.Lines.Add (newLine);
+    //        beingProcessedPage._fillableLine = newLine;
+    //    }
+
+    //    if ( additionSuccess == ActionSuccess.FailureByHeight )
+    //    {
+    //        bool isPageBlank = (beingProcessedPage.Lines. Count < 2);
+
+    //        if ( isPageBlank ) 
+    //        {
+    //            throw new PageException ();
+    //        }
+
+    //        beingProcessedPage = new PageViewModel (_scale);
+    //        beingProcessedPage.AddBadge (badge);
+    //    }
+
+    //    beingProcessedPage._badgeCount++;
+    //    return beingProcessedPage;
+    //}
+
+
+    //private bool IsTimeForNewPage () 
+    //{
+    //    double restHeight = GetRestHeight ();
+    //    bool itIsTime = restHeight > _fillableLine.Height;
+    //    return itIsTime;
+    //}
+
+
+    //private double GetRestHeight ( ) 
+    //{
+    //    double summaryHeight = 0;
+
+    //    foreach ( BadgeLine line   in   Lines )
+    //    {
+    //        summaryHeight += line.Height;
+    //    }
+
+    //    double restHeight = Height - summaryHeight;
+    //    return restHeight;
+    //}
+
+
+    //internal void Clear ()
+    //{
+    //    _badgeCount = 0;
+
+    //    foreach( BadgeLine line   in   Lines ) 
+    //    {
+    //        line.Clear ();
+    //    }
+    //}
 
 
     internal void ZoomOn ( double scaleCoefficient )
     {
         this._scale *= scaleCoefficient;
-        PageHeight *= scaleCoefficient;
-        PageWidth *= scaleCoefficient;
+        Height *= scaleCoefficient;
+        Width *= scaleCoefficient;
         ContentTopOffset *= scaleCoefficient;
         ContentLeftOffset *= scaleCoefficient;
-        BorderHeight = PageHeight + 2;
-        BorderWidth = PageWidth + 2;
+        BorderHeight = Height + 2;
+        BorderWidth = Width + 2;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {
@@ -273,12 +287,12 @@ public class PageViewModel : ReactiveObject
     internal void ZoomOut ( double scaleCoefficient )
     {
         _scale /= scaleCoefficient;
-        PageHeight /= scaleCoefficient;
-        PageWidth /= scaleCoefficient;
+        Height /= scaleCoefficient;
+        Width /= scaleCoefficient;
         ContentTopOffset /= scaleCoefficient;
         ContentLeftOffset /= scaleCoefficient;
-        BorderHeight = PageHeight + 2;
-        BorderWidth = PageWidth + 2;
+        BorderHeight = Height + 2;
+        BorderWidth = Width + 2;
 
         for ( int index = 0;   index < Lines. Count;   index++ )
         {
@@ -291,13 +305,26 @@ public class PageViewModel : ReactiveObject
     {
         if ( _scale != 1 )
         {
-            PageHeight *= _scale;
-            PageWidth *= _scale;
+            Height *= _scale;
+            Width *= _scale;
             ContentTopOffset *= _scale;
             ContentLeftOffset *= _scale;
-            BorderHeight = PageHeight + 2;
-            BorderWidth = PageWidth + 2;
+            BorderHeight = Height + 2;
+            BorderWidth = Width + 2;
         }
+    }
+
+
+    internal List<BadgeViewModel> GetBadges ()
+    {
+        List<BadgeViewModel> result = new ();
+
+        foreach ( var line in Lines )
+        {
+            result.AddRange ( line.Badges );
+        }
+
+        return result;
     }
 
 
@@ -328,62 +355,12 @@ public class PageViewModel : ReactiveObject
     }
 
 
-    private static bool AreArgumentsInvalid ( List<BadgeViewModel> placebleBadges, double desiredScale )
-    {
-        bool areArgumentsInvalid = ( placebleBadges == null );
-        areArgumentsInvalid = areArgumentsInvalid   ||   ( placebleBadges.Count < 1 );
-        areArgumentsInvalid = areArgumentsInvalid   ||   ( desiredScale == 0 );
-
-        return areArgumentsInvalid;
-    }
-
-
-    private static PageViewModel DefineFillablePage ( PageViewModel ? scratchPage, double desiredScale ) 
-    {
-        bool isBadgeInsertionFirstTime = (scratchPage == null);
-
-        if ( isBadgeInsertionFirstTime ) 
-        {
-            return new PageViewModel ( desiredScale );
-        }
-        else 
-        {
-            return scratchPage;
-        }
-    }
-
-
-    private static List <PageViewModel> Place ( List <BadgeViewModel> placebleBadges, double desiredScale
-                                                                            , PageViewModel fillablePage ) 
-    {
-        List <PageViewModel> result = new ();
-
-        for ( int index = 0;   index < placebleBadges.Count;   index++ )
-        {
-            BadgeViewModel beingProcessedBadge = placebleBadges [index];
-
-            PageViewModel posibleNewPadge = fillablePage.AddBadge (beingProcessedBadge);
-            bool timeToAddNewPage = ! posibleNewPadge.Equals (fillablePage);
-
-            if ( timeToAddNewPage )
-            {
-                result.Add (fillablePage);
-                fillablePage = posibleNewPadge;
-            }
-
-            if ( index == placebleBadges.Count - 1 )
-            {
-                result.Add (fillablePage);
-            }
-        }
-
-        return result;
-    }
+    
 }
 
 
 
-public class PageException : Exception {}
+//public class PageException : Exception {}
 
 
 //private double lCLS;

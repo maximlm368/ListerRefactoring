@@ -1,31 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Globalization;
-using Avalonia.Media;
-using ReactiveUI;
-using QuestPDF.Infrastructure;
-using ExtentionsAndAuxiliary;
-using System.Reflection;
-using Avalonia.Controls.Shapes;
-using static System.Net.Mime.MediaTypeNames;
-using Avalonia;
-using System.Reflection.Emit;
+﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Fonts.Inter;
-using Avalonia.Media.Fonts;
-using Avalonia.Platform;
-using SkiaSharp;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Web.Services.Description;
-using System.Diagnostics;
-using static QuestPDF.Helpers.Colors;
+using Avalonia.Media;
 using Core.Models.Badge;
+using QuestPDF.Infrastructure;
+using ReactiveUI;
 
 namespace Lister.ViewModels
 {
@@ -33,11 +11,10 @@ namespace Lister.ViewModels
     {
         private static readonly double _maxFontSizeLimit = 30;
         private static readonly double _minFontSizeLimit = 6;
-        private static readonly double _divider = 8;
         private static TextBlock _textBlock;
         private string _alignmentName;
 
-        internal TextualAtom DataSource { get; private set; }
+        internal TextLine Model { get; private set; }
 
         private HorizontalAlignment _alignment;
         internal HorizontalAlignment Alignment
@@ -49,8 +26,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Thickness _padding;
-        internal Thickness Padding
+        private Avalonia.Thickness _padding;
+        internal Avalonia.Thickness Padding
         {
             get { return _padding; }
             private set
@@ -96,7 +73,6 @@ namespace Lister.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged (ref _content, value, nameof (Content));
-                SetUsefullWidth ();
             }
         }
 
@@ -154,30 +130,31 @@ namespace Lister.ViewModels
         internal bool isBorderViolent = false;
         internal bool isOverLayViolent = false;
 
-        public TextLineViewModel ( TextualAtom text )
-        {
-            _alignmentName = text.Alignment;
-            DataSource = text;
 
-            bool fontSizeIsOutOfRange = ( text.FontSize < _minFontSizeLimit )   ||   ( text.FontSize > _maxFontSizeLimit );
+        public TextLineViewModel ( TextLine model )
+        {
+            _alignmentName = model.Alignment;
+            Model = model;
+
+            bool fontSizeIsOutOfRange = ( model.FontSize < _minFontSizeLimit )   ||   ( model.FontSize > _maxFontSizeLimit );
 
             if ( fontSizeIsOutOfRange ) 
             {
             
             }
 
-            FontSize = text.FontSize;
-            FontWeight = GetFontWeight (text.FontWeight);
-            string fontName = text.FontName;
+            FontSize = model.FontSize;
+            FontWeight = GetFontWeight (model.FontWeight);
+            string fontName = model.FontName;
             FontFamily = new Avalonia.Media.FontFamily (fontName);
 
-            Content = text.Content;
-            IsSplitable = text.IsSplitable;
+            Content = model.Content;
+            IsSplitable = model.IsSplitable;
 
             Avalonia.Media.Color color;
-            bool isColor = Avalonia.Media.Color.TryParse (text.ForegroundHexStr, out color);
+            bool isColor = Avalonia.Media.Color.TryParse (model.ForegroundHexStr, out color);
 
-            if ( ! Avalonia.Media.Color.TryParse (text.ForegroundHexStr, out color) )
+            if ( ! Avalonia.Media.Color.TryParse (model.ForegroundHexStr, out color) )
             {
                 color = new Avalonia.Media.Color (255, 200, 200, 200);
             }
@@ -185,53 +162,32 @@ namespace Lister.ViewModels
             SolidColorBrush foreground = new SolidColorBrush (color);
             Foreground = foreground;
 
-            SetUsefullWidth ();
-            SetYourself (text.Width, FontSize, text.TopOffset, text.LeftOffset);
-            SetAlignment (text.Alignment);
+            Height = model.Height;
+            Padding = new Avalonia.Thickness ( model.Padding.Left, model.Padding.Top );
 
-            Height = text.Height;
-            Padding = GetPadding ();
+            SetYourself (model.Width, FontSize, model.TopOffset, model.LeftOffset);
+            SetUsefullWidth ();
         }
 
 
         private TextLineViewModel ( TextLineViewModel source )
         {
             _alignmentName = source._alignmentName;
-            DataSource = source.DataSource;
+            Model = source.Model;
             FontSize = source.FontSize;
             FontFamily = source.FontFamily;
             FontWeight = source.FontWeight;
             Content = source.Content;
             IsSplitable = source.IsSplitable;
-            Padding = new Thickness (0, -FontSize / _divider);
+            Padding = source.Padding;
             UsefullWidth = source.UsefullWidth;
             UsefullHeight = source.UsefullHeight;
             Foreground = source.Foreground;
             Background = source.Background;
+            Padding = source.Padding;
 
             SetYourself (source.UsefullWidth, source.Height, source.TopOffset, source.LeftOffset);
-            Padding = GetPadding ();
-        }
-
-
-        public static double CalculateWidth ( string content, TextualAtom demensions )
-        {
-            FormattedText formatted = new FormattedText (content
-                                                       , System.Globalization.CultureInfo.CurrentCulture
-                                                       , FlowDirection.LeftToRight, Typeface.Default
-                                                       , demensions.FontSize, null);
-
-            formatted.SetFontWeight (GetFontWeight (demensions.FontWeight));
-            formatted.SetFontSize (demensions.FontSize);
-            formatted.SetFontFamily (new Avalonia.Media.FontFamily (demensions.FontName));
-
-            return formatted.Width;
-        }
-
-
-        private Thickness GetPadding ()
-        {
-            return new Thickness (0, - FontSize / _divider);
+            SetUsefullWidth ();
         }
 
 
@@ -252,24 +208,9 @@ namespace Lister.ViewModels
         }
 
 
-        private static Avalonia.Media.FontFamily GetFontFamilyByName ( string fontName )
-        {
-            return new Avalonia.Media.FontFamily (fontName);
-        }
-
-
         private void SetUsefullWidth ()
         {
-            FormattedText formatted = new FormattedText (Content
-                                                       , System.Globalization.CultureInfo.CurrentCulture
-                                                       , FlowDirection.LeftToRight, Typeface.Default
-                                                       , FontSize, null);
-
-            formatted.SetFontWeight (FontWeight);
-            formatted.SetFontSize (FontSize);
-            formatted.SetFontFamily (FontFamily);
-
-            UsefullWidth = formatted.Width;
+            UsefullWidth = Model.UsefullWidth;
             UsefullHeight = HeightWithBorder;
         }
 
@@ -287,7 +228,7 @@ namespace Lister.ViewModels
             FontSize *= coefficient;
             UsefullWidth *= coefficient;
             UsefullHeight *= coefficient;
-            Padding = new Thickness (Padding.Left * coefficient, Padding.Top * coefficient);
+            Padding = new Avalonia.Thickness (Padding.Left * coefficient, Padding.Top * coefficient);
         }
 
 
@@ -297,11 +238,11 @@ namespace Lister.ViewModels
             FontSize /= coefficient;
             UsefullWidth /= coefficient;
             UsefullHeight /= coefficient;
-            Padding = new Thickness (Padding.Left / coefficient, Padding.Top / coefficient);
+            Padding = new Avalonia.Thickness (Padding.Left / coefficient, Padding.Top / coefficient);
         }
 
 
-        internal void Increase ( double additable )
+        internal void IncreaseFontSize ( double additable )
         {
             double oldFontSize = FontSize;
             FontSize += additable;
@@ -315,11 +256,11 @@ namespace Lister.ViewModels
             SetUsefullWidth ();
             double proportion = FontSize / oldFontSize;
             Height *= proportion;
-            Padding = GetPadding ();
+            Padding = new Avalonia.Thickness ( Model.Padding.Left, Model.Padding.Top );
         }
 
 
-        internal void Reduce ( double subtractable )
+        internal void ReduceFontSize ( double subtractable )
         {
             double insideLeftRest = UsefullWidth - Math.Abs (LeftOffset);
             double insideTopRest = Height - Math.Abs (TopOffset);
@@ -338,7 +279,7 @@ namespace Lister.ViewModels
             SetUsefullWidth ();
             double proportion = oldFontSize / FontSize;
             Height /= proportion;
-            Padding = GetPadding ();
+            Padding = new Avalonia.Thickness ( Model.Padding.Left, Model.Padding.Top );
 
             double newInsideLeftRest = UsefullWidth - Math.Abs (LeftOffset);
 
@@ -356,69 +297,6 @@ namespace Lister.ViewModels
         }
 
 
-        private void SetAlignment ( string alignmentName ) 
-        {
-            if ( Width <= UsefullWidth )
-            {
-                return;
-            }
 
-            if ( alignmentName == "Right" )
-            {
-                LeftOffset += ( Width - Math.Ceiling(UsefullWidth) );
-            }
-            else if ( alignmentName == "Center" )
-            {
-                LeftOffset += ( Width - UsefullWidth ) / 2;
-            }
-        }
-
-
-        internal List <TextLineViewModel> SplitYourself ( List<string> splittedContents, double scale, double layoutWidth )
-        {
-            List <TextLineViewModel> result = new List <TextLineViewModel>();
-            double splitableLineLeftOffset = LeftOffset;
-            double offsetInQueue = LeftOffset;
-
-            foreach ( string content   in   splittedContents )
-            {
-                TextLineViewModel newLine = new TextLineViewModel (this.DataSource);
-
-                if ( scale > 1 )
-                {
-                    newLine.ZoomOn (scale);
-                }
-                else if ( scale < 1 ) 
-                {
-                    newLine.ZoomOut (scale);
-                }
-                
-                newLine.LeftOffset = offsetInQueue;
-                newLine.ReplaceContent (content);
-
-                if ( newLine.LeftOffset >= layoutWidth - 10 ) 
-                {
-                    newLine.LeftOffset = splitableLineLeftOffset;
-                }
-                
-                newLine.TopOffset = TopOffset;
-                offsetInQueue += newLine.UsefullWidth + scale;
-                result.Add (newLine);
-            }
-
-            return result;
-        }
-
-
-        private void ReplaceContent ( string content )
-        {
-            if ( content == null ) 
-            {
-                content = string.Empty;
-            }
-
-            Content = content;
-            SetUsefullWidth ();
-        }
     }
 }

@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Lister.ViewModels
 {
-    public class ShapeViewModel : BoundToTextLine
+    internal class ShapeViewModel : BoundToTextLine
     {
         internal ShapeType Type { get; private set; }
-
+        internal InsideImage Model { get; private set; }
         private SolidColorBrush _fillColor;
         internal SolidColorBrush FillColor
         {
@@ -27,7 +27,7 @@ namespace Lister.ViewModels
         internal string FillColorHexStr { get; private set; }
 
        
-        public ShapeViewModel ( int id, InsideShape shape )
+        internal ShapeViewModel ( int id, InsideShape shape )
         {
             Id = id;
             Type = shape.Type;
@@ -50,7 +50,7 @@ namespace Lister.ViewModels
         }
 
 
-        public ShapeViewModel ( ShapeViewModel prototype )
+        internal ShapeViewModel ( ShapeViewModel prototype )
         {
             Id = prototype.Id;
             Type = prototype.Type;

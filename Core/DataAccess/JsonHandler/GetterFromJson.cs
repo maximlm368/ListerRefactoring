@@ -108,7 +108,7 @@ namespace Core.DataAccess.JsonHandlers
 
                 if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1; step < keyPathOfSection.Count; step++ )
+                    for ( int step = 1;   step < keyPathOfSection.Count;   step++ )
                     {
                         sectionName = keyPathOfSection [step];
                         section = section.GetSection ( sectionName );
@@ -121,9 +121,6 @@ namespace Core.DataAccess.JsonHandlers
             }
             catch ( Exception ex )
             {
-                string str = ex.ToString ();
-                string name = ex.GetType ().Name;
-
                 return string.Empty;
             }
         }

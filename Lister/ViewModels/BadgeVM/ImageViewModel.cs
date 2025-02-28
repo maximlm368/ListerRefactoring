@@ -5,11 +5,12 @@ using ReactiveUI;
 
 namespace Lister.ViewModels
 {
-    public class ImageViewModel : BoundToTextLine
+    internal class ImageViewModel : BoundToTextLine
     {
-        public static Dictionary <string, Bitmap> NameToImage = new ();
+        private static Dictionary <string, Bitmap> NameToImage = new ();
 
-        public string Path { get; private set; }
+        internal InsideImage Model { get; private set; }
+        internal string Path { get; private set; }
 
         private Bitmap _bitMap;
         internal Bitmap BitMap
@@ -22,7 +23,7 @@ namespace Lister.ViewModels
         }
 
 
-        public ImageViewModel ( int id, InsideImage image )
+        internal ImageViewModel ( int id, InsideImage image )
         {
             Path = image.Path;
 
@@ -40,7 +41,7 @@ namespace Lister.ViewModels
         }
 
 
-        public ImageViewModel ( ImageViewModel prototype )
+        internal ImageViewModel ( ImageViewModel prototype )
         {
             Path = prototype.Path;
             Id = prototype.Id;

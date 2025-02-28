@@ -22,13 +22,7 @@ public sealed class Person
         Department = department;
         Post = post;
 
-        string view = string.Empty;
-
-        view = AppendInFullName ( FamilyName, ref view );
-        view = AppendInFullName ( FirstName, ref view );
-        view = AppendInFullName ( PatronymicName, ref view );
-
-        FullName = view;
+        FullName = FamilyName + " " + FirstName + " " + PatronymicName;
     }
 
 
@@ -127,22 +121,5 @@ public sealed class Person
 
         bool isMatching = ( stringPresentation == this.FullName );
         return isMatching;
-    }
-
-
-    private string AppendInFullName ( string namePart, ref string view )
-    {
-
-        if ( !string.IsNullOrWhiteSpace ( namePart ) )
-        {
-            if ( !string.IsNullOrWhiteSpace ( view ) )
-            {
-                view += " ";
-            }
-
-            view += namePart;
-        }
-
-        return view;
     }
 }

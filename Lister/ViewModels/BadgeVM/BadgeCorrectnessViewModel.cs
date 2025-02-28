@@ -204,7 +204,7 @@ namespace Lister.ViewModels
         internal void CalcStringPresentation ( double widthLimit )
         {
             string tail = "...";
-            string personPresentation = BoundBadge.BadgeModel.Person.FullName;
+            string personPresentation = BoundBadge.Model.Person.FullName;
 
             FormattedText formatted = new FormattedText (personPresentation, System.Globalization.CultureInfo.CurrentCulture
                                            , FlowDirection.LeftToRight, Typeface.Default, 16, null);

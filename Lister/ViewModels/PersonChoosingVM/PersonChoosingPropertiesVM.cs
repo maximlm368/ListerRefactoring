@@ -103,8 +103,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Thickness _chosenTemplatePadding;
-        public Thickness ChosenTemplatePadding
+        private Avalonia.Thickness _chosenTemplatePadding;
+        public Avalonia.Thickness ChosenTemplatePadding
         {
             get
             {

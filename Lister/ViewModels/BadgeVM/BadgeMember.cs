@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using Core.Models.Badge;
 using AvaloniaEdit.Highlighting;
 using ReactiveUI;
+using Splat.ModeDetection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,8 @@ namespace Lister.ViewModels
     abstract public class BadgeMember : ReactiveObject
     {
         protected double _scale = 1;
+
+        //public LayoutComponent Model { get; protected set; }
 
         private double _width;
         public double Width
@@ -57,8 +61,8 @@ namespace Lister.ViewModels
             }
         }
 
-        private Thickness _borderThickness;
-        public Thickness BorderThickness
+        private Avalonia.Thickness _borderThickness;
+        public Avalonia.Thickness BorderThickness
         {
             get { return _borderThickness; }
             protected set
@@ -133,15 +137,9 @@ namespace Lister.ViewModels
         }
 
 
-        public void BecomeFocused ( SolidColorBrush borderColor, Thickness borderThickness )
+        public void BecomeFocused ( SolidColorBrush borderColor, Avalonia.Thickness borderThickness )
         {
-            BorderColor = borderColor;
-
-            if ( borderColor == null ) 
-            {
-                BorderColor = new SolidColorBrush (new Color (255, 0, 0, 0));
-            }
-
+            BorderColor = borderColor ?? new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
             BorderThickness = borderThickness;
         }
 
@@ -149,11 +147,11 @@ namespace Lister.ViewModels
         public void BecomeUnFocused ()
         {
             BorderColor = null;
-            BorderThickness = new Thickness (0, 0, 0, 0);
+            BorderThickness = new Avalonia.Thickness (0, 0, 0, 0);
         }
 
 
-        public void Mark ( SolidColorBrush borderColor, Thickness borderThickness )
+        public void Mark ( SolidColorBrush borderColor, Avalonia.Thickness borderThickness )
         {
             BorderColor = borderColor;
             BorderThickness = borderThickness;
@@ -167,11 +165,6 @@ namespace Lister.ViewModels
             Height *= coefficient;
             TopOffset *= coefficient;
             LeftOffset *= coefficient;
-
-            //LeftOffset = Math.Round (LeftOffset * coefficient, 0);
-
-        //    BorderThickness =
-        //new Thickness (BorderThickness.Left * coefficient, BorderThickness.Top, BorderThickness.Right, BorderThickness.Bottom);
         }
 
 
@@ -182,18 +175,6 @@ namespace Lister.ViewModels
             Height /= coefficient;
             TopOffset /= coefficient;
             LeftOffset /= coefficient;
-
-            //LeftOffset = Math.Round (LeftOffset / coefficient, 0);
-
-            //   BorderThickness =
-            //new Thickness (BorderThickness.Left / coefficient, BorderThickness.Top, BorderThickness.Right, BorderThickness.Bottom);
-        }
-
-
-        public void Shift ( Avalonia.Point newPoint )
-        {
-            TopOffset -= newPoint.Y;
-            LeftOffset -= newPoint.X;
         }
     }
 }
