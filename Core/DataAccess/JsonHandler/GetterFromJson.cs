@@ -11,7 +11,7 @@ namespace Core.DataAccess.JsonHandlers
         private static List<string> _incorrectJsons = [];
 
 
-        public static IConfigurationSection? GetSection ( string jsonPath, List<string> keyPathOfSection )
+        public static IConfigurationSection ? GetSection ( string jsonPath, List<string> keyPathOfSection )
         {
             IConfigurationSection section = null;
 
@@ -47,16 +47,7 @@ namespace Core.DataAccess.JsonHandlers
 
             try
             {
-                //Stream stream = File.OpenRead (jsonPath);
-                //byte [] buffer = new byte [4096];
-                //int length = stream.Read (buffer, 0, 1000);
-                //string result = System.Text.Encoding.UTF8.GetString (buffer, 0, length);
-
-
                 string [] lines = File.ReadAllLines ( jsonPath );
-
-
-
 
                 JsonDocument doc = JsonDocument.Parse ( File.ReadAllText ( jsonPath ) );
                 error = string.Empty;
@@ -167,9 +158,9 @@ namespace Core.DataAccess.JsonHandlers
 
 
         public static IEnumerable<IConfigurationSection> GetIncludedItemsOfSection
-                                                                          ( List<string> keyPathOfSection, string jsonPath )
+                                                         ( List<string> keyPathOfSection, string jsonPath )
         {
-            if ( keyPathOfSection == null || keyPathOfSection.Count < 1 || _incorrectJsons.Contains ( jsonPath ) )
+            if ( keyPathOfSection == null  ||  keyPathOfSection.Count < 1  ||  _incorrectJsons.Contains ( jsonPath ) )
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }
@@ -182,7 +173,7 @@ namespace Core.DataAccess.JsonHandlers
 
                 if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1; step < keyPathOfSection.Count; step++ )
+                    for ( int step = 1;   step < keyPathOfSection.Count;   step++ )
                     {
                         sectionName = keyPathOfSection [step];
                         section = section.GetSection ( sectionName );
@@ -206,7 +197,7 @@ namespace Core.DataAccess.JsonHandlers
 
         public static IEnumerable<IConfigurationSection> GetChildren ( List<string> keyPathOfSection, string jsonPath )
         {
-            if ( keyPathOfSection == null || keyPathOfSection.Count < 1 )
+            if ( keyPathOfSection == null  ||  keyPathOfSection.Count < 1 )
             {
                 return Enumerable.Empty<IConfigurationSection> ();
             }
@@ -219,7 +210,7 @@ namespace Core.DataAccess.JsonHandlers
 
                 if ( keyPathOfSection.Count > 1 )
                 {
-                    for ( int step = 1; step < keyPathOfSection.Count; step++ )
+                    for ( int step = 1;   step < keyPathOfSection.Count;   step++ )
                     {
                         sectionName = keyPathOfSection [step];
                         section = section.GetSection ( sectionName );
@@ -246,7 +237,7 @@ namespace Core.DataAccess.JsonHandlers
 
             bool isInt = int.TryParse ( parsable, out result );
 
-            if ( !isInt )
+            if ( ! isInt )
             {
                 return -1;
             }

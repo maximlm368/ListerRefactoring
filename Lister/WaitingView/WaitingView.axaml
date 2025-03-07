@@ -1,0 +1,204 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="487"
+			 x:Class="View.WaitingView.WaitingView"
+			 xmlns:vm="clr-namespace:View.WaitingView.ViewModel; assembly=View"
+			 x:DataType="vm:WaitingViewModel"
+			 Margin="{Binding  Path=Margin,  Mode=OneWay}">
+
+	<StackPanel>
+
+		<Canvas
+			Name="canvas"
+			Width="{Binding Path=CanvasWidth, Mode=OneWay}"
+			Height="{Binding Path=CanvasHeight, Mode=OneWay}"
+			Opacity="0.5"
+			Background="Black">
+
+			<Image
+			  Name="image"
+			  Canvas.Top="{Binding Path=CanvasTop, Mode=OneWay}"
+			  Canvas.Left="{Binding Path=CanvasLeft, Mode=OneWay}"
+			  anim:ImageBehavior.AnimatedSource="{Binding Path=GifSource, Mode=OneWay}"
+			  Opacity="2"
+			  Width="300"
+			  Height="300"/>
+
+		</Canvas>
+
+	</StackPanel>
+  
+</UserControl>
+
+
+<!-- 
+
+		<Canvas
+			Name="canvas"
+			Width="800"
+			Height="467"
+			Opacity="0.5"
+			Background="Black">
+
+			<Canvas
+				Name="progress"
+				Canvas.Top="209"
+				Canvas.Left="245"
+				Height="40"
+				Width="300"
+				Background="Green"/>
+
+		</Canvas>
+
+
+
+
+	<StackPanel>
+
+		<Border
+			Name="canvas"
+			Width="800"
+			Height="467"
+			Opacity="0.5"
+			Background="Black">
+
+			<Border
+				Name="progressBorder"
+				Width="310"
+				Height="50"
+
+				Margin="245,209"
+				Background="White"
+				Opacity="2">
+
+				<Border
+					Name="progress"
+					
+					Margin="{Binding  Path=Margin,  Mode=OneWay}"
+					
+					Background="Green"/>
+
+			</Border>
+
+		</Border>
+
+	</StackPanel>
+
+
+
+
+
+
+
+
+Height="40"
+					Width="{Binding  Path=ProgressWidth,  Mode=OneWay}"
+
+
+Margin="245,209"
+				Canvas.Top="209"
+				Canvas.Left="245"
+				
+				Canvas.Top="5"
+					Canvas.Left="5"
+				
+
+			<Border
+				Name="progressBorder"
+				Width="310"
+				Height="50"
+				Margin="245,209"
+				Background="White"
+				Opacity="2">
+
+				<Canvas
+					Name="progress"
+					Height="40"
+					Width="{Binding  Path=ProgressWidth,  Mode=OneWay}"
+					Background="Green"
+					Margin="5,5"/>
+
+			</Border>
+
+
+
+
+
+
+
+		  <Border
+			  Name="progressBorder"
+			  Width="{Binding  Path=ImageWidth,  Mode=OneWay}"
+			  Height="{Binding  Path=ImageHeight,  Mode=OneWay}"
+			  Canvas.Top="{Binding  Path=CanvasTop,  Mode=OneWay}"
+			  Canvas.Left="{Binding  Path=CanvasLeft,  Mode=OneWay}"
+			  Background="White"
+			  BorderBrush="Black"
+			  >
+			  
+			  
+		  </Border>
+
+
+
+
+
+		  <Image
+			Name="image"
+			anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
+			Opacity="2"
+			Width="300"
+			Height="300"/>
+
+
+
+
+
+
+anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
+
+anim:ImageBehavior.AnimatedSource="{Binding Path=GifSource, Mode=OneWay}"
+
+"D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\win-x64\Resources/Loading.gif"
+anim:ImageBehavior.AnimatedSource="{Binding  Path=Image,  Mode=OneWay}"
+
+Canvas.Top="80"
+			Canvas.Left="250"
+
+
+
+	  <Canvas
+		  Name="canvas"
+		  Width="800"
+		  Height="{Binding  Path=CanvasHeight,  Mode=OneWay}"
+		  Opacity="0.5"
+		  Background="Black">
+
+		  <Image
+			Name="image"
+			anim:ImageBehavior.AnimatedSource="D:\MML\Lister\Lister.Desktop\bin\Debug\net8.0\win-x64\Resources/Loading.gif"
+			Opacity="2"
+			IsVisible="{Binding  Path=ImageIsVisible,  Mode=OneWay}"
+			Width="{Binding  Path=ImageHeight,  Mode=OneWay}"
+			Height="{Binding  Path=ImageHeight,  Mode=OneWay}"
+			Canvas.Top="{Binding  Path=CanvasTop,  Mode=OneWay}"
+			Canvas.Left="{Binding  Path=CanvasLeft,  Mode=OneWay}"
+			/>
+		  
+	  </Canvas>
+	  
+	  
+	  
+	  		  <Image
+			Name="image"
+			anim:ImageBehavior.AnimatedSource="D:/MML/Lister/Lister.Desktop/bin/Debug/net8.0/win-x64/Resources/Loading.gif"
+			Opacity="2"
+			Width="300"
+			Height="300"/>
+	  
+
+
+-->

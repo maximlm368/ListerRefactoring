@@ -199,17 +199,20 @@
   
   
  <ItemGroup>
-   <Compile Update="Views\EditionView.axaml.cs">
+   <Compile Update="EditionWindow\EditionView.axaml.cs">
      <DependentUpon>EditionView.axaml</DependentUpon>
    </Compile>
-   <Compile Update="Views\BadgesBuildingUC.axaml.cs">
+   <Compile Update="MainWindow\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">
      <DependentUpon>BadgesBuildingUC.axaml</DependentUpon>
    </Compile>
-   <Compile Update="Views\LargeMessageDialog.axaml.cs">
+   <Compile Update="DialogMessageWindows\LargeMessage\LargeMessageDialog.axaml.cs">
      <DependentUpon>LargeMessageDialog.axaml</DependentUpon>
    </Compile>
-   <Compile Update="Views\MainView.axaml.cs">
+   <Compile Update="MainWindow\MainView\MainView.axaml.cs">
      <DependentUpon>MainView.axaml</DependentUpon>
+   </Compile>
+   <Compile Update="MainWindow\MainView\Parts\NavigationZoom\NavigationZoomUserControl.axaml.cs">
+     <DependentUpon>NavigationZoomUserControl.axaml</DependentUpon>
    </Compile>
  </ItemGroup>
   

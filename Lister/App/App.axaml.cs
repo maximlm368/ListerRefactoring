@@ -1,14 +1,16 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Core.DataAccess;
-using Lister.ViewModels;
-using Lister.Views;
+using View.SplashWindow;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
+using View.MainWindow.MainView;
+using View.MainWindow.MainView.ViewModel;
+using View.MainWindow;
 
-namespace Lister;
+namespace View.App;
 
-public partial class App : Avalonia.Application
+public partial class ListerApp : Avalonia.Application
 {
     private static bool _runningOnWindow = false;
     private static bool _runningOnLinux = false;
@@ -22,7 +24,7 @@ public partial class App : Avalonia.Application
 
 
 
-    public static MainWindow MainWindow { get; private set; }
+    public static MainWin MainWindow { get; private set; }
     public static string ResourceFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
@@ -30,7 +32,7 @@ public partial class App : Avalonia.Application
     public static ServiceProvider services;
 
 
-    static App () 
+    static ListerApp () 
     {
         ServiceCollection collection = new ServiceCollection ();
         collection.AddNeededServices ();
@@ -65,7 +67,7 @@ public partial class App : Avalonia.Application
     }
 
 
-    public App (){ }
+    public ListerApp (){ }
 
 
     public override void Initialize()
@@ -78,14 +80,12 @@ public partial class App : Avalonia.Application
     {
         if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
-            SplashWindow splashWindow = new SplashWindow ();
-            //SplashViewModel splashViewModel = new SplashViewModel ();
-            //splashWindow.DataContext = splashViewModel;
+            SplashWindow.SplashWindow splashWindow = new SplashWindow.SplashWindow ();
             desktop.MainWindow = splashWindow;
             splashWindow.Show ();
 
-            await BadgeAppearence.SetUp (( App.WorkDirectoryPath + App.ResourceFolderName )
-                                               , ( App.WorkDirectoryPath + App.JsonSchemeFolderName ), OsName);
+            await BadgeAppearence.SetUp (( ListerApp.WorkDirectoryPath + ListerApp.ResourceFolderName )
+                                               , ( ListerApp.WorkDirectoryPath + ListerApp.JsonSchemeFolderName ), OsName);
 
             MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
 
@@ -94,13 +94,12 @@ public partial class App : Avalonia.Application
                 DataContext = mainViewModel
             };
 
-            MainWindow mainWindow = new MainWindow ()
+            MainWin mainWindow = new MainWin ()
             {
-                DataContext = new MainWindowViewModel (),
                 Content = mainView
             };
 
-            App.MainWindow = mainWindow;
+            ListerApp.MainWindow = mainWindow;
             desktop.MainWindow = mainWindow;
             desktop.MainWindow.Show ();
             splashWindow.Close ();

@@ -1,0 +1,482 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="48"
+             x:Class="View.MainWindow.MainView.Parts.BuildButton.BadgesBuildingUserControl"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.BuildButton.ViewModel; assembly=View"
+			 x:DataType="vm:BadgesBuildingViewModel">
+	        
+
+	<Grid
+		Name="badgeTemplateChoice"
+		Height="48"
+		ZIndex="1"
+	    Margin="0,0"
+		Background="#EEEEEE">
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition  Width="216"></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition  Height="22"></RowDefinition>
+			<RowDefinition  Height="2"></RowDefinition>
+			<RowDefinition Height="22"></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Button
+			Name="buildBadges"
+			Classes="superButton"
+			Grid.Column="1"
+			Grid.Row="0"
+			Grid.RowSpan="3"
+			Width="200"
+			Height="32"
+			Margin="8,0"
+			Padding="7,3"
+			ZIndex="2"
+			IsEnabled="{Binding  Path=BuildingIsPossible,  Mode=OneWay}"
+			ToolTip.Tip="Построить макет на основе выбранных данных"
+			ToolTip.HorizontalOffset="10"
+			PointerPressed="RightPointerPressed"
+			Command="{Binding  BuildBadges}">
+
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="30"></ColumnDefinition>
+					<ColumnDefinition Width="170"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				
+				<Label
+					Name="pic"
+					Classes="picture"
+					Grid.Column="0"
+					Content="&#xE2CA;"
+					Width="30"
+					Height="32"
+					Padding="3,8"/>
+				<Label
+					Name="lable"
+					Grid.Column="1"
+					Content="Построить макет"
+					Height="32"
+					Width="170"
+					FontSize="16"
+					Padding="8,6"/>
+			</Grid>
+			
+		</Button>
+
+		<Border
+			Grid.Column="0"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="0,5,0,0"
+			Background="#fafafa">
+
+			<Canvas Name="leftShadow">
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="0"
+					Width="302"
+					Height="1"
+					Opacity="0.35"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="1"
+					Width="301"
+					Height="1"
+					Opacity="0.3"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="2"
+					Width="300"
+					Height="1"
+					Opacity="0.25"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="3"
+					Width="299"
+					Height="1"
+					Opacity="0.2"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="4"
+					Width="298"
+					Height="1"
+					Opacity="0.15"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="5"
+					Width="297"
+					Height="1"
+					Opacity="0.1"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="6"
+					Width="296"
+					Height="1"
+					Opacity="0.05"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="7"
+					Width="295"
+					Height="1"
+					Opacity="0.02"
+					Background="Black"/>
+
+
+
+				<Canvas
+					Canvas.Left="306"
+					Canvas.Top="5"
+					Width="1"
+					Height="13"
+					Opacity="0.35"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="305"
+					Canvas.Top="6"
+					Width="1"
+					Height="12"
+					Opacity="0.3"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="304"
+					Canvas.Top="7"
+					Width="1"
+					Height="11"
+					Opacity="0.25"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="303"
+					Canvas.Top="8"
+					Width="1"
+					Height="10"
+					Opacity="0.2"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="302"
+					Canvas.Top="9"
+					Width="1"
+					Height="9"
+					Opacity="0.15"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="301"
+					Canvas.Top="10"
+					Width="1"
+					Height="8"
+					Opacity="0.1"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="300"
+					Canvas.Top="11"
+					Width="1"
+					Height="7"
+					Opacity="0.05"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="299"
+					Canvas.Top="12"
+					Width="1"
+					Height="6"
+					Opacity="0.02"
+					Background="Black"/>
+
+
+
+
+				<Border
+					Canvas.Left="302" Canvas.Top="0"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,6,0,0"
+					Opacity="0.4"/>
+				<Border
+					Canvas.Left="301" Canvas.Top="1"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,5,0,0"
+					Opacity="0.35"/>
+				<Border
+					Canvas.Left="300" Canvas.Top="2"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,4,0,0"
+					Opacity="0.25"/>
+				<Border
+					Canvas.Left="299" Canvas.Top="3"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,3,0,0"
+					Opacity="0.2"/>
+				<Border
+					Canvas.Left="298" Canvas.Top="4"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,2,0,0"
+					Opacity="0.15"/>
+				<Border
+					Canvas.Left="297" Canvas.Top="5"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,2,0,0"
+					Opacity="0.1"/>
+				<Border
+					Canvas.Left="296" Canvas.Top="6"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,2,0,0"
+					Opacity="0.05"/>
+				<Border
+					Canvas.Left="295" Canvas.Top="7"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="0,1,1,0"
+					CornerRadius="0,2,0,0"
+					Opacity="0.02"/>
+				
+			</Canvas>
+			
+		</Border>
+
+		<Border
+			Grid.Column="2"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="5,0,0,0"
+			Background="#fafafa">
+
+			<Canvas Name="rightShadow">
+				<Canvas
+					Canvas.Left="5"
+					Canvas.Top="0"
+					Width="302"
+					Height="1"
+					Opacity="0.35"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="6"
+					Canvas.Top="1"
+					Width="301"
+					Height="1"
+					Opacity="0.3"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="7"
+					Canvas.Top="2"
+					Width="300"
+					Height="1"
+					Opacity="0.25"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="8"
+					Canvas.Top="3"
+					Width="299"
+					Height="1"
+					Opacity="0.2"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="9"
+					Canvas.Top="4"
+					Width="298"
+					Height="1"
+					Opacity="0.15"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="10"
+					Canvas.Top="5"
+					Width="297"
+					Height="1"
+					Opacity="0.1"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="11"
+					Canvas.Top="6"
+					Width="296"
+					Height="1"
+					Opacity="0.05"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="12"
+					Canvas.Top="7"
+					Width="295"
+					Height="1"
+					Opacity="0.02"
+					Background="Black"/>
+
+
+				<Canvas
+					Canvas.Left="0"
+					Canvas.Top="5"
+					Width="1"
+					Height="13"
+					Opacity="0.35"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="1"
+					Canvas.Top="6"
+					Width="1"
+					Height="12"
+					Opacity="0.3"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="2"
+					Canvas.Top="7"
+					Width="1"
+					Height="11"
+					Opacity="0.25"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="3"
+					Canvas.Top="8"
+					Width="1"
+					Height="10"
+					Opacity="0.2"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="4"
+					Canvas.Top="9"
+					Width="1"
+					Height="9"
+					Opacity="0.15"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="5"
+					Canvas.Top="10"
+					Width="1"
+					Height="8"
+					Opacity="0.1"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="6"
+					Canvas.Top="11"
+					Width="1"
+					Height="7"
+					Opacity="0.05"
+					Background="Black"/>
+				<Canvas
+					Canvas.Left="7"
+					Canvas.Top="12"
+					Width="1"
+					Height="6"
+					Opacity="0.02"
+					Background="Black"/>
+
+
+				<Border
+					Canvas.Left="0" Canvas.Top="0"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="6,0,0,0"
+					Opacity="0.4"/>
+				<Border
+					Canvas.Left="1" Canvas.Top="1"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="5,0,0,0"
+					Opacity="0.35"/>
+				<Border
+					Canvas.Left="2" Canvas.Top="2"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="4,0,0,0"
+					Opacity="0.25"/>
+				<Border
+					Canvas.Left="3" Canvas.Top="3"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="3,0,0,0"
+					Opacity="0.2"/>
+				<Border
+					Canvas.Left="4" Canvas.Top="4"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="2,0,0,0"
+					Opacity="0.15"/>
+				<Border
+					Canvas.Left="5" Canvas.Top="5"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="2,0,0,0"
+					Opacity="0.1"/>
+				<Border
+					Canvas.Left="6" Canvas.Top="6"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="2,0,0,0"
+					Opacity="0.05"/>
+				<Border
+					Canvas.Left="7" Canvas.Top="7"
+					Width="5"
+					Height="5"
+					BorderBrush="Black"
+					BorderThickness="1,1,0,0"
+					CornerRadius="2,0,0,0"
+					Opacity="0.02"/>
+			</Canvas>
+		</Border>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="0,0,0,0"
+			Background="White"/>
+
+		<Border
+			Grid.Column="1"
+			Grid.Row="2"
+			Height="24"
+			CornerRadius="0,0,5,5"
+			Background="#EEEEEE"/>
+
+	</Grid>
+  
+</UserControl>
+
+
+
+
+
+

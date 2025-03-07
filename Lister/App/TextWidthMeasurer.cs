@@ -1,12 +1,11 @@
 ﻿using Avalonia.Media;
-using Avalonia.Threading;
-using Core.DocumentBuilder;
+using Core.DocumentProcessor.Abstractions;
 
-namespace Lister;
+namespace View.App;
 
 public class TextWidthMeasurer : ITextWidthMeasurer
 {
-    private static ITextWidthMeasurer Instance;
+    private static ITextWidthMeasurer _instance;
 
 
     private TextWidthMeasurer() {}
@@ -14,12 +13,12 @@ public class TextWidthMeasurer : ITextWidthMeasurer
 
     public static ITextWidthMeasurer GetMesurer () 
     {
-        if ( Instance == null ) 
+        if ( _instance == null ) 
         {
-            Instance = new TextWidthMeasurer();
+            _instance = new TextWidthMeasurer();
         }
 
-        return Instance;
+        return _instance;
     }
 
 
@@ -35,9 +34,6 @@ public class TextWidthMeasurer : ITextWidthMeasurer
         formatted.SetFontFamily ( new Avalonia.Media.FontFamily ( fontName ) );
 
         return formatted.Width;
-
-
-        //return result1;
     }
 
 

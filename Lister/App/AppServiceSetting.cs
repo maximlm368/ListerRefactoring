@@ -1,29 +1,40 @@
 ﻿using Avalonia.Media;
 using Core.DataAccess.JsonHandlers;
-using Core.BadgesProvider;
 using Core.DataAccess.PeopleSource;
-using Lister.ViewModels;
-using Lister.Views;
+using Core.DocumentProcessor;
 using Microsoft.Extensions.DependencyInjection;
-using Core.DocumentBuilder;
+using View.CoreAbstractionsImplimentations;
+using View.DialogMessageWindows.LargeMessage.ViewModel;
+using View.DialogMessageWindows.PrintDialog.ViewModel;
+using View.EditionWindow.ViewModel;
+using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
+using View.MainWindow.MainView.Parts.PersonChoosing;
+using View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
+using View.MainWindow.MainView.Parts.PersonSource.ViewModel;
+using View.MainWindow.MainView.Parts.Scene.ViewModel;
+using View.MainWindow.MainView.ViewModel;
+using View.WaitingView.ViewModel;
+using View.CoreModelReflection;
+using View.CoreModelReflection.Badge;
 
-namespace Lister;
+
+namespace View.App;
 
 public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
         collection.AddSingleton <PeopleXlsxSource> ();
-        collection.AddSingleton (typeof (ConverterToPdf), ConverterToPdfFactory);
-        collection.AddSingleton <Lister.ViewModels.PdfPrinter> ();
+        collection.AddSingleton ( typeof ( PdfPrinter ), PdfPrinterFactory );
 
-        collection.AddSingleton ( typeof ( DocumentBuilder ), DocumentBuilderFactory );
+        collection.AddSingleton ( typeof ( DocumentProcessor ), DocumentBuilderFactory );
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
         collection.AddSingleton (typeof (PersonChoosingViewModel), PersonChoosingViewModelFactory);
         collection.AddSingleton (typeof (PersonSourceViewModel), PersonSourceViewModelFactory);
         collection.AddSingleton (typeof (SceneViewModel), SceneViewModelFactory);
-        collection.AddSingleton (typeof (PageNavigationZoomerViewModel), NavigationZoomerViewModelFactory);
+        collection.AddSingleton (typeof (NavigationZoomViewModel), NavigationZoomerViewModelFactory);
         collection.AddSingleton (typeof (PrintDialogViewModel), PrintDialogViewModelFactory);
         collection.AddSingleton (typeof (EditorViewModelArgs), EditorViewModelArgsFactory);
         collection.AddSingleton <BadgesBuildingViewModel> ();
@@ -32,15 +43,20 @@ public static class ServiceCollectionExtensions
     }
 
 
-    private static ConverterToPdf ConverterToPdfFactory ( IServiceProvider serviceProvider )
+    private static DocumentProcessor DocumentBuilderFactory ( IServiceProvider serviceProvider )
     {
-        return new ConverterToPdf (App.OsName);
+        return DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
+            , Printer.GetInstance( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName ) ) );
     }
 
 
-    private static DocumentBuilder DocumentBuilderFactory ( IServiceProvider serviceProvider )
+    private static PdfPrinter PdfPrinterFactory ( IServiceProvider serviceProvider )
     {
-        return new DocumentBuilder ( TextWidthMeasurer.GetMesurer() );
+        DocumentProcessor model =
+        DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
+            , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName)) );
+    
+        return new PdfPrinter ( model );
     }
 
 
@@ -53,7 +69,7 @@ public static class ServiceCollectionExtensions
         string fileIsOpenMessage = MainViewConfigs.fileIsOpenMessage;
         string fileIsTooBigMessage = MainViewConfigs.fileIsTooBig;
 
-        return new MainViewModel (App.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
+        return new MainViewModel (ListerApp.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
                                                                       , fileIsOpenMessage, fileIsTooBigMessage);
     }
 
@@ -69,7 +85,7 @@ public static class ServiceCollectionExtensions
         int badgeLimit = PersonSourceConfigs.badgeCountLimit;
 
         string sourcePathKeeper =
-        GetterFromJson.GetSectionStrValue (new List<string> { "personSource" }, App.ConfigPath);
+        GetterFromJson.GetSectionStrValue (new List<string> { "personSource" }, ListerApp.ConfigPath);
 
         PersonSourceViewModel result = 
         new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper);
@@ -139,11 +155,12 @@ public static class ServiceCollectionExtensions
         string fileIsOpenMessage = SceneConfigs.fileIsOpenMessage;
 
         return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
-                                                             , new DocumentBuilder (TextWidthMeasurer.GetMesurer ()) );
+             , DocumentProcessor.GetInstance (TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
+             , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))) );
     }
 
 
-    private static PageNavigationZoomerViewModel NavigationZoomerViewModelFactory ( IServiceProvider serviceProvider )
+    private static NavigationZoomViewModel NavigationZoomerViewModelFactory ( IServiceProvider serviceProvider )
     {
         string procentSymbol = NavigationZoomerConfigs.procentSymbol;
 
@@ -151,7 +168,7 @@ public static class ServiceCollectionExtensions
 
         short minDepth = NavigationZoomerConfigs.minDepth;
 
-        return new PageNavigationZoomerViewModel (procentSymbol, maxDepth, minDepth);
+        return new NavigationZoomViewModel (procentSymbol, maxDepth, minDepth);
     }
 
 
@@ -162,7 +179,7 @@ public static class ServiceCollectionExtensions
         string emptyPages = PrintDialogConfigs.emptyPages;
         string emptyPrinters = PrintDialogConfigs.emptyPrinters;
 
-        return new PrintDialogViewModel (warnImagePath, emptyCopies, emptyPages, emptyPrinters, App.OsName);
+        return new PrintDialogViewModel (warnImagePath, emptyCopies, emptyPages, emptyPrinters, ListerApp.OsName);
     }
 
 

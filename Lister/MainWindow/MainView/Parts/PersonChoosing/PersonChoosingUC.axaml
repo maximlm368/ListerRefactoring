@@ -1,0 +1,255 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
+			 xmlns:uc="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing"
+             x:Class="View.MainWindow.MainView.Parts.PersonChoosing.PersonChoosingUserControl"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing.ViewModel; assembly=View"
+			 x:DataType="vm:PersonChoosingViewModel">
+
+	<Grid Name="personChoosingBlock"
+		  Background="#EEEEEE"
+		  Height="36"
+		  ZIndex="0">
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition  Width="70" ></ColumnDefinition>
+			<ColumnDefinition  ></ColumnDefinition>
+			<ColumnDefinition  Width="33" ></ColumnDefinition>
+			<ColumnDefinition  Width="90" ></ColumnDefinition>
+			<ColumnDefinition  Width="195" ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+
+		<Label
+			Grid.Column="0"
+			Padding="10,5"
+			Content="ФИО:"/>
+
+		<Canvas
+			Name="customCombobox"
+			Grid.Column="1">
+
+			<TextBox
+				Name="personTextBox"
+				Width="446"
+				Padding="10,4"
+				Margin="0,2"
+				BorderThickness="1,1,0,1"
+				BorderBrush="Gray"
+				CornerRadius="3,0,0,3"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+				IsReadOnly="{Binding   Path = TextboxIsReadOnly,  Mode=OneWay}"
+				Focusable="{Binding   Path = TextboxIsFocusable,  Mode=OneWay}"
+				Text="{Binding   Path = PlaceHolder,  Mode=OneWay}"
+				CaretIndex="{Binding   Path = CaretIndex,  Mode=OneWay}"
+				GotFocus="CustomComboboxGotFocus"
+				LostFocus="CustomComboboxLostFocus"
+				PointerEntered="CustomComboboxPointerOver"
+				PointerExited="CustomComboboxPointerExited"
+				KeyUp="HandlePersonListReduction"
+				KeyDown="DropOrPickUpPersonsOrScroll"/>
+
+			<Border
+				Name="listBorder"
+				Canvas.Top="36"
+				ZIndex="2"
+				Margin="0,-2"
+				CornerRadius="0"
+				BorderThickness="1"
+				Opacity="{Binding  Path=DropDownOpacity, Mode=OneWay}"
+				Background="Gray">
+
+					<uc:CustomViewbox
+						Name="visiblePersons"
+						Width="472"
+						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+						PointerWheelChanged="ScrollByWheel"
+						IsScrollable="{Binding   Path = IsPersonsScrollable,  Mode=OneWay}">
+					
+					<Canvas
+						Name="listFrame"
+						Width="472"
+						Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+						Background="AliceBlue" >
+
+						<Label
+							Name="allPersonsSign"
+							Padding="8,4"
+							FontStyle="Italic"
+							Background="{Binding   Path = EntireBackgroundColor,  Mode=OneWay }"
+							Foreground="{Binding   Path = EntireForegroundColor,  Mode=OneWay }"
+							BorderBrush="{Binding   Path = EntireBorderColor,  Mode=OneWay }"
+							FontWeight="{Binding   Path = EntireFontWeight,  Mode=OneWay }"
+							BorderThickness="2"
+							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+							Height="{Binding   Path = FirstItemHeight,  Mode=OneWay}"
+							IsVisible="{Binding   Path = FirstIsVisible,  Mode=OneWay}"
+							PointerPressed="AcceptEntirePersonList"
+							PointerEntered="HoverComboboxItem"
+							PointerExited="ExitComboboxItem"
+							Content="Весь список"/>
+						
+						<ItemsControl
+							Name="personList"
+							Canvas.Top="{Binding   Path = PersonsScrollValue,  Mode=OneWay}"
+							Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+							ItemsSource="{Binding   Path = VisiblePeople,  Mode=OneWay}">
+
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+
+										<Label
+											Padding="8,4"
+											Height="32"
+											BorderThickness="1"
+											Background="{Binding   Path = BackgroundColor,  Mode=OneWay }"
+											Foreground="{Binding   Path = ForegroundColor,  Mode=OneWay }"
+											BorderBrush="{Binding   Path = BorderColor,  Mode=OneWay }"
+											FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+											Width="{Binding   Path = PersonListWidth,  Mode=OneWay}"
+											PointerPressed="HandleChoosingByTapping"
+											PointerEntered="HoverComboboxItem"
+											PointerExited="ExitComboboxItem"
+											Content="{Binding   Path = Person.FullName,  Mode=OneWay }"/>
+
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+
+
+						<Canvas
+							Name="scroller"
+							Canvas.Left="{Binding   Path = ScrollerCanvasLeft,  Mode=OneWay}"
+							Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+							Height="{Binding   Path = VisibleHeight,  Mode=OneWay}"
+							ZIndex="5"
+							PointerPressed="ScrollerPressed"
+							Background="White">
+
+							<Canvas
+								Name="upper"
+								Canvas.Left="0"
+								Canvas.Top="0"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="15"
+								Background="LightGray"
+								PointerPressed="ScrollByTapping"/>
+
+							<Canvas
+								Name="topSpan"
+								Canvas.Left="0"
+								Canvas.Top="15"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = TopSpanHeight,  Mode=OneWay}"
+								Background="#EEEEEE"
+								PointerPressed="ShiftRunner"/>
+
+							<Canvas
+								Name="runner"
+								Classes="Runner"
+								Canvas.Left="0"
+								Canvas.Top="{Binding   Path = RunnerYCoordinate,  Mode=OneWay}"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+								ZIndex="3"
+								Background="#817974"
+								PointerPressed="CaptureRunner"
+								PointerEntered="OverRunner"
+								PointerExited="ExitedRunner"
+								PointerMoved="MoveRunner"/>
+
+							<Canvas
+								Name="bottomSpan"
+								Canvas.Left="0"
+								Canvas.Bottom="15"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="{Binding   Path = BottomSpanHeight,  Mode=OneWay}"
+								Background="#EEEEEE"
+								PointerPressed="ShiftRunner"/>
+
+							<Canvas
+								Name="downer"
+								Canvas.Left="0"
+								Canvas.Bottom="0"
+								Width="{Binding   Path = ScrollerWidth,  Mode=OneWay}"
+								Height="15"
+								Background="LightGray"
+								PointerPressed="ScrollByTapping"/>
+
+						</Canvas>
+
+					</Canvas>
+				</uc:CustomViewbox>
+			</Border>
+
+		</Canvas>
+		
+		<Border
+			Name="builtInBorder"
+			Classes="builtIn"
+			Grid.Column="2"
+			Width="30"
+			Height="32"
+			BorderThickness="0,1,1,1"
+			Background="White"
+			CornerRadius="0,3,3,0">
+		
+			<Label
+				Name="builtInButton"
+				Classes="inBuiltIn"
+				VerticalAlignment="Top"
+				VerticalContentAlignment="Center"
+				Width="28"
+				Height="28"
+				CornerRadius="0,4,4,0"
+				Padding="6,7"
+				PointerPressed="ButtonPressed"
+				PointerReleased="ButtonReleased"
+				FontFamily="{StaticResource FA}"
+				Background="White"
+				Content="&#xf107;"/>
+
+		</Border>
+			
+		<Label
+			Classes="narrow"
+			Grid.Column="3"
+			Content="Шаблон:"
+			Margin="10, 0"
+			Padding="10, 0"/>
+
+		<ComboBox
+			Name="templateChoosing"
+			Grid.Column="4"
+			PlaceholderForeground="{Binding  Path=ChosenTemplateColor,  Mode=OneWay}"
+			PlaceholderText="{Binding  Path=ChosenTemplate.Name,  Mode=OneWay}"
+			FontSize="16"
+			Height="32"
+			Width="184"
+			Margin="0,2"
+			Padding="4,0"
+			ScrollViewer.AllowAutoHide="False"
+			ScrollViewer.VerticalScrollBarVisibility="Auto"
+			MaxDropDownHeight="100"
+			SelectedItem="{Binding  Path=ChosenTemplate,  Mode=OneWay}"
+			IsDropDownOpen="{Binding  Path=IsOpen,  Mode=OneWay}"
+			DropDownClosed="HandleClosing"
+		    ItemsSource="{Binding  Path=Templates,  Mode=OneWay}">
+
+			<ComboBox.ItemTemplate >
+				<DataTemplate >
+					<Label
+						Classes="narrow"
+						Padding="4,0"
+						Foreground="{Binding  Path=Color,  Mode=OneWay}"
+						Content="{Binding  Path=Name,  Mode=OneWay}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+	</Grid>
+	
+</UserControl>
+
+

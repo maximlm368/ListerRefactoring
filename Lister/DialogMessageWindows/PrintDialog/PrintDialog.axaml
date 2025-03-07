@@ -1,0 +1,220 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="668" d:DesignHeight="369"
+		x:Class="View.DialogMessageWindows.PrintDialog.PrintDialog"
+		xmlns:views="clr-namespace:View.DialogMessageWindows.PrintDialog; assembly=View"
+		xmlns:vm="clr-namespace:View.DialogMessageWindows.PrintDialog.ViewModel"
+		Width="668"
+		Height="369"
+		WindowStartupLocation="CenterOwner"
+		x:DataType="vm:PrintDialogViewModel"
+		
+		SystemDecorations="None"
+		
+		ExtendClientAreaToDecorationsHint = "true"
+		ExtendClientAreaChromeHints = "NoChrome"
+		ExtendClientAreaTitleBarHeightHint = "0">
+
+	<UserControl
+		Width="668"
+		Height="369"
+		BorderBrush = "gray"
+        BorderThickness = "1">
+
+		<StackPanel>
+
+			<Label
+				Classes="modalLabel"
+				Content ="Настройка печати"/>
+
+            <Grid Margin="8,16">
+				
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition  Width="180"></ColumnDefinition>
+					<ColumnDefinition  Width="400"></ColumnDefinition>
+					<ColumnDefinition  Width="20"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+
+				<Grid.RowDefinitions>
+					<RowDefinition  Height="36"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+					<RowDefinition  Height="38"></RowDefinition>
+				</Grid.RowDefinitions>
+				
+				<Label
+					Name="printerName"
+					Grid.Column="0"
+					Grid.Row="0"
+					Padding="10,5"
+					Content="Выбор принтера"/>
+
+				<ComboBox
+					Name="printerChoosing"
+					Grid.Column="1"
+					Grid.Row="0"
+					Foreground="Black"
+					Background="White"
+					FontSize="16"
+					Height="32"
+					Width="461"
+					Margin="0,2"
+					MaxDropDownHeight="120"
+					SelectedIndex="{Binding  Path=SelectedIndex, Mode=TwoWay}"
+					ItemsSource="{Binding  Path=Printers, Mode=OneWay}">
+
+					<ComboBox.ItemTemplate >
+						<DataTemplate >
+							<Label
+								Classes="narrow"
+								Width="420"
+								VerticalContentAlignment="Center"
+								Content="{Binding  Path=StringPresentation, Mode=OneWay}"/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+
+				<Label
+					Name="printersEmptyError"
+					Grid.Column="1"
+					Grid.Row="1"
+					Padding="10,5"
+					Foreground="Red"
+					Content="{Binding  Path = PrintersEmptyError,  Mode=OneWay}"/>
+
+				<RadioButton
+					Name="allPages"
+					GroupName="PageSelection"
+					Grid.Column="0"
+					Grid.Row="2"
+					Margin="10,-4"
+					Padding="8,-5"
+					Content="Все страницы"
+					FontSize="16"/>
+
+				<RadioButton
+					Name="somePages"
+					GroupName="PageSelection"
+					Grid.Column="0"
+					Grid.Row="3"
+					Margin="10,0"
+					IsChecked="{Binding  Path = Some,  Mode=OneWayToSource}"
+					Content="Выбор страниц"
+					FontSize="16"/>
+				
+				<TextBox
+					Name="pagesText"
+					Grid.Column="1"
+					Grid.Row="3"
+					Height="32"
+					Width="461"
+					Margin="0,-2"
+					HorizontalAlignment="Left"
+					FontSize="16"
+					BorderBrush="{Binding  Path = PagesBorderColor,  Mode=OneWay}"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					LostFocus="PagesLostFocus"
+					GotFocus="PagesGotFocus"
+					TextChanged="PagesSetChanged"
+					Text="{Binding  Path = Pages,  Mode=OneWay}"
+					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"/>
+
+				<Label
+					Name="pagesError"
+					Grid.Column="1"
+					Grid.Row="4"
+					Padding="10,5"
+					Foreground="Red"
+					Content="{Binding  Path = PagesError,  Mode=OneWay}"/>
+
+				<Label
+					Name="amount"
+					Grid.Column="0"
+					Grid.Row="5"
+					Padding="10,8"
+					Content="Количество копий"/>
+
+				<TextBox
+					Name="amountText"
+					Grid.Column="1"
+					Grid.Row="5"
+					Height="32"
+					Width="30"
+					Margin="0,4"
+					HorizontalAlignment="Left"
+					FontSize="16"
+					BorderBrush="{Binding  Path = CopiesBorderColor,  Mode=OneWay}"
+					ScrollViewer.VerticalScrollBarVisibility="Disabled"
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+					LostFocus="CopiesLostFocus"
+					GotFocus="CopiesGotFocus"
+					TextChanged="CopiesChanged"
+					Text="{Binding  Path = Copies,  Mode=OneWay}"/>
+
+				<Label
+					Name="copiesError"
+					Grid.Column="1"
+					Grid.Row="6"
+					Padding="10,5"
+					Foreground="Red"
+					Content="{Binding  Path = CopiesError,  Mode=OneWay}"/>
+				
+			</Grid>
+
+			<Canvas
+				Name ="Line"
+				Width="666"
+				Height="1"
+				Margin ="0,2"
+				Background ="#dcdcdc"/>
+
+			<Canvas
+				Name="buttons"
+				Width="666"
+				Height="51"
+				Margin ="0,-2,0,0"
+				Background = "#f0f0f0">
+
+				<Button
+					Name="printerSettings"
+					Classes="Primary"
+					Padding="15,4"
+					Canvas.Top="8"
+					Canvas.Left="8"
+					Content="Настройки принтера"
+					Command="{Binding  Path = OpenPrinterSettings}"/>
+				
+				<Button
+					Name="print"
+					Classes="Primary"
+					Padding="13,4"
+					Canvas.Top="8"
+					Canvas.Left="453"
+					Content="Печатать"
+					IsEnabled="{Binding  Path = PrintingIsAvailable,  Mode=OneWay}"
+					Command="{Binding  Path = Print}"/>
+
+				<Button
+					Name="cancel"
+					Classes="Primary"
+					Padding="15,4"
+					Canvas.Top="8"
+					Canvas.Left="563"
+					Content="Отмена"
+					Command="{Binding  Path = Cancel}"/>
+
+			</Canvas>
+
+		</StackPanel>
+	</UserControl>
+
+
+</Window>
+
+

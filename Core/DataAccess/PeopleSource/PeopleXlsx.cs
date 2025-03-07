@@ -29,7 +29,7 @@ public sealed class PeopleXlsxSource : PeopleSourceBase
                 return null;
             }
 
-            var conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new ExcelDataSetConfiguration
             {
                 ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
                 {
@@ -40,11 +40,11 @@ public sealed class PeopleXlsxSource : PeopleSourceBase
             var dataSet = reader.AsDataSet ( conf );
             var dataTable = dataSet.Tables [0];
 
-            for ( var i = 1; i < dataTable.Rows.Count; i++ )
+            for ( var i = 1;   i < dataTable.Rows.Count;   i++ )
             {
                 List<string> rowData = [];
 
-                for ( var j = 0; j < dataTable.Columns.Count; j++ )
+                for ( var j = 0;   j < dataTable.Columns.Count;   j++ )
                 {
                     var data = dataTable.Rows [i] [j];
                     rowData.Add ( data.ToString () );
@@ -79,7 +79,7 @@ public sealed class PeopleXlsxSource : PeopleSourceBase
             using IExcelDataReader reader = ExcelReaderFactory.CreateReader ( stream );
             int rowCounts = reader.RowCount;
 
-            var conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new ExcelDataSetConfiguration
             {
                 ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
                 {
@@ -90,9 +90,9 @@ public sealed class PeopleXlsxSource : PeopleSourceBase
             DataSet dataSet = reader.AsDataSet ( conf );
             System.Data.DataTable dataTable = dataSet.Tables [0];
 
-            for ( int i = 0; i < 1; i++ )
+            for ( int i = 0;   i < 1;   i++ )
             {
-                for ( int j = 0; j < dataTable.Columns.Count; j++ )
+                for ( int j = 0;   j < dataTable.Columns.Count;   j++ )
                 {
                     object data = dataTable.Rows [i] [j];
                     resultRow.Add ( data.ToString () );

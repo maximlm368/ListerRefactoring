@@ -1,8 +1,9 @@
 ﻿namespace Core.Models.Badge
 {
-    public abstract class BindableToAnother : LayoutComponent
+    public abstract class BindableToAnother : LayoutComponentBase
     {
-        public string? BindingName { get; set; }
+        public int Id { get; protected set; }
+        public string? Binding { get; set; }
         public bool IsAboveOfBinding { get; set; }
     }
 }

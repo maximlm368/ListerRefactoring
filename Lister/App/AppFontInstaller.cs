@@ -4,9 +4,9 @@ using Microsoft.Extensions.Configuration;
 using System.Drawing.Text;
 
 
-namespace Lister;
+namespace View.App;
 
-public partial class App : Avalonia.Application
+public partial class ListerApp : Avalonia.Application
 {
     private Task InstallFonts ()
     {

@@ -1,13 +1,15 @@
-﻿using Core.DocumentBuilder;
+﻿using Core.DocumentProcessor.Abstractions;
 using ExtentionsAndAuxiliary;
 
 namespace Core.Models.Badge;
 
-public class TextLine : LayoutComponent
+public class TextLine : LayoutComponentBase
 {
     internal static ITextWidthMeasurer Measurer { get; set; }
 
     private static readonly double _divider = 8;
+    private static readonly double _maxFontSizeLimit = 30;
+    private static readonly double _minFontSizeLimit = 6;
 
     public string Name { get; private set; }
     public int NumberToLocate { get; private set; }
@@ -24,30 +26,49 @@ public class TextLine : LayoutComponent
         {
             return _content;
         }
-        set
+        internal set
         {
-            if ( ! string.IsNullOrWhiteSpace ( value ) )
-            {
-                _content = value;
-                ContentIsSet = true;
-            }
+            _content = value;
+            ContentIsSet = true;
         }
     }
     public double UsefullWidth { get; private set; }
-    public List<string> IncludedAtoms { get; private set; }
+    public List<string> IncludedLines { get; private set; }
     public bool IsSplitable { get; private set; }
     public bool ContentIsSet { get; private set; }
     public bool isNeeded;
 
-    public bool IsBorderViolent { get; internal set; } = false;
-    public bool IsOverLayViolent { get; internal set; } = false;
+    private bool _isBorderViolent = false;
+    public bool IsPaddingViolent 
+    {
+        get { return _isBorderViolent; }
+        internal set 
+        {
+            _isBorderViolent = value;
+            TextChanged?.Invoke ( this );
+        } 
+    }
+
+    private bool _isOverLayViolent = false;
+    public bool IsOverLayViolent 
+    {
+        get { return _isOverLayViolent; }
+        internal set 
+        {
+            _isOverLayViolent = value;
+            TextChanged?.Invoke ( this );
+        }
+    }
+
+    public delegate void TextChangedHandler (TextLine source);
+    public event TextChangedHandler ? TextChanged;
 
 
     public TextLine ( string name, double width, double height, double topOffset, double leftOffset, string alignment
-                       , double fontSize, string fontName, string foregroundHexStr
-                       , string fontWeight, List<string>? includedAtoms, bool isSplitable, int numberToLocate )
+                       , double fontSize, string fontName, string foregroundHexStr, string fontWeight
+                       , List<string>? includedLines, bool isSplitable, int numberToLocate )
     {
-        _content = "";
+        Content = "";
         ContentIsSet = false;
         Name = name;
         Width = width;
@@ -61,12 +82,11 @@ public class TextLine : LayoutComponent
         ForegroundHexStr = foregroundHexStr;
 
         FontWeight = fontWeight;
-        IncludedAtoms = includedAtoms ?? new List<string> ();
+        IncludedLines = includedLines ?? new List<string> ();
         IsSplitable = isSplitable;
         NumberToLocate = numberToLocate;
-        isNeeded = true;
 
-        //SetAlignment ( );
+        isNeeded = true;
     }
 
 
@@ -83,10 +103,13 @@ public class TextLine : LayoutComponent
         FontName = source.FontName;
         ForegroundHexStr = source.ForegroundHexStr;
         FontWeight = source.FontWeight;
-        IncludedAtoms = source.IncludedAtoms ?? new List<string> ();
+        IncludedLines = source.IncludedLines ?? new List<string> ();
         IsSplitable = source.IsSplitable;
         NumberToLocate = source.NumberToLocate;
         isNeeded = true;
+
+        IsPaddingViolent = source.IsPaddingViolent;
+        IsOverLayViolent = source.IsOverLayViolent;
 
         if ( isJustCopying )
         {
@@ -97,6 +120,7 @@ public class TextLine : LayoutComponent
         {
             UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
             SetAlignment ();
+            Width = UsefullWidth;
             Padding = GetPadding ();
         }
     }
@@ -105,7 +129,7 @@ public class TextLine : LayoutComponent
     internal TextLine CloneAsDescription ()
     {
         TextLine clone = new TextLine ( Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize
-                                             , FontName, ForegroundHexStr, FontWeight, IncludedAtoms, IsSplitable
+                                             , FontName, ForegroundHexStr, FontWeight, IncludedLines, IsSplitable
                                              , NumberToLocate );
         return clone;
     }
@@ -126,33 +150,42 @@ public class TextLine : LayoutComponent
 
         foreach ( char symbol   in   unNeeded )
         {
-            _content = _content.TrimStart ( symbol );
-            _content = _content.TrimEnd ( symbol );
+            Content = Content.TrimStart ( symbol );
+            Content = Content.TrimEnd ( symbol );
         }
     }
 
 
-    public void IncreaseFontSize ( double additable )
+    internal void IncreaseFontSize ( )
     {
         double oldFontSize = FontSize;
-        FontSize += additable;
+        double newFontSize = oldFontSize + 1;
+
+        if ( newFontSize > _maxFontSizeLimit ) return;
+
+        FontSize += 1;
 
         UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
         double proportion = FontSize / oldFontSize;
         Height *= proportion;
         Padding = GetPadding ();
+
+        TextChanged?.Invoke (this);
     }
 
 
-    public void ReduceFontSize ( double subtractable )
+    internal void ReduceFontSize ( )
     {
+        double fontSize = FontSize;
+        if ( ( fontSize - 1 ) < _minFontSizeLimit ) return;
+
         double insideLeftRest = UsefullWidth - Math.Abs ( LeftOffset );
         double insideTopRest = Height - Math.Abs ( TopOffset );
 
         double oldWidth = UsefullWidth;
         double oldFontSize = FontSize;
 
-        FontSize -= subtractable;
+        FontSize -= 1;
 
         UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
         double proportion = oldFontSize / FontSize;
@@ -172,6 +205,8 @@ public class TextLine : LayoutComponent
         {
             TopOffset += ( insideTopRest - newInsideTopRest );
         }
+
+        TextChanged?.Invoke (this);
     }
 
 
@@ -202,10 +237,11 @@ public class TextLine : LayoutComponent
     }
 
 
-    internal void ResetContent ( string newText )
+    public void ResetContent ( string newText )
     {
         Content = newText;
-        CheckFocusedLineCorrectness ();
+        UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
+        TextChanged?.Invoke (this);
     }
 
 

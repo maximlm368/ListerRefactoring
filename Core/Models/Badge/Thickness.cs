@@ -33,4 +33,13 @@ public class Thickness
         Right = 0;
         Bottom = 0;
     }
+
+
+    public Thickness ( double left, double top, double right, double bottom )
+    {
+        Left = left;
+        Top = top;
+        Right = right;
+        Bottom = bottom;
+    }
 }

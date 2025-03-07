@@ -1,14 +1,9 @@
 ﻿using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Lister.ViewModels;
-using System.Text;
-using System.Collections;
-using System.Diagnostics.Metrics;
-using System.Collections.Immutable;
+using View.CoreModelReflection.Badge;
 
 namespace Lister.Extentions
 {
-    public class BadgeComparer : IComparer <BadgeViewModel>
+    internal class BadgeComparer : IComparer <BadgeViewModel>
     {
         public int Compare ( BadgeViewModel ? x, BadgeViewModel ? y )
         {
@@ -50,7 +45,7 @@ namespace Lister.Extentions
 
 
 
-    public static class ImageHelper
+    internal static class ImageHelper
     {
         public static Bitmap ? LoadFromResource (string source)
         {
@@ -62,6 +57,29 @@ namespace Lister.Extentions
             }
 
             return bitmap;
+        }
+    }
+
+
+
+    internal static class StringExtention 
+    {
+        public static string TrimLastNewLineChar ( this string beingProcessed )
+        {
+            bool isNotEmpty = !string.IsNullOrEmpty ( beingProcessed );
+
+            if ( isNotEmpty )
+            {
+                char lastChar = beingProcessed [beingProcessed.Length - 1];
+                bool isGoal = ( lastChar == '\n' );
+
+                if ( isGoal )
+                {
+                    beingProcessed = beingProcessed.Substring ( 0, beingProcessed.Length - 1 );
+                }
+            }
+
+            return beingProcessed;
         }
     }
 }

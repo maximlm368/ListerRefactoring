@@ -1,0 +1,447 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.Scene.ViewModel; assembly=View"
+			 xmlns:imageLoader="clr-namespace:AsyncImageLoader; assembly=AsyncImageLoader.Avalonia"
+			 x:DataType="vm:SceneViewModel"
+             x:Class="View.MainWindow.MainView.Parts.Scene.SceneUserControl">
+	
+
+	<StackPanel 
+		ZIndex="1"
+		Orientation="Horizontal">
+
+		<Border
+			Name="buttonBlock"
+			Background="#EEEEEE"
+			BoxShadow="3 3 10 0 #817974"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Width="{Binding   Path = ButtonBlockWidth,   Mode=OneWay}"
+			Height="264"
+			ZIndex="2"
+			CornerRadius="0,5,5,0">
+		
+		    <StackPanel>
+
+				<Border
+					Margin="{Binding   Path = ExtenderMargin,   Mode=OneWay}"
+					Width="26"
+					Height="26">
+					
+					<Button
+						Name="extender"
+						Classes="extender"
+						CornerRadius="3,5,3,3"
+						Padding="4,3"
+						Command="{Binding  Path=ExtendButtons}"
+						PointerPressed="SomeButtonPressed"
+						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
+						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}"/>
+				</Border>
+
+				<Grid
+					Name="entireCount">
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="64"></ColumnDefinition>
+						<ColumnDefinition Width="168" ></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="30"></RowDefinition>
+						<RowDefinition Height="30" ></RowDefinition>
+					</Grid.RowDefinitions>
+
+					<Label
+						Grid.Column="0"
+						Grid.Row="0"
+						Padding="12,5"
+						Width="64"
+						ToolTip.Tip="Всего бейджей"
+						Content="{Binding  Path = BadgeCount,  Mode=OneWay}"/>
+
+					<Label
+						Grid.Column="1"
+						Grid.Row="0"
+						Padding="0,5"
+						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
+						Content="Всего бейджей"/>
+
+					<Label
+						Grid.Column="0"
+						Grid.Row="1"
+						Padding="12,0"
+						Margin="0,0,0,5"
+						Width="64"
+						Foreground="Red"
+						ToolTip.Tip="Из них с ошибками"
+						Content="{Binding  Path = IncorrectBadgeCount,  Mode=OneWay}"/>
+
+					<Label
+						Grid.Column="1"
+						Grid.Row="1"
+						Padding="0,0"
+						Margin="0,0,0,5"
+						Width="{Binding  Path = HintWidth,  Mode=OneWay}"
+						Content="Из них с ошибками"/>
+					
+				</Grid>
+
+				<Button
+					Name="edit"
+					Classes="Primary"
+					Margin="12,3"
+					Padding="0,0"
+					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
+					IsEnabled="{Binding   Path = EditionMustEnable,   Mode=OneWay}"
+					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+					Command="{Binding   Path = EditIncorrectBadges}"
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Редактировать макет"
+					ToolTip.HorizontalOffset="30">
+
+					<StackPanel Orientation="Horizontal">
+						<Label
+							Classes="picture"
+							Content="&#xf303;"
+							Width="30"
+							Padding="6,7"/>
+						
+						<Label 
+							Content="Редактировать"
+							Width="170"
+							Padding="13,6"/>
+					</StackPanel>
+
+				</Button>
+			
+				<Button
+					Name="clearBadges"
+					Classes="Primary"
+					Margin="12,3"
+					Padding="0,0"
+					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
+					IsEnabled="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
+					Focusable="{Binding  Path=ClearIsEnable,  Mode=OneWay}"
+					Command="{Binding  Path=ClearBadges}"
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Очистить макет"
+					ToolTip.HorizontalOffset="30">
+
+					<StackPanel Orientation="Horizontal">
+						<Label
+							Classes="picture"
+							Content="&#xf51a;"
+							Width="30"
+							Padding="6,7"/>
+
+						<Label 
+							Content="Очистить"
+							Width="170"
+							Padding="33,6"/>
+					</StackPanel>
+
+				</Button>
+
+				<Button
+					Name="save"
+					Classes="Primary"
+					Margin="12,3"
+					Padding="0,0"
+					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
+					IsEnabled="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+					Focusable="{Binding  Path=SaveIsEnable,  Mode=OneWay}"
+					Command="{Binding  Path=GeneratePdf}"
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Сохранить макет в pdf-файл"
+					ToolTip.HorizontalOffset="30">
+
+					<StackPanel Orientation="Horizontal">
+						<Label
+							Classes="picture"
+							Content="&#xf1c1;"
+							Width="30"
+							Padding="6,7"/>
+
+						<Label 
+							Content="Сохранить"
+							Width="170"
+							Padding="30,6"/>
+					</StackPanel>
+					
+				</Button>
+
+				<Button
+					Name="print"
+					Classes="Primary"
+					Margin="12,3"
+					Padding="0,0"
+					Width="{Binding   Path = ButtonWidth,   Mode=OneWay}"
+					IsEnabled="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
+					Focusable="{Binding  Path=PrintIsEnable,  Mode=OneWay}"
+					Command="{Binding  Path=Print}"
+					PointerPressed="SomeButtonPressed"
+					ToolTip.Tip="Печатать макет"
+					ToolTip.HorizontalOffset="30">
+
+					<StackPanel Orientation="Horizontal">
+						<Label
+							Classes="picture"
+							Content="&#xf02f;"
+							Width="30"
+							Padding="6,7"/>
+						<Label
+							Content="Печатать"
+							Width="170"
+							Padding="35,6"/>
+					</StackPanel>
+
+				</Button>
+			
+		</StackPanel>
+		
+		</Border>
+			
+		<Border
+			Name="workArea"
+			HorizontalAlignment="Left"
+			Margin="{Binding  Path=WorkAreaMargin,  Mode=OneWay}"
+			Height="331"
+			Width="850" >
+
+			<ScrollViewer
+				Name="scroller"
+				Margin="10,0"
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Auto"
+				AllowAutoHide="False"
+				Background="#FAFAFA">
+
+					<Border
+						Name="pageBorder"
+						Margin="5,20"
+						BorderBrush="#A0A0A0"
+						BorderThickness="1"
+						Width="{Binding  Path = BorderWidth,  Mode=OneWay}"
+						Height="{Binding  Path = BorderHeight,  Mode=OneWay}"
+						DataContext="{Binding  Path = VisiblePage,  Mode=OneWay}">
+
+						<Canvas
+							Name="A4"
+							VerticalAlignment="Top"
+							Width="{Binding  Path = Width,  Mode=OneWay}"
+							Height="{Binding  Path = Height,  Mode=OneWay}"
+							Background="White"
+							PointerPressed="PagePressed">
+
+							<ItemsControl
+								Name="lines"
+								Canvas.Top="{Binding  Path = ContentTopOffset,  Mode=OneWay }"
+								Canvas.Left="{Binding  Path = ContentLeftOffset,  Mode=OneWay }"
+								HorizontalAlignment="Left"
+								ItemsSource="{Binding  Path = Lines,  Mode=OneWay }">
+
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+
+										<ItemsControl
+											HorizontalAlignment="Left"
+											Margin="{Binding  Path = Margin,  Mode=OneWay }"
+											ItemsSource="{Binding  Path = Badges,  Mode=OneWay }">
+
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Horizontal"/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+
+													<Border
+														BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay }"
+														Margin="{Binding  Path = Margin,  Mode=OneWay }"
+														Width="{Binding  Path = BorderWidth,  Mode=OneWay }"
+														Height="{Binding  Path = BorderHeight,  Mode=OneWay }"
+														BorderBrush="Gray">
+
+														<Canvas
+															Width="{Binding  Path = BadgeWidth,  Mode=OneWay }"
+															Height="{Binding   Path = BadgeHeight,   Mode=OneWay }">
+
+															<Image
+																Canvas.Top="0"
+																Canvas.Left="0"
+																VerticalAlignment="Top"
+																Source="{Binding   Path = ImageBitmap,  Mode=OneWay }"
+																Width="{Binding   Path = BadgeWidth,   Mode=OneWay }"
+																Height="{Binding   Path = BadgeHeight,   Mode=OneWay }"/>
+
+															<ItemsControl
+																Name="textLines"
+																ItemsSource="{Binding  Path = TextLines,  Mode=OneWay }" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+
+																		<TextBlock
+																			VerticalAlignment="Center"
+																			Height="{Binding  Path = FontSize,  Mode=OneWay}"
+																			FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
+																			TextAlignment="Center"
+																			Padding="{Binding  Path = Padding,  Mode=OneWay}"
+																			FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
+																			FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
+																			Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+																			Text="{Binding   Path = Content,  Mode=OneWay }"/>
+
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+
+															</ItemsControl>
+
+															<ItemsControl
+																Name="images"
+																ItemsSource="{Binding  Path = InsideImages,  Mode=OneWay }" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}" />
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}" />
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>	
+																		<Image
+																			Source = "{Binding   Path = BitMap,  Mode=OneWay }"/>
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+
+															</ItemsControl>
+
+															<ItemsControl
+																Name="rectangles"
+																ItemsSource="{Binding  Path = InsideRectangles,  Mode=OneWay}" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Height" Value="{Binding Height}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+
+																		<Rectangle
+																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+																			Fill="{Binding  Path = FillColor,  Mode=OneWay}"/>
+																			
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+															</ItemsControl>
+
+															<ItemsControl
+																Name="ellipses"
+																ItemsSource="{Binding  Path = InsideEllipses,  Mode=OneWay}" >
+
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<Canvas
+																			Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
+																			Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+
+																<ItemsControl.Styles>
+																	<Style Selector="ItemsControl ContentPresenter">
+																		<Setter Property="Width" Value="{Binding Width}"/>
+																		<Setter Property="Height" Value="{Binding Height}"/>
+																		<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																		<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																	</Style>
+																</ItemsControl.Styles>
+
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+																		
+																		<Ellipse
+																			RenderTransform=""
+																			Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
+																			StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
+																			Fill="{Binding  Path = FillColor,  Mode=OneWay}"/>
+																			
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+															</ItemsControl>
+															
+															
+														</Canvas>
+													</Border>
+
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+
+
+						</Canvas>
+					</Border>
+
+			</ScrollViewer>
+		</Border>
+
+	</StackPanel>
+	
+</UserControl>
+
+
+
+<!--
+
+   Source = "{Binding   Path = ImageBitmap,  Mode=OneWay }"
+
+-->
+
