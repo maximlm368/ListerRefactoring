@@ -1,9 +1,8 @@
-﻿namespace Core.Models.Badge
+﻿namespace Core.Models.Badge;
+
+public enum ShapeType
 {
-    public enum ShapeType
-    {
-        rectangle = 0,
-        ellipse = 1,
-        nothing = 2
-    }
+    rectangle = 0,
+    ellipse = 1,
+    nothing = 2
 }

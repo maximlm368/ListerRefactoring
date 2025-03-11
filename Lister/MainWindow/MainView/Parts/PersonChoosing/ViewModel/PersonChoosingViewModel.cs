@@ -1,19 +1,21 @@
 ﻿using Avalonia.Media;
-using Core.BadgesProvider;
-using Core.DataAccess;
+using Core.BadgesCreator;
 using Core.Models;
 using Core.Models.Badge;
 using DynamicData;
-using Lister.Extentions;
-using View.CoreModelReflection;
+using View.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using View.CoreModelReflection;
 using View.CoreModelReflection.Badge;
+using View.CoreAbstractionsImplimentations.BadgeCreator;
 
 namespace View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
 public partial class PersonChoosingViewModel : ReactiveObject
 {
+    private BadgeCreator _badgeCreator;
+
     private readonly int _inputLimit = 50;
     private bool _entireSelectionIsSet;
 
@@ -28,9 +30,9 @@ public partial class PersonChoosingViewModel : ReactiveObject
     }
 
 
-    public PersonChoosingViewModel ( string placeHolder, int inputLimit
-                                    , SolidColorBrush incorrectTemplateColor, List <SolidColorBrush> defaultColors
-                                    , List <SolidColorBrush> focusedColors, List <SolidColorBrush> selectedColors )
+    public PersonChoosingViewModel ( string placeHolder, int inputLimit, SolidColorBrush incorrectTemplateColor
+                                   , List <SolidColorBrush> defaultColors, List <SolidColorBrush> focusedColors
+                                   , List <SolidColorBrush> selectedColors, BadgeCreator badgesCreator )
     {
         _inputLimit = inputLimit;
 
@@ -58,10 +60,12 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         if ( _badgeLayouts == null )
         {
-            _badgeLayouts = BadgeAppearence.GetBadgeLayouts ();
+            _badgeLayouts = BadgeLayoutProvider.GetInstance().GetBadgeLayouts ();
         }
 
         ChosenTemplatePadding = new Avalonia.Thickness (4, 0);
+
+        _badgeCreator = badgesCreator;
     }
 
 
@@ -76,11 +80,9 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
     internal void SetPersonsFromFile ( string ? path )
     {
-        BadgesCreator badgesGetter = BadgesCreator.GetInstance ();
-
         try
         {
-            List <Person> people = badgesGetter.GetPersons ( path );
+            List <Person> people = _badgeCreator.GetPersons ( path );
             UsePeople ( people, true );
         }
         catch ( Exception ex )

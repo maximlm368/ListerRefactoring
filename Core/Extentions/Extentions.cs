@@ -1,10 +1,8 @@
-﻿using System.Diagnostics;
-
-namespace ExtentionsAndAuxiliary;
+﻿namespace Core.ExtentionsAndAuxiliary;
 
 public static class StringExtention
 {
-    public static List<string> SeparateTail ( this string str )
+    public static List<string> SeparateTailOnce ( this string str, char [] separators )
     {
         List<string> result = new List<string> ( 2 );
 
@@ -13,9 +11,9 @@ public static class StringExtention
             return result;
         }
 
-        for ( var index = str.Length - 1;   index >= 0;   index-- )
+        for ( int index = str.Length - 1;   index >= 0;   index-- )
         {
-            if ( ( str [index] == ' ' ) || ( str [index] == '-' ) )
+            if ( separators.Contains ( str [index] ) )
             {
                 int gapLength = 1;
                 int endPartLength = str.Length - index - gapLength;
@@ -110,54 +108,3 @@ public static class StringExtention
     }
 }
 
-
-
-public static class DigitalStringParser
-{
-    public static int ParseToInt ( string parsable )
-    {
-        if ( string.IsNullOrEmpty ( parsable ) )
-        {
-            return 0;
-        }
-
-        int result = 0;
-
-        bool isInt = int.TryParse ( parsable, out result );
-
-        if ( ! isInt )
-        {
-            return 0;
-        }
-
-        return result;
-    }
-}
-
-
-
-public static class TerminalCommandExecuter
-{
-    public static string ExecuteCommand ( string command )
-    {
-        using ( Process process = new Process () )
-        {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            process.Start ();
-
-            string result = process.StandardOutput.ReadToEnd ();
-
-            process.WaitForExit ();
-
-            return result;
-        }
-    }
-}

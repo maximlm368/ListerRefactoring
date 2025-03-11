@@ -1,5 +1,8 @@
 ﻿namespace Core.Models.Badge;
 
+/// <summary>
+/// Defines shared data and functionality for badge layout component such as image, shape or text.
+/// </summary>
 public abstract class LayoutComponentBase
 {
     public double Width { get; protected set; }

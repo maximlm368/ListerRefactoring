@@ -4,7 +4,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using View.EditionWindow;
+using View.EditionView;
 
 
 namespace View.MainWindow;

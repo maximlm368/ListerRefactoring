@@ -1,5 +1,5 @@
 ﻿using Avalonia.Media.Imaging;
-using Lister.Extentions;
+using View.Extentions;
 using ReactiveUI;
 using View.App;
 

@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
 			 xmlns:uc="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing"
              x:Class="View.MainWindow.MainView.Parts.PersonChoosing.PersonChoosingUserControl"
-			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing.ViewModel; assembly=View"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;assembly=View"
 			 x:DataType="vm:PersonChoosingViewModel">
 
 	<Grid Name="personChoosingBlock"

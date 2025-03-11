@@ -2,6 +2,10 @@
 
 namespace Core.DocumentProcessor;
 
+/// <summary>
+/// Represents badges placed on one line.
+/// Place sent badge in itself.
+/// </summary>
 public class BadgeLine
 {
     internal double _restWidth;
@@ -47,18 +51,18 @@ public class BadgeLine
     }
 
 
-    internal BuildingSuccess AddBadge ( Badge badge )
+    internal AdditionSuccess AddBadge ( Badge badge )
     {
         bool isFailureByWidth = ( _restWidth < badge.Layout.BorderWidth );
         bool isFailureByHeight = ( _heightConstraint < badge.Layout.BorderHeight );
 
         if ( isFailureByWidth )
         {
-            return BuildingSuccess.FailureByWidth;
+            return AdditionSuccess.FailureByWidth;
         }
         else if ( isFailureByHeight )
         {
-            return BuildingSuccess.FailureByHeight;
+            return AdditionSuccess.FailureByHeight;
         }
         else
         {
@@ -75,7 +79,7 @@ public class BadgeLine
             Height = badge.Layout.BorderHeight;
             _restWidth -= badge.Layout.BorderWidth;
 
-            return BuildingSuccess.Success;
+            return AdditionSuccess.Success;
         }
     }
 

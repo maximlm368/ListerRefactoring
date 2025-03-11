@@ -1,21 +1,24 @@
-﻿namespace Core.Models.Badge
+﻿namespace Core.Models.Badge;
+
+/// <summary>
+/// Comparers TextLines.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class TextLineComparer <T> : IComparer<T> where T : TextLine
 {
-    public class TextLineComparer<T> : IComparer<T> where T : TextLine
+    public int Compare ( T first, T second )
     {
-        public int Compare ( T first, T second )
+        int result = -1;
+
+        bool comparingShouldBe = first != null
+                                 &&
+                                 second != null;
+
+        if ( comparingShouldBe )
         {
-            int result = -1;
-
-            bool comparingShouldBe = first != null
-                                     &&
-                                     second != null;
-
-            if ( comparingShouldBe )
-            {
-                result = first.NumberToLocate - second.NumberToLocate;
-            }
-
-            return result;
+            result = first.NumberToLocate - second.NumberToLocate;
         }
+
+        return result;
     }
 }

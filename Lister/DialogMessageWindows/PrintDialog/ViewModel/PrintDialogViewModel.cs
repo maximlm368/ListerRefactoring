@@ -1,11 +1,10 @@
 ﻿using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using ExtentionsAndAuxiliary;
-using Lister.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using View.App;
+using View.Extentions;
 
 namespace View.DialogMessageWindows.PrintDialog.ViewModel;
 

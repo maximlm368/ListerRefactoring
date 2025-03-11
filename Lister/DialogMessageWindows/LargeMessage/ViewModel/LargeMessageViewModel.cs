@@ -1,10 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using View.App;
-using Lister.Extentions;
-using Lister.Views;
+using View.Extentions;
 using ReactiveUI;
+using View.App;
 
 namespace View.DialogMessageWindows.LargeMessage.ViewModel
 {

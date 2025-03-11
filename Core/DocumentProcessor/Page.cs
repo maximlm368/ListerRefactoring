@@ -2,6 +2,10 @@
 
 namespace Core.DocumentProcessor;
 
+/// <summary>
+/// Represents lines of badges on page.
+/// Adds sent badge.
+/// </summary>
 public class Page
 {
     private static double _topOffsetOfContent;
@@ -52,16 +56,16 @@ public class Page
     internal Page AddAndGetIncludingPage ( Badge badge )
     {
         Page fillablePage = this;
-        BuildingSuccess additionSuccess = _fillableLine.AddBadge ( badge );
+        AdditionSuccess additionSuccess = _fillableLine.AddBadge ( badge );
 
-        if ( additionSuccess == BuildingSuccess.FailureByWidth )
+        if ( additionSuccess == AdditionSuccess.FailureByWidth )
         {
             double restHeight = GetRestHeight ();
             bool isFirstLine = ( Lines.Count == 0 );
             BadgeLine newLine = new BadgeLine ( Width, restHeight, isFirstLine );
             additionSuccess = newLine.AddBadge ( badge );
 
-            if ( additionSuccess == BuildingSuccess.FailureByHeight )
+            if ( additionSuccess == AdditionSuccess.FailureByHeight )
             {
                 fillablePage = new Page ( );
                 fillablePage.BadgeCount--;
@@ -72,7 +76,7 @@ public class Page
             fillablePage._fillableLine = newLine;
         }
 
-        if ( additionSuccess == BuildingSuccess.FailureByHeight )
+        if ( additionSuccess == AdditionSuccess.FailureByHeight )
         {
             Complated?.Invoke ( this );
             fillablePage = new Page ( );

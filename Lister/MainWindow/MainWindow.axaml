@@ -4,9 +4,11 @@
         xmlns:vm="clr-namespace:Lister.ViewModels.Main;assembly=View"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:View.MainWindow; assembly=View"
-        mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
+		mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
+		
+        xmlns:views="clr-namespace:View.MainWindow.MainView;assembly=View"
         x:Class="View.MainWindow.MainWin"
+		
         Icon="/Assets/badge.ico"
         Title="Lister"
 		WindowStartupLocation="CenterScreen"

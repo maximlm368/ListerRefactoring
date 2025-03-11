@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="48"
              x:Class="View.MainWindow.MainView.Parts.BuildButton.BadgesBuildingUserControl"
-			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.BuildButton.ViewModel; assembly=View"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.BuildButton.ViewModel;assembly=View"
 			 x:DataType="vm:BadgesBuildingViewModel">
 	        
 

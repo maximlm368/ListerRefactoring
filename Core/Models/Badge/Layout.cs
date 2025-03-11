@@ -1,8 +1,13 @@
 ﻿using Core.DocumentProcessor.Abstractions;
-using ExtentionsAndAuxiliary;
+using Core.ExtentionsAndAuxiliary;
 
 namespace Core.Models.Badge;
 
+/// <summary>
+/// Definds components of badge and its description.
+/// Controls change of this content.
+/// Can have processable component to change it.
+/// </summary>
 public class Layout
 {
     internal static ITextWidthMeasurer Measurer { get; set; }
@@ -393,7 +398,7 @@ public class Layout
                     }
                 }
 
-                List<string> splited = processableContent.SeparateTail ();
+                List<string> splited = processableContent.SeparateTailOnce ( new char[] { ' ', '-' } );
 
                 if ( ( splited.Count > 0 )   &&   processable.IsSplitable )
                 {

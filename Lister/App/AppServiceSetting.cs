@@ -1,12 +1,16 @@
 ﻿using Avalonia.Media;
-using Core.DataAccess.JsonHandlers;
-using Core.DataAccess.PeopleSource;
+using Core.BadgesCreator;
 using Core.DocumentProcessor;
 using Microsoft.Extensions.DependencyInjection;
-using View.CoreAbstractionsImplimentations;
+using View.App.Configs;
+using View.CoreAbstractionsImplimentations.BadgeCreator;
+using View.CoreAbstractionsImplimentations.DataAccess;
+using View.CoreAbstractionsImplimentations.DocumentProcessor;
+using View.CoreModelReflection;
+using View.CoreModelReflection.Badge;
 using View.DialogMessageWindows.LargeMessage.ViewModel;
 using View.DialogMessageWindows.PrintDialog.ViewModel;
-using View.EditionWindow.ViewModel;
+using View.EditionView.ViewModel;
 using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
 using View.MainWindow.MainView.Parts.PersonChoosing;
@@ -15,8 +19,6 @@ using View.MainWindow.MainView.Parts.PersonSource.ViewModel;
 using View.MainWindow.MainView.Parts.Scene.ViewModel;
 using View.MainWindow.MainView.ViewModel;
 using View.WaitingView.ViewModel;
-using View.CoreModelReflection;
-using View.CoreModelReflection.Badge;
 
 
 namespace View.App;
@@ -25,9 +27,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        collection.AddSingleton <PeopleXlsxSource> ();
         collection.AddSingleton ( typeof ( PdfPrinter ), PdfPrinterFactory );
-
         collection.AddSingleton ( typeof ( DocumentProcessor ), DocumentBuilderFactory );
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
@@ -46,7 +46,8 @@ public static class ServiceCollectionExtensions
     private static DocumentProcessor DocumentBuilderFactory ( IServiceProvider serviceProvider )
     {
         return DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
-            , Printer.GetInstance( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName ) ) );
+            , Printer.GetInstance( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName ) )
+            , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance () );
     }
 
 
@@ -54,7 +55,8 @@ public static class ServiceCollectionExtensions
     {
         DocumentProcessor model =
         DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
-            , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName)) );
+            , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))
+            , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
     
         return new PdfPrinter ( model );
     }
@@ -87,8 +89,11 @@ public static class ServiceCollectionExtensions
         string sourcePathKeeper =
         GetterFromJson.GetSectionStrValue (new List<string> { "personSource" }, ListerApp.ConfigPath);
 
+        BadgeCreator badgesCreator = BadgeCreator.GetInstance ( BadgeLayoutProvider.GetInstance ()
+                                                              , PeopleSourceFactory.GetInstance () );
+
         PersonSourceViewModel result = 
-        new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper);
+        new PersonSourceViewModel (pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper, badgesCreator);
 
         return result;
     }
@@ -128,8 +133,11 @@ public static class ServiceCollectionExtensions
         PersonChoosingUserControl.SetComboboxHoveredItemColors (hoveredBackgroundColor, hoveredBorderColor);
         VisiblePerson.SetColors (defaultColors, focusedColors, selectedColors);
 
+        BadgeCreator badgesCreator = BadgeCreator.GetInstance ( BadgeLayoutProvider.GetInstance ()
+                                                              , PeopleSourceFactory.GetInstance() );
+
         return new PersonChoosingViewModel (placeHolder, inputLimit, incorrectTemplateColor
-                                                  , defaultColors, focusedColors, selectedColors);
+                                                  , defaultColors, focusedColors, selectedColors, badgesCreator);
     }
 
 
@@ -156,7 +164,9 @@ public static class ServiceCollectionExtensions
 
         return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
              , DocumentProcessor.GetInstance (TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
-             , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))) );
+             , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))
+             , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () ) 
+             );
     }
 
 
@@ -185,23 +195,23 @@ public static class ServiceCollectionExtensions
 
     private static EditorViewModelArgs EditorViewModelArgsFactory ( IServiceProvider serviceProvider )
     {
-        string extentionToolTip = EditorConfigs.extentionToolTip;
-        string shrinkingToolTip = EditorConfigs.shrinkingToolTip;
-        string allFilter = EditorConfigs.allFilter;
-        string incorrectFilter = EditorConfigs.incorrectFilter;
+        string extentionToolTip = EditionViewConfigs.extentionToolTip;
+        string shrinkingToolTip = EditionViewConfigs.shrinkingToolTip;
+        string allFilter = EditionViewConfigs.allFilter;
+        string incorrectFilter = EditionViewConfigs.incorrectFilter;
 
-        string correctFilter = EditorConfigs.correctFilter;
+        string correctFilter = EditionViewConfigs.correctFilter;
 
-        string allTip = EditorConfigs.allTip;
+        string allTip = EditionViewConfigs.allTip;
 
-        string correctTip = EditorConfigs.correctTip;
+        string correctTip = EditionViewConfigs.correctTip;
 
-        string incorrectTip = EditorConfigs.incorrectTip;
+        string incorrectTip = EditionViewConfigs.incorrectTip;
 
-        SolidColorBrush focusedFontColor = GetColor (EditorConfigs.focusedFontColor);
-        SolidColorBrush releasedFontColor = GetColor (EditorConfigs.releasedFontColor);
-        SolidColorBrush focusedFontBorderColor = GetColor (EditorConfigs.focusedFontBorderColor);
-        SolidColorBrush releasedFontBorderColor = GetColor (EditorConfigs.releasedFontBorderColor);
+        SolidColorBrush focusedFontColor = GetColor (EditionViewConfigs.focusedFontColor);
+        SolidColorBrush releasedFontColor = GetColor (EditionViewConfigs.releasedFontColor);
+        SolidColorBrush focusedFontBorderColor = GetColor (EditionViewConfigs.focusedFontBorderColor);
+        SolidColorBrush releasedFontBorderColor = GetColor (EditionViewConfigs.releasedFontBorderColor);
 
         EditorViewModelArgs result = new ();
 
@@ -225,6 +235,6 @@ public static class ServiceCollectionExtensions
 
     private static WaitingViewModel WaitingViewModelFactory ( IServiceProvider serviceProvider )
     {
-        return new WaitingViewModel (WaitingConfigs.gifName);
+        return new WaitingViewModel (WaitingElementConfigs.gifName);
     }
 }

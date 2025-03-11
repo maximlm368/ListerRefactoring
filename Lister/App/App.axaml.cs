@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using View.MainWindow.MainView;
 using View.MainWindow.MainView.ViewModel;
 using View.MainWindow;
+using View.CoreAbstractionsImplimentations.BadgeCreator;
 
 namespace View.App;
 
@@ -84,8 +85,10 @@ public partial class ListerApp : Avalonia.Application
             desktop.MainWindow = splashWindow;
             splashWindow.Show ();
 
-            await BadgeAppearence.SetUp (( ListerApp.WorkDirectoryPath + ListerApp.ResourceFolderName )
-                                               , ( ListerApp.WorkDirectoryPath + ListerApp.JsonSchemeFolderName ), OsName);
+            BadgeLayoutProvider layoutProvider = BadgeLayoutProvider.GetInstance ();
+
+            await layoutProvider.SetUp (( WorkDirectoryPath + ResourceFolderName )
+                                       , ( WorkDirectoryPath + JsonSchemeFolderName ), OsName);
 
             MainViewModel mainViewModel = services.GetRequiredService<MainViewModel> ();
 

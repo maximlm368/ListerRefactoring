@@ -11,7 +11,7 @@ using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using View.MainWindow.MainView.ViewModel;
 using View.ViewBase;
 using View.App;
-using View.EditionWindow;
+using View.EditionView;
 
 namespace View.MainWindow.MainView;
 

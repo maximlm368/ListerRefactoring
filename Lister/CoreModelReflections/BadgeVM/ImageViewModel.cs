@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
 using Core.Models.Badge;
-using Lister.Extentions;
+using View.Extentions;
 using ReactiveUI;
 
 namespace View.CoreModelReflection.Badge;

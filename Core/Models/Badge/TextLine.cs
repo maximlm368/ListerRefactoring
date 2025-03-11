@@ -1,5 +1,5 @@
 ﻿using Core.DocumentProcessor.Abstractions;
-using ExtentionsAndAuxiliary;
+using Core.ExtentionsAndAuxiliary;
 
 namespace Core.Models.Badge;
 

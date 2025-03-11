@@ -25,8 +25,6 @@ public partial class BadgesBuildingUserControl : UserControl
 
         DataContext = ListerApp.services.GetRequiredService<BadgesBuildingViewModel> ();
         _viewModel = ( BadgesBuildingViewModel ) DataContext;
-        ActualThemeVariantChanged += ThemeChanged;
-
         buildBadges.FocusAdorner = null;
     }
 
@@ -43,16 +41,16 @@ public partial class BadgesBuildingUserControl : UserControl
     }
 
 
-    internal void ThemeChanged ( object sender, EventArgs args )
-    {
-        if ( ActualThemeVariant == null ) 
-        {
-            return;
-        }
+    //internal void ThemeChanged ( object sender, EventArgs args )
+    //{
+    //    if ( ActualThemeVariant == null ) 
+    //    {
+    //        return;
+    //    }
 
-        _theme = ActualThemeVariant.Key.ToString ();
-        _viewModel.ChangeAccordingTheme ( _theme );
-    }
+    //    _theme = ActualThemeVariant.Key.ToString ();
+    //    //_viewModel.ChangeAccordingTheme ( _theme );
+    //}
 
 
     internal void ChangeSize ( double widthDifference )

@@ -10,7 +10,7 @@
 			 xmlns:NavigationZoomUc="clr-namespace:View.MainWindow.MainView.Parts.NavigationZoom"
 			 xmlns:WaitingUc="clr-namespace:View.WaitingView"
 			 
-			 xmlns:vm="clr-namespace:View.MainWindow.MainView.ViewModel; assembly=View"
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.ViewModel;assembly=View"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
              x:Class="View.MainWindow.MainView.MainView"
 			 x:DataType="vm:MainViewModel"
@@ -226,7 +226,7 @@
 			
 		</Border>
 
-		<NavigationZoomUc:PageNavigationZoomer
+		<NavigationZoomUc:NavigationZoomUserControl
 			Name="navigatorZoomer"
 			Background="#EEEEEE"
 			Margin="0,-12"/>

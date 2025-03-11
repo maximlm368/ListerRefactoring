@@ -1,22 +1,21 @@
 ﻿using Avalonia.Platform.Storage;
-using View.App;
-using View.MainWindow.MainView.Parts.Scene.ViewModel;
-using View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
-using View.DialogMessageWindows.PrintDialog;
-using View.DialogMessageWindows.Message;
-using View.DialogMessageWindows.LargeMessage;
+using View.App;
 using View.CoreModelReflection;
-using View.MainWindow.MainView.ViewModel;
-using View.MainWindow.MainView.Parts.PersonSource.ViewModel;
-using View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
+using View.DialogMessageWindows.LargeMessage;
+using View.DialogMessageWindows.Message;
+using View.DialogMessageWindows.PrintDialog;
 using View.DialogMessageWindows.PrintDialog.ViewModel;
 using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
+using View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
+using View.MainWindow.MainView.Parts.PersonSource.ViewModel;
+using View.MainWindow.MainView.Parts.Scene.ViewModel;
 using View.WaitingView.ViewModel;
 
 namespace View.MainWindow.MainView.ViewModel;
@@ -253,14 +252,14 @@ public class MainViewModel : ReactiveObject
     }
 
 
-    private void PrinterChanged(object? sender, PropertyChangedEventArgs args)
+    private void PrinterChanged (object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == "PdfGenerationSuccesseeded")
         {
             EndWaiting();
             ShowInFileExplorer();
         }
-        else if (args.PropertyName == "PrintingEnded")
+        else if (args.PropertyName == "PrintingIsFinished" )
         {
             EndWaiting();
         }

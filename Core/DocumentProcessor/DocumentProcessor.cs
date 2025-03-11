@@ -1,9 +1,16 @@
-﻿using Core.BadgesProvider;
+﻿using Core.BadgesCreator.Abstractions;
+using Core.DataAccess.Abstractions;
 using Core.DocumentProcessor.Abstractions;
 using Core.Models;
 using Core.Models.Badge;
 
 namespace Core.DocumentProcessor;
+
+/// <summary>
+/// Single class, builds badges for template and for single person or all persons from source file,
+/// returning pages as result.
+/// Produces, save pdf file for result pages and sends these pages to printer. 
+/// </summary>
 
 public class DocumentProcessor 
 {
@@ -11,7 +18,7 @@ public class DocumentProcessor
 
     private IPdfCreator _pdfCreator;
     private IPdfPrinter _pdfPrinter;
-    private BadgesCreator _badgeGetter;
+    private BadgesCreator.BadgeCreator _badgeCreator;
     private List<Page> _allPages;
     private int _badgeCount;
 
@@ -22,11 +29,12 @@ public class DocumentProcessor
     public event ComplatedPageHandler ? ComplatedPage;
 
 
-    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer, IPdfCreator pdfCreator, IPdfPrinter pdfPrinter ) 
+    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer, IPdfCreator pdfCreator, IPdfPrinter pdfPrinter
+                                , IBadgeLayoutProvider badgeAppearenceProvider, IPeopleSourceFactory peopleSourceFactory ) 
     {
         _pdfCreator = pdfCreator;
         _pdfPrinter = pdfPrinter;
-        _badgeGetter = BadgesCreator.GetInstance ();
+        _badgeCreator = BadgesCreator.BadgeCreator.GetInstance (badgeAppearenceProvider, peopleSourceFactory);
         Page.Complated += ( Page page ) => { ComplatedPage?.Invoke ( page, false ); };
 
         _allPages = new ();
@@ -39,11 +47,13 @@ public class DocumentProcessor
 
 
     public static DocumentProcessor GetInstance ( ITextWidthMeasurer widthMeasurer, IPdfCreator pdfCreator
-                                                                                  , IPdfPrinter pdfPrinter ) 
+                                                , IPdfPrinter pdfPrinter, IBadgeLayoutProvider badgeAppearenceProvider
+                                                , IPeopleSourceFactory peopleSourceFactory )
     {
         if ( _instance == null ) 
         {
-            _instance = new DocumentProcessor ( widthMeasurer, pdfCreator, pdfPrinter );
+            _instance = new DocumentProcessor ( widthMeasurer, pdfCreator, pdfPrinter, badgeAppearenceProvider
+                                                                                          , peopleSourceFactory );
         }
 
         return _instance;
@@ -51,7 +61,7 @@ public class DocumentProcessor
 
     public List<Page> BuildAllPages ( string templateName, int limit )
     {
-        List<Person> people = _badgeGetter.GetCurrentPeople ();
+        List<Person> people = _badgeCreator.GetCurrentPeople ();
 
         if ( ( _badgeCount + people.Count ) >= limit )
         {
@@ -67,7 +77,7 @@ public class DocumentProcessor
 
         for ( int index = 0;   index < people.Count;   index++ )
         {
-            Badge builtIn = _badgeGetter.CreateSingleBadgeByTemplate ( templateName, people [index] );
+            Badge builtIn = _badgeCreator.CreateSingleBadgeByTemplate ( templateName, people [index] );
 
             if ( (builtIn != null)   &&   ! builtIn.IsCorrect )
             {
@@ -100,7 +110,7 @@ public class DocumentProcessor
 
     public List<Page> BuildBadge ( string templateName, Person person )
     {
-        Badge builtIn = _badgeGetter.CreateSingleBadgeByTemplate ( templateName, person );
+        Badge builtIn = _badgeCreator.CreateSingleBadgeByTemplate ( templateName, person );
 
         if ( ( builtIn != null )   &&   ! builtIn.IsCorrect )
         {

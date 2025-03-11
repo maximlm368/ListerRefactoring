@@ -1,6 +1,5 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
-using Core.Models.Badge;
 
 namespace View.CoreModelReflection.Badge;
 

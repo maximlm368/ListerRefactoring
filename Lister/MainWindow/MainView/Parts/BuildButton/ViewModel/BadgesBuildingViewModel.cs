@@ -1,5 +1,5 @@
 ﻿using ReactiveUI;
-using View.EditionWindow.ViewModel;
+using View.EditionView.ViewModel;
 using View.WaitingView.ViewModel;
 
 namespace View.MainWindow.MainView.Parts.BuildButton.ViewModel;
@@ -50,37 +50,37 @@ public class BadgesBuildingViewModel : ReactiveObject
     }
 
 
-    internal void ChangeAccordingTheme(string theme)
-    {
-        //SolidColorBrush foundColor = new SolidColorBrush (MainWindow.black);
-        //SolidColorBrush unfoundColor = new SolidColorBrush (new Color (100, 0, 0, 0));
+    //internal void ChangeAccordingTheme(string theme)
+    //{
+    //    SolidColorBrush foundColor = new SolidColorBrush ( MainWindow.black );
+    //    SolidColorBrush unfoundColor = new SolidColorBrush ( new Color ( 100, 0, 0, 0 ) );
 
-        //if ( theme == "Dark" ) 
-        //{
-        //    foundColor  = new SolidColorBrush (MainWindow.white);
-        //    unfoundColor = new SolidColorBrush (new Color (100, 255, 255, 255));
-        //}
+    //    if ( theme == "Dark" )
+    //    {
+    //        foundColor = new SolidColorBrush ( MainWindow.white );
+    //        unfoundColor = new SolidColorBrush ( new Color ( 100, 255, 255, 255 ) );
+    //    }
 
-        //ObservableCollection <TemplateViewModel> templates = new ();
+    //    ObservableCollection<TemplateViewModel> templates = new ();
 
-        //foreach ( TemplateName name   in   _templateNames )
-        //{
-        //    SolidColorBrush brush;
+    //    foreach ( TemplateName name in _templateNames )
+    //    {
+    //        SolidColorBrush brush;
 
-        //    if ( name.IsFound )
-        //    {
-        //        brush = foundColor;
-        //    }
-        //    else
-        //    {
-        //        brush = unfoundColor;
-        //    }
+    //        if ( name.IsFound )
+    //        {
+    //            brush = foundColor;
+    //        }
+    //        else
+    //        {
+    //            brush = unfoundColor;
+    //        }
 
-        //    templates.Add (new TemplateViewModel (name, brush));
-        //}
+    //        templates.Add ( new TemplateViewModel ( name, brush ) );
+    //    }
 
-        //Templates = templates;
-    }
+    //    Templates = templates;
+    //}
 
 
     internal void BuildBadges()

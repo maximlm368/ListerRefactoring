@@ -2,10 +2,11 @@
 using Avalonia.Threading;
 using Core.DataAccess;
 using Core.Models.Badge;
-using Lister.Extentions;
+using View.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using View.MainWindow.MainView.ViewModel;
+using View.CoreAbstractionsImplimentations.BadgeCreator;
 
 
 namespace View.CoreModelReflection.Badge;
@@ -13,6 +14,7 @@ namespace View.CoreModelReflection.Badge;
 public class BadgeViewModel : ReactiveObject
 {
     private static Dictionary<string, Avalonia.Media.Imaging.Bitmap> _pathToImage;
+    private static BadgeLayoutProvider _layoutProvider;
 
     private readonly string _semiProtectedTypeName = "Lister.ViewModels.BadgeEditorViewModel";
     private readonly double _interLineAddition = 1;
@@ -270,6 +272,11 @@ public class BadgeViewModel : ReactiveObject
 
     public BadgeViewModel ( Core.Models.Badge.Badge model )
     {
+        if ( _layoutProvider == null ) 
+        {
+            _layoutProvider = BadgeLayoutProvider.GetInstance ();
+        }
+
         SetUp ( model );
         Model.RolledBack += HandleModelRolledBack;
         Model.CorrectnessChanged += HandleCorrectnessChanged;
@@ -606,16 +613,11 @@ public class BadgeViewModel : ReactiveObject
 
     private void SetIncorrectComponentMarking ( Core.Models.Badge.Badge model )
     {
-        string incorrectLineBackgroundHexStr =
-                 BadgeAppearence.GetIncorrectLineBackgroundStr ( model.Layout.TemplateName );
-        string incorrectMemberBorderHexStr =
-                         BadgeAppearence.GetIncorrectMemberBorderStr ( model.Layout.TemplateName );
-        string correctMemberBorderHexStr =
-                         BadgeAppearence.GetCorrectMemberBorderStr ( model.Layout.TemplateName );
-        List<byte> incorrectMemberBorderThickness =
-                         BadgeAppearence.GetIncorrectMemberBorderThickness ( model.Layout.TemplateName );
-        List<byte> correctMemberBorderThickness =
-                         BadgeAppearence.GetCorrectMemberBorderThickness ( model.Layout.TemplateName );
+        string incorrectLineBackgroundHexStr = _layoutProvider.GetIncorrectLineBackgroundStr ( model.Layout.TemplateName );
+        string incorrectMemberBorderHexStr = _layoutProvider.GetIncorrectMemberBorderStr ( model.Layout.TemplateName );
+        string correctMemberBorderHexStr = _layoutProvider.GetCorrectMemberBorderStr ( model.Layout.TemplateName );
+        List<byte> incorrectMemberBorderThickness = _layoutProvider.GetIncorrectMemberBorderThickness ( model.Layout.TemplateName );
+        List<byte> correctMemberBorderThickness = _layoutProvider.GetCorrectMemberBorderThickness ( model.Layout.TemplateName );
 
 
         _incorrectLineBackground = GetColor ( incorrectLineBackgroundHexStr );

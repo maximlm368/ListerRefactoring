@@ -1,10 +1,6 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using Avalonia;
-using Avalonia.Media;
-using Avalonia.Platform;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
+using View.App;
 
 
 namespace Lister.Desktop;
@@ -33,7 +29,7 @@ class Program
 
     //Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp ()
-        => AppBuilder.Configure<App> ()
+        => AppBuilder.Configure<ListerApp> ()
             .UsePlatformDetect ()
             .WithInterFont ()
             .LogToTrace ()

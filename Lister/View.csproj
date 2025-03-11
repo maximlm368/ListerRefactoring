@@ -199,7 +199,7 @@
   
   
  <ItemGroup>
-   <Compile Update="EditionWindow\EditionView.axaml.cs">
+   <Compile Update="EditionView\EditionView.axaml.cs">
      <DependentUpon>EditionView.axaml</DependentUpon>
    </Compile>
    <Compile Update="MainWindow\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">

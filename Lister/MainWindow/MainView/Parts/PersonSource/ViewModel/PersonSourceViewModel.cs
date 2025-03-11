@@ -1,295 +1,294 @@
 ﻿using Avalonia.Platform.Storage;
-using Core.BadgesProvider;
-using Core.DataAccess.JsonHandlers;
-using Core.DataAccess.PeopleSource;
-using View.App;
-using Microsoft.Extensions.DependencyInjection;
+using Core.BadgesCreator;
 using ReactiveUI;
+using View.App;
+using View.CoreAbstractionsImplimentations.DataAccess;
 
-namespace View.MainWindow.MainView.Parts.PersonSource.ViewModel
+namespace View.MainWindow.MainView.Parts.PersonSource.ViewModel;
+
+public class PersonSourceViewModel : ReactiveObject
 {
-    public class PersonSourceViewModel : ReactiveObject
+    private IReadOnlyList<string> _patterns;
+    private readonly string _pickerTitle;
+    private readonly string _filePickerTitle;
+    private IReadOnlyList<string> _xslxHeaders;
+
+    private string _sourcePathKeeper;
+
+    private bool _isFirstTimeLoading = true;
+    private string _declinedFilePath;
+
+    private BadgeCreator _badgeCreator;
+
+    private FilePickerOpenOptions _filePickerOptions;
+    private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new()
     {
-        private IReadOnlyList<string> _patterns;
-        private readonly string _pickerTitle;
-        private readonly string _filePickerTitle;
-        private IReadOnlyList<string> _xslxHeaders;
-
-        private string _sourcePathKeeper;
-
-        private bool _isFirstTimeLoading = true;
-        private string _declinedFilePath;
-
-        private FilePickerOpenOptions _filePickerOptions;
-        private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new()
-        {
-            Title = _filePickerTitle,
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType (_pickerTitle)
-                {
-                    Patterns = _patterns
-                }
-            ]
-        };
-
-        private string _sourceFilePath;
-        internal string SourceFilePath
-        {
-            get { return _sourceFilePath; }
-            private set
+        Title = _filePickerTitle,
+        AllowMultiple = false,
+        FileTypeFilter =
+        [
+            new FilePickerFileType (_pickerTitle)
             {
-                _sourcePathKeeper = value;
-                this.RaiseAndSetIfChanged( ref _sourceFilePath, value, nameof( SourceFilePath ) );
+                Patterns = _patterns
             }
-        }
+        ]
+    };
 
-        internal readonly int personsLimitForSource;
-
-        private bool _personsFileIsOpen;
-        public bool FileIsOpen
+    private string _sourceFilePath;
+    internal string SourceFilePath
+    {
+        get { return _sourceFilePath; }
+        private set
         {
-            get { return _personsFileIsOpen; }
-            private set
+            _sourcePathKeeper = value;
+            this.RaiseAndSetIfChanged( ref _sourceFilePath, value, nameof( SourceFilePath ) );
+        }
+    }
+
+    internal readonly int personsLimitForSource;
+
+    private bool _personsFileIsOpen;
+    public bool FileIsOpen
+    {
+        get { return _personsFileIsOpen; }
+        private set
+        {
+            if (_personsFileIsOpen == value)
             {
-                if (_personsFileIsOpen == value)
-                {
-                    _personsFileIsOpen = !_personsFileIsOpen;
-                }
-
-                this.RaiseAndSetIfChanged( ref _personsFileIsOpen, value, nameof( FileIsOpen ) );
-            }
-        }
-
-        private bool _fileIsDeclined;
-        internal bool FileIsDeclined
-        {
-            get { return _fileIsDeclined; }
-            private set
-            {
-                if (_fileIsDeclined == value)
-                {
-                    _fileIsDeclined = !_fileIsDeclined;
-                }
-
-                this.RaiseAndSetIfChanged( ref _fileIsDeclined, value, nameof( FileIsDeclined ) );
-            }
-        }
-
-        private bool _fileIsTooBig;
-        internal bool FileIsTooBig
-        {
-            get { return _fileIsTooBig; }
-            private set
-            {
-                if (_fileIsTooBig == value)
-                {
-                    _fileIsTooBig = !_fileIsTooBig;
-                }
-
-                this.RaiseAndSetIfChanged( ref _fileIsTooBig, value, nameof( FileIsTooBig ) );
-            }
-        }
-
-        internal string FilePath { get; private set; }
-
-
-        public PersonSourceViewModel(string pickerTitle, string filePickerTitle, List<string> patterns
-                                             , List<string> xslxHeaders, int limit, string sourceKeeper)
-        {
-            _pickerTitle = pickerTitle;
-            _filePickerTitle = filePickerTitle;
-
-            _patterns = patterns;
-            _xslxHeaders = xslxHeaders;
-            personsLimitForSource = limit;
-
-            _sourcePathKeeper = sourceKeeper;
-        }
-
-
-        internal void OnLoaded()
-        {
-            if (!_isFirstTimeLoading)
-            {
-                return;
+                _personsFileIsOpen = !_personsFileIsOpen;
             }
 
+            this.RaiseAndSetIfChanged( ref _personsFileIsOpen, value, nameof( FileIsOpen ) );
+        }
+    }
+
+    private bool _fileIsDeclined;
+    internal bool FileIsDeclined
+    {
+        get { return _fileIsDeclined; }
+        private set
+        {
+            if (_fileIsDeclined == value)
+            {
+                _fileIsDeclined = !_fileIsDeclined;
+            }
+
+            this.RaiseAndSetIfChanged( ref _fileIsDeclined, value, nameof( FileIsDeclined ) );
+        }
+    }
+
+    private bool _fileIsTooBig;
+    internal bool FileIsTooBig
+    {
+        get { return _fileIsTooBig; }
+        private set
+        {
+            if (_fileIsTooBig == value)
+            {
+                _fileIsTooBig = !_fileIsTooBig;
+            }
+
+            this.RaiseAndSetIfChanged( ref _fileIsTooBig, value, nameof( FileIsTooBig ) );
+        }
+    }
+
+    internal string FilePath { get; private set; }
+
+
+    public PersonSourceViewModel (string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders
+                                 , int limit, string sourceKeeper, BadgeCreator badgesCreator)
+    {
+        _pickerTitle = pickerTitle;
+        _filePickerTitle = filePickerTitle;
+
+        _patterns = patterns;
+        _xslxHeaders = xslxHeaders;
+        personsLimitForSource = limit;
+
+        _sourcePathKeeper = sourceKeeper;
+        _badgeCreator = badgesCreator;
+    }
+
+
+    internal void OnLoaded()
+    {
+        if (!_isFirstTimeLoading)
+        {
+            return;
+        }
+
+        try
+        {
+            SetPath( _sourcePathKeeper );
+        }
+        catch (IndexOutOfRangeException ex)
+        {
+            SetPath( null );
+        }
+
+        _isFirstTimeLoading = false;
+    }
+
+
+    internal async void ChooseFile()
+    {
+        IReadOnlyList<IStorageFile> files =
+            await MainWin.CommonStorageProvider.OpenFilePickerAsync( FilePickerOptions );
+
+        if (files.Count == 1 && files[0] is not null)
+        {
+            string path = files[0].Path.LocalPath;
+
+            CheckIfOpenOrIncorrectAndUse( path, true );
+        }
+    }
+
+
+    internal void DeclineKeepedFileIfIncorrect()
+    {
+        if (string.IsNullOrWhiteSpace( _declinedFilePath ))
+        {
+            return;
+        }
+
+        DeclineIncorrectFile( _declinedFilePath );
+    }
+
+
+    internal void EmptySourcePath()
+    {
+        SourceFilePath = string.Empty;
+    }
+
+
+    private void SetPath(string? path)
+    {
+        bool pathExists = path != null && path != string.Empty;
+
+        if (pathExists)
+        {
+            CheckIfOpenOrIncorrectAndUse( path, false );
+        }
+        else
+        {
+            SourceFilePath = null;
+        }
+    }
+
+
+    private void CheckIfOpenOrIncorrectAndUse(string path, bool shouldSave)
+    {
+        FileInfo fileInfo = new FileInfo( path );
+
+        if (fileInfo.Exists)
+        {
             try
             {
-                SetPath( _sourcePathKeeper );
+                FileStream stream = fileInfo.OpenWrite();
+                stream.Close();
             }
-            catch (IndexOutOfRangeException ex)
-            {
-                SetPath( null );
-            }
-
-            _isFirstTimeLoading = false;
-        }
-
-
-        internal async void ChooseFile()
-        {
-            IReadOnlyList<IStorageFile> files =
-                await MainWin.CommonStorageProvider.OpenFilePickerAsync( FilePickerOptions );
-
-            if (files.Count == 1 && files[0] is not null)
-            {
-                string path = files[0].Path.LocalPath;
-
-                CheckIfOpenOrIncorrectAndUse( path, true );
-            }
-        }
-
-
-        internal void DeclineKeepedFileIfIncorrect()
-        {
-            if (string.IsNullOrWhiteSpace( _declinedFilePath ))
-            {
-                return;
-            }
-
-            DeclineIncorrectFile( _declinedFilePath );
-        }
-
-
-        internal void EmptySourcePath()
-        {
-            SourceFilePath = string.Empty;
-        }
-
-
-        private void SetPath(string? path)
-        {
-            bool pathExists = path != null && path != string.Empty;
-
-            if (pathExists)
-            {
-                CheckIfOpenOrIncorrectAndUse( path, false );
-            }
-            else
-            {
-                SourceFilePath = null;
-            }
-        }
-
-
-        private void CheckIfOpenOrIncorrectAndUse(string path, bool shouldSave)
-        {
-            FileInfo fileInfo = new FileInfo( path );
-
-            if (fileInfo.Exists)
-            {
-                try
-                {
-                    FileStream stream = fileInfo.OpenWrite();
-                    stream.Close();
-                }
-                catch (IOException ex)
-                {
-                    FileIsOpen = true;
-                    return;
-                }
-            }
-            else
-            {
-                SourceFilePath = null;
-                return;
-            }
-
-            XlsxFileState fileState = CheckCorrectnessIfXSLX( path );
-
-            if (fileState == XlsxFileState.IsIncorrect)
-            {
-                DeclineIncorrectFile( path );
-                return;
-            }
-            else if (!TryUse( path ))
-            {
-                FilePath = path;
-                FileIsTooBig = true;
-                return;
-            }
-            else if (fileState == XlsxFileState.IsOpen)
+            catch (IOException ex)
             {
                 FileIsOpen = true;
                 return;
             }
-            else if (fileState == XlsxFileState.NotXlsxFile)
-            {
-                SourceFilePath = path;
+        }
+        else
+        {
+            SourceFilePath = null;
+            return;
+        }
 
-                if (shouldSave)
-                {
-                    SavePath();
-                }
+        XlsxFileState fileState = CheckCorrectnessIfXSLX( path );
+
+        if (fileState == XlsxFileState.IsIncorrect)
+        {
+            DeclineIncorrectFile( path );
+            return;
+        }
+        else if (! TryUse( path ))
+        {
+            FilePath = path;
+            FileIsTooBig = true;
+            return;
+        }
+        else if (fileState == XlsxFileState.IsOpen)
+        {
+            FileIsOpen = true;
+            return;
+        }
+        else if (fileState == XlsxFileState.NotXlsxFile)
+        {
+            SourceFilePath = path;
+
+            if (shouldSave)
+            {
+                SavePath();
             }
         }
+    }
 
 
-        private void SavePath()
+    private void SavePath()
+    {
+        SetterInJson.WritePersonSource( ListerApp.ConfigPath, SourceFilePath );
+    }
+
+
+    private XlsxFileState CheckCorrectnessIfXSLX(string path)
+    {
+        XlsxFileState fileState = XlsxFileState.NotXlsxFile;
+
+        if (path.Last() == 'x')
         {
-            SetterInJson.WritePersonSource( ListerApp.ConfigPath, SourceFilePath );
-        }
-
-
-        private XlsxFileState CheckCorrectnessIfXSLX(string path)
-        {
-            XlsxFileState fileState = XlsxFileState.NotXlsxFile;
-
-            if (path.Last() == 'x')
+            try
             {
-                try
+                PeopleXlsxSource headersSource = PeopleXlsxSource.GetInstance ();
+                List<string> headers = headersSource.GetRow( path, 0 );
+
+                for (int index = 0;   index < _xslxHeaders.Count;   index++)
                 {
-                    PeopleXlsxSource headersSource = ListerApp.services.GetService<PeopleXlsxSource>();
-                    List<string> headers = headersSource.GetRow( path, 0 );
+                    bool isNotCoincident = headers[index] != _xslxHeaders[index];
 
-                    for (int index = 0; index < _xslxHeaders.Count; index++)
+                    if (isNotCoincident)
                     {
-                        bool isNotCoincident = headers[index] != _xslxHeaders[index];
+                        fileState = XlsxFileState.IsIncorrect;
 
-                        if (isNotCoincident)
-                        {
-                            fileState = XlsxFileState.IsIncorrect;
-
-                            break;
-                        }
+                        break;
                     }
                 }
-                catch (IOException ex)
-                {
-                    fileState = XlsxFileState.IsOpen;
-                }
             }
-
-            return fileState;
+            catch (IOException ex)
+            {
+                fileState = XlsxFileState.IsOpen;
+            }
         }
 
-
-        private bool TryUse(string path)
-        {
-            BadgesCreator documentAssembler = BadgesCreator.GetInstance();
-            bool fileIsAcceptable = documentAssembler.TrySetPeopleFrom( path, personsLimitForSource );
-
-            return fileIsAcceptable;
-        }
+        return fileState;
+    }
 
 
-        private void DeclineIncorrectFile(string filePath)
-        {
-            FilePath = filePath;
-            FileIsDeclined = true;
-        }
+    private bool TryUse(string path)
+    {
+        bool fileIsAcceptable = _badgeCreator.TrySetPeopleFrom ( path, personsLimitForSource );
+
+        return fileIsAcceptable;
+    }
 
 
-        private enum XlsxFileState
-        {
-            NotXlsxFile = 0,
-            IsOpen = 1,
-            IsIncorrect = 2,
-            IsTooBig = 3
-        }
+    private void DeclineIncorrectFile (string filePath)
+    {
+        FilePath = filePath;
+        FileIsDeclined = true;
+    }
+
+
+    private enum XlsxFileState
+    {
+        NotXlsxFile = 0,
+        IsOpen = 1,
+        IsIncorrect = 2,
+        IsTooBig = 3
     }
 }
 
