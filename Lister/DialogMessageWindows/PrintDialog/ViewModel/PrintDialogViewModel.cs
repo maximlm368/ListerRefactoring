@@ -1,14 +1,16 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Animation;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using View.App;
 using View.Extentions;
+using View.CoreAbstractionsImplimentations.DocumentProcessor;
 
 namespace View.DialogMessageWindows.PrintDialog.ViewModel;
 
-public partial class PrintDialogViewModel : ReactiveObject
+internal partial class PrintDialogViewModel : ReactiveObject
 {
     private readonly string _warnImagePath;
 
@@ -42,7 +44,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     private string _pagesListError;
 
     private SolidColorBrush _lineBackgraund;
-    public SolidColorBrush LineBackground
+    internal SolidColorBrush LineBackground
     {
         get { return _lineBackgraund; }
         private set
@@ -52,7 +54,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private SolidColorBrush _canvasBackground;
-    public SolidColorBrush CanvasBackground
+    internal SolidColorBrush CanvasBackground
     {
         get { return _canvasBackground; }
         private set
@@ -62,7 +64,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private Bitmap _warnImage;
-    public Bitmap WarnImage
+    internal Bitmap WarnImage
     {
         get { return _warnImage; }
         private set
@@ -72,7 +74,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private ObservableCollection<PrinterPresentation> _printers;
-    public ObservableCollection<PrinterPresentation> Printers
+    internal ObservableCollection<PrinterPresentation> Printers
     {
         get { return _printers; }
         private set
@@ -82,7 +84,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private bool _some;
-    public bool Some
+    internal bool Some
     {
         get { return _some; }
         private set
@@ -97,7 +99,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private string _pages;
-    public string Pages
+    internal string Pages
     {
         get { return _pages; }
         set
@@ -140,7 +142,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private SolidColorBrush _pagesBorderColor;
-    public SolidColorBrush PagesBorderColor
+    internal SolidColorBrush PagesBorderColor
     {
         get { return _pagesBorderColor; }
         set
@@ -150,7 +152,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private string _pagesError;
-    public string PagesError
+    internal string PagesError
     {
         get { return _pagesError; }
         set
@@ -169,7 +171,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private string _copies;
-    public string Copies
+    internal string Copies
     {
         get { return _copies; }
         set
@@ -197,7 +199,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private SolidColorBrush _copiesBorderColor;
-    public SolidColorBrush CopiesBorderColor
+    internal SolidColorBrush CopiesBorderColor
     {
         get { return _copiesBorderColor; }
         set
@@ -207,7 +209,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private string _copiesError;
-    public string CopiesError
+    internal string CopiesError
     {
         get { return _copiesError; }
         set
@@ -226,7 +228,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private string _printersEmptyError;
-    public string PrintersEmptyError
+    internal string PrintersEmptyError
     {
         get { return _printersEmptyError; }
         set
@@ -236,7 +238,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private bool _printingIsAvailable;
-    public bool PrintingIsAvailable
+    internal bool PrintingIsAvailable
     {
         get { return _printingIsAvailable; }
         private set
@@ -246,7 +248,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private int _selectedIndex;
-    public int SelectedIndex
+    internal int SelectedIndex
     {
         get { return _selectedIndex; }
         private set
@@ -256,7 +258,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
     private bool _needClose;
-    public bool NeedClose
+    internal bool NeedClose
     {
         get { return _needClose; }
         private set
@@ -271,7 +273,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public PrintDialogViewModel(string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters
+    internal PrintDialogViewModel(string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters
                                 , string osName)
     {
         _warnImagePath = warnImagePath;
@@ -291,7 +293,7 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public void PagesLostFocus()
+    internal void PagesLostFocus()
     {
         try
         {
@@ -312,13 +314,13 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public void PagesGotFocus()
+    internal void PagesGotFocus()
     {
         PagesError = string.Empty;
     }
 
 
-    public void CopiesLostFocus()
+    internal void CopiesLostFocus()
     {
         if (string.IsNullOrEmpty( Copies ))
         {
@@ -328,29 +330,34 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public void CopiesGotFocus()
+    internal void CopiesGotFocus()
     {
         CopiesError = string.Empty;
     }
 
 
-    public void OpenPrinterSettings()
+    internal void OpenPrinterSettings()
     {
-        if (_osName == "Windows")
+        if ( _osName == "Windows" )
         {
-            string printerName = Printers[SelectedIndex].StringPresentation;
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            string printerName = Printers [SelectedIndex].StringPresentation;
+            System.Diagnostics.Process process = new System.Diagnostics.Process ();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo ();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
             startInfo.Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + printerName + "\"";
             process.StartInfo = startInfo;
-            process.Start();
+            process.Start ();
+        }
+        else if ( _osName == "Linux" ) 
+        {
+            string command = "gnome-control-center -s Printers";
+            PdfPrinterImplementation.ExecuteBashCommand ( command );
         }
     }
 
 
-    public void Print()
+    internal void Print()
     {
         try
         {
@@ -359,7 +366,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                 throw new ParsingException( _emptyCopies );
             }
 
-            if (string.IsNullOrEmpty( Pages ) && Some)
+            if (string.IsNullOrEmpty( Pages )   &&   Some)
             {
                 throw new ParsingException( _emptyPages );
             }
@@ -367,11 +374,11 @@ public partial class PrintDialogViewModel : ReactiveObject
             PrinterPresentation printer = Printers[SelectedIndex];
             _printingAdjusting.PrinterName = printer.StringPresentation;
 
-            if (!Some)
+            if ( ! Some )
             {
                 _chosenPagesToPrint = new List<int>();
 
-                for (int index = 0; index < _passedPagesAmount; index++)
+                for (int index = 0;   index < _passedPagesAmount;   index++)
                 {
                     _chosenPagesToPrint.Add( index );
                 }
@@ -397,6 +404,42 @@ public partial class PrintDialogViewModel : ReactiveObject
                 CopiesError = ex.Message;
             }
         }
+    }
+
+
+    internal void Cancel ()
+    {
+        CopiesError = string.Empty;
+        PagesError = string.Empty;
+
+        _printingAdjusting.Cancelled = true;
+        NeedClose = true;
+    }
+
+
+    internal void Prepare ()
+    {
+        ObservableCollection<PrinterPresentation> printersList = null;
+
+        if ( _osName == "Windows" )
+        {
+            printersList = PreparePrintersListOnWindows ();
+        }
+        else if ( _osName == "Linux" )
+        {
+            printersList = PreparePrintersListOnLinux ();
+        }
+
+        HandleEmptyPrinters ( printersList );
+        Printers = printersList;
+        Copies = "1";
+    }
+
+
+    internal void TakeAmmountAndAdjusting ( int pageAmmount, PrintAdjustingData printAdjusting )
+    {
+        _passedPagesAmount = pageAmmount;
+        _printingAdjusting = printAdjusting;
     }
 
 
@@ -445,9 +488,9 @@ public partial class PrintDialogViewModel : ReactiveObject
         {
             int num = int.Parse( glyph.ToString() );
 
-            if (_state == ParserStates.BeforeOrBetweenOrAfterGlyph || _state == ParserStates.InsideIntegerOrFirstInRange)
+            if ((_state == ParserStates.BeforeOrBetweenOrAfterGlyph)   ||   (_state == ParserStates.InsideIntegerOrFirstInRange))
             {
-                if (_state == ParserStates.BeforeOrBetweenOrAfterGlyph && glyph == '0')
+                if ((_state == ParserStates.BeforeOrBetweenOrAfterGlyph)   &&   (glyph == '0'))
                 {
                     throw new ParsingException( "Число не может начинаться с ноля" );
                 }
@@ -491,7 +534,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
                 presentation = "";
 
-                foreach (char ch in _numAsChars)
+                foreach (char ch   in   _numAsChars)
                 {
                     presentation += ch;
                 }
@@ -500,7 +543,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
                 if (_rangeStart > rangeEnd)
                 {
-                    if (rangeEnd * 10 > _passedPagesAmount)
+                    if ((rangeEnd * 10) > _passedPagesAmount)
                     {
                         throw new ParsingException( "Некорректный интервал" );
                     }
@@ -520,7 +563,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
                 string presentation = "";
 
-                foreach (char ch in _numAsChars)
+                foreach (char ch   in   _numAsChars)
                 {
                     presentation += ch;
                 }
@@ -529,7 +572,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
                 if (_rangeStart > rangeEnd)
                 {
-                    if (rangeEnd * 10 > _passedPagesAmount)
+                    if ((rangeEnd * 10) > _passedPagesAmount)
                     {
                         throw new ParsingException( "Некорректный интервал" );
                     }
@@ -537,7 +580,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
                 if (isGlyphLast)
                 {
-                    for (int index = _rangeStart; index <= rangeEnd; index++)
+                    for (int index = _rangeStart;   index <= rangeEnd;   index++)
                     {
                         _pageNumbers.Add( index );
                     }
@@ -548,7 +591,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                 throw new ParsingException( "Цифра не может идти после пробела" );
             }
         }
-        else if (!glyphIsInteger)
+        else if ( ! glyphIsInteger )
         {
             switch (glyph)
             {
@@ -562,7 +605,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                     {
                         string presentation = "";
 
-                        foreach (char ch in _numAsChars)
+                        foreach (char ch   in   _numAsChars)
                         {
                             presentation += ch;
                         }
@@ -574,7 +617,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                             throw new ParsingException( "Некорректный интервал" );
                         }
 
-                        for (int index = _rangeStart; index <= rangeEnd; index++)
+                        for (int index = _rangeStart;   index <= rangeEnd;   index++)
                         {
                             _pageNumbers.Add( index );
                         }
@@ -586,7 +629,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                     break;
                 case '-':
 
-                    if (_state == ParserStates.InsideIntegerOrFirstInRange || _state == ParserStates.AfterInteger)
+                    if ((_state == ParserStates.InsideIntegerOrFirstInRange)   ||   (_state == ParserStates.AfterInteger))
                     {
                         _state = ParserStates.InRange;
 
@@ -618,21 +661,18 @@ public partial class PrintDialogViewModel : ReactiveObject
                     break;
                 case ',':
 
-                    if (_state == ParserStates.InsideIntegerOrFirstInRange || _state == ParserStates.AfterInteger)
+                    if ((_state == ParserStates.InsideIntegerOrFirstInRange)   ||   (_state == ParserStates.AfterInteger))
                     {
                         string presentation = "";
 
-                        foreach (char ch in _numAsChars)
+                        foreach (char ch   in   _numAsChars)
                         {
                             presentation += ch;
                         }
 
                         _numAsChars = new();
-
                         int integer = int.Parse( presentation );
-
                         _pageNumbers.Add( integer );
-
                         _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
 
                         if (isGlyphLast)
@@ -644,7 +684,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                     {
                         string presentation = "";
 
-                        foreach (char ch in _numAsChars)
+                        foreach (char ch   in   _numAsChars)
                         {
                             presentation += ch;
                         }
@@ -656,7 +696,7 @@ public partial class PrintDialogViewModel : ReactiveObject
                             throw new ParsingException( "Некорректный интервал" );
                         }
 
-                        for (int index = _rangeStart; index <= rangeEnd; index++)
+                        for (int index = _rangeStart;   index <= rangeEnd;   index++)
                         {
                             _pageNumbers.Add( index );
                         }
@@ -700,13 +740,13 @@ public partial class PrintDialogViewModel : ReactiveObject
 
         bool glyphIsIncorrect = true;
 
-        for (int index = 0; index < value.Length; index++)
+        for (int index = 0;   index < value.Length;   index++)
         {
             char ch = value[index];
 
             glyphIsIncorrect = acceptableGlyphs.Contains( ch );
 
-            if (!glyphIsIncorrect)
+            if ( ! glyphIsIncorrect )
             {
                 value = value.Remove( index, 1 );
                 break;
@@ -732,35 +772,6 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public void Cancel()
-    {
-        CopiesError = string.Empty;
-        PagesError = string.Empty;
-
-        _printingAdjusting.Cancelled = true;
-        NeedClose = true;
-    }
-
-
-    public void Prepare()
-    {
-        ObservableCollection<PrinterPresentation> printersList = null;
-
-        if (_osName == "Windows")
-        {
-            printersList = PreparePrintersListOnWindows();
-        }
-        else if (_osName == "Linux")
-        {
-            printersList = PreparePrintersListOnLinux();
-        }
-
-        HandleEmptyPrinters( printersList );
-        Printers = printersList;
-        Copies = "1";
-    }
-
-
     private ObservableCollection<PrinterPresentation> PreparePrintersListOnWindows()
     {
         ObservableCollection<PrinterPresentation> printersList = new();
@@ -772,7 +783,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
         int counter = 0;
 
-        foreach (string printer in printers)
+        foreach (string printer   in   printers)
         {
             printersList.Add( new PrinterPresentation( printer ) );
 
@@ -800,7 +811,7 @@ public partial class PrintDialogViewModel : ReactiveObject
 
         int counter = 0;
 
-        foreach (string printer in printers)
+        foreach (string printer   in   printers)
         {
             string prntr = printer.TrimLastNewLineChar();
 
@@ -835,12 +846,6 @@ public partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    public void TakeAmmountAndAdjusting(int pageAmmount, PrintAdjustingData printAdjusting)
-    {
-        _passedPagesAmount = pageAmmount;
-        _printingAdjusting = printAdjusting;
-    }
-
 
     private enum ParserStates
     {
@@ -850,45 +855,38 @@ public partial class PrintDialogViewModel : ReactiveObject
         AfterInteger = 3,
         InRangeEnd = 4
     }
+
+
+
+    private class ParsingException : Exception
+    {
+        public ParsingException ( string message ) : base ( message ) { }
+    }
+
+
+
+    private class TransparentForTypingParsingException : ParsingException
+    {
+        public TransparentForTypingParsingException ( string message ) : base ( message ) { }
+    }
 }
 
 
 
-public class ParsingException : Exception
-{
-    public ParsingException(string message) : base( message ) { }
-}
-
-
-
-public class TransparentForTypingParsingException : ParsingException
-{
-    public TransparentForTypingParsingException(string message) : base( message ) { }
-}
-
-
-
-public class IncorrectStringStartException : ParsingException
-{
-    public IncorrectStringStartException(string message) : base( message ) { }
-}
-
-
-
-public class PrinterPresentation : ReactiveObject
+internal class PrinterPresentation : ReactiveObject
 {
     private string sP;
-    public string StringPresentation
+    internal string StringPresentation
     {
         get { return sP; }
         private set
         {
-            this.RaiseAndSetIfChanged( ref sP, value, nameof( StringPresentation ) );
+            this.RaiseAndSetIfChanged ( ref sP, value, nameof ( StringPresentation ) );
         }
     }
 
 
-    public PrinterPresentation(string printerName)
+    internal PrinterPresentation ( string printerName )
     {
         StringPresentation = printerName;
     }

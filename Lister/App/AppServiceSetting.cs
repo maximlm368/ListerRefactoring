@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices ( this IServiceCollection collection )
     {
-        collection.AddSingleton ( typeof ( PdfPrinter ), PdfPrinterFactory );
+        collection.AddSingleton ( typeof ( CoreModelReflection.PdfPrinter ), PdfPrinterFactory );
         collection.AddSingleton ( typeof ( DocumentProcessor ), DocumentBuilderFactory );
 
         collection.AddSingleton (typeof (MainViewModel), MainViewModelFactory);
@@ -45,20 +45,20 @@ public static class ServiceCollectionExtensions
 
     private static DocumentProcessor DocumentBuilderFactory ( IServiceProvider serviceProvider )
     {
-        return DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
-            , Printer.GetInstance( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName ) )
+        return DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance ( ListerApp.OsName )
+            , CoreAbstractionsImplimentations.DocumentProcessor.PdfPrinterImplementation.GetInstance( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName ) )
             , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance () );
     }
 
 
-    private static PdfPrinter PdfPrinterFactory ( IServiceProvider serviceProvider )
+    private static CoreModelReflection.PdfPrinter PdfPrinterFactory ( IServiceProvider serviceProvider )
     {
         DocumentProcessor model =
         DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
-            , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))
+            , CoreAbstractionsImplimentations.DocumentProcessor.PdfPrinterImplementation.GetInstance ( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName))
             , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
     
-        return new PdfPrinter ( model );
+        return new CoreModelReflection.PdfPrinter ( model );
     }
 
 
@@ -162,9 +162,9 @@ public static class ServiceCollectionExtensions
         string shrinkingToolTip = SceneConfigs.shrinkingToolTip;
         string fileIsOpenMessage = SceneConfigs.fileIsOpenMessage;
 
-        return new SceneViewModel (badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
-             , DocumentProcessor.GetInstance (TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
-             , Printer.GetInstance (ListerApp.OsName, PdfCreator.GetInstance (ListerApp.OsName))
+        return new SceneViewModel ( badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
+             , DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
+             , CoreAbstractionsImplimentations.DocumentProcessor.PdfPrinterImplementation.GetInstance ( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName))
              , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () ) 
              );
     }

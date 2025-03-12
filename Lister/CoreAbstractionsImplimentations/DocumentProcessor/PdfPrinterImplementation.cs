@@ -5,24 +5,24 @@ using System.Drawing.Printing;
 
 namespace View.CoreAbstractionsImplimentations.DocumentProcessor;
 
-public class Printer : IPdfPrinter
+public class PdfPrinterImplementation : IPdfPrinter
 {
-    private static Printer _instance = null;
+    private static PdfPrinterImplementation _instance = null;
 
     private string _osName;
     private IPdfCreator _pdgCreator;
 
 
-    private Printer(string osName, IPdfCreator pdfCreator)
+    private PdfPrinterImplementation (string osName, IPdfCreator pdfCreator)
     {
         _osName = osName;
         _pdgCreator = pdfCreator;
     }
 
 
-    internal static Printer GetInstance(string osName, IPdfCreator pdfCreator)
+    internal static PdfPrinterImplementation GetInstance(string osName, IPdfCreator pdfCreator)
     {
-        Printer instance = _instance ?? new Printer( osName, pdfCreator );
+        PdfPrinterImplementation instance = _instance ?? new PdfPrinterImplementation( osName, pdfCreator );
 
         return instance;
     }
@@ -37,6 +37,30 @@ public class Printer : IPdfPrinter
         else if (_osName == "Linux")
         {
             PrintOnLinux( printables, creator, printerName, copiesAmount );
+        }
+    }
+
+
+    internal static string ExecuteBashCommand ( string command )
+    {
+        using ( Process process = new Process () )
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{command}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start ();
+
+            string result = process.StandardOutput.ReadToEnd ();
+
+            process.WaitForExit ();
+
+            return result;
         }
     }
 
@@ -81,30 +105,6 @@ public class Printer : IPdfPrinter
             string bashPrintCommand = "lp -d " + printer + " -n " + copies + " " + pdfProxyName;
 
             ExecuteBashCommand( bashPrintCommand );
-        }
-    }
-
-
-    private string ExecuteBashCommand(string command)
-    {
-        using (Process process = new Process())
-        {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            process.Start();
-
-            string result = process.StandardOutput.ReadToEnd();
-
-            process.WaitForExit();
-
-            return result;
         }
     }
 }

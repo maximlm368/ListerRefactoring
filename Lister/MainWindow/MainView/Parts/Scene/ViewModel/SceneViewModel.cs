@@ -420,8 +420,6 @@ public partial class SceneViewModel : ReactiveObject
         VisiblePage = _lastPage;
         VisiblePage.Show ();
 
-        //PrintableBadges.Add (printableBadge);
-
         BadgeCount++;
         VisiblePageNumber = AllPages.Count;
         PageCount = AllPages.Count;
