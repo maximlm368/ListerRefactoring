@@ -25,7 +25,6 @@ namespace View.EditionView;
 public partial class BadgeEditorView : ShowingDialog
 {
     private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
-    private static readonly string _startFilter = "Все";
     private static readonly int _focusedTextLineLengthLimit = 100;
 
     private static bool _widthIsChanged;
@@ -78,7 +77,7 @@ public partial class BadgeEditorView : ShowingDialog
 
         DisableFocusAdorner ();
         editorTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
-        filterChoosing.SelectedValue = _startFilter;
+        filterChoosing.SelectedIndex = 0;
         PointerPressed += PointerIsPressed;
     }
 

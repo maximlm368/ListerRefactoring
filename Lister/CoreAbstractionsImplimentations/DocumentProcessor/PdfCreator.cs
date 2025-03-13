@@ -2,6 +2,7 @@
 using Core.DocumentProcessor.Abstractions;
 using Core.Models.Badge;
 using QuestPDF;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
@@ -15,6 +16,7 @@ public class PdfCreator : IPdfCreator
 
     private readonly string _osName;
     private Dictionary<string, Image> pathToInsideImage = new();
+    private List<string> _registeredFonts = new ();
     public IEnumerable<byte[]> bytes = null;
     public List<string> intermidiateFiles = new();
 
@@ -101,7 +103,7 @@ public class PdfCreator : IPdfCreator
                     (
                         column =>
                         {
-                            foreach (BadgeLine currentLine in lines)
+                            foreach (BadgeLine currentLine  in  lines)
                             {
                                 RenderLine( column, currentLine );
                             }
@@ -179,28 +181,21 @@ public class PdfCreator : IPdfCreator
     }
 
 
-    private void RenderTextLines(LayersDescriptor layers, IEnumerable<TextLine> textLines, Badge renderable)
+    private void RenderTextLines (LayersDescriptor layers, IEnumerable<TextLine> textLines, Badge renderable)
     {
-        foreach (TextLine textLine in textLines)
+        foreach ( TextLine textLine   in   textLines )
         {
-            string text = textLine.Content;
-
-            float paddingLeft = (float)textLine.LeftOffset;
-            float paddingTop = (float)(textLine.TopOffset + 2 * textLine.Padding.Top);
-
-            string fontName = textLine.FontName;
-            float fontSize = (float)textLine.FontSize;
-            float maxWidth = (float)textLine.Width;
+            RegisterFontFor ( textLine );
 
             TextBlockDescriptor textBlock = layers
-            .Layer()
-            .PaddingLeft( paddingLeft, Unit.Point )
-            .PaddingTop( paddingTop, Unit.Point )
-            .Text( text )
-            .ClampLines( 1, "." )
-            .FontFamily( fontName )
-            .FontColor( Color.FromHex( textLine.ForegroundHexStr ) )
-            .FontSize( fontSize );
+            .Layer ()
+            .PaddingLeft ( ( float ) textLine.LeftOffset, Unit.Point )
+            .PaddingTop ( ( float ) ( textLine.TopOffset + 2 * textLine.Padding.Top ), Unit.Point )
+            .Text ( textLine.Content )
+            .ClampLines ( 1, "." )
+            .FontFamily ( textLine.FontName )
+            .FontColor ( Color.FromHex ( textLine.ForegroundHexStr ) )
+            .FontSize ( ( float ) textLine.FontSize );
 
             if (textLine.FontWeight == "Thin")
             {
@@ -214,24 +209,84 @@ public class PdfCreator : IPdfCreator
     }
 
 
+    private void RegisterFontFor ( TextLine textLine )
+    {
+        if ( ( _osName == "Linux" )   &&   !_registeredFonts.Contains ( textLine.FontName ) )
+        {
+            _registeredFonts.Add ( textLine.FontName );
+            string fontName = textLine.FontName;
+
+            if ( textLine.FontName.Contains ( ' ' ) )
+            {
+                fontName = string.Empty;
+
+                for ( int index = 0;   index < textLine.FontName.Length;   index++ )
+                {
+                    if ( textLine.FontName [index] == ' ' )
+                    {
+                        fontName += "\'";
+                    }
+
+                    fontName += textLine.FontName [index];
+                }
+            }
+
+            string command = "fc-list | grep " + fontName;
+
+            string result = PdfPrinterImplementation.ExecuteBashCommand ( command );
+
+            if ( ! string.IsNullOrWhiteSpace ( result ) )
+            {
+                List<string> fonts = new ();
+                int substrStart = 0;
+
+                for ( int index = 0; index < result.Length; index++ )
+                {
+                    if ( ( result [index] == '\n' ) && ( index != result.Length - 1 ) )
+                    {
+                        fonts.Add ( result.Substring ( substrStart, index ) );
+                        substrStart = index + 1;
+                    }
+                }
+
+                List<string> fontPathes = new ();
+
+                foreach ( string font   in   fonts )
+                {
+                    for ( int index = 0;   index < font.Length;   index++ )
+                    {
+                        if ( font [index] == ':' )
+                        {
+                            fontPathes.Add ( font.Substring ( 0, index ) );
+                            break;
+                        }
+                    }
+                }
+
+                foreach ( string fontPath   in   fontPathes )
+                {
+                    using FileStream stream = new FileStream ( fontPath, FileMode.OpenOrCreate );
+                    FontManager.RegisterFont ( stream );
+                }
+            }
+        }
+    }
+
+
     private void RenderInsideImages(LayersDescriptor layers, IEnumerable<ComponentImage> insideImages)
     {
         foreach (ComponentImage image in insideImages)
         {
-            float paddingLeft = (float)image.LeftOffset;
-            float paddingTop = (float)image.TopOffset;
-            float imageWidth = (float)image.Width;
-            float imageHeight = (float)image.Height;
             Image img = GetImageByPath( image.Path );
 
             if (img == null) continue;
 
             layers
                 .Layer()
-                .PaddingLeft( paddingLeft )
-                .PaddingTop( paddingTop )
+                .PaddingLeft( ( float ) image.LeftOffset )
+                .PaddingTop( ( float ) image.TopOffset )
                 .Container()
-                .Width( imageWidth )
+                .Width( ( float ) image.Width )
                 .Image( img )
                 .FitArea();
         }
@@ -242,9 +297,6 @@ public class PdfCreator : IPdfCreator
     {
         foreach (ComponentShape shape in insideShapes)
         {
-            float paddingLeft = (float)shape.LeftOffset;
-            float paddingTop = (float)shape.TopOffset;
-
             layers
                 .Layer()
                 .SkiaSharpCanvas
@@ -255,7 +307,7 @@ public class PdfCreator : IPdfCreator
 
                         SKColor color;
 
-                        if (!SKColor.TryParse( shape.FillHexStr, out color ))
+                        if ( ! SKColor.TryParse( shape.FillHexStr, out color ))
                         {
                             color = new SKColor( 0, 0, 0, 255 );
                         }
@@ -281,14 +333,14 @@ public class PdfCreator : IPdfCreator
     }
 
 
-    private Image? GetImageByPath(string path)
+    private Image ? GetImageByPath(string path)
     {
         if (_osName == "Linux")
         {
             path = "/" + path;
         }
 
-        if (!pathToInsideImage.ContainsKey( path ))
+        if (! pathToInsideImage.ContainsKey( path ))
         {
             if (File.Exists( path ))
             {
