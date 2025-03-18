@@ -30,11 +30,11 @@ public class Page
 
     static Page ()
     {
-        _width = 794;
-        _height = 1123;
+        _width = 825;
+        _height = 1168;
         
-        _topOffsetOfContent = 20;
-        _leftOffsetOfContent = 45;
+        _topOffsetOfContent = 40;
+        _leftOffsetOfContent = 60;
     }
 
 

@@ -12,27 +12,27 @@ namespace View.CoreAbstractionsImplimentations.DocumentProcessor;
 
 public class PdfCreator : IPdfCreator
 {
+    private static readonly double _coefficient = 0.721;
     private static PdfCreator _instance = null;
 
-    private readonly string _osName;
+    private static string _osName;
     private Dictionary<string, Image> pathToInsideImage = new();
     private List<string> _registeredFonts = new ();
     public IEnumerable<byte[]> bytes = null;
     public List<string> intermidiateFiles = new();
 
 
-    private PdfCreator(string osName)
-    {
-        _osName = osName;
-    }
+    private PdfCreator () { }
 
 
-    public static PdfCreator GetInstance(string osName)
+    public static PdfCreator GetInstance (string osName)
     {
         if (_instance == null)
         {
-            _instance = new PdfCreator( osName );
+            _instance = new PdfCreator ( );
         }
+
+        _osName = osName;
 
         return _instance;
     }
@@ -88,8 +88,8 @@ public class PdfCreator : IPdfCreator
                 container.Page( page =>
                 {
                     Page currentPage = pages[pageNumber];
-                    float width = (float)currentPage.Width;
-                    float height = (float)currentPage.Height;
+                    float width = (float)(currentPage.Width * _coefficient);
+                    float height = (float)(currentPage.Height * _coefficient );
 
                     page.Size( width, height, Unit.Point );
                     page.MarginLeft( 0, Unit.Point );
@@ -99,7 +99,8 @@ public class PdfCreator : IPdfCreator
 
                     List<BadgeLine> lines = currentPage.Lines;
 
-                    page.Content().PaddingTop( 20 ).PaddingLeft( (float)currentPage.ContentLeftOffset ).Column
+                    page.Content().PaddingTop( (int)(20 * _coefficient) )
+                    .PaddingLeft( (float)( currentPage.ContentLeftOffset * _coefficient ) ).Column
                     (
                         column =>
                         {
@@ -129,10 +130,10 @@ public class PdfCreator : IPdfCreator
                       (
                           columns =>
                           {
-                              for (int badgeNumber = 0; badgeNumber < line.Badges.Count; badgeNumber++)
+                              for (int badgeNumber = 0;   badgeNumber < line.Badges.Count;   badgeNumber++)
                               {
                                   Badge beingRendered = line.Badges[badgeNumber];
-                                  float badgeWidth = (float)beingRendered.Layout.Width;
+                                  float badgeWidth = (float)(beingRendered.Layout.Width * _coefficient);
                                   columns.ConstantColumn( badgeWidth, Unit.Point );
                                   RenderBadge( table, beingRendered, badgeNumber );
                               }
@@ -146,15 +147,8 @@ public class PdfCreator : IPdfCreator
     private void RenderBadge(TableDescriptor tableForLine, Badge beingRendered, int badgeIndex)
     {
         if (beingRendered == null) return;
-        float badgeWidth = 0;
-
-        try
-        {
-            badgeWidth = (float)beingRendered.Layout.Width;
-        }
-        catch (Exception ex) { }
-
-        float badgeHeight = (float)beingRendered.Layout.Height;
+        float badgeWidth = ( float ) ( beingRendered.Layout.Width * _coefficient );
+        float badgeHeight = (float)( beingRendered.Layout.Height * _coefficient );
         string imagePath = beingRendered.BackgroundImagePath;
 
         Image image = GetImageByPath( imagePath );
@@ -165,7 +159,7 @@ public class PdfCreator : IPdfCreator
             (
                 layers =>
                 {
-                    IContainer container = layers.PrimaryLayer().Border( 0.5f, Unit.Point )
+                    IContainer container = layers.PrimaryLayer().Border ( 0.5f, Unit.Point )
                                           .BorderColor( QuestPDF.Helpers.Colors.Grey.Medium );
 
                     if (image != null)
@@ -185,17 +179,15 @@ public class PdfCreator : IPdfCreator
     {
         foreach ( TextLine textLine   in   textLines )
         {
-            RegisterFontFor ( textLine );
-
             TextBlockDescriptor textBlock = layers
             .Layer ()
-            .PaddingLeft ( ( float ) textLine.LeftOffset, Unit.Point )
-            .PaddingTop ( ( float ) ( textLine.TopOffset + 2 * textLine.Padding.Top ), Unit.Point )
+            .PaddingLeft ( ( float ) ( textLine.LeftOffset * _coefficient ), Unit.Point )
+            .PaddingTop ( ( float ) ((textLine.TopOffset + 2 * textLine.Padding.Top) * _coefficient), Unit.Point )
             .Text ( textLine.Content )
             .ClampLines ( 1, "." )
             .FontFamily ( textLine.FontName )
             .FontColor ( Color.FromHex ( textLine.ForegroundHexStr ) )
-            .FontSize ( ( float ) textLine.FontSize );
+            .FontSize ( ( float ) ( textLine.FontSize * _coefficient ) );
 
             if (textLine.FontWeight == "Thin")
             {
@@ -204,70 +196,6 @@ public class PdfCreator : IPdfCreator
             else if (textLine.FontWeight == "Bold")
             {
                 textBlock.Bold();
-            }
-        }
-    }
-
-
-    private void RegisterFontFor ( TextLine textLine )
-    {
-        if ( ( _osName == "Linux" )   &&   !_registeredFonts.Contains ( textLine.FontName ) )
-        {
-            _registeredFonts.Add ( textLine.FontName );
-            string fontName = textLine.FontName;
-
-            if ( textLine.FontName.Contains ( ' ' ) )
-            {
-                fontName = string.Empty;
-
-                for ( int index = 0;   index < textLine.FontName.Length;   index++ )
-                {
-                    if ( textLine.FontName [index] == ' ' )
-                    {
-                        fontName += "\'";
-                    }
-
-                    fontName += textLine.FontName [index];
-                }
-            }
-
-            string command = "fc-list | grep " + fontName;
-
-            string result = PdfPrinterImplementation.ExecuteBashCommand ( command );
-
-            if ( ! string.IsNullOrWhiteSpace ( result ) )
-            {
-                List<string> fonts = new ();
-                int substrStart = 0;
-
-                for ( int index = 0; index < result.Length; index++ )
-                {
-                    if ( ( result [index] == '\n' ) && ( index != result.Length - 1 ) )
-                    {
-                        fonts.Add ( result.Substring ( substrStart, index ) );
-                        substrStart = index + 1;
-                    }
-                }
-
-                List<string> fontPathes = new ();
-
-                foreach ( string font   in   fonts )
-                {
-                    for ( int index = 0;   index < font.Length;   index++ )
-                    {
-                        if ( font [index] == ':' )
-                        {
-                            fontPathes.Add ( font.Substring ( 0, index ) );
-                            break;
-                        }
-                    }
-                }
-
-                foreach ( string fontPath   in   fontPathes )
-                {
-                    using FileStream stream = new FileStream ( fontPath, FileMode.OpenOrCreate );
-                    FontManager.RegisterFont ( stream );
-                }
             }
         }
     }
@@ -283,10 +211,10 @@ public class PdfCreator : IPdfCreator
 
             layers
                 .Layer()
-                .PaddingLeft( ( float ) image.LeftOffset )
-                .PaddingTop( ( float ) image.TopOffset )
+                .PaddingLeft( ( float ) ( image.LeftOffset * _coefficient ) )
+                .PaddingTop( ( float ) ( image.TopOffset * _coefficient ) )
                 .Container()
-                .Width( ( float ) image.Width )
+                .Width( ( float ) ( image.Width * _coefficient ) )
                 .Image( img )
                 .FitArea();
         }
@@ -295,7 +223,7 @@ public class PdfCreator : IPdfCreator
 
     private void RenderInsideShapes(LayersDescriptor layers, IEnumerable<ComponentShape> insideShapes)
     {
-        foreach (ComponentShape shape in insideShapes)
+        foreach (ComponentShape shape   in   insideShapes)
         {
             layers
                 .Layer()
@@ -316,16 +244,21 @@ public class PdfCreator : IPdfCreator
 
                         if (shape.Type == ShapeType.rectangle)
                         {
-                            canvas.DrawRect( (float)shape.LeftOffset, (float)shape.TopOffset
-                                            , (float)shape.Width, (float)shape.Height, paint );
+                            canvas.DrawRect( (float)( shape.LeftOffset * _coefficient )
+                                           , (float)( shape.TopOffset * _coefficient )
+                                           , (float)( shape.Width * _coefficient )
+                                           , (float)( shape.Height * _coefficient ), paint );
                         }
                         else if (shape.Type == ShapeType.ellipse)
                         {
-                            float centerVerticalCoordinate = (float)(shape.TopOffset + shape.Height / 2);
-                            float centerHorizontalCoordinate = (float)(shape.LeftOffset + shape.Width / 2);
+                            float centerVerticalCoordinate = (float)((shape.TopOffset * _coefficient) 
+                                                           + (shape.Height * _coefficient) / 2);
+                            float centerHorizontalCoordinate = (float)((shape.LeftOffset*_coefficient) 
+                                                              +(shape.Width*_coefficient) / 2);
 
                             canvas.DrawOval( centerHorizontalCoordinate, centerVerticalCoordinate
-                                             , (float)shape.Width / 2, (float)shape.Height / 2, paint );
+                                           , (float)( shape.Width * _coefficient ) / 2
+                                           , (float)( shape.Height * _coefficient ) / 2, paint );
                         }
                     }
                 );

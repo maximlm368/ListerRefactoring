@@ -24,7 +24,6 @@
 	</Style>
 
 	
-
 	<Style Selector="TextBlock.picture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 	</Style>
@@ -50,6 +49,7 @@
 		<Setter Property="Margin" Value="5,0,0,0"/>
 	</Style>
 
+	
 	<Style Selector="Label.comboboxItem /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#FFFFFF"/>
 		<Setter Property="BorderBrush" Value="#D5E8F6"/>
@@ -67,6 +67,12 @@
 		<Setter Property="Background" Value="#E3F1FC"/>
 		<Setter Property="BorderBrush" Value="#D5E8F6"/>
 		<Setter Property="Foreground" Value="#000000"/>
+	</Style>
+
+
+	<Style Selector="TextBlock.printErrorMessage /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="Height" Value="18"/>
 	</Style>
 
 

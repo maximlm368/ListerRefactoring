@@ -93,6 +93,12 @@ public partial class PrintDialog : BaseWindow
     public void PagesSetChanged ( object sender, TextChangedEventArgs args )
     {
         TextBox textBox = sender as TextBox;
+
+        if ( _viewModel.Pages == textBox.Text ) 
+        {
+            return;
+        }
+
         _viewModel.Pages = textBox.Text;
         textBox.Text = _viewModel.Pages;
     }

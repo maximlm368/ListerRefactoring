@@ -76,7 +76,7 @@ public partial class PdfPrinter : ReactiveObject
         Task printing = new Task
         ( () =>
         {
-            _model.Print ( _printAdjusting.PrinterName, _printAdjusting.CopiesAmount );
+            _model.Print ( _printAdjusting.PrinterName, _printAdjusting.PageNumbers, _printAdjusting.CopiesAmount );
         } );
 
         printing.ContinueWith

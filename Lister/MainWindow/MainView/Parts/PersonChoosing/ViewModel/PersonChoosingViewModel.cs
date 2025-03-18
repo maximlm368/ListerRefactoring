@@ -3,12 +3,12 @@ using Core.BadgesCreator;
 using Core.Models;
 using Core.Models.Badge;
 using DynamicData;
-using View.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using View.CoreAbstractionsImplimentations.BadgeCreator;
 using View.CoreModelReflection;
 using View.CoreModelReflection.Badge;
-using View.CoreAbstractionsImplimentations.BadgeCreator;
+using View.Extentions;
 
 namespace View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 

@@ -164,7 +164,7 @@ public static class ServiceCollectionExtensions
 
         return new SceneViewModel ( badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
              , DocumentProcessor.GetInstance ( TextWidthMeasurer.GetMesurer (), PdfCreator.GetInstance ( ListerApp.OsName )
-             , CoreAbstractionsImplimentations.DocumentProcessor.PdfPrinterImplementation.GetInstance ( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName))
+             , PdfPrinterImplementation.GetInstance ( ListerApp.OsName, PdfCreator.GetInstance ( ListerApp.OsName))
              , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () ) 
              );
     }

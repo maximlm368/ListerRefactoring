@@ -28,15 +28,15 @@ public class PdfPrinterImplementation : IPdfPrinter
     }
 
 
-    public void Print(List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
+    public void Print ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
     {
         if (_osName == "Windows")
         {
-            PrintOnWindows( printables, creator, printerName, copiesAmount );
+            PrintOnWindows ( printables, creator, printerName, copiesAmount );
         }
         else if (_osName == "Linux")
         {
-            PrintOnLinux( printables, creator, printerName, copiesAmount );
+            PrintOnLinux ( printables, creator, printerName, copiesAmount );
         }
     }
 
@@ -65,27 +65,27 @@ public class PdfPrinterImplementation : IPdfPrinter
     }
 
 
-    private void PrintOnWindows(List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
+    private void PrintOnWindows ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
     {
-        IEnumerable<byte[]> intermediateBytes = creator.Create( printables );
+        IEnumerable<byte []> intermediateBytes = creator.Create ( printables );
 
-        if (intermediateBytes != null   ||   intermediateBytes.Count() > 0)
+        if ( intermediateBytes != null   ||   intermediateBytes.Count () > 0 )
         {
-            foreach (byte[] pageBytes   in   intermediateBytes)
+            foreach ( byte [] pageBytes   in   intermediateBytes )
             {
-                using Stream intermediateStream = new MemoryStream( pageBytes );
-                using PrintDocument pd = new PrintDocument();
+                using Stream intermediateStream = new MemoryStream ( pageBytes );
+                using PrintDocument pd = new PrintDocument ();
 
                 pd.PrinterSettings.PrinterName = printerName;
-                pd.PrinterSettings.Copies = (short)copiesAmount;
+                pd.PrinterSettings.Copies = ( short ) copiesAmount;
 
-                pd.PrintPage += (sender, args) =>
+                pd.PrintPage += ( sender, args ) =>
                 {
-                    System.Drawing.Image img = System.Drawing.Image.FromStream( intermediateStream );
-                    args.Graphics.DrawImage( img, args.Graphics.VisibleClipBounds );
+                    System.Drawing.Image img = System.Drawing.Image.FromStream ( intermediateStream );
+                    args.Graphics.DrawImage ( img, args.Graphics.VisibleClipBounds );
                 };
 
-                pd.Print();
+                pd.Print ();
             }
         }
     }
@@ -94,14 +94,12 @@ public class PdfPrinterImplementation : IPdfPrinter
     private void PrintOnLinux (List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
     {
         string pdfProxyName = @"./proxy.pdf";
-
         bool dataIsGenerated = creator.CreateAndSave( printables, pdfProxyName );
 
         if (dataIsGenerated)
         {
             string printer = printerName;
             string copies = copiesAmount.ToString();
-
             string bashPrintCommand = "lp -d " + printer + " -n " + copies + " " + pdfProxyName;
 
             ExecuteBashCommand( bashPrintCommand );

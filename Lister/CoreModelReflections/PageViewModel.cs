@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Core.DocumentProcessor;
+﻿using Core.DocumentProcessor;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using view = View.CoreModelReflection.Badge;
@@ -8,14 +7,8 @@ namespace View.CoreModelReflection;
 
 public class PageViewModel : ReactiveObject
 {
-    private static double _topOffsetOfContent;
-    private static double _leftOffsetOfContent;
-    internal static Size Size { get; private set; }
-
-    private bool _isShown;
-    private int _badgeCount;
     private double _scale;
-    private Core.DocumentProcessor.BadgeLine _fillableLine;
+    private BadgeLine _fillableLine;
     
     internal Page Model { get; private set; }
 
@@ -90,38 +83,11 @@ public class PageViewModel : ReactiveObject
     }
 
 
-    static PageViewModel () 
-    {
-        Size = new Size (794, 1123);
-        _topOffsetOfContent = 20;
-        _leftOffsetOfContent = 45;
-    }
-
-
-    public PageViewModel ( double desiredScale )
-    {
-        Lines = new ObservableCollection<view.BadgeLine> ();
-        _scale = desiredScale;
-        _badgeCount = 0;
-
-        Width = Size.Width;
-        Height = Size.Height;
-        ContentTopOffset = _topOffsetOfContent;
-        ContentLeftOffset = _leftOffsetOfContent;
-        double usefullHeight = Height - 20;
-        BorderHeight = Height + 2;
-        BorderWidth = Width + 2;
-
-        SetCorrectScale ();
-    }
-
-
     public PageViewModel ( Page source, double desiredScale )
     {
         Lines = new ObservableCollection<view.BadgeLine> ();
         Model = source;
         _scale = desiredScale;
-        _badgeCount = 0;
 
         List<BadgeLine> sourceLines = source.Lines;
 
@@ -132,8 +98,10 @@ public class PageViewModel : ReactiveObject
 
         Width = source. Width;
         Height = source. Height;
-        ContentTopOffset = _topOffsetOfContent;
-        ContentLeftOffset = _leftOffsetOfContent;
+
+        ContentTopOffset = source.ContentTopOffset;
+        ContentLeftOffset = source.ContentLeftOffset;
+
         double usefullHeight = Height - 20;
         BorderHeight = Height + 2;
         BorderWidth = Width + 2;
@@ -219,58 +187,7 @@ public class PageViewModel : ReactiveObject
             Lines [index].Hide ();
         }
     }
-
-
-    
 }
 
 
 
-//public class PageException : Exception {}
-
-
-//private double lCLS;
-//internal double LinesLeftShift
-//{
-//    get { return lCLS; }
-//    set
-//    {
-//        this.RaiseAndSetIfChanged (ref lCLS, value, nameof (LinesLeftShift));
-//    }
-//}
-
-//private double lCTS;
-//internal double LinesContainerTopShift
-//{
-//    get { return lCTS; }
-//    set
-//    {
-//        this.RaiseAndSetIfChanged (ref lCTS, value, nameof (LinesContainerTopShift));
-//    }
-//}
-
-
-
-//private void VerifyBadgeSizeAccordence ( VMBadge badge )
-//{
-//    Size verifiebleSize = badge.BadgeModel.badgeDescription.badgeDimensions.outlineSize;
-//    int verifiebleWidth = ( int ) ( _scale * verifiebleSize.Width );
-//    int verifiebleHeight = ( int ) ( _scale * verifiebleSize.Height );
-
-//    bool isNotAccordent = ( verifiebleWidth != ( int ) BadgeExample.BadgeWidth )
-//                          ||
-//                          ( verifiebleHeight != ( int ) BadgeExample.BadgeHeight );
-
-//    if ( isNotAccordent )
-//    {
-//        throw new Exception ("Size of passed on badge is not according set for this page");
-//    }
-//}
-
-
-//bool timeToStartNewPage = IsTimeForNewPage ();
-
-//if ( timeToStartNewPage )
-//{
-//    beingProcessedPage = new PageViewModel ( _scale);
-//}

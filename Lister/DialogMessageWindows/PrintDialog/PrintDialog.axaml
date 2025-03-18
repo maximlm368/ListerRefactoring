@@ -79,13 +79,15 @@
 					</ComboBox.ItemTemplate>
 				</ComboBox>
 
-				<Label
+				<TextBlock
 					Name="printersEmptyError"
+					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="1"
-					Padding="10,5"
+					Padding="0,0"
 					Foreground="Red"
-					Content="{Binding  Path = PrintersEmptyError,  Mode=OneWay}"/>
+					TextWrapping="Wrap"
+					Text="{Binding  Path = PrintersEmptyError,  Mode=OneWay}"/>
 
 				<RadioButton
 					Name="allPages"
@@ -122,16 +124,17 @@
 					LostFocus="PagesLostFocus"
 					GotFocus="PagesGotFocus"
 					TextChanged="PagesSetChanged"
-					Text="{Binding  Path = Pages,  Mode=OneWay}"
 					IsEnabled="{Binding  Path = Some,  Mode=OneWay}"/>
 
-				<Label
+				<TextBlock
 					Name="pagesError"
+					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="4"
-					Padding="10,5"
+					Padding="0,0"
 					Foreground="Red"
-					Content="{Binding  Path = PagesError,  Mode=OneWay}"/>
+					TextWrapping="Wrap"
+					Text="{Binding  Path = PagesError,  Mode=OneWay}"/>
 
 				<Label
 					Name="amount"
@@ -157,13 +160,15 @@
 					TextChanged="CopiesChanged"
 					Text="{Binding  Path = Copies,  Mode=OneWay}"/>
 
-				<Label
-					Name="copiesError"
+				<TextBlock
+					Name="copiesError"			
+					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="6"
-					Padding="10,5"
+					Padding="0,0"
 					Foreground="Red"
-					Content="{Binding  Path = CopiesError,  Mode=OneWay}"/>
+					TextWrapping="Wrap"
+					Text="{Binding  Path = CopiesError,  Mode=OneWay}"/>
 				
 			</Grid>
 

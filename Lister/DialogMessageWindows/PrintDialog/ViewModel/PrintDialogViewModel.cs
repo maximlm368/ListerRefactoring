@@ -1,12 +1,11 @@
-﻿using Avalonia.Animation;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using View.App;
-using View.Extentions;
 using View.CoreAbstractionsImplimentations.DocumentProcessor;
+using View.Extentions;
 
 namespace View.DialogMessageWindows.PrintDialog.ViewModel;
 
@@ -22,7 +21,7 @@ internal partial class PrintDialogViewModel : ReactiveObject
     private readonly string _emptyPrinters;
 
     private readonly int _copiesMaxCount = 10;
-    private readonly int _pagesStringMaxGlyphCount = 30;
+    private readonly int _pagesStrMaxGlyphCount = 30;
 
     private readonly List<char> _pageNumsAcceptables
                                = new List<char>() { ' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
@@ -30,7 +29,6 @@ internal partial class PrintDialogViewModel : ReactiveObject
                                = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
     private readonly string _osName;
-
     private List<char> _numAsChars;
     private List<int> _pageNumbers;
     private List<int> _currentRange;
@@ -38,8 +36,6 @@ internal partial class PrintDialogViewModel : ReactiveObject
     private int _rangeStart;
     private int _passedPagesAmount;
     private PrintAdjustingData _printingAdjusting;
-    private List<int> _chosenPagesToPrint;
-    private bool _pagesHinderPrinting;
     private bool _copiesHinderPrinting;
     private string _pagesListError;
 
@@ -89,7 +85,7 @@ internal partial class PrintDialogViewModel : ReactiveObject
         get { return _some; }
         private set
         {
-            if (!value)
+            if ( ! value )
             {
                 Pages = string.Empty;
             }
@@ -105,39 +101,29 @@ internal partial class PrintDialogViewModel : ReactiveObject
         set
         {
             PagesError = string.Empty;
-            value = RemoveUnacceptableGlyph( value, _pageNumsAcceptables );
+            value = RemoveUnacceptableGlyph ( value, _pageNumsAcceptables );
 
-            if (!string.IsNullOrEmpty( value ) && value.Length > _pagesStringMaxGlyphCount)
+            if ( ! string.IsNullOrEmpty( value )   &&   (value.Length > _pagesStrMaxGlyphCount))
             {
                 value = Pages;
             }
 
-            try
+            string errMessage = null;
+            bool canContinue = false;
+            GetPagesFromString ( value, out errMessage, out canContinue );
+
+            if ( ! canContinue   &&   ! string.IsNullOrWhiteSpace ( errMessage ) ) return;
+
+            for ( int index = 0;   index < _pageNumbers.Count;   index++ )
             {
-                List<int> pageNumbers;
-                pageNumbers = GetPagesFromString( value );
-
-                for (int index = 0; index < pageNumbers.Count; index++)
+                if ( _pageNumbers [index] > _passedPagesAmount )
                 {
-                    int currentNum = pageNumbers[index];
-
-                    if (currentNum > _passedPagesAmount - 1)
-                    {
-                        value = Pages;
-                        break;
-                    }
+                    value = Pages;
+                    break;
                 }
             }
-            catch (TransparentForTypingParsingException ex) { }
-            catch (ParsingException ex)
-            {
-                string changer = value;
-                value = _pages;
-                _pages = changer;
-            }
 
-            _pagesHinderPrinting = false;
-            this.RaiseAndSetIfChanged( ref _pages, value, nameof( Pages ) );
+            _pages = value;
         }
     }
 
@@ -295,21 +281,19 @@ internal partial class PrintDialogViewModel : ReactiveObject
 
     internal void PagesLostFocus()
     {
-        try
+        string errMessage = null;
+        bool canContinue = false;
+        GetPagesFromString ( Pages, out errMessage, out canContinue );
+
+        if ( ! string.IsNullOrWhiteSpace(errMessage) )
         {
-            GetPagesFromString( Pages );
-        }
-        catch (ParsingException ex)
-        {
-            PagesError = ex.Message;
-            _pagesListError = ex.Message;
-            _pagesHinderPrinting = true;
+            PagesError = errMessage;
+            _pagesListError = errMessage;
         }
 
         if (string.IsNullOrEmpty( Pages ))
         {
             PagesError = _emptyPages;
-            _pagesHinderPrinting = true;
         }
     }
 
@@ -357,53 +341,70 @@ internal partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    internal void Print()
+    internal void Print ()
     {
-        try
+        if ( HasError () ) return;
+
+        PrinterPresentation printer = Printers [SelectedIndex];
+        _printingAdjusting.PrinterName = printer.StringPresentation;
+
+        if ( ! Some )
         {
-            if (string.IsNullOrEmpty( Copies ))
-            {
-                throw new ParsingException( _emptyCopies );
-            }
+            _pageNumbers = new List<int> ();
 
-            if (string.IsNullOrEmpty( Pages )   &&   Some)
+            for ( int index = 0;   index < _passedPagesAmount;   index++ )
             {
-                throw new ParsingException( _emptyPages );
-            }
-
-            PrinterPresentation printer = Printers[SelectedIndex];
-            _printingAdjusting.PrinterName = printer.StringPresentation;
-
-            if ( ! Some )
-            {
-                _chosenPagesToPrint = new List<int>();
-
-                for (int index = 0;   index < _passedPagesAmount;   index++)
-                {
-                    _chosenPagesToPrint.Add( index );
-                }
-            }
-            else
-            {
-                _chosenPagesToPrint = GetPagesFromString( Pages );
-            }
-
-            _printingAdjusting.PageNumbers = _chosenPagesToPrint;
-            _printingAdjusting.CopiesAmount = int.Parse( Copies );
-            _printingAdjusting.Cancelled = false;
-            NeedClose = true;
-        }
-        catch (ParsingException ex)
-        {
-            if (ex.Message == _emptyPages)
-            {
-                PagesError = ex.Message;
-            }
-            else if (ex.Message == _emptyCopies)
-            {
-                CopiesError = ex.Message;
+                _pageNumbers.Add ( index );
             }
         }
+        else
+        {
+            string errMessage = null;
+            bool canContinue = false;
+            GetPagesFromString ( Pages, out errMessage, out canContinue );
+
+            if ( ! string.IsNullOrWhiteSpace ( errMessage ) )
+            {
+                PagesError = errMessage;
+
+                return;
+            }
+
+            for ( int index = 0;   index < _pageNumbers.Count;   index++ ) 
+            {
+                _pageNumbers [index] -= 1;
+            }
+        }
+
+        _printingAdjusting.PageNumbers = _pageNumbers;
+        _printingAdjusting.CopiesAmount = int.Parse ( Copies );
+        _printingAdjusting.Cancelled = false;
+        NeedClose = true;
+    }
+
+
+    private bool HasError ()
+    {
+        if ( string.IsNullOrEmpty ( Copies ) )
+        {
+            CopiesError = _emptyCopies;
+
+            return true;
+        }
+
+        if ( string.IsNullOrEmpty ( Pages )   &&   Some )
+        {
+            PagesError = _emptyPages;
+
+            return true;
+        }
+
+        if ( ! string.IsNullOrWhiteSpace ( _pages )   &&   PagesError.Contains ("Некорректный интервал") )
+        {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -443,47 +444,43 @@ internal partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    private List<int> GetPagesFromString(string pageNumbers)
+    private void GetPagesFromString (string pageNumbers, out string errMessage, out bool canContinue)
     {
         List<int> result = new();
+        errMessage = string.Empty;
+        canContinue = false;
 
-        if (_printingAdjusting.Cancelled || pageNumbers == null)
+        if (_printingAdjusting.Cancelled   ||   (pageNumbers == null))
         {
-            return result;
+            return;
         }
 
         _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
         _numAsChars = new();
         _pageNumbers = new();
 
-        for (int index = 0; index < pageNumbers.Length; index++)
+        for (int index = 0;   index < pageNumbers.Length;   index++)
         {
-            bool isGlyphLast = false;
-
-            if (index == pageNumbers.Length - 1)
-            {
-                isGlyphLast = true;
-            }
-
+            bool isGlyphLast = ( index == pageNumbers.Length - 1 );
             char glyph = pageNumbers[index];
-            ParsePageNumbers( glyph, isGlyphLast );
+            string errorMessage = CalcNumbersReturningErrMessage ( glyph, isGlyphLast, out canContinue );
+
+            if ( errorMessage != string.Empty ) 
+            {
+                errMessage = errorMessage;
+                
+                return;
+            }
         }
 
         _pageNumbers.Sort();
-
-        for (int index = 0; index < _pageNumbers.Count; index++)
-        {
-            result.Add( _pageNumbers[index] - 1 );
-        }
-
-        return result;
     }
 
 
-    private void ParsePageNumbers(char glyph, bool isGlyphLast)
+    private string CalcNumbersReturningErrMessage (char glyph, bool isGlyphLast, out bool canContinue)
     {
         bool glyphIsInteger = _copiesCountAcceptables.Contains( glyph );
-
+        canContinue = false;
         if (glyphIsInteger)
         {
             int num = int.Parse( glyph.ToString() );
@@ -492,7 +489,7 @@ internal partial class PrintDialogViewModel : ReactiveObject
             {
                 if ((_state == ParserStates.BeforeOrBetweenOrAfterGlyph)   &&   (glyph == '0'))
                 {
-                    throw new ParsingException( "Число не может начинаться с ноля" );
+                    return "Число не может начинаться с ноля";
                 }
 
                 _state = ParserStates.InsideIntegerOrFirstInRange;
@@ -502,7 +499,7 @@ internal partial class PrintDialogViewModel : ReactiveObject
                 {
                     string presentation = "";
 
-                    foreach (char ch in _numAsChars)
+                    foreach (char ch   in   _numAsChars)
                     {
                         presentation += ch;
                     }
@@ -516,21 +513,20 @@ internal partial class PrintDialogViewModel : ReactiveObject
             {
                 if (glyph == '0')
                 {
-                    throw new ParsingException( "Число не может начинаться с ноля" );
+                    return "Число не может начинаться с ноля";
                 }
 
                 string presentation = "";
 
-                foreach (char ch in _numAsChars)
+                foreach (char ch   in   _numAsChars)
                 {
                     presentation += ch;
                 }
 
-                _rangeStart = int.Parse( presentation );
-
+                _rangeStart = int.Parse ( presentation );
                 _numAsChars = new();
                 _state = ParserStates.InRangeEnd;
-                _numAsChars.Add( glyph );
+                _numAsChars.Add ( glyph );
 
                 presentation = "";
 
@@ -539,27 +535,34 @@ internal partial class PrintDialogViewModel : ReactiveObject
                     presentation += ch;
                 }
 
-                int rangeEnd = int.Parse( presentation );
+                int rangeEnd = int.Parse ( presentation );
 
                 if (_rangeStart > rangeEnd)
                 {
                     if ((rangeEnd * 10) > _passedPagesAmount)
                     {
-                        throw new ParsingException( "Некорректный интервал" );
+                        return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
 
                 if (isGlyphLast)
                 {
-                    for (int index = _rangeStart; index <= rangeEnd; index++)
+                    for (int index = _rangeStart;   index <= rangeEnd;   index++)
                     {
-                        _pageNumbers.Add( index );
+                        _pageNumbers.Add ( index );
+                    }
+
+                    if ( _rangeStart > rangeEnd )
+                    {
+                        canContinue = true;
+
+                        return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
             }
             else if (_state == ParserStates.InRangeEnd)
             {
-                _numAsChars.Add( glyph );
+                _numAsChars.Add ( glyph );
 
                 string presentation = "";
 
@@ -568,13 +571,13 @@ internal partial class PrintDialogViewModel : ReactiveObject
                     presentation += ch;
                 }
 
-                int rangeEnd = int.Parse( presentation );
+                int rangeEnd = int.Parse ( presentation );
 
                 if (_rangeStart > rangeEnd)
                 {
                     if ((rangeEnd * 10) > _passedPagesAmount)
                     {
-                        throw new ParsingException( "Некорректный интервал" );
+                        return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
 
@@ -582,80 +585,106 @@ internal partial class PrintDialogViewModel : ReactiveObject
                 {
                     for (int index = _rangeStart;   index <= rangeEnd;   index++)
                     {
-                        _pageNumbers.Add( index );
+                        _pageNumbers.Add ( index );
+                    }
+
+                    if ( _rangeStart > rangeEnd )
+                    {
+                        canContinue = true;
+
+                        return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
             }
             else if (_state == ParserStates.AfterInteger)
             {
-                throw new ParsingException( "Цифра не может идти после пробела" );
+                return "Цифра не может идти после пробела";
+            }
+            else if ( _state == ParserStates.AfterSpaceWithoutPunctuation )
+            {
+                return "Отсутствует пунктуация";
             }
         }
-        else if ( ! glyphIsInteger )
+        else if( ! glyphIsInteger )
         {
             switch (glyph)
             {
                 case ' ':
 
-                    if (_state == ParserStates.InsideIntegerOrFirstInRange)
+                    if ( _state == ParserStates.InsideIntegerOrFirstInRange )
                     {
                         _state = ParserStates.AfterInteger;
                     }
-                    else if (_state == ParserStates.InRangeEnd)
+                    else if ( _state == ParserStates.InRangeEnd )
                     {
                         string presentation = "";
 
-                        foreach (char ch   in   _numAsChars)
+                        foreach ( char ch in _numAsChars )
                         {
                             presentation += ch;
                         }
 
-                        int rangeEnd = int.Parse( presentation );
+                        int rangeEnd = int.Parse ( presentation );
 
-                        if (_rangeStart > rangeEnd)
+                        if ( _rangeStart > rangeEnd )
                         {
-                            throw new ParsingException( "Некорректный интервал" );
+                            return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                         }
 
-                        for (int index = _rangeStart;   index <= rangeEnd;   index++)
+                        for ( int index = _rangeStart; index <= rangeEnd; index++ )
                         {
-                            _pageNumbers.Add( index );
+                            _pageNumbers.Add ( index );
                         }
 
-                        _numAsChars = new();
-                        _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
+                        _numAsChars = new ();
+                        _state = ParserStates.AfterSpaceWithoutPunctuation;
+                    }
+                    else if ( _state == ParserStates.InRange ) 
+                    {
+                        if ( isGlyphLast )
+                        {
+                            canContinue = true;
+
+                            return "Тире не может быть последним в строке";
+                        }
                     }
 
                     break;
                 case '-':
 
-                    if ((_state == ParserStates.InsideIntegerOrFirstInRange)   ||   (_state == ParserStates.AfterInteger))
+                    if (( _state == ParserStates.InsideIntegerOrFirstInRange )   ||   ( _state == ParserStates.AfterInteger ))
                     {
                         _state = ParserStates.InRange;
 
-                        if (isGlyphLast)
+                        if ( isGlyphLast )
                         {
-                            throw new TransparentForTypingParsingException( "Тире не может быть последним в строке" );
+                            canContinue = true;
+
+                            return "Тире не может быть последним в строке";
                         }
                     }
-                    else if (_state == ParserStates.BeforeOrBetweenOrAfterGlyph)
+                    else if ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )
                     {
-                        if (_pageNumbers.Count < 1)
+                        if ( _pageNumbers.Count < 1 )
                         {
-                            throw new ParsingException( "Тире не может быть первым" );
+                            return "Тире не может быть первым";
                         }
                         else
                         {
-                            throw new ParsingException( "Тире может быть только внутри интервала" );
+                            return "Тире может быть только внутри интервала";
                         }
                     }
-                    else if (_state == ParserStates.InRange)
+                    else if ( _state == ParserStates.InRange )
                     {
-                        throw new ParsingException( "Тире не может идти подряд" );
+                        return "Тире не может идти подряд";
                     }
-                    else if (_state == ParserStates.InRangeEnd)
+                    else if ( _state == ParserStates.InRangeEnd )
                     {
-                        throw new ParsingException( "Тире не может идти после интервала" );
+                        return "Тире не может идти после интервала";
+                    }
+                    else if ( _state == ParserStates.AfterSpaceWithoutPunctuation) 
+                    {
+                        return "Тире не может идти после интервала";
                     }
 
                     break;
@@ -677,7 +706,9 @@ internal partial class PrintDialogViewModel : ReactiveObject
 
                         if (isGlyphLast)
                         {
-                            throw new TransparentForTypingParsingException( "Запятая не может быть последней в строке" );
+                            canContinue = true;
+
+                            return "Запятая не может быть последней в строке";
                         }
                     }
                     else if (_state == ParserStates.InRangeEnd)
@@ -693,7 +724,7 @@ internal partial class PrintDialogViewModel : ReactiveObject
 
                         if (_rangeStart > rangeEnd)
                         {
-                            throw new ParsingException( "Некорректный интервал" );
+                            return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                         }
 
                         for (int index = _rangeStart;   index <= rangeEnd;   index++)
@@ -706,28 +737,43 @@ internal partial class PrintDialogViewModel : ReactiveObject
 
                         if (isGlyphLast)
                         {
-                            throw new TransparentForTypingParsingException( "Запятая не может быть последней в строке" );
+                            canContinue = true;
+
+                            return "Запятая не может быть последней в строке";
                         }
                     }
                     else if (_state == ParserStates.BeforeOrBetweenOrAfterGlyph)
                     {
                         if (_pageNumbers.Count < 1)
                         {
-                            throw new ParsingException( "Запятая не может быть первой" );
+                            return "Запятая не может быть первой";
                         }
                         else
                         {
-                            throw new ParsingException( "Запятые не могут идти подряд" );
+                            return "Запятые не могут идти подряд";
                         }
                     }
                     else if (_state == ParserStates.InRange)
                     {
-                        throw new ParsingException( "Запятая не может идти после тире" );
+                        return "Запятая не может идти после тире";
+                    }
+                    else if ( _state == ParserStates.AfterSpaceWithoutPunctuation )
+                    {
+                        _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
+
+                        if ( isGlyphLast )
+                        {
+                            canContinue = true;
+
+                            return "Запятая не может быть последней в строке";
+                        }
                     }
 
                     break;
             }
         }
+
+        return string.Empty;
     }
 
 
@@ -853,41 +899,8 @@ internal partial class PrintDialogViewModel : ReactiveObject
         InsideIntegerOrFirstInRange = 1,
         InRange = 2,
         AfterInteger = 3,
-        InRangeEnd = 4
-    }
-
-
-
-    private class ParsingException : Exception
-    {
-        public ParsingException ( string message ) : base ( message ) { }
-    }
-
-
-
-    private class TransparentForTypingParsingException : ParsingException
-    {
-        public TransparentForTypingParsingException ( string message ) : base ( message ) { }
-    }
-}
-
-
-
-internal class PrinterPresentation : ReactiveObject
-{
-    private string sP;
-    internal string StringPresentation
-    {
-        get { return sP; }
-        private set
-        {
-            this.RaiseAndSetIfChanged ( ref sP, value, nameof ( StringPresentation ) );
-        }
-    }
-
-
-    internal PrinterPresentation ( string printerName )
-    {
-        StringPresentation = printerName;
+        InRangeEnd = 4,
+        SpaceAfterComma = 5,
+        AfterSpaceWithoutPunctuation = 6
     }
 }

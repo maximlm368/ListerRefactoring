@@ -160,8 +160,18 @@ public class DocumentProcessor
     }
 
 
-    public void Print ( string printerName, int copiesAmount )
+    public void Print ( string printerName, List<int> printablePageNumbers, int copiesAmount )
     {
-        _pdfPrinter.Print ( _allPages, _pdfCreator, printerName, copiesAmount );
+        List<Page> printables = new ();
+
+        for ( int index = 0;   index < _allPages.Count;   index++ ) 
+        {
+            if ( printablePageNumbers.Contains(index) ) 
+            {
+                printables.Add ( _allPages[index] );
+            }
+        }
+
+        _pdfPrinter.Print ( printables, _pdfCreator, printerName, copiesAmount );
     }
 }

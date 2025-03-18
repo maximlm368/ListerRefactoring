@@ -624,10 +624,6 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
     }
 
 
-
-
-
-
     public Dictionary<Layout, KeyValuePair<string, List<string>>> GetBadgeLayouts()
     {
         Dictionary<Layout, KeyValuePair<string, List<string>>> layouts = new();
@@ -748,11 +744,6 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
     }
 
 
-
-
-
-
-
     private List<string> GetUninstalledFontsFrom(string jsonPath)
     {
         List<string> fontNames = new();
@@ -810,9 +801,9 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
 
         foreach (var name in checkebles)
         {
-            bool isExisting = !string.IsNullOrWhiteSpace( name );
+            bool isExisting = ! string.IsNullOrWhiteSpace( name );
 
-            if (isExisting && !installed.Contains( name ))
+            if (isExisting   &&   ! installed.Contains( name ))
             {
                 uninstalled.Add( name );
             }
