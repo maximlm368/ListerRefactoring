@@ -1,0 +1,242 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 
+			 xmlns:BuildButtonUc="clr-namespace:View.MainWindow.MainView.Parts.BuildButton"
+			 xmlns:PersonSourceUc="clr-namespace:View.MainWindow.MainView.Parts.PersonSource"
+			 xmlns:PersonChoosingUc="clr-namespace:View.MainWindow.MainView.Parts.PersonChoosing"
+			 xmlns:SceneUc="clr-namespace:View.MainWindow.MainView.Parts.Scene"
+			 xmlns:NavigationZoomUc="clr-namespace:View.MainWindow.MainView.Parts.NavigationZoom"
+			 xmlns:WaitingUc="clr-namespace:View.WaitingView"
+			 
+			 xmlns:vm="clr-namespace:View.MainWindow.MainView.ViewModel;assembly=Lister.Desktop"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
+             x:Class="View.MainWindow.MainView.MainView"
+			 x:DataType="vm:MainViewModel"
+			 Height="500"
+			 Width="830" >
+		
+	<StackPanel ZIndex="1" >
+
+		<PersonSourceUc:PersonSourceUserControl
+			Name="personSource"/>
+
+		<PersonChoosingUc:PersonChoosingUserControl
+			Name="personChoosing"
+			ZIndex="3"
+			Margin="0,-160"
+			Height="357"/>
+
+		<BuildButtonUc:BadgesBuildingUserControl
+			Name="badgeBuilding"
+			Margin="0,-4"/>
+
+		<Border
+			Name="complexShadow"
+			Margin="200,4"
+			BorderThickness="0"
+			ZIndex="2">
+
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+				<Canvas Width="16" Height="8">
+					<Border
+						Canvas.Left="2" Canvas.Top="-5"
+						Width="6"
+						Height="6"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,6"
+						Opacity="0.35"/>
+
+					<Border
+						Canvas.Left="1" Canvas.Top="-5"
+						Width="7"
+						Height="7"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,7"
+						Opacity="0.3"/>
+
+					<Border
+						Canvas.Left="0" Canvas.Top="-5"
+						Width="8"
+						Height="8"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,8"
+						Opacity="0.25"/>
+
+					<Border
+						Canvas.Left="-1" Canvas.Top="-5"
+						Width="9"
+						Height="9"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,9"
+						Opacity="0.2"/>
+
+					<Border
+						Canvas.Left="-2" Canvas.Top="-5"
+						Width="10"
+						Height="10"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,10"
+						Opacity="0.15"/>
+
+					<Border
+						Canvas.Left="-3" Canvas.Top="-5"
+						Width="11"
+						Height="11"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,11"
+						Opacity="0.1"/>
+
+					<Border
+						Canvas.Left="-4" Canvas.Top="-5"
+						Width="12"
+						Height="12"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,12"
+						Opacity="0.05"/>
+
+					<Border
+						Canvas.Left="-5" Canvas.Top="-5"
+						Width="13"
+						Height="13"
+						BorderBrush="Black"
+						BorderThickness="1,0,0,1"
+						CornerRadius="0,0,0,13"
+						Opacity="0.02"/>
+				</Canvas>
+
+				<StackPanel Margin="-8,0">
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.35" />
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.3"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.25"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.2"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.15"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.1"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.05"/>
+					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.02"/>
+				</StackPanel>
+
+				<Canvas Width="16" Height="8">
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="6"
+						Height="6"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,6,0"
+						Opacity="0.35"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="7"
+						Height="7"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,7,0"
+						Opacity="0.3"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="8"
+						Height="8"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,8,0"
+						Opacity="0.25"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="9"
+						Height="9"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,9,0"
+						Opacity="0.2"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="10"
+						Height="10"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,10,0"
+						Opacity="0.15"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="11"
+						Height="11"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,11,0"
+						Opacity="0.1"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="12"
+						Height="12"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,12,0"
+						Opacity="0.05"/>
+
+					<Border
+						Canvas.Left="8" Canvas.Top="-5"
+						Width="13"
+						Height="13"
+						BorderBrush="Black"
+						BorderThickness="0,0,1,1"
+						CornerRadius="0,0,13,0"
+						Opacity="0.02"/>
+				</Canvas>
+
+			</StackPanel>
+
+		</Border>
+
+		<SceneUc:SceneUserControl
+			Name="scene"
+			Margin="0,-12"/>
+
+		<Border
+			Name="shadow"
+			Margin="0,12"
+			BorderThickness="0"
+			ZIndex="2">
+
+			<StackPanel Name="simpleShadow" Margin="0,-8">
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.02"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.05"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.1"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.15"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.2"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.25"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.3"/>
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.35" />
+			</StackPanel>
+			
+		</Border>
+
+		<NavigationZoomUc:NavigationZoomUserControl
+			Name="navigatorZoomer"
+			Background="#EEEEEE"
+			Margin="0,-12"/>
+
+		<WaitingUc:WaitingView
+			Name="waiting"
+			ZIndex="5"/>
+
+	</StackPanel>
+		
+</UserControl>
+
+

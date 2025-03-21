@@ -21,66 +21,159 @@
 	<PackRelease>true</PackRelease>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\badge.ico" />
+    <None Remove="Assets\Icons\badge.ico" />
+	<None Remove="Assets\JsonSchema\Schema.json" />
     <None Remove="Assets\Font Awesome 6 Free-Solid-900.otf" />
     <None Remove="Assets\fontawesome-webfont.ttf" />
+	
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\badge.ico">
+    <AvaloniaResource Include="Assets\JsonSchema\Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
-    <AvaloniaResource Include="Assets\Font Awesome 6 Free-Solid-900.otf">
+    <AvaloniaResource Include="Assets\Icons\badge.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
-    <AvaloniaResource Include="Assets\fontawesome-webfont.ttf">
+    <AvaloniaResource Include="Assets\Fonts\Font Awesome 6 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\Fonts\fontawesome-webfont.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AnimatedImage.Avalonia" Version="2.0.0" />
+    <PackageReference Include="Avalonia" Version="11.2.5" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <PackageReference Include="Avalonia.Skia" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="8.3.0.1" />
     <PackageReference Include="JsonSchema.Net" Version="7.2.3" />
+    <PackageReference Include="MessageBox.Avalonia-mainthread" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.3" />
     <PackageReference Include="NJsonSchema" Version="11.1.0" />
+    <PackageReference Include="QuestPDF" Version="2025.1.6" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lister\View.csproj" />
+    <ProjectReference Include="..\Lister.Core\Lister.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\Doctor-release.json">
+    <None Update="Resources\Templates\Aurse2\Images\doctors2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Doctor2.json">
+    <None Update="Resources\Templates\Aurse2\Images\nurses2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Doctor-release\Doctor-release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Doctor-release\Images\doctors2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Doctor2\Doctor2.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Doctor3.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\doctors2.jpg">
+    <None Update="Resources\Templates\Doctor2\Images\doctors2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Icons\badge.ico">
+    <None Update="Resources\Templates\Doctor2\Images\nurses2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Icons\Loading.gif">
+    <None Update="Resources\Templates\Doctor3\Doctor3.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Icons\warning-alert.ico">
+    <None Update="Assets\Icons\Loading.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\JsonSchemes\Schema.json">
+    <None Update="Assets\Icons\warning-alert.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\JsonSchema\Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\ListerConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Nurse-release.json">
+    <None Update="Resources\Templates\Doctor3\Images\doctors2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\nurses2.jpg">
+    <None Update="Resources\Templates\Doctor3\Images\GreenCheckMarker.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Templates\Doctor3\Images\nurses2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Doctor3\Images\RedCross.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Incorrect\Images\doctors2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Incorrect\Images\nurses2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Nurse-release\Images\nurses2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Templates\Nurse-release\Nurse-release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="App\App.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogMessageWindows\Dialog\DialogWindow.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogMessageWindows\LargeMessage\LargeMessageDialog.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogMessageWindows\Message\MessageDialog.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogMessageWindows\PrintDialog\PrintDialog.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\EditionView\EditionView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\MainView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\Parts\NavigationZoom\NavigationZoomUserControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\Parts\PersonChoosing\PersonChoosingUC.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\Parts\PersonSource\PersonSourceUC.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainView\Parts\Scene\SceneUserControl.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\MainWindow.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SplashWindow\SplashWindow.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WaitingView\WaitingView.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

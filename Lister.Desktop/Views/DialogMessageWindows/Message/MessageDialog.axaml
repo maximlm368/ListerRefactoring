@@ -1,0 +1,100 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="130"
+        x:Class="View.DialogMessageWindows.Message.MessageDialog"
+		xmlns:views="clr-namespace:View.DialogMessageWindows.Message; assembly=View"
+		xmlns:vm="clr-namespace:View.DialogMessageWindows.Message.ViewModel"
+		MaxWidth="568"
+		MaxHeight="138"
+		WindowStartupLocation="CenterOwner"
+		x:DataType="vm:MessageViewModel"
+		
+		SystemDecorations="None"
+		
+		ExtendClientAreaToDecorationsHint = "true"
+		ExtendClientAreaChromeHints = "NoChrome"
+		ExtendClientAreaTitleBarHeightHint = "0">
+
+	<UserControl
+		Width="568"
+		Height="138"
+		BorderBrush = "gray"
+        BorderThickness = "1">
+
+		<StackPanel>
+
+			<Label
+				Classes="modalLabel"
+				Content ="Ошибка"/>
+
+			<Grid Height="70"
+				  Width="544"
+				  HorizontalAlignment="Left">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition  Width="36"></ColumnDefinition>
+					<ColumnDefinition  Width="408"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+
+				<Image
+					Grid.Column="0"
+					Width="35"
+					Margin ="16,0,0,0"
+					Source = "/Assets/Icons/warning-alert.ico"/>
+
+				<Border
+					Grid.Column="1"
+					Width="493"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Bottom">
+
+					<TextBlock
+						Name="messageText"
+						Width="470"
+						Margin="16,0,0,16"
+						FontSize="12"
+						Text ="{Binding  Path = Message,  Mode=OneWay}"
+						TextWrapping="WrapWithOverflow"
+						MaxLines="3"/>
+					
+				</Border>
+				
+			</Grid>
+
+			<Canvas
+				Name ="Line"
+				Width="566"
+				Height="1"
+				Margin ="0,-5,0,0"
+				Background ="#ececec"/>
+
+			<Canvas
+				Width="566"
+				Height="47"
+				Margin ="0,-2,0,0"
+				Background ="#f6f6f6">
+
+				<Button
+					Name="ok"
+					Classes="Primary"
+					Padding="31,4"
+					Background ="#ececec"
+					Canvas.Top="8"
+					Canvas.Left="470"
+					Content="Ok"
+					Command="{Binding  Path=Close}"/>
+
+			</Canvas>
+
+		</StackPanel>
+	</UserControl>
+
+</Window>
+
+
+<!--
+
+Source = "{Binding  Path = WarnImage,  Mode=OneWay }"
+-->
