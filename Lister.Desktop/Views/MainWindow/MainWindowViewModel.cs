@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace View.MainWindow;
+namespace Views.MainWindow;
 
 public class MainWindowViewModel : ReactiveObject
 {

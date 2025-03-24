@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
-using View.App;
-using View.WaitingView.ViewModel;
+using Lister.Desktop.App;
+using Lister.Desktop.Views.WaitingView.ViewModel;
 
-namespace View.WaitingView;
+namespace Lister.Desktop.Views.WaitingView;
 
 public partial class WaitingView : UserControl
 {

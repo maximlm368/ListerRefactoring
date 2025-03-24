@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace View.ViewBase;
+namespace Lister.Desktop.Views.ViewBase;
 
 public abstract class ShowingDialog : UserControl
 {

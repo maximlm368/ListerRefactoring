@@ -1,8 +1,8 @@
 ﻿using ReactiveUI;
-using View.EditionView.ViewModel;
-using View.WaitingView.ViewModel;
+using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
+using Lister.Desktop.Views.WaitingView.ViewModel;
 
-namespace View.MainWindow.MainView.Parts.BuildButton.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 
 public class BadgesBuildingViewModel : ReactiveObject
 {

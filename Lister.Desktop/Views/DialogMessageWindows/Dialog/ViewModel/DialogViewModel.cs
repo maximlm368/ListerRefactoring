@@ -1,9 +1,9 @@
 ﻿using Avalonia.Media.Imaging;
 using ReactiveUI;
-using View.App;
+using Lister.Desktop.App;
 using Lister.Desktop.Extentions;
 
-namespace View.DialogMessageWindows.Dialog.ViewModel;
+namespace Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel;
 
 public class DialogViewModel : ReactiveObject
 {

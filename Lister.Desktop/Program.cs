@@ -1,6 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using View.App;
+using Lister.Desktop.App;
 
 
 namespace Lister.Desktop;

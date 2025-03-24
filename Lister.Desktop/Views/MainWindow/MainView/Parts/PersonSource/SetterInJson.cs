@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
 
-namespace View.MainWindow.MainView.Parts.PersonSource.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 
 public static class SetterInJson
 {

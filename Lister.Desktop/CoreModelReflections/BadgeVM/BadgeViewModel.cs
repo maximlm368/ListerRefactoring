@@ -1,11 +1,11 @@
 ﻿using Avalonia.Media;
 using Avalonia.Threading;
 using Lister.Core.Models.Badge;
-using Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
 using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
-using View.MainWindow.MainView.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 
 namespace Lister.Desktop.CoreModelReflections.BadgeVM;
 

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+namespace Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
 
 public static class GetterFromJson
 {

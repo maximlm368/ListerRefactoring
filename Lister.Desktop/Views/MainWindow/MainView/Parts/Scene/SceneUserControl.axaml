@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
-			 xmlns:vm="clr-namespace:View.MainWindow.MainView.Parts.Scene.ViewModel;assembly=Lister.Desktop"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;assembly=Lister.Desktop"
 			 xmlns:imageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
 			 x:DataType="vm:SceneViewModel"
-             x:Class="View.MainWindow.MainView.Parts.Scene.SceneUserControl">
+             x:Class="Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.SceneUserControl">
 	
 
 	<StackPanel 

@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using View.App;
-using View.DialogMessageWindows.Dialog.ViewModel;
-using View.MainWindow;
-using View.ViewBase;
+using Lister.Desktop.App;
+using Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel;
+using Lister.Desktop.Views.MainWindow;
+using Lister.Desktop.Views.ViewBase;
 
-namespace View.DialogMessageWindows.Dialog;
+namespace Lister.Desktop.Views.DialogMessageWindows.Dialog;
 
 public partial class DialogWindow : Window
 {

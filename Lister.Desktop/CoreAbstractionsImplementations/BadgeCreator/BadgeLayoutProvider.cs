@@ -8,7 +8,7 @@ using System.Text;
 using Lister.Desktop.Extentions;
 using Avalonia.Platform;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+namespace Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
 
 public class BadgeLayoutProvider : IBadgeLayoutProvider
 {
@@ -399,7 +399,7 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
         List<TextLine> lines = GetLines( jsonPath );
         SetUnitingLines( lines, jsonPath );
 
-        List<ComponentImage> images = GetImages( jsonPath );
+        List<ComponentImage> images = GetImages( jsonPath, templateName );
         List<ComponentShape> shapes = GetShapes( jsonPath );
 
         Layout result = new Layout( badgeWidth, badgeHeight, templateName, paddings, lines, images, shapes );
@@ -465,7 +465,7 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
     }
 
 
-    private List<ComponentImage> GetImages(string jsonPath)
+    private List<ComponentImage> GetImages(string jsonPath, string templateName)
     {
         List<ComponentImage> images = new();
 
@@ -474,7 +474,7 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
 
         foreach (IConfigurationSection imageSection in imageSections)
         {
-            ComponentImage image = BuildInsideImage( imageSection );
+            ComponentImage image = BuildInsideImage( imageSection, templateName );
             images.Add( image );
         }
 
@@ -563,11 +563,11 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
     }
 
 
-    private ComponentImage BuildInsideImage(IConfigurationSection section)
+    private ComponentImage BuildInsideImage(IConfigurationSection section, string templateName)
     {
         double[] commonData = GetSharedData( section );
         string fileName = section.GetSection( "Path" )?.Value ?? "";
-        string imagesFolder = _resourceFolder + "Images";
+        string imagesFolder = _templateNameToDirectory [templateName] + "\\Images\\";
         string fileUri = imagesFolder + fileName;
         string bindingObjectName = section.GetSection( "BindingObject" )?.Value ?? "";
         string isAbove = section.GetSection( "IsAboveOfBinding" )?.Value ?? "";
@@ -704,7 +704,7 @@ public class BadgeLayoutProvider : IBadgeLayoutProvider
                                 }
                                 else
                                 {
-                                    if ( err.Path != null && err.Path.Length > 2 )
+                                    if ( ( err.Path != null ) && ( err.Path.Length > 2 ) )
                                     {
                                         messageLine += err.Path.Substring ( 2, err.Path.Length - 2 );
                                     }

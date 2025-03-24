@@ -22,12 +22,20 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\Icons\badge.ico" />
+    <None Remove="Assets\Icons\Loading.gif" />
+    <None Remove="Assets\Icons\warning-alert.ico" />
 	<None Remove="Assets\JsonSchema\Schema.json" />
     <None Remove="Assets\Font Awesome 6 Free-Solid-900.otf" />
     <None Remove="Assets\fontawesome-webfont.ttf" />
 	
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Assets\Icons\Loading.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\Icons\warning-alert.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
     <AvaloniaResource Include="Assets\JsonSchema\Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
@@ -89,12 +97,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Doctor3.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Icons\Loading.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Icons\warning-alert.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Assets\JsonSchema\Schema.json">

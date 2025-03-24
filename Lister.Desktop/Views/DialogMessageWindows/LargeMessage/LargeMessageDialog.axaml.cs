@@ -1,12 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using MessageBox.Avalonia.Views;
-using View.DialogMessageWindows.LargeMessage.ViewModel;
-using View.ViewBase;
-using View.MainWindow;
-using View.App;
+using Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
+using Lister.Desktop.Views.ViewBase;
+using Lister.Desktop.Views.MainWindow;
+using Lister.Desktop.App;
 
-namespace View.DialogMessageWindows.LargeMessage;
+namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
 
 public partial class LargeMessageDialog : BaseWindow
 {

@@ -2,7 +2,7 @@
 using Lister.Core.Models;
 using System.Text;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DataAccess;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
 
 public sealed class PeopleCsvSource : IPeopleSource
 {
@@ -26,8 +26,16 @@ public sealed class PeopleCsvSource : IPeopleSource
     public List<Person>? Get(string? filePath, int gettingLimit)
     {
         List<Person> result = [];
+        Encoding encoding;
 
-        Encoding encoding = Encoding.GetEncoding( 1251 );
+        try
+        {
+            encoding = Encoding.GetEncoding ( 1251 );
+        }
+        catch ( NotSupportedException ex ) 
+        {
+            return null;
+        }
 
         if (filePath == null)
         {

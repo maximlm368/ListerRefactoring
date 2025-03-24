@@ -6,11 +6,11 @@ using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using Lister.Desktop.Extentions;
-using Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
 using Lister.Desktop.CoreModelReflections;
 using Lister.Desktop.CoreModelReflections.BadgeVM;
 
-namespace View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
 public partial class PersonChoosingViewModel : ReactiveObject
 {

@@ -1,4 +1,4 @@
-﻿namespace View.DialogMessageWindows.PrintDialog;
+﻿namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 
 public class PrintAdjustingData
 {

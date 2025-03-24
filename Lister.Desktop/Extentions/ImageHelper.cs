@@ -1,5 +1,4 @@
 ﻿using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 
 namespace Lister.Desktop.Extentions;
 

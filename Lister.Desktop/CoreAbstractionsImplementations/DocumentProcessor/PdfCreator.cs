@@ -7,7 +7,7 @@ using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DocumentProcessor;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
 
 public class PdfCreator : IPdfCreator
 {

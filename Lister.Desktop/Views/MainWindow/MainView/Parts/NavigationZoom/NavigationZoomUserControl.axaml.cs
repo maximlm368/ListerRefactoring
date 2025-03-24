@@ -2,13 +2,13 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
-using View.MainWindow.MainView.Parts.Scene.ViewModel;
-using View.App;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
+using Lister.Desktop.App;
 using Microsoft.Extensions.DependencyInjection;
 
 
-namespace View.MainWindow.MainView.Parts.NavigationZoom;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom;
 
 public partial class NavigationZoomUserControl : UserControl
 {
@@ -42,7 +42,7 @@ public partial class NavigationZoomUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
     }
 
 

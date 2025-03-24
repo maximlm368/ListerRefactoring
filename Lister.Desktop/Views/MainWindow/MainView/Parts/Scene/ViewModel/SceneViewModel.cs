@@ -4,9 +4,9 @@ using Lister.Core.Models;
 using Lister.Desktop.CoreModelReflections;
 using Lister.Desktop.CoreModelReflections.BadgeVM;
 using ReactiveUI;
-using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 
-namespace View.MainWindow.MainView.Parts.Scene.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
 
 public partial class SceneViewModel : ReactiveObject
 {

@@ -1,10 +1,10 @@
 ﻿using Avalonia.Platform.Storage;
 using Lister.Core.BadgesCreator;
-using Lister.Desktop.CoreAbstractionsImplimentations.DataAccess;
+using Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
 using ReactiveUI;
-using View.App;
+using Lister.Desktop.App;
 
-namespace View.MainWindow.MainView.Parts.PersonSource.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 
 public class PersonSourceViewModel : ReactiveObject
 {
@@ -161,7 +161,9 @@ public class PersonSourceViewModel : ReactiveObject
 
     private void SetPath(string? path)
     {
-        bool pathExists = path != null && path != string.Empty;
+        bool pathExists = path != null
+                          && 
+                          path != string.Empty;
 
         if (pathExists)
         {

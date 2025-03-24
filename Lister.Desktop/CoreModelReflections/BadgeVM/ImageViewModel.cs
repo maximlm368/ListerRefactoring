@@ -1,12 +1,11 @@
 ﻿using Avalonia.Media.Imaging;
 using Lister.Core.Models.Badge;
-using ReactiveUI;
 using Lister.Desktop.Extentions;
-using Avalonia.Platform;
+using ReactiveUI;
 
 namespace Lister.Desktop.CoreModelReflections.BadgeVM;
 
-internal class ImageViewModel : BoundToTextLine
+internal class ImageViewModel : BoundToTextLineBase
 {
     private static Dictionary<string, Bitmap> _nameToImage = new();
 
@@ -31,8 +30,7 @@ internal class ImageViewModel : BoundToTextLine
 
         if (!_nameToImage.ContainsKey( model.Path ) || _nameToImage[model.Path] == null)
         {
-            //_nameToImage[model.Path] = ImageHelper.LoadFromResource( model.Path );
-            _nameToImage [model.Path] = new Bitmap ( AssetLoader.Open ( new Uri ( model.Path ) ) );
+            _nameToImage[model.Path] = ImageHelper.LoadFromResource( model.Path );
         }
 
         Id = id;
@@ -60,53 +58,9 @@ internal class ImageViewModel : BoundToTextLine
     }
 
 
-    internal void ZoomOn(double coefficient)
-    {
-        base.ZoomOn( coefficient );
-    }
-
-
-    internal void ZoomOut(double coefficient)
-    {
-        base.ZoomOut( coefficient );
-    }
-
-
     internal ImageViewModel Clone()
     {
         return new ImageViewModel( this );
     }
 }
 
-
-
-public abstract class BoundToTextLine : BadgeComponent
-{
-    public int Id { get; protected set; }
-
-    private string? _binding;
-    public string? Binding
-    {
-        get { return _binding; }
-        protected set
-        {
-            this.RaiseAndSetIfChanged( ref _binding, value, nameof( Binding ) );
-        }
-    }
-
-    private bool _isAboveOfBinding;
-    public bool IsAboveOfBinding
-    {
-        get { return _isAboveOfBinding; }
-        protected set
-        {
-            this.RaiseAndSetIfChanged( ref _isAboveOfBinding, value, nameof( IsAboveOfBinding ) );
-        }
-    }
-
-
-    protected void HandleModelChanged(LayoutComponentBase model)
-    {
-        SetUp( model.Width, model.Height, model.TopOffset, model.LeftOffset );
-    }
-}

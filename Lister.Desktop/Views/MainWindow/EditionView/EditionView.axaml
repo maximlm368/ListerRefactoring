@@ -3,9 +3,9 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
-			 xmlns:vm="clr-namespace:View.EditionView.ViewModel"
-			 xmlns:uc="clr-namespace:View.EditionView"
-			 x:Class="View.EditionView.BadgeEditorView"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView.ViewModel"
+			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView"
+			 x:Class="Lister.Desktop.Views.MainWindow.EditionView.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel"
 			 
 			 KeyDown="ToSide"

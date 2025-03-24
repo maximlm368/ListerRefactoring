@@ -3,12 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
-using View.App;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
+using Lister.Desktop.App;
 using Microsoft.Extensions.DependencyInjection;
 using Lister.Desktop.CoreModelReflections;
 
-namespace View.MainWindow.MainView.Parts.PersonChoosing;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing;
 
 public partial class PersonChoosingUserControl : UserControl
 {
@@ -88,14 +88,14 @@ public partial class PersonChoosingUserControl : UserControl
     internal void AcceptEntirePersonList ( object sender, PointerPressedEventArgs args )
     {
         _personListIsDropped = false;
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
         _viewModel.SetEntireList ();
     }
 
 
     internal void ScrollerPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
     }
 
 
@@ -198,7 +198,7 @@ public partial class PersonChoosingUserControl : UserControl
     internal void ButtonPressed ( object sender, PointerPressedEventArgs args )
     {
         _dropdownButtonIsTapped = true;
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
     }
 
 
@@ -315,7 +315,7 @@ public partial class PersonChoosingUserControl : UserControl
 
     internal void HandleChoosingByTapping ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
 
         Label chosenLabel = ( Label ) sender;
         string chosenName = ( string ) chosenLabel.Content;

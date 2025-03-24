@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace View.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
 public partial class PersonChoosingViewModel : ReactiveObject
 {

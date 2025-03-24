@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace Lister.Desktop.CoreModelReflections.BadgeVM;
 
-public class TextLineViewModel : BadgeComponent
+public class TextLineViewModel : BadgeComponentBase
 {
     private static readonly double _maxFontSizeLimit = 30;
     private static readonly double _minFontSizeLimit = 6;

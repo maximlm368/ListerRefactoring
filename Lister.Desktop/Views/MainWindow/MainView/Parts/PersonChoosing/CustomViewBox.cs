@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 
-namespace View.MainWindow.MainView.Parts.PersonChoosing;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing;
 
 public class CustomViewbox : Viewbox
 {

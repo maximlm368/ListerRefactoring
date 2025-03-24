@@ -1,32 +1,30 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Lister.Desktop.App;
-using Lister.Desktop.CoreAbstractionsImplimentations.BadgeCreator;
+using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
+using Lister.Desktop.Views.MainWindow;
+using Lister.Desktop.Views.MainWindow.MainView;
+using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
+using Lister.Desktop.Views.SplashWindow;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
-using View.MainWindow;
-using View.MainWindow.MainView;
-using View.MainWindow.MainView.ViewModel;
 
-namespace View.App;
+namespace Lister.Desktop.App;
 
 public partial class ListerApp : Avalonia.Application
 {
     private static bool _runningOnWindow = false;
     private static bool _runningOnLinux = false;
-    private MainView _mainView;
-
     public static string JsonSchemeFolderName { get; private set; }
     public static string WorkDirectoryPath { get; private set; }
-    public static string ImagesUri { get; private set; }
     public static string ConfigPath { get; private set; }
-
     public static MainWin MainWindow { get; private set; }
     public static string ResourceFolderName { get; private set; }
     public static string ResourceUriType { get; private set; }
     public static string ResourceDirectoryUri { get; private set; }
     public static string OsName { get; private set; }
     public static ServiceProvider Services;
+
+    private MainVieww _mainView;
 
 
     static ListerApp () 
@@ -42,25 +40,22 @@ public partial class ListerApp : Avalonia.Application
         bool isWindows = RuntimeInformation.IsOSPlatform (OSPlatform.Windows);
         bool isLinux = RuntimeInformation.IsOSPlatform (OSPlatform.Linux);
         string osDescription = RuntimeInformation.OSDescription;
+        JsonSchemeFolderName = "avares://Lister.Desktop/Assets/JsonSchema/Schema.json";
 
         if ( isWindows )
         {
-            //JsonSchemeFolderName = @"Resources\JsonSchemes\";
-            JsonSchemeFolderName = "avares://Lister.Desktop/Assets/JsonSchema/Schema.json";
             ResourceFolderName = @"Resources\";
             ResourceUriType = "file:///";
             OsName = "Windows";
         }
         else if ( isLinux ) 
         {
-            JsonSchemeFolderName = "Resources/JsonSchemes/";
             ResourceFolderName = "Resources/";
             ResourceUriType = "file://";
             OsName = "Linux";
         }
 
         ResourceDirectoryUri = ResourceUriType + WorkDirectoryPath + ResourceFolderName;
-        ImagesUri = "avares://Lister/Assets/";
         ConfigPath = WorkDirectoryPath + ResourceFolderName + "ListerConfig.json";
     }
 
@@ -78,7 +73,7 @@ public partial class ListerApp : Avalonia.Application
     {
         if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
         {
-            SplashWindow.SplashWindow splashWindow = new SplashWindow.SplashWindow ();
+            SplashWindow splashWindow = new SplashWindow ();
             desktop.MainWindow = splashWindow;
             splashWindow.Show ();
 
@@ -89,7 +84,7 @@ public partial class ListerApp : Avalonia.Application
 
             MainViewModel mainViewModel = Services.GetRequiredService<MainViewModel> ();
 
-            MainView mainView = new MainView ()
+            MainVieww mainView = new MainVieww ()
             {
                 DataContext = mainViewModel
             };

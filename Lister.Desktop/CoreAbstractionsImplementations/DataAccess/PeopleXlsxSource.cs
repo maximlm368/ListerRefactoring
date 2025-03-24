@@ -3,7 +3,7 @@ using Lister.Core.DataAccess.Abstractions;
 using System.Data;
 using ExcelDataReader;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DataAccess;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
 
 public sealed class PeopleXlsxSource : IPeopleSource
 {

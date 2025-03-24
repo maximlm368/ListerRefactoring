@@ -3,10 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using View.EditionView;
+using Lister.Desktop.Views.MainWindow.EditionView;
+using mainView = Lister.Desktop.Views.MainWindow.MainView;
 
 
-namespace View.MainWindow;
+namespace Lister.Desktop.Views.MainWindow;
 
 public partial class MainWin : Window
 {
@@ -17,7 +18,7 @@ public partial class MainWin : Window
     internal static MainWin Window { get; private set; }
     internal static double HeightfDifference { get; private set; }
 
-    private MainView.MainView _mainView;
+    private mainView.MainVieww _mainView;
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
@@ -42,24 +43,19 @@ public partial class MainWin : Window
         InitializeComponent();
 
         CommonStorageProvider = StorageProvider;
-
-        this.Opened += OnOpened;
-        _mainView = ( MainView.MainView ) Content;
-
-        this.SizeChanged += OnSizeChanged;
+        _mainView = ( MainView.MainVieww ) Content;
         _currentWidth = Width;
         _currentHeight = Height;
-
-        this.PointerReleased += ReleaseCaptured;
-        this.PositionChanged += HandlePositionChange;
-        PointerMoved += Moved;
-
         Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
-
         CanResize = true;
-
         _pointerPosition = Position;
+
+        Opened += OnOpened;
+        SizeChanged += OnSizeChanged;
+        PointerReleased += ReleaseCaptured;
+        PositionChanged += HandlePositionChange;
+        PointerMoved += Moved;
     }
 
 
@@ -90,11 +86,12 @@ public partial class MainWin : Window
     }
 
 
-    private void OnSizeChanged ( object ? sender , SizeChangedEventArgs args )
+    private void OnSizeChanged ( object? sender, SizeChangedEventArgs args )
     {
-        try
+        MainView.MainVieww mainView = Content as MainView.MainVieww;
+
+        if ( mainView != null )
         {
-            MainView.MainView mainView = ( MainView.MainView ) Content;
             double newWidth = args.NewSize.Width;
             double newHeight = args.NewSize.Height;
             double newWidthDifference = _currentWidth - newWidth;
@@ -103,26 +100,24 @@ public partial class MainWin : Window
             HeightDifference = newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
-            mainView.ChangeSize (newWidthDifference, newHeightDifference);
+            mainView.ChangeSize ( newWidthDifference, newHeightDifference );
+
+            return;
         }
-        catch ( System.InvalidCastException ex )
+
+        BadgeEditorView editionView = Content as BadgeEditorView;
+
+        if ( editionView != null )
         {
-            try
-            {
-                BadgeEditorView mainView = ( BadgeEditorView ) Content;
-                double newWidth = args.NewSize.Width;
-                double newHeight = args.NewSize.Height;
-                double widthDifference = _currentWidth - newWidth;
-                double heightDifference = _currentHeight - newHeight;
-                WidthDifference += widthDifference;
-                HeightDifference = heightDifference;
-                _currentWidth = newWidth;
-                _currentHeight = newHeight;
-                mainView.ChangeSize (widthDifference, heightDifference);
-            }
-            catch ( System.InvalidCastException excp )
-            {
-            }
+            double newWidth = args.NewSize.Width;
+            double newHeight = args.NewSize.Height;
+            double widthDifference = _currentWidth - newWidth;
+            double heightDifference = _currentHeight - newHeight;
+            WidthDifference += widthDifference;
+            HeightDifference = heightDifference;
+            _currentWidth = newWidth;
+            _currentHeight = newHeight;
+            editionView.ChangeSize ( widthDifference, heightDifference );
         }
     }
 
@@ -139,7 +134,7 @@ public partial class MainWin : Window
         double x = point.Position.X;
         double y = point.Position.Y;
 
-        MainView.MainView mainView = Content  as  MainView.MainView;
+        MainView.MainVieww mainView = Content  as  MainView.MainVieww;
 
         if ( mainView != null )
         {
@@ -159,7 +154,7 @@ public partial class MainWin : Window
 
     internal void Moved ( object sender, PointerEventArgs args )
     {
-        MainView.MainView mainView = Content as MainView.MainView;
+        MainView.MainVieww mainView = Content as MainView.MainVieww;
 
         if ( mainView != null )
         {
@@ -188,10 +183,8 @@ public partial class MainWin : Window
     private void RestrictPosition ( object sender, PixelPointEventArgs args )
     {
         PixelPoint currentPosition = this.Position;
-
         var screens = Screens;
         int count = screens.All.Count;
-
         Screen screen = screens.All [0];
         int screenHeight = screen.WorkingArea.Height;
         int screenWidth = screen.WorkingArea.Width;
@@ -211,7 +204,6 @@ public partial class MainWin : Window
         }
 
         PixelPoint delta = Position - _pointerPosition;
-
         ModalWindow.Position += delta;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using ReactiveUI;
 
-namespace View.MainWindow.MainView.Parts.Scene.ViewModel
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel
 {
     public partial class SceneViewModel : ReactiveObject
     {

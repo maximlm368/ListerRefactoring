@@ -4,7 +4,7 @@ using ReactiveUI;
 
 namespace Lister.Desktop.CoreModelReflections.BadgeVM;
 
-abstract public class BadgeComponent : ReactiveObject
+abstract public class BadgeComponentBase : ReactiveObject
 {
     protected double _scale = 1;
 
@@ -149,7 +149,7 @@ abstract public class BadgeComponent : ReactiveObject
     }
 
 
-    protected void ZoomOn(double coefficient)
+    internal void ZoomOn(double coefficient)
     {
         _scale *= coefficient;
         Width *= coefficient;
@@ -159,7 +159,7 @@ abstract public class BadgeComponent : ReactiveObject
     }
 
 
-    protected void ZoomOut(double coefficient)
+    internal void ZoomOut(double coefficient)
     {
         _scale /= coefficient;
         Width /= coefficient;

@@ -1,10 +1,10 @@
 ﻿using AnimatedImage.Avalonia;
 using Avalonia;
-using View.App;
-using View.MainWindow.MainView.ViewModel;
+using Avalonia.Platform;
+using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 using ReactiveUI;
 
-namespace View.WaitingView.ViewModel;
+namespace Lister.Desktop.Views.WaitingView.ViewModel;
 
 public partial class WaitingViewModel : ReactiveObject
 {
@@ -145,7 +145,7 @@ public partial class WaitingViewModel : ReactiveObject
         if (_gifSourceStorage == null)
         {
             string waintingImageIriString = "avares://Lister.Desktop/Assets/" + _gifName;
-            _gifSourceStorage = new AnimatedImageSourceUri( new Uri( waintingImageIriString ) );
+            _gifSourceStorage = new AnimatedImageSourceStream ( AssetLoader.Open ( new Uri ( waintingImageIriString ) ) );
         }
 
         GifSource = _gifSourceStorage;

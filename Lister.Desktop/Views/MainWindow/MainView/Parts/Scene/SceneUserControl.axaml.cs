@@ -1,11 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using View.MainWindow.MainView.Parts.Scene.ViewModel;
-using View.App;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
+using Lister.Desktop.App;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace View.MainWindow.MainView.Parts.Scene;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 
 public partial class SceneUserControl : UserControl
 {
@@ -30,7 +30,7 @@ public partial class SceneUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        MainVieww.SomeControlPressed = true;
     }
 
 

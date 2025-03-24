@@ -2,10 +2,10 @@
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
-using View.App;
+using Lister.Desktop.App;
 using Lister.Desktop.Extentions;
 
-namespace View.DialogMessageWindows.LargeMessage.ViewModel;
+namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
 
 public class LargeMessageViewModel : ReactiveObject
 {

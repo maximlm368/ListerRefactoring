@@ -1,15 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
-using ReactiveUI;
-using System.Reactive.Linq;
-using System.Collections.ObjectModel;
-using Lister.Desktop.Extentions;
 using Lister.Desktop.CoreModelReflections;
 using Lister.Desktop.CoreModelReflections.BadgeVM;
-using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
+using Lister.Desktop.Extentions;
+using ReactiveUI;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 
-namespace View.EditionView.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
 public partial class BadgeEditorViewModel : ReactiveObject
 {

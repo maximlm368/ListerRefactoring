@@ -1,7 +1,7 @@
 ﻿using Lister.Desktop.CoreModelReflections.BadgeVM;
 using ReactiveUI;
 
-namespace View.EditionView.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
 public partial class BadgeEditorViewModel : ReactiveObject
 {

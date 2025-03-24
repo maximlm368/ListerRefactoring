@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
-using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
-using View.App;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using Lister.Desktop.App;
 using Lister.Desktop.CoreModelReflections;
 
-namespace View.MainWindow.MainView.Parts.BuildButton;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton;
 
 public partial class BadgesBuildingUserControl : UserControl
 {
@@ -14,7 +14,7 @@ public partial class BadgesBuildingUserControl : UserControl
 
     private static TemplateViewModel _chosen;
 
-    private MainView _parent;
+    private MainVieww _parent;
     private BadgesBuildingViewModel _viewModel;
     private string _theme;
 
@@ -35,7 +35,7 @@ public partial class BadgesBuildingUserControl : UserControl
 
         if ( point.Properties.IsRightButtonPressed )
         {
-            MainView.SomeControlPressed = true;
+            MainVieww.SomeControlPressed = true;
             this.Focus ();
         }
     }

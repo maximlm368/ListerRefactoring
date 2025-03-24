@@ -6,22 +6,19 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-
-using View.EditionView.ViewModel;
-using View.MainWindow.MainView;
-using View.MainWindow;
-using View.DialogMessageWindows.Dialog;
-using View.WaitingView.ViewModel;
-using View.ViewBase;
-using View.App;
-
+using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
+using mainView = Lister.Desktop.Views.MainWindow.MainView;
+using Lister.Desktop.Views.MainWindow;
+using Lister.Desktop.Views.DialogMessageWindows.Dialog;
+using Lister.Desktop.Views.WaitingView.ViewModel;
+using Lister.Desktop.Views.ViewBase;
+using Lister.Desktop.App;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using Lister.Desktop.CoreModelReflections;
 using Lister.Desktop.CoreModelReflections.BadgeVM;
-using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-namespace View.EditionView;
+namespace Lister.Desktop.Views.MainWindow.EditionView;
 
 public partial class BadgeEditorView : ShowingDialog
 {
@@ -45,7 +42,7 @@ public partial class BadgeEditorView : ShowingDialog
     private bool _badgeIsCaptured;
     private Point _pointerOnBadgeComponent;
     private Point _pointerOnBadge;
-    private MainView _back;
+    private mainView.MainVieww _back;
     private BadgeEditorViewModel _viewModel;
     private bool _isReleaseLocked;
     private bool _isTextEditorFocused;
@@ -246,7 +243,7 @@ public partial class BadgeEditorView : ShowingDialog
     }
 
 
-    internal void PassBackPoint ( MainView back )
+    internal void PassBackPoint ( mainView.MainVieww back )
     {
         _back = back;
         _viewModel.PassView (this);

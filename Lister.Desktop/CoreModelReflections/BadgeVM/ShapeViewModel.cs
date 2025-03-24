@@ -4,7 +4,7 @@ using ReactiveUI;
 
 namespace Lister.Desktop.CoreModelReflections.BadgeVM;
 
-internal class ShapeViewModel : BoundToTextLine
+internal class ShapeViewModel : BoundToTextLineBase
 {
     internal ShapeType Type { get; private set; }
     internal ComponentShape Model { get; private set; }
@@ -59,18 +59,6 @@ internal class ShapeViewModel : BoundToTextLine
         SetUp( prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset );
 
         Model.Changed += HandleModelChanged;
-    }
-
-
-    internal void ZoomOn(double coefficient)
-    {
-        base.ZoomOn( coefficient );
-    }
-
-
-    internal void ZoomOut(double coefficient)
-    {
-        base.ZoomOut( coefficient );
     }
 
 

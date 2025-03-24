@@ -1,7 +1,7 @@
 ﻿using Avalonia.Media;
 using Lister.Core.DocumentProcessor.Abstractions;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DocumentProcessor;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
 
 public class TextWidthMeasurer : ITextWidthMeasurer
 {

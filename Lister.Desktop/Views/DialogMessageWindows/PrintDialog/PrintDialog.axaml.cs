@@ -4,10 +4,10 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using MessageBox.Avalonia.Views;
 using Microsoft.Extensions.DependencyInjection;
-using View.App;
-using View.DialogMessageWindows.PrintDialog.ViewModel;
+using Lister.Desktop.App;
+using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-namespace View.DialogMessageWindows.PrintDialog;
+namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 
 public partial class PrintDialog : BaseWindow
 {

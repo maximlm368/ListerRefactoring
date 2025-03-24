@@ -3,7 +3,7 @@ using Lister.Core.DocumentProcessor.Abstractions;
 using System.Diagnostics;
 using System.Drawing.Printing;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DocumentProcessor;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
 
 public class PdfPrinterImplementation : IPdfPrinter
 {

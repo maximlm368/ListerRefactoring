@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace View.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
 
 public class NavigationZoomViewModel : ReactiveObject
 {

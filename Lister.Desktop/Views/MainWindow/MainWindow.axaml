@@ -6,8 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
 		
-        xmlns:views="clr-namespace:View.MainWindow.MainView;assembly=Lister.Desktop"
-        x:Class="View.MainWindow.MainWin"
+        xmlns:views="clr-namespace:Lister.Desktop.Views.MainWindow.MainView;assembly=Lister.Desktop"
+        x:Class="Lister.Desktop.Views.MainWindow.MainWin"
 		
         Icon="/Assets/Icons/badge.ico"
         Title="Lister"
@@ -18,7 +18,7 @@
 		Height="500"
 		Width="830">
 
-	<views:MainView
+	<views:MainVieww
 		Name="view"/>
   
 </Window>

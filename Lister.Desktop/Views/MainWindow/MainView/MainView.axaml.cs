@@ -5,24 +5,24 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
-using View.MainWindow.MainView.Parts.BuildButton.ViewModel;
-using View.MainWindow.MainView.ViewModel;
-using View.ViewBase;
-using View.App;
-using View.EditionView;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
+using Lister.Desktop.Views.ViewBase;
+using Lister.Desktop.App;
+using Lister.Desktop.Views.MainWindow.EditionView;
 using Lister.Desktop.CoreModelReflections;
 using Lister.Desktop.CoreModelReflections.BadgeVM;
 
-namespace View.MainWindow.MainView;
+namespace Lister.Desktop.Views.MainWindow.MainView;
 
-public partial class MainView : ShowingDialog
+public partial class MainVieww : ShowingDialog
 {
     private static bool _widthIsChanged;
     private static bool _heightIsChanged;
 
     internal static bool SomeControlPressed;
     internal static bool IsPathSet;
-    internal static MainView Instance { get; private set; }
+    internal static MainVieww Instance { get; private set; }
     internal static int TappedGoToEditorButton { get; private set; }
     internal static double ProperWidth { get; private set; }
     internal static double ProperHeight { get; private set; }
@@ -33,18 +33,16 @@ public partial class MainView : ShowingDialog
 
     internal BadgeEditorView EditorView { get; private set; }
 
-    public MainView ()
+    public MainVieww ()
     {
         InitializeComponent ();
-        Instance = this;
 
+        Instance = this;
         ProperWidth = Width;
         ProperHeight = Height;
-
         DataContext = ListerApp.Services.GetRequiredService<MainViewModel> ();
         _viewModel = ( MainViewModel ) DataContext;
         _viewModel.PassView (this);
-
         FocusAdorner = null;
 
         Loaded += OnLoaded;
@@ -201,13 +199,13 @@ public partial class MainView : ShowingDialog
     {
         _processableBadges = processableBadges;
         _firstPage = firstPage;
-        MainView mainView = this;
+        MainVieww mainView = this;
         MainWin window = MainWin.GetMainWindow ();
 
         if ( ( window != null )   &&   ( processableBadges.Count > 0 ) )
         {
             EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, processableBadges.Count );
-            EditorView.SetProperSize (MainView.ProperWidth, MainView.ProperHeight);
+            EditorView.SetProperSize (MainVieww.ProperWidth, MainVieww.ProperHeight);
             window.CancelSizeDifference ();
             TappedGoToEditorButton = 1;
             _viewModel.SetWaitingUpdatingLayout ();

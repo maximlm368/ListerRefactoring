@@ -1,13 +1,13 @@
 ﻿using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Lister.Desktop.CoreAbstractionsImplimentations.DocumentProcessor;
+using Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
 using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
-using View.App;
+using Lister.Desktop.App;
 
-namespace View.DialogMessageWindows.PrintDialog.ViewModel;
+namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
 internal partial class PrintDialogViewModel : ReactiveObject
 {

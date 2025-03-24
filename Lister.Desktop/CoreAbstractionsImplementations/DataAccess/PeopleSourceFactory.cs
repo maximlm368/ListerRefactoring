@@ -1,6 +1,6 @@
 ﻿using Lister.Core.DataAccess.Abstractions;
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DataAccess;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
 
 public class PeopleSourceFactory : IPeopleSourceFactory
 {

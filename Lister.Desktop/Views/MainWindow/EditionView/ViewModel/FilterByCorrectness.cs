@@ -4,7 +4,7 @@ using Lister.Desktop.CoreModelReflections.BadgeVM;
 using ReactiveUI;
 using System.Reactive.Linq;
 
-namespace View.EditionView.ViewModel;
+namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
 public partial class BadgeEditorViewModel : ReactiveObject
 {

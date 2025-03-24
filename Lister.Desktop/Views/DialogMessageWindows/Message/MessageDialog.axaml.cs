@@ -1,11 +1,11 @@
 using Avalonia.Input;
 using MessageBox.Avalonia.Views;
-using View.ViewBase;
-using View.MainWindow;
-using View.DialogMessageWindows.Message.ViewModel;
-using View.App;
+using Lister.Desktop.Views.ViewBase;
+using Lister.Desktop.Views.MainWindow;
+using Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel;
+using Lister.Desktop.App;
 
-namespace View.DialogMessageWindows.Message;
+namespace Lister.Desktop.Views.DialogMessageWindows.Message;
 
 public partial class MessageDialog : BaseWindow
 {
@@ -44,16 +44,17 @@ public partial class MessageDialog : BaseWindow
         DataContext = _vm;
         CanResize = false;
         _vm.PassView (this);
-
-        CanResize = false;
-
-        Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
-
         MainWin mainWindow = ListerApp.MainWindow as MainWin;
-        mainWindow.ModalWindow = this;
+
+        if ( mainWindow != null ) 
+        {
+            mainWindow.ModalWindow = this;
+        }
 
         Message = message;
         ok.FocusAdorner = null;
+
+        Activated += delegate { ok.Focus ( NavigationMethod.Tab, KeyModifiers.None ); };
     }
 
 

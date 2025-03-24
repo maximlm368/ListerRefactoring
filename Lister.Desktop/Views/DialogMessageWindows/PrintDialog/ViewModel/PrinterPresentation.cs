@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace View.DialogMessageWindows.PrintDialog.ViewModel;
+namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
 internal class PrinterPresentation : ReactiveObject
 {

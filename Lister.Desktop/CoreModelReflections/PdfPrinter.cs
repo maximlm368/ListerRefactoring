@@ -1,6 +1,6 @@
 ﻿using Avalonia.Threading;
 using Lister.Core.DocumentProcessor;
-using View.DialogMessageWindows.PrintDialog;
+using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 using ReactiveUI;
 
 namespace Lister.Desktop.CoreModelReflections;

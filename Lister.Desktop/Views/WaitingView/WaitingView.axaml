@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="487"
-			 x:Class="View.WaitingView.WaitingView"
-			 xmlns:vm="clr-namespace:View.WaitingView.ViewModel;assembly=Lister.Desktop"
+			 x:Class="Lister.Desktop.Views.WaitingView.WaitingView"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.WaitingView.ViewModel;assembly=Lister.Desktop"
 			 x:DataType="vm:WaitingViewModel"
 			 Margin="{Binding  Path=Margin,  Mode=OneWay}">
 

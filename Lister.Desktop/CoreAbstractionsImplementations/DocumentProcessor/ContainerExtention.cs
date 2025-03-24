@@ -4,7 +4,7 @@ using SkiaSharp;
 using System.Text;
 
 
-namespace Lister.Desktop.CoreAbstractionsImplimentations.DocumentProcessor;
+namespace Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
 
 public static class IContainerExtentions
 {

@@ -1,11 +1,8 @@
 ﻿using Avalonia.Media.Imaging;
+using Lister.Desktop.App;
 using ReactiveUI;
-using View.App;
-using Lister.Desktop.Extentions;
-using Avalonia.Platform;
-using System;
 
-namespace View.DialogMessageWindows.Message.ViewModel;
+namespace Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel;
 
 public class MessageViewModel : ReactiveObject
 {
@@ -39,7 +36,6 @@ public class MessageViewModel : ReactiveObject
     public MessageViewModel()
     {
         string warningIconPath = ListerApp.ResourceFolderName + _warnImageName;
-        //WarnImage = new Bitmap ( AssetLoader.Open ( new Uri (  ) ) );
     }
 
 

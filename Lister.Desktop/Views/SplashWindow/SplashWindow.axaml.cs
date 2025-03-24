@@ -1,6 +1,6 @@
 using MessageBox.Avalonia.Views;
 
-namespace View.SplashWindow;
+namespace Lister.Desktop.Views.SplashWindow;
 
 public partial class SplashWindow : BaseWindow
 {
