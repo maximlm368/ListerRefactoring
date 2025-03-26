@@ -8,11 +8,11 @@
 			 xmlns:PersonChoosingUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing"
 			 xmlns:SceneUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.Scene"
 			 xmlns:NavigationZoomUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom"
-			 xmlns:WaitingUc="clr-namespace:Lister.Desktop.Views.WaitingView"
+			 xmlns:WaitingUc="clr-namespace:Lister.Desktop.Views.MainWindow.WaitingView"
 			 
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.ViewModel;assembly=Lister.Desktop"
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
-             x:Class="Lister.Desktop.Views.MainWindow.MainView.MainVieww"
+             x:Class="Lister.Desktop.Views.MainWindow.MainView.MainView"
 			 x:DataType="vm:MainViewModel"
 			 Height="500"
 			 Width="830" >

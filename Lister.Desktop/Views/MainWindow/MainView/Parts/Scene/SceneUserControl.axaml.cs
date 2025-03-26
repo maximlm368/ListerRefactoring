@@ -30,7 +30,7 @@ public partial class SceneUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
     }
 
 

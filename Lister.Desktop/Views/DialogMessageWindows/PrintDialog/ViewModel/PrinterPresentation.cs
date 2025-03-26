@@ -2,7 +2,10 @@
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-internal class PrinterPresentation : ReactiveObject
+/// <summary>
+/// Represents visible data of printer.
+/// </summary>
+internal sealed class PrinterPresentation : ReactiveObject
 {
     private string _stringPresentation;
     internal string StringPresentation

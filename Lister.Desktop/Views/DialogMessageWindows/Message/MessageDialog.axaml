@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="130"
+        mc:Ignorable="d" d:DesignWidth="568" d:DesignHeight="138"
         x:Class="Lister.Desktop.Views.DialogMessageWindows.Message.MessageDialog"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message; assembly=View"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel"

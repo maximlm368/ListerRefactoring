@@ -76,10 +76,10 @@
 
   <ItemGroup>
     <None Update="Resources\Templates\Aurse2\Images\doctors2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Aurse2\Images\nurses2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor-release\Doctor-release.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -91,10 +91,10 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor2\Images\doctors2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor2\Images\nurses2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Doctor3.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -118,10 +118,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Incorrect\Images\doctors2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Incorrect\Images\nurses2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Nurse-release\Images\nurses2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -174,7 +174,7 @@
     <Compile Update="Views\SplashWindow\SplashWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\WaitingView\WaitingView.axaml.cs">
+    <Compile Update="Views\MainWindow\WaitingView\WaitingView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>

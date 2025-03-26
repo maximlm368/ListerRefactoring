@@ -2,7 +2,7 @@
 
 internal static class WaitingElementConfigs
 {
-    internal static readonly string GifName = "Icons/Loading.gif";
+    internal static readonly string GifPath = "avares://Lister.Desktop/Assets/Icons/Loading.gif";
 }
 
 

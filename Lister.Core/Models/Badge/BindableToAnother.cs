@@ -1,7 +1,7 @@
 ﻿namespace Lister.Core.Models.Badge;
 
 /// <summary>
-/// Defines badge layout component that can be bound to textline with name set in "Binding".
+/// Defines badge layout component that can be bound to textline geometrically with name set in "Binding".
 /// </summary>
 public abstract class BindableToAnother : LayoutComponentBase
 {

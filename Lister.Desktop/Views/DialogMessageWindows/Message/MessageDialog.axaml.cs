@@ -7,7 +7,7 @@ using Lister.Desktop.App;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.Message;
 
-public partial class MessageDialog : BaseWindow
+public sealed partial class MessageDialog : BaseWindow
 {
     private MessageViewModel _vm;
     public ShowingDialog Caller { get; private set; }

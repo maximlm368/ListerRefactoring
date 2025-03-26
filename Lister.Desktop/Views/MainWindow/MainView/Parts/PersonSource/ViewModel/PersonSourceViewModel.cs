@@ -1,6 +1,6 @@
 ﻿using Avalonia.Platform.Storage;
 using Lister.Core.BadgesCreator;
-using Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
+using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 using ReactiveUI;
 using Lister.Desktop.App;
 

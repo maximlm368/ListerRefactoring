@@ -8,7 +8,7 @@ namespace Lister.Core.Models.Badge;
 /// Controls change of this content.
 /// Can have processable component to change it.
 /// </summary>
-public class Layout
+public sealed class Layout
 {
     internal static ITextWidthMeasurer Measurer { get; set; }
 

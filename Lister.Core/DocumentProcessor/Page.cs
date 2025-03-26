@@ -6,7 +6,7 @@ namespace Lister.Core.DocumentProcessor;
 /// Represents lines of badges for page.
 /// Adds sent badge.
 /// </summary>
-public class Page
+public sealed class Page
 {
     private static double _topOffsetOfContent;
     private static double _leftOffsetOfContent;

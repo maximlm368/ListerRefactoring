@@ -6,9 +6,9 @@ using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using Lister.Desktop.Extentions;
-using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
@@ -30,6 +30,9 @@ public partial class PersonChoosingViewModel : ReactiveObject
             this.RaiseAndSetIfChanged (ref _fileNotFound, value, nameof (FileNotFound));
         }
     }
+
+
+    public PersonChoosingViewModel () { }
 
 
     public PersonChoosingViewModel ( string placeHolder, int inputLimit, SolidColorBrush incorrectTemplateColor
@@ -115,7 +118,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
         }
         else
         {
-            ChosenPerson = _focused.Person;
+            ChosenPerson = _focused.Model;
             PlaceHolder = ChosenPerson.FullName;
             _choiceIsAbsent = false;
             _selected = _focused;
@@ -182,7 +185,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
         List<VisiblePerson> visiblePeople = people.Clone ()
              .Where (person => ! person.IsEmpty ())
              .Select (person => new VisiblePerson (person))
-             .OrderBy (person => person.Person.FullName)
+             .OrderBy (person => person.Model.FullName)
              .ToList ();
 
         PeopleStorage = visiblePeople;
@@ -212,7 +215,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
         for ( int index = seekingScratch;   index <= seekingEnd;   index++ )
         {
             VisiblePerson foundPerson = InvolvedPeople [index];
-            bool isCoincidence = person.Equals (foundPerson.Person);
+            bool isCoincidence = person.Equals (foundPerson.Model);
 
             if ( isCoincidence )
             {
@@ -295,11 +298,11 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         foreach ( VisiblePerson person   in   InvolvedPeople )
         {
-            bool isIntresting = person.Person.IsMatchingTo (presentation);
+            bool isIntresting = person.Model.IsMatchingTo (presentation);
 
             if ( isIntresting )
             {
-                result = person.Person;
+                result = person.Model;
                 break;
             }
         }
@@ -485,7 +488,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
         foreach ( VisiblePerson person   in   PeopleStorage )
         {
             person.IsFocused = false;
-            string entireName = person.Person.FullName;
+            string entireName = person.Model.FullName;
 
             if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
             {

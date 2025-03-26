@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
+using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.Views.MainWindow;
 using Lister.Desktop.Views.MainWindow.MainView;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
@@ -24,7 +24,7 @@ public partial class ListerApp : Avalonia.Application
     public static string OsName { get; private set; }
     public static ServiceProvider Services;
 
-    private MainVieww _mainView;
+    private MainView _mainView;
 
 
     static ListerApp () 
@@ -84,7 +84,7 @@ public partial class ListerApp : Avalonia.Application
 
             MainViewModel mainViewModel = Services.GetRequiredService<MainViewModel> ();
 
-            MainVieww mainView = new MainVieww ()
+            MainView mainView = new MainView ()
             {
                 DataContext = mainViewModel
             };

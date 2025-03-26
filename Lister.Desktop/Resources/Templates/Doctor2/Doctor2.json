@@ -1,0 +1,160 @@
+{
+  "TemplateName" : "Бейдж с фоном2",
+  "BackgroundImagePath" : "doctors2.jpg",
+  "CommonDefaultFontFamily": "Kramola",
+  "Width" : 350,
+  "Height" : 214,
+  "InsideSpan" : 
+  {
+    "Left": 11,
+    "Top": 11,
+    "Right": 11,
+    "Bottom": 11
+  },
+  "IncorrectLineBackground": 
+  {
+	"Red": 200,
+	"Green": 200,
+	"Blue": 200
+  },
+  
+
+  "FamilyName": {
+    "Width" : 210,
+    "Height" : 24,
+    "TopOffset" : 60,
+	"LeftOffset" : 130,
+    "Alignment" : "Right",
+    "FontSize" : 24,
+    "FontFile": "Kramola.ttf",
+	"FontName": "Kramola",
+	"Foregroundqq": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "FirstName": {
+    "Width": 210,
+    "Height": 21,
+    "TopOffset": 92,
+    "LeftOffset": 130,
+    "Alignment": "Right",
+    "FontSize": 14,
+	"FontFile": "Kramola.ttf",
+	"FontName": "Kramola",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "PatronymicName": {
+    "Width": 210,
+    "Height": 21,
+    "TopOffset": 92,
+	"LeftOffset": 130,
+    "Alignment": "Right",
+    "FontSize": 14,
+	"FontFile": "Kramola.ttf",
+	"FontName": "Kramola",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": false
+  },
+
+  "Post": {
+    "Width": 210,
+    "Height": 17,
+    "TopOffset": 122,
+    "LeftOffset": 130,
+    "Alignment": "Right",
+    "FontSize": 10,
+	"FontFile": "Kramola.ttf",
+	"FontName": "Kramola",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": "fdfdfdfdfdf"
+  },
+
+  "Department": {
+    "Width": 210,
+    "Height": 17,
+    "TopOffset": 146,
+    "LeftOffset": 13000,
+    "Alignment": "Right",
+    "FontSize": 10,
+	"FontFile": "Kramola.ttf",
+	"FontName": "Kramola",
+	"Foreground": 
+	{
+		"Red": 0,
+		"Green": 0,
+		"Blue": 0
+	},
+	"FontWeight": "Bold",
+    "IsSplitable": true
+  },
+  
+  "UnitedTextBlocks" : {
+	"Items": [
+		{
+			"United": [
+			    "FirstName",
+				"PatronymicName"
+			],
+			"Name": "FirstAndPatronymic",
+			"Number":1,
+			"Width": 210,
+			"Height": 21,
+			"TopOffset": 92,
+			"LeftOffset": 13000,
+			"Alignment": "Right",
+			"FontSize": 14,
+			"FontFile": "Kramola.ttf",
+			"FontName": "Kramola",
+			"Foreground": 
+			{
+				"Red": 22222,
+				"Green": 22222,
+				"Blue": 22222
+			},
+			"FontWeight": "Bold",
+			"IsSplitable": false
+		}
+    ]
+  },
+
+  "InsideImages" : {
+    "Items" : [
+      {
+        "ImagePath": "",
+        "GeometricElementName": "Rectangle",
+        "Color": "Brown",
+        "Width": 80,
+        "Height": 1,
+        "TopOffset": 138,
+        "LeftOffset": 212
+      }
+    ]
+
+  }
+}

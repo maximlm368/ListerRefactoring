@@ -6,7 +6,8 @@ using Avalonia.Media;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 using Lister.Desktop.App;
 using Microsoft.Extensions.DependencyInjection;
-using Lister.Desktop.CoreModelReflections;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing;
 
@@ -43,6 +44,11 @@ public partial class PersonChoosingUserControl : UserControl
 
     public PersonChoosingUserControl ( )
     {
+        if ( Design.IsDesignMode )
+        {
+            Design.SetDataContext ( this, new PersonChoosingViewModel () );
+        }
+
         InitializeComponent ();
 
         DataContext = ListerApp.Services.GetRequiredService<PersonChoosingViewModel> ();
@@ -88,14 +94,14 @@ public partial class PersonChoosingUserControl : UserControl
     internal void AcceptEntirePersonList ( object sender, PointerPressedEventArgs args )
     {
         _personListIsDropped = false;
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
         _viewModel.SetEntireList ();
     }
 
 
     internal void ScrollerPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
     }
 
 
@@ -198,7 +204,7 @@ public partial class PersonChoosingUserControl : UserControl
     internal void ButtonPressed ( object sender, PointerPressedEventArgs args )
     {
         _dropdownButtonIsTapped = true;
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
     }
 
 
@@ -315,7 +321,7 @@ public partial class PersonChoosingUserControl : UserControl
 
     internal void HandleChoosingByTapping ( object sender, PointerPressedEventArgs args )
     {
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
 
         Label chosenLabel = ( Label ) sender;
         string chosenName = ( string ) chosenLabel.Content;

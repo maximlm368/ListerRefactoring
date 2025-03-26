@@ -2,6 +2,12 @@
 
 public static class StringExtention
 {
+    /// <summary>
+    /// Once separates tail of string defining it by any of separators. 
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="separators"></param>
+    /// <returns></returns>
     public static List<string> SeparateTailOnce ( this string str, char [] separators )
     {
         List<string> result = new List<string> ( 2 );
@@ -30,7 +36,15 @@ public static class StringExtention
     }
 
 
-    public static List<string> SplitBySeparators ( this string str, char [] separators, char [] onceUnremovableSeparators )
+    /// <summary>
+    /// Splits string by separators removing separator that not included in unremovableSeparators.<br/>
+    /// Unremovable separator gets added to first from two splitted strings.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="separators"></param>
+    /// <param name="unremovableSeparators"></param>
+    /// <returns></returns>
+    public static List<string> SplitBySeparators ( this string str, char [] separators, char [] unremovableSeparators )
     {
         List<string> result = new List<string> ();
 
@@ -66,7 +80,7 @@ public static class StringExtention
                     result.Add ( splited );
                 }
 
-                if ( onceUnremovableSeparators.Contains ( str [index] ) )
+                if ( unremovableSeparators.Contains ( str [index] ) )
                 {
                     if ( result.Count > 0 )
                     {
@@ -89,7 +103,7 @@ public static class StringExtention
                     isWaitingUnremovable = false;
                     unremovableIsEncountered = true;
                 }
-                else if ( !onceUnremovableSeparators.Contains ( str [index] )  &&  ! unremovableIsEncountered )
+                else if ( !unremovableSeparators.Contains ( str [index] )  &&  ! unremovableIsEncountered )
                 {
                     isWaitingUnremovable = true;
                 }

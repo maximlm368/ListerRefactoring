@@ -2,12 +2,12 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="130"
+		mc:Ignorable="d" d:DesignWidth="358" d:DesignHeight="140"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Dialog; assembly=View"
 		x:Class="Lister.Desktop.Views.DialogMessageWindows.Dialog.DialogWindow"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel"
 		MaxWidth="360"
-		MaxHeight="138"
+		MaxHeight="136"
 		WindowStartupLocation="CenterOwner"
 		x:DataType="vm:DialogViewModel"
 		
@@ -20,7 +20,7 @@
 	
 		<StackPanel
 			Width="360"
-			Height="138">
+			Height="136">
 
 			<Label
 				Classes="modalLabel"
@@ -37,7 +37,7 @@
 					Grid.Column="0"
 					Width="35"
 					Margin ="16,0,0,0"
-					Source = "{Binding  Path = WarnImage,  Mode=OneWay }"/>
+					Source = "/Assets/Icons/warning-alert.ico"/>
 
 				<TextBlock
 					Name="message"

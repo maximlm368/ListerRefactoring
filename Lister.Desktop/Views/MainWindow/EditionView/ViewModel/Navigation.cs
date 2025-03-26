@@ -1,4 +1,4 @@
-﻿using Lister.Desktop.CoreModelReflections.BadgeVM;
+﻿using Lister.Desktop.ModelMappings.BadgeVM;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;

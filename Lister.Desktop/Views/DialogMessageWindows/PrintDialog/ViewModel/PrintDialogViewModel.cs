@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
+using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using Lister.Desktop.App;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-internal partial class PrintDialogViewModel : ReactiveObject
+internal sealed partial class PrintDialogViewModel : ReactiveObject
 {
     private readonly string _warnImagePath;
 

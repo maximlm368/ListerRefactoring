@@ -1,5 +1,5 @@
 ﻿using Lister.Core.BadgesCreator.Abstractions;
-using Lister.Core.DataAccess.Abstractions;
+using Lister.Core.PeopleAccess.Abstractions;
 using Lister.Core.Models;
 using Lister.Core.Models.Badge;
 
@@ -9,7 +9,7 @@ namespace Lister.Core.BadgesCreator;
 /// <summary>
 /// Single class creating Badge class instance for person and template.
 /// </summary>
-public class BadgeCreator
+public sealed class BadgeCreator
 {
     private static BadgeCreator _instance;
     private static IBadgeLayoutProvider _badgeLayoutProvider;

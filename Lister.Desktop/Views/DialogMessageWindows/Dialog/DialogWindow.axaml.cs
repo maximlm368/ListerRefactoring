@@ -7,7 +7,7 @@ using Lister.Desktop.Views.ViewBase;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.Dialog;
 
-public partial class DialogWindow : Window
+public sealed partial class DialogWindow : Window
 {
     public readonly string YesStr = "yes";
     public readonly string NoStr = "no";

@@ -3,6 +3,9 @@ using Lister.Core.ExtentionsAndAuxiliary;
 
 namespace Lister.Core.Models.Badge;
 
+/// <summary>
+/// Represents component of badge that contains only text.
+/// </summary>
 public class TextLine : LayoutComponentBase
 {
     internal static ITextWidthMeasurer Measurer { get; set; }

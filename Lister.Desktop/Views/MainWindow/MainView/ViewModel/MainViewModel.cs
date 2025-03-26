@@ -1,13 +1,7 @@
-﻿using Avalonia.Platform.Storage;
-using Lister.Desktop.CoreModelReflections;
-using Microsoft.Extensions.DependencyInjection;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Text;
+﻿using Avalonia;
+using Avalonia.Platform.Storage;
 using Lister.Desktop.App;
-using Lister.Desktop.Views.MainWindow.MainView;
+using Lister.Desktop.ModelMappings;
 using Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
 using Lister.Desktop.Views.DialogMessageWindows.Message;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
@@ -16,12 +10,19 @@ using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
-using Lister.Desktop.Views.WaitingView.ViewModel;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 
-internal class MainViewModel : ReactiveObject
+internal sealed class MainViewModel : ReactiveObject
 {
     private static bool _inWaitingState;
     internal static bool InWaitingState
@@ -57,7 +58,7 @@ internal class MainViewModel : ReactiveObject
 
     private string _osName;
 
-    private PdfPrinter _pdfPrinter;
+    private PdfCreationAndPrintingStarter _pdfPrinter;
     private PrintDialog _printDialog;
     private PrintDialogViewModel _printDialogViewModel;
     private PersonSourceViewModel _personSourceViewModel;
@@ -66,7 +67,7 @@ internal class MainViewModel : ReactiveObject
     private NavigationZoomViewModel _zoomNavigationViewModel;
     private SceneViewModel _sceneViewModel;
     private WaitingViewModel _waitingViewModel;
-    private MainVieww _view;
+    private MainView _view;
     private bool _buildButtonIsTapped = false;
     private PrintAdjustingData _printAdjusting;
 
@@ -74,7 +75,8 @@ internal class MainViewModel : ReactiveObject
 
 
     internal MainViewModel(string osName, string suggestedFileNames, string saveTitle, string incorrectXSLX
-                         , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage, string fileIsTooBigMessage)
+                         , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage, string fileIsTooBigMessage
+                         , object [] dependecies )
     {
         _osName = osName;
         _suggestedFileNames = suggestedFileNames;
@@ -84,14 +86,14 @@ internal class MainViewModel : ReactiveObject
         _fileIsOpenMessage = fileIsOpenMessage;
         _fileIsTooBigMessage = fileIsTooBigMessage;
 
-        _pdfPrinter = ListerApp.Services.GetRequiredService<PdfPrinter>();
-        _printDialogViewModel = ListerApp.Services.GetRequiredService<PrintDialogViewModel>();
-        _personChoosingViewModel = ListerApp.Services.GetRequiredService<PersonChoosingViewModel>();
-        _personSourceViewModel = ListerApp.Services.GetRequiredService<PersonSourceViewModel>();
-        _badgesBuildingViewModel = ListerApp.Services.GetRequiredService<BadgesBuildingViewModel>();
-        _zoomNavigationViewModel = ListerApp.Services.GetRequiredService<NavigationZoomViewModel>();
-        _sceneViewModel = ListerApp.Services.GetRequiredService<SceneViewModel>();
-        _waitingViewModel = ListerApp.Services.GetRequiredService<WaitingViewModel>();
+        _pdfPrinter = dependecies [0] as PdfCreationAndPrintingStarter;
+        _printDialogViewModel = dependecies[1] as PrintDialogViewModel;
+        _personChoosingViewModel = dependecies[2] as PersonChoosingViewModel;
+        _personSourceViewModel = dependecies[3] as PersonSourceViewModel;
+        _badgesBuildingViewModel = dependecies[4] as BadgesBuildingViewModel;
+        _zoomNavigationViewModel = dependecies[5] as NavigationZoomViewModel;
+        _sceneViewModel = dependecies[6] as SceneViewModel;
+        _waitingViewModel = dependecies[7] as WaitingViewModel;
 
         _pdfPrinter.PropertyChanged += PrinterChanged;
         _printDialogViewModel.PropertyChanged += PrintDialogChanged;
@@ -112,7 +114,7 @@ internal class MainViewModel : ReactiveObject
         }
         else
         {
-            if (MainVieww.Instance == null)
+            if (MainView.Instance == null)
             {
                 return;
             }
@@ -120,17 +122,15 @@ internal class MainViewModel : ReactiveObject
             if (args.PropertyName == "FileIsDeclined")
             {
                 string message = _personSourceViewModel.FilePath + _incorrectXSLX;
-                MessageDialog messegeDialog = new MessageDialog( MainVieww.Instance, message );
-                WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
-                waitingVM.Darken();
+                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, message );
+                _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( ListerApp.MainWindow );
             }
             else if (args.PropertyName == "FileIsTooBig")
             {
                 string limit = _sceneViewModel.GetLimit().ToString() + ".";
-                MessageDialog messegeDialog = new MessageDialog( MainVieww.Instance, _buildingLimitIsExhaustedMessage + limit );
-                WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
-                waitingVM.Darken();
+                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _buildingLimitIsExhaustedMessage + limit );
+                _waitingViewModel.Darken();
 
                 if ( ListerApp.MainWindow != null ) 
                 {
@@ -139,9 +139,8 @@ internal class MainViewModel : ReactiveObject
             }
             else if (args.PropertyName == "FileIsOpen")
             {
-                MessageDialog messegeDialog = new MessageDialog( MainVieww.Instance, _fileIsOpenMessage );
-                WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
-                waitingVM.Darken();
+                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
+                _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( MainWin.Window );
             }
         }
@@ -163,8 +162,8 @@ internal class MainViewModel : ReactiveObject
                 TemplateViewModel template = _personChoosingViewModel.ChosenTemplate;
 
                 LargeMessageDialog messegeDialog =
-                new LargeMessageDialog( MainVieww.Instance, template.CorrectnessMessage, template.SourcePath );
-
+                new LargeMessageDialog( MainView.Instance, template.CorrectnessMessage, template.SourcePath );
+                
                 _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( MainWin.Window );
                 messegeDialog.Focusable = true;
@@ -194,9 +193,7 @@ internal class MainViewModel : ReactiveObject
             {
                 List<string> message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
                 string path = _personChoosingViewModel.ChosenTemplate.SourcePath;
-
-                LargeMessageDialog messegeDialog = new LargeMessageDialog( MainVieww.Instance, message, path );
-
+                LargeMessageDialog messegeDialog = new LargeMessageDialog( MainView.Instance, message, path );
                 _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( MainWin.Window );
                 messegeDialog.Focusable = true;
@@ -232,16 +229,15 @@ internal class MainViewModel : ReactiveObject
                 EndWaiting();
                 string limit = _sceneViewModel.GetLimit().ToString() + ".";
                 MessageDialog messegeDialog =
-                                 new MessageDialog( MainVieww.Instance, _buildingLimitIsExhaustedMessage + limit );
+                                 new MessageDialog( MainView.Instance, _buildingLimitIsExhaustedMessage + limit );
 
-                WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
-                waitingVM.Darken();
+                _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( MainWin.Window );
             }
         }
         else if (args.PropertyName == "EditIncorrectsIsSelected")
         {
-            MainVieww mainView = MainVieww.Instance;
+            MainView mainView = MainView.Instance;
             mainView.EditIncorrectBadges( _sceneViewModel.ProcessableBadges, _sceneViewModel.VisiblePage );
         }
         else if (args.PropertyName == "PdfIsWanted")
@@ -329,10 +325,9 @@ internal class MainViewModel : ReactiveObject
     }
 
 
-    internal void PassView(MainVieww view)
+    internal void PassView(MainView view)
     {
         _view = view;
-        WaitingView.WaitingView wv = _view.waiting;
     }
 
 
@@ -387,9 +382,8 @@ internal class MainViewModel : ReactiveObject
             }
             catch (IOException ex)
             {
-                var messegeDialog = new MessageDialog( MainVieww.Instance, _fileIsOpenMessage );
-                WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
-                waitingVM.Darken();
+                var messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
+                _waitingViewModel.Darken();
                 messegeDialog.ShowDialog( MainWin.Window );
 
                 return;
@@ -464,8 +458,7 @@ internal class MainViewModel : ReactiveObject
         }
         else
         {
-            MessageDialog messegeDialog = new MessageDialog( MainVieww.Instance, _fileIsOpenMessage );
-            WaitingViewModel waitingVM = ListerApp.Services.GetRequiredService<WaitingViewModel>();
+            MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
             _waitingViewModel.Darken();
             messegeDialog.ShowDialog( MainWin.Window );
         }
@@ -475,9 +468,7 @@ internal class MainViewModel : ReactiveObject
     private void PreparePrinting()
     {
         _printAdjusting = new();
-
         _printDialog = PrintDialog.GetPreparedDialog( _sceneViewModel.AllPages.Count, _printAdjusting );
-
         _waitingViewModel.Darken();
         _printDialog.ShowDialog( MainWin.Window );
     }
@@ -509,7 +500,7 @@ internal class MainViewModel : ReactiveObject
             _pdfPrinter.PrintDuringWaiting( _printAdjusting, _osName );
             return;
         }
-        else if (MainVieww.TappedGoToEditorButton == 1)
+        else if (MainView.TappedGoToEditorButton == 1)
         {
             _view.SwitchToEditor();
         }

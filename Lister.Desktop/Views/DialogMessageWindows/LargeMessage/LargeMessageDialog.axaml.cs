@@ -8,7 +8,7 @@ using Lister.Desktop.App;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
 
-public partial class LargeMessageDialog : BaseWindow
+public sealed partial class LargeMessageDialog : BaseWindow
 {
     private LargeMessageViewModel _viewModel;
     private bool _messageIsSelected;

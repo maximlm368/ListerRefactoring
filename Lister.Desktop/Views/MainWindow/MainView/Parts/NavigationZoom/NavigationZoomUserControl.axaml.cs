@@ -42,7 +42,7 @@ public partial class NavigationZoomUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainVieww.SomeControlPressed = true;
+        MainView.SomeControlPressed = true;
     }
 
 

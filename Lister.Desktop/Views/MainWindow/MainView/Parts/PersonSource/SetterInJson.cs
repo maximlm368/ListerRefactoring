@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
+using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 

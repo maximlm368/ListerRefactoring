@@ -1,6 +1,9 @@
 ﻿namespace Lister.Core.Models.Badge;
 
-public class ComponentShape : BindableToAnother
+/// <summary>
+/// Represents shape placed on badge.
+/// </summary>
+public sealed class ComponentShape : BindableToAnother
 {
     private string _typeName;
     public string FillHexStr { get; private set; }

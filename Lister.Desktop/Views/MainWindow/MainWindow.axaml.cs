@@ -9,7 +9,7 @@ using mainView = Lister.Desktop.Views.MainWindow.MainView;
 
 namespace Lister.Desktop.Views.MainWindow;
 
-public partial class MainWin : Window
+public sealed partial class MainWin : Window
 {
     private static readonly int _onScreenRestriction = 50;
     private static PixelPoint _pointerPosition;
@@ -18,7 +18,7 @@ public partial class MainWin : Window
     internal static MainWin Window { get; private set; }
     internal static double HeightfDifference { get; private set; }
 
-    private mainView.MainVieww _mainView;
+    private mainView.MainView _mainView;
     private PixelSize _screenSize;
     private double _currentWidth;
     private double _currentHeight;
@@ -43,7 +43,7 @@ public partial class MainWin : Window
         InitializeComponent();
 
         CommonStorageProvider = StorageProvider;
-        _mainView = ( MainView.MainVieww ) Content;
+        _mainView = ( MainView.MainView ) Content;
         _currentWidth = Width;
         _currentHeight = Height;
         Window = this;
@@ -88,7 +88,7 @@ public partial class MainWin : Window
 
     private void OnSizeChanged ( object? sender, SizeChangedEventArgs args )
     {
-        MainView.MainVieww mainView = Content as MainView.MainVieww;
+        MainView.MainView mainView = Content as MainView.MainView;
 
         if ( mainView != null )
         {
@@ -134,7 +134,7 @@ public partial class MainWin : Window
         double x = point.Position.X;
         double y = point.Position.Y;
 
-        MainView.MainVieww mainView = Content  as  MainView.MainVieww;
+        MainView.MainView mainView = Content  as  MainView.MainView;
 
         if ( mainView != null )
         {
@@ -154,7 +154,7 @@ public partial class MainWin : Window
 
     internal void Moved ( object sender, PointerEventArgs args )
     {
-        MainView.MainVieww mainView = Content as MainView.MainVieww;
+        MainView.MainView mainView = Content as MainView.MainView;
 
         if ( mainView != null )
         {

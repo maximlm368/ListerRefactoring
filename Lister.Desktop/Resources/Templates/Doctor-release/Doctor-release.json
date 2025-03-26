@@ -1,0 +1,140 @@
+{
+	"TemplateName":"Бейдж с фоном",
+	"BackgroundImagePath": "doctors2.jpg",
+	"CommonDefaultFontFamily": "Century Gothic",
+	"Width": 350,
+	"Height": 214,
+	"Padding": {
+		"Left": 10,
+		"Top": 10,
+		"Right": 16,
+		"Bottom": 10
+	},
+
+	"CorrectMemberSettings": {
+
+		"BorderColor": "#4aacfe",
+
+		"BorderThickness": {
+			"Left": 2,
+			"Top": 2,
+			"Right": 2,
+			"Bottom": 2
+		}
+	},
+
+	"IncorrectMemberSettings": {
+
+		"Background": "#c8c8c8",
+
+		"BorderColor": "#d23650",
+
+		"BorderThickness": {
+			"Left": 2,
+			"Top": 2,
+			"Right": 2,
+			"Bottom": 2
+		}
+	},
+
+	"FamilyName": {
+		"Width": 210,
+		"Height": 26,
+		"TopOffset": 60,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 26,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#730000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"FirstName": {
+		"Width": 210,
+		"Height": 15,
+		"TopOffset": 92,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 15,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#730000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"PatronymicName": {
+		"Width": 210,
+		"Height": 15,
+		"TopOffset": 92,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 15,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#730000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": false
+	},
+
+	"Post": {
+		"Width": 210,
+		"Height": 11,
+		"TopOffset": 124,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 11,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#000000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"Department": {
+		"Width": 210,
+		"Height": 11,
+		"TopOffset": 146,
+		"LeftOffset": 124,
+		"Alignment": "Right",
+		"FontSize": 11,
+		"FontName": "Century Gothic",
+
+		"Foreground": "#000000",
+
+		"FontWeight": "Bold",
+		"IsSplitable": true
+	},
+
+	"UnitedTextBlocks": {
+		"Items": [
+			{
+				"United": [
+					"FirstName",
+					"PatronymicName"
+				],
+				"Name": "FirstAndPatronymic",
+				"Number": 1,
+				"Width": 210,
+				"Height": 15,
+				"TopOffset": 92,
+				"LeftOffset": 124,
+				"Alignment": "Right",
+				"FontSize": 15,
+				"FontName": "Century Gothic",
+
+				"Foreground": "#730000",
+
+				"FontWeight": "Bold",
+				"IsSplitable": false
+			}
+		]
+	}
+
+}

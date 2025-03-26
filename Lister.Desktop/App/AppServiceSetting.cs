@@ -2,16 +2,13 @@
 using Lister.Core.BadgesCreator;
 using Lister.Core.DocumentProcessor;
 using Lister.Desktop.App.Configs;
-using Lister.Desktop.CoreAbstractionsImplementations.BadgeCreator;
-using Lister.Desktop.CoreAbstractionsImplementations.DataAccess;
-using Lister.Desktop.CoreAbstractionsImplementations.DocumentProcessor;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
-using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
-using Microsoft.Extensions.DependencyInjection;
-using Lister.Desktop.App;
+using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
+using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
+using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
+using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing;
@@ -19,7 +16,9 @@ using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
-using Lister.Desktop.Views.WaitingView.ViewModel;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 
 
 namespace Lister.Desktop.App;
@@ -28,7 +27,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddNeededServices(this IServiceCollection collection)
     {
-        collection.AddSingleton( typeof( PdfPrinter ), PdfPrinterFactory );
+        collection.AddSingleton( typeof( PdfCreationAndPrintingStarter ), PdfPrinterFactory );
         collection.AddSingleton( typeof( DocumentProcessor ), DocumentBuilderFactory );
 
         collection.AddSingleton( typeof( MainViewModel ), MainViewModelFactory );
@@ -52,14 +51,14 @@ public static class ServiceCollectionExtensions
     }
 
 
-    private static PdfPrinter PdfPrinterFactory(IServiceProvider serviceProvider)
+    private static PdfCreationAndPrintingStarter PdfPrinterFactory(IServiceProvider serviceProvider)
     {
         DocumentProcessor model =
         DocumentProcessor.GetInstance( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
             , PdfPrinterImplementation.GetInstance( ListerApp.OsName, PdfCreator.GetInstance( ListerApp.OsName ) )
             , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance() );
 
-        return new PdfPrinter( model );
+        return new PdfCreationAndPrintingStarter( model );
     }
 
 
@@ -72,8 +71,20 @@ public static class ServiceCollectionExtensions
         string fileIsOpenMessage = MainViewConfigs.FileIsOpenMessage;
         string fileIsTooBigMessage = MainViewConfigs.FileIsTooBig;
 
+        object [] dependencies = 
+        {
+            serviceProvider.GetRequiredService<PdfCreationAndPrintingStarter> (),
+            serviceProvider.GetRequiredService<PrintDialogViewModel> (),
+            serviceProvider.GetRequiredService<PersonChoosingViewModel> (),
+            serviceProvider.GetRequiredService<PersonSourceViewModel> (),
+            serviceProvider.GetRequiredService<BadgesBuildingViewModel> (),
+            serviceProvider.GetRequiredService<NavigationZoomViewModel> (),
+            serviceProvider.GetRequiredService<SceneViewModel> (),
+            serviceProvider.GetRequiredService<WaitingViewModel> ()
+        };
+
         return new MainViewModel( ListerApp.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
-                                                                      , fileIsOpenMessage, fileIsTooBigMessage );
+                                 , fileIsOpenMessage, fileIsTooBigMessage, dependencies );
     }
 
 
@@ -241,6 +252,6 @@ public static class ServiceCollectionExtensions
 
     private static WaitingViewModel WaitingViewModelFactory(IServiceProvider serviceProvider)
     {
-        return new WaitingViewModel( WaitingElementConfigs.GifName );
+        return new WaitingViewModel( WaitingElementConfigs.GifPath );
     }
 }

@@ -1,29 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using ReactiveUI;
-using Lister.Desktop.App;
-using Lister.Desktop.Extentions;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
 
-public class LargeMessageViewModel : ReactiveObject
+public sealed class LargeMessageViewModel : ReactiveObject
 {
-    private static string _warnImageName = "Icons/warning-alert.ico";
-
     private readonly int _maxHeight = 200;
     private readonly int _lineHeight = 16;
     private LargeMessageDialog _view;
-
-    private Bitmap _warnImage;
-    internal Bitmap WarnImage
-    {
-        get { return _warnImage; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _warnImage, value, nameof( WarnImage ) );
-        }
-    }
 
     private List<string> _messageLines;
     internal List<string> MessageLines
@@ -145,13 +130,6 @@ public class LargeMessageViewModel : ReactiveObject
         {
             this.RaiseAndSetIfChanged( ref _messageHeight, value, nameof( MessageHeight ) );
         }
-    }
-
-
-    public LargeMessageViewModel()
-    {
-        string correctnessIcon = ListerApp.ResourceFolderName + _warnImageName;
-        WarnImage = ImageHelper.LoadFromResource( correctnessIcon );
     }
 
 

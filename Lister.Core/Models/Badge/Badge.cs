@@ -1,10 +1,16 @@
 ﻿namespace Lister.Core.Models.Badge;
 
-public class Badge
+/// <summary>
+/// Represents data of badge containing background image, person and layout as set of movable components.
+/// </summary>
+public sealed class Badge
 {
     private static int _lastId;
     private static Dictionary<int, Badge> _backup = new ();
 
+    /// <summary>
+    /// Is margin in badge line of page for one unit (may be on display or printer) thickness frame.
+    /// </summary>
     public Thickness Margin { get; internal set; }
     public int Id { get; private set; }
     public Person Person { get; private set; }

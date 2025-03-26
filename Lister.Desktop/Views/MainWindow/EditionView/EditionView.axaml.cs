@@ -6,21 +6,23 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
-using mainView = Lister.Desktop.Views.MainWindow.MainView;
-using Lister.Desktop.Views.MainWindow;
-using Lister.Desktop.Views.DialogMessageWindows.Dialog;
-using Lister.Desktop.Views.WaitingView.ViewModel;
-using Lister.Desktop.Views.ViewBase;
 using Lister.Desktop.App;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
+using Lister.Desktop.Views.DialogMessageWindows.Dialog;
+using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
+using Lister.Desktop.Views.ViewBase;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using mainView = Lister.Desktop.Views.MainWindow.MainView;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView;
 
-public partial class BadgeEditorView : ShowingDialog
+/// <summary>
+/// Is view for edition of current badge collection.
+/// </summary>
+public sealed partial class BadgeEditorView : ShowingDialog
 {
     private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
     private static readonly int _focusedTextLineLengthLimit = 100;
@@ -42,7 +44,7 @@ public partial class BadgeEditorView : ShowingDialog
     private bool _badgeIsCaptured;
     private Point _pointerOnBadgeComponent;
     private Point _pointerOnBadge;
-    private mainView.MainVieww _back;
+    private mainView.MainView _back;
     private BadgeEditorViewModel _viewModel;
     private bool _isReleaseLocked;
     private bool _isTextEditorFocused;
@@ -154,7 +156,7 @@ public partial class BadgeEditorView : ShowingDialog
         MainWin mainWindow = Parent as MainWin;
         _back.SetProperSize ( _viewModel.ViewWidth, _viewModel.ViewHeight );
         mainWindow.CancelSizeDifference ();
-        _back.RefreshTempateAppearences ();
+        _back.RefreshTemplateAppearences ();
         mainWindow.Content = _back;
     }
 
@@ -243,7 +245,7 @@ public partial class BadgeEditorView : ShowingDialog
     }
 
 
-    internal void PassBackPoint ( mainView.MainVieww back )
+    internal void PassBackPoint ( mainView.MainView back )
     {
         _back = back;
         _viewModel.PassView (this);

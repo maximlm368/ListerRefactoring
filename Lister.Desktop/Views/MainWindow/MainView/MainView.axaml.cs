@@ -4,25 +4,28 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using Microsoft.Extensions.DependencyInjection;
+using Lister.Desktop.App;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
+using Lister.Desktop.Views.MainWindow.EditionView;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 using Lister.Desktop.Views.ViewBase;
-using Lister.Desktop.App;
-using Lister.Desktop.Views.MainWindow.EditionView;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView;
 
-public partial class MainVieww : ShowingDialog
+/// <summary>
+/// Is start and main view.
+/// </summary>
+public sealed partial class MainView : ShowingDialog
 {
     private static bool _widthIsChanged;
     private static bool _heightIsChanged;
 
     internal static bool SomeControlPressed;
     internal static bool IsPathSet;
-    internal static MainVieww Instance { get; private set; }
+    internal static MainView Instance { get; private set; }
     internal static int TappedGoToEditorButton { get; private set; }
     internal static double ProperWidth { get; private set; }
     internal static double ProperHeight { get; private set; }
@@ -33,10 +36,11 @@ public partial class MainVieww : ShowingDialog
 
     internal BadgeEditorView EditorView { get; private set; }
 
-    public MainVieww ()
+    public MainView ()
     {
         InitializeComponent ();
 
+        waiting.Margin = new Avalonia.Thickness(0,12);
         Instance = this;
         ProperWidth = Width;
         ProperHeight = Height;
@@ -189,7 +193,7 @@ public partial class MainVieww : ShowingDialog
     }
 
 
-    internal void RefreshTempateAppearences ( )
+    internal void RefreshTemplateAppearences ( )
     {
         _viewModel.RefreshAppearences ();
     }
@@ -199,13 +203,13 @@ public partial class MainVieww : ShowingDialog
     {
         _processableBadges = processableBadges;
         _firstPage = firstPage;
-        MainVieww mainView = this;
+        MainView mainView = this;
         MainWin window = MainWin.GetMainWindow ();
 
         if ( ( window != null )   &&   ( processableBadges.Count > 0 ) )
         {
             EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, processableBadges.Count );
-            EditorView.SetProperSize (MainVieww.ProperWidth, MainVieww.ProperHeight);
+            EditorView.SetProperSize (ProperWidth, ProperHeight);
             window.CancelSizeDifference ();
             TappedGoToEditorButton = 1;
             _viewModel.SetWaitingUpdatingLayout ();

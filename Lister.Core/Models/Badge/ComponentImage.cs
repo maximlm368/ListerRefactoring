@@ -1,6 +1,9 @@
 ﻿namespace Lister.Core.Models.Badge;
 
-public class ComponentImage : BindableToAnother
+/// <summary>
+/// Represents image placed on badge.
+/// </summary>
+public sealed class ComponentImage : BindableToAnother
 {
     public string Path { get; private set; }
 

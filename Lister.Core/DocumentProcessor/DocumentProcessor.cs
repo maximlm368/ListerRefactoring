@@ -1,5 +1,5 @@
 ﻿using Lister.Core.BadgesCreator.Abstractions;
-using Lister.Core.DataAccess.Abstractions;
+using Lister.Core.PeopleAccess.Abstractions;
 using Lister.Core.DocumentProcessor.Abstractions;
 using Lister.Core.Models;
 using Lister.Core.Models.Badge;
@@ -12,7 +12,7 @@ namespace Lister.Core.DocumentProcessor;
 /// Produces, save pdf file for result pages and sends these pages to printer. 
 /// </summary>
 
-public class DocumentProcessor 
+public sealed class DocumentProcessor 
 {
     private static DocumentProcessor _instance = null;
 

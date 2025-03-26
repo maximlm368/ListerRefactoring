@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public partial class BadgeEditorViewModel : ReactiveObject
+public sealed partial class BadgeEditorViewModel : ReactiveObject
 {
     internal static event BackingToMainViewHandler BackingToMainViewEvent;
 
@@ -233,7 +233,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
     internal void HandleDialogOpenig ()
     {
-        Margin = new Thickness (0, -ViewHeight);
+        Margin = new Thickness (0, -(ViewHeight - 8));
     }
 
 

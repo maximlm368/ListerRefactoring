@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Lister.Core.Models.Badge;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using ReactiveUI;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;

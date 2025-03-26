@@ -2,7 +2,7 @@
 
 namespace Views.MainWindow;
 
-public class MainWindowViewModel : ReactiveObject
+public sealed class MainWindowViewModel : ReactiveObject
 {
     public MainWindowViewModel ()
     {

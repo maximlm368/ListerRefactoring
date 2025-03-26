@@ -6,7 +6,7 @@ namespace Lister.Core.DocumentProcessor;
 /// Represents badges placed on one line.
 /// Place sent badge in itself.
 /// </summary>
-public class BadgeLine
+public sealed class BadgeLine
 {
     internal double _restWidth;
     private double _heightConstraint;

@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
-using Lister.Desktop.Views.WaitingView.ViewModel;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 

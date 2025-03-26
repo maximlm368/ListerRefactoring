@@ -1,8 +1,8 @@
 ﻿using Avalonia.Threading;
 using Lister.Core.DocumentProcessor;
 using Lister.Core.Models;
-using Lister.Desktop.CoreModelReflections;
-using Lister.Desktop.CoreModelReflections.BadgeVM;
+using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using ReactiveUI;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 

@@ -9,7 +9,7 @@ using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 
-public partial class PrintDialog : BaseWindow
+public sealed partial class PrintDialog : BaseWindow
 {
     private static int _defaultSelectedIndex = -1;
     private PrintDialogViewModel _viewModel;
