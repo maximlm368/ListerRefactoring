@@ -574,7 +574,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
             LastIsEnable = true;
         }
 
-        _view.CorrespondToEmptyCurrentCollection (CurrentVisibleCollection.Count);
+        if ( CurrentVisibleCollection.Count < 1 ) PeopleGotEmpty?.Invoke ();
     }
 
 

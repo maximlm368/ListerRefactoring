@@ -2,14 +2,13 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using MessageBox.Avalonia.Views;
-using Microsoft.Extensions.DependencyInjection;
 using Lister.Desktop.App;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 
-public sealed partial class PrintDialog : BaseWindow
+public sealed partial class PrintDialog : Window
 {
     private static int _defaultSelectedIndex = -1;
     private PrintDialogViewModel _viewModel;
@@ -50,13 +49,11 @@ public sealed partial class PrintDialog : BaseWindow
         allPages.IsChecked = true;
         amountText.Text = "1";
         pagesText.AcceptsReturn = true;
-        CanResize = false;
-
-        Activated += delegate { cancel.Focus (NavigationMethod.Tab, KeyModifiers.None); };
-
         printerSettings.FocusAdorner = null;
         print.FocusAdorner = null;
         cancel.FocusAdorner = null;
+
+        Activated += ( s, a ) => { cancel.Focus ( NavigationMethod.Tab, KeyModifiers.None ); };
     }
 
 

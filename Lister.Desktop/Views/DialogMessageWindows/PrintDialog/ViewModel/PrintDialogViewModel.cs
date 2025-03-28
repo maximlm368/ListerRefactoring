@@ -11,24 +11,19 @@ namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
 internal sealed partial class PrintDialogViewModel : ReactiveObject
 {
-    private readonly string _warnImagePath;
-
     private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
     private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
-
     private readonly string _emptyCopies;
     private readonly string _emptyPages;
     private readonly string _emptyPrinters;
-
     private readonly int _copiesMaxCount = 10;
     private readonly int _pagesStrMaxGlyphCount = 30;
-
     private readonly List<char> _pageNumsAcceptables
                                = new List<char>() { ' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private readonly List<char> _copiesCountAcceptables
                                = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
     private readonly string _osName;
+
     private List<char> _numAsChars;
     private List<int> _pageNumbers;
     private List<int> _currentRange;
@@ -56,16 +51,6 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         private set
         {
             this.RaiseAndSetIfChanged( ref _canvasBackground, value, nameof( CanvasBackground ) );
-        }
-    }
-
-    private Bitmap _warnImage;
-    internal Bitmap WarnImage
-    {
-        get { return _warnImage; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _warnImage, value, nameof( WarnImage ) );
         }
     }
 
@@ -259,21 +244,15 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
     }
 
 
-    internal PrintDialogViewModel(string warnImagePath, string emptyCopies, string emptyPages, string emptyPrinters
-                                , string osName)
+    internal PrintDialogViewModel( string emptyCopies, string emptyPages, string emptyPrinters, string osName)
     {
-        _warnImagePath = warnImagePath;
         _emptyCopies = emptyCopies;
         _emptyPages = emptyPages;
         _emptyPrinters = emptyPrinters;
         _osName = osName;
 
-        string correctnessIcon = ListerApp.ResourceFolderName + _warnImagePath;
-        WarnImage = ImageHelper.LoadFromResource( correctnessIcon );
-
         CanvasBackground = new SolidColorBrush( new Color( 255, 240, 240, 240 ) );
         LineBackground = new SolidColorBrush( new Color( 255, 220, 220, 220 ) );
-
         PagesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
         CopiesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
     }
@@ -412,7 +391,6 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
     {
         CopiesError = string.Empty;
         PagesError = string.Empty;
-
         _printingAdjusting.Cancelled = true;
         NeedClose = true;
     }

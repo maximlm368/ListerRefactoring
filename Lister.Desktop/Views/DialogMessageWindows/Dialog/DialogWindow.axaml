@@ -3,7 +3,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		mc:Ignorable="d" d:DesignWidth="358" d:DesignHeight="140"
-		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Dialog; assembly=View"
+		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Dialog; assembly=Lister.Desktop"
 		x:Class="Lister.Desktop.Views.DialogMessageWindows.Dialog.DialogWindow"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel"
 		MaxWidth="360"
@@ -12,6 +12,7 @@
 		x:DataType="vm:DialogViewModel"
 		
 		SystemDecorations="None"
+		CanResize="False"
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
@@ -45,6 +46,7 @@
 					Width="314"
 					FontSize="12"
 					Margin ="18,37,0,0"
+					Text="{Binding Path=Question, Mode=OneWay}"
 					TextWrapping="WrapWithOverflow"
 					MaxLines="3"/>
 			</Grid>

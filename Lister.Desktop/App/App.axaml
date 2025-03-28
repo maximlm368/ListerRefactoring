@@ -14,6 +14,19 @@
 		
 		<StyleInclude Source="/Views/Styles/ButtonStyles.axaml"/>
 		<StyleInclude Source="/Views/Styles/GeneralStyles.axaml"/>
+
+		<Style Selector="AdornerLayer">
+			<Setter Property="DefaultFocusAdorner">
+				<FocusAdornerTemplate>
+					<Border BorderThickness="0"
+							BorderBrush="{DynamicResource SystemControlFocusVisualPrimaryBrush}"
+							Margin="{DynamicResource SystemControlFocusVisualMargin}">
+						<Border BorderThickness="0"
+								BorderBrush="{DynamicResource SystemControlFocusVisualSecondaryBrush}" />
+					</Border>
+				</FocusAdornerTemplate>
+			</Setter>
+		</Style>
 		
 	</Application.Styles>
 

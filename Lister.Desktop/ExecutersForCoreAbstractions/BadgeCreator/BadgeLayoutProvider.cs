@@ -88,7 +88,7 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         _templateToCorrectMemberBorderThickness = new();
 
         _schemeFile = schemeFolder;
-        string templatesFolder = _resourceFolder + "Templates\\";
+        string templatesFolder = Path.Combine(_resourceFolder, "Templates");
         DirectoryInfo containingDirectory = new DirectoryInfo( templatesFolder );
         DirectoryInfo[] templateDirectories = containingDirectory.GetDirectories ();
 

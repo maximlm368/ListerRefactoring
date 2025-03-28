@@ -4,29 +4,29 @@ namespace Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel;
 
 public sealed class MessageViewModel : ReactiveObject
 {
-    private readonly int _lineHeight = 16;
-    private int _topMargin = 54;
-    private MessageDialog _view;
-
     private string _message;
     internal string Message
     {
-        get { return _message; }
+        get => _message;
         set
         {
-            this.RaiseAndSetIfChanged( ref _message, value, nameof( Message ) );
+            if ( value == null ) return;
+            this.RaiseAndSetIfChanged ( ref _message, value, nameof ( Message ) );
         }
     }
 
+    public delegate void ClosedHandler ( );
+    public event ClosedHandler? Closed;
 
-    internal void PassView(MessageDialog view)
+
+    public MessageViewModel ( string message ) 
     {
-        _view = view;
+        Message = message;
     }
 
 
-    internal void Close()
+    internal void Close ()
     {
-        _view.Shut();
+        Closed?.Invoke ();
     }
 }

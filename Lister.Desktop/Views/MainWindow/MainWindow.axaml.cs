@@ -9,13 +9,13 @@ using mainView = Lister.Desktop.Views.MainWindow.MainView;
 
 namespace Lister.Desktop.Views.MainWindow;
 
-public sealed partial class MainWin : Window
+public sealed partial class MainWindow : Window
 {
     private static readonly int _onScreenRestriction = 50;
     private static PixelPoint _pointerPosition;
 
     internal static IStorageProvider CommonStorageProvider { get; private set; }
-    internal static MainWin Window { get; private set; }
+    internal static MainWindow Window { get; private set; }
     internal static double HeightfDifference { get; private set; }
 
     private mainView.MainView _mainView;
@@ -38,7 +38,7 @@ public sealed partial class MainWin : Window
     internal double HeightDifference { get; private set; }
 
 
-    public MainWin ( )
+    public MainWindow ( )
     {
         InitializeComponent();
 
@@ -59,7 +59,7 @@ public sealed partial class MainWin : Window
     }
 
 
-    internal static MainWin ? GetMainWindow ( )
+    internal static MainWindow ? GetMainWindow ( )
     {
         return Window;
     }

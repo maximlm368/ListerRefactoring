@@ -1,5 +1,5 @@
 ﻿using Lister.Core.DocumentProcessor.Abstractions;
-using Lister.Core.ExtentionsAndAuxiliary;
+using Lister.Core.Extentions;
 
 namespace Lister.Core.Models.Badge;
 

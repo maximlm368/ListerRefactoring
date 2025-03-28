@@ -1,52 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using MessageBox.Avalonia.Views;
 using Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
-using Lister.Desktop.Views.ViewBase;
-using Lister.Desktop.Views.MainWindow;
-using Lister.Desktop.App;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
 
-public sealed partial class LargeMessageDialog : BaseWindow
+public sealed partial class LargeMessageDialog : Window
 {
-    private LargeMessageViewModel _viewModel;
     private bool _messageIsSelected;
     private bool _pathIsSelected;
-    private string _message;
-    internal string Message 
-    {
-        get 
-        {
-            return _message; 
-        }
-
-        set 
-        {
-            if ( value != null )
-            {
-                string [] lines = value.Split (new char[]{'.'}, StringSplitOptions.RemoveEmptyEntries);
-
-                if ( lines.Length == 1 ) 
-                {
-                    lines = [value];
-                }
-
-                List<string> pureLines = new List<string> ();
-
-                foreach ( string line   in   lines ) 
-                {
-                    string pureLine = line.Trim ();
-                    pureLines.Add ( pureLine );
-                }
-
-                _viewModel.MessageLines = pureLines;
-                _message = value;
-            }
-        }
-    }
-
-    public ShowingDialog Caller { get; private set; }
 
 
     public LargeMessageDialog ()
@@ -55,58 +16,18 @@ public sealed partial class LargeMessageDialog : BaseWindow
     }
 
 
-    public LargeMessageDialog ( ShowingDialog caller, List<string> errors, string errorsSource ) : this ()
+    public LargeMessageDialog ( List<string> errors, string errorsSource ) : this ()
     {
-        Caller = caller;
-        _viewModel = new LargeMessageViewModel ();
-        DataContext = _viewModel;
-        CanResize = false;
-        _viewModel.PassView (this);
+        LargeMessageViewModel viewModel = new LargeMessageViewModel ();
+        viewModel.Closed += () => Close ();
 
-        CanResize = false;
-        ok.FocusAdorner = null;
-        textArea.FocusAdorner = null;
-        
-        Activated += delegate { ok.Focus (NavigationMethod.Tab, KeyModifiers.None); };
+        DataContext = viewModel;
 
-        MainWin mainWindow = ListerApp.MainWindow;
-        mainWindow.ModalWindow = this;
+        Activated += (s,a) => ok.Focus (NavigationMethod.Tab, KeyModifiers.None);
 
-        List<string> messageLines = null;
-        _viewModel.Set (errors, errorsSource);
-    }
+        MainWindow.MainWindow.Window.ModalWindow = this;
 
-
-    internal List<string> ConvertToLinesForStandard ( string message )
-    {
-        List<string> pureLines = new List<string> ();
-
-        if ( message == null )
-        {
-            return pureLines;
-        }
-
-        string [] lines = message.Split (new char[]{'.'}, StringSplitOptions.RemoveEmptyEntries);
-
-        if ( lines.Length == 1 )
-        {
-            lines = [message];
-        }
-
-        foreach ( string line   in   lines )
-        {
-            string pureLine = line.Trim ();
-            pureLines.Add (pureLine);
-        }
-
-        return pureLines;
-    }
-
-
-    internal void Shut ()
-    {
-        Caller.HandleDialogClosing ();
-        this.Close ();
+        viewModel.Set (errors, errorsSource);
     }
 
 

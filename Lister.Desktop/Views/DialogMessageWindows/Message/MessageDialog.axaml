@@ -2,16 +2,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="568" d:DesignHeight="138"
-        x:Class="Lister.Desktop.Views.DialogMessageWindows.Message.MessageDialog"
-		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message; assembly=View"
-		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel"
+        mc:Ignorable="d" d:DesignWidth="568" d:DesignHeight="134"
+        x:Class="Lister.Desktop.Views.DialogMessageWindows.Message.MessageWindow"
+		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message; assembly=Lister.Desktop"
+		
 		MaxWidth="568"
-		MaxHeight="138"
+		MaxHeight="134"
 		WindowStartupLocation="CenterOwner"
+		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel"
+
 		x:DataType="vm:MessageViewModel"
 		
 		SystemDecorations="None"
+		CanResize="False"
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
@@ -19,7 +22,7 @@
 
 	<UserControl
 		Width="568"
-		Height="138"
+		Height="134"
 		BorderBrush = "gray"
         BorderThickness = "1">
 
@@ -27,6 +30,7 @@
 
 			<Label
 				Classes="modalLabel"
+				Height="16"
 				Content ="Ошибка"/>
 
 			<Grid Height="70"
@@ -55,12 +59,12 @@
 						Width="470"
 						Margin="16,0,0,16"
 						FontSize="12"
-						Text ="{Binding  Path = Message,  Mode=OneWay}"
 						TextWrapping="WrapWithOverflow"
+						Text="{Binding Path=Message, Mode=OneWay}"
 						MaxLines="3"/>
-					
+
 				</Border>
-				
+
 			</Grid>
 
 			<Canvas
@@ -94,7 +98,3 @@
 </Window>
 
 
-<!--
-
-Source = "{Binding  Path = WarnImage,  Mode=OneWay }"
--->

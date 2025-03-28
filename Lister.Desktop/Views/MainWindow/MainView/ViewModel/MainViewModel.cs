@@ -1,7 +1,6 @@
-﻿using Avalonia;
-using Avalonia.Platform.Storage;
-using Lister.Desktop.App;
+﻿using Avalonia.Platform.Storage;
 using Lister.Desktop.ModelMappings;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
 using Lister.Desktop.Views.DialogMessageWindows.Message;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
@@ -13,7 +12,6 @@ using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
 using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
-using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -22,7 +20,7 @@ using System.Text;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 
-internal sealed class MainViewModel : ReactiveObject
+public sealed class MainViewModel : ReactiveObject
 {
     private static bool _inWaitingState;
     internal static bool InWaitingState
@@ -57,7 +55,6 @@ internal sealed class MainViewModel : ReactiveObject
     };
 
     private string _osName;
-
     private PdfCreationAndPrintingStarter _pdfPrinter;
     private PrintDialog _printDialog;
     private PrintDialogViewModel _printDialogViewModel;
@@ -67,11 +64,12 @@ internal sealed class MainViewModel : ReactiveObject
     private NavigationZoomViewModel _zoomNavigationViewModel;
     private SceneViewModel _sceneViewModel;
     private WaitingViewModel _waitingViewModel;
-    private MainView _view;
     private bool _buildButtonIsTapped = false;
     private PrintAdjustingData _printAdjusting;
 
     internal string PdfFileName { get; private set; }
+    public delegate void EditionIsChosenHandler ( List<BadgeViewModel> processableBadges, PageViewModel firstPage );
+    public event EditionIsChosenHandler? EditionIsChosen;
 
 
     internal MainViewModel(string osName, string suggestedFileNames, string saveTitle, string incorrectXSLX
@@ -114,34 +112,18 @@ internal sealed class MainViewModel : ReactiveObject
         }
         else
         {
-            if (MainView.Instance == null)
-            {
-                return;
-            }
-
             if (args.PropertyName == "FileIsDeclined")
             {
-                string message = _personSourceViewModel.FilePath + _incorrectXSLX;
-                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, message );
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( ListerApp.MainWindow );
+                ShowMessageWindow ( _personSourceViewModel.FilePath + _incorrectXSLX );
             }
             else if (args.PropertyName == "FileIsTooBig")
             {
                 string limit = _sceneViewModel.GetLimit().ToString() + ".";
-                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _buildingLimitIsExhaustedMessage + limit );
-                _waitingViewModel.Darken();
-
-                if ( ListerApp.MainWindow != null ) 
-                {
-                    messegeDialog.ShowDialog ( ListerApp.MainWindow );
-                }
+                ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
             }
             else if (args.PropertyName == "FileIsOpen")
             {
-                MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( MainWin.Window );
+                ShowMessageWindow (_fileIsOpenMessage);
             }
         }
     }
@@ -160,14 +142,7 @@ internal sealed class MainViewModel : ReactiveObject
             if (_personChoosingViewModel.SickTemplateIsSet)
             {
                 TemplateViewModel template = _personChoosingViewModel.ChosenTemplate;
-
-                LargeMessageDialog messegeDialog =
-                new LargeMessageDialog( MainView.Instance, template.CorrectnessMessage, template.SourcePath );
-                
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( MainWin.Window );
-                messegeDialog.Focusable = true;
-                messegeDialog.Focus();
+                ShowLargeMessageWindow ( template.CorrectnessMessage, template.SourcePath );
             }
         }
         else if (args.PropertyName == "FileNotFound")
@@ -187,18 +162,13 @@ internal sealed class MainViewModel : ReactiveObject
             }
 
             bool shouldShowMessage = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage != null
-                                     && _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
-
+                                     && 
+                                     _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
             if (shouldShowMessage)
             {
                 List<string> message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
-                string path = _personChoosingViewModel.ChosenTemplate.SourcePath;
-                LargeMessageDialog messegeDialog = new LargeMessageDialog( MainView.Instance, message, path );
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( MainWin.Window );
-                messegeDialog.Focusable = true;
-                messegeDialog.Focus();
-
+                string templatePath = _personChoosingViewModel.ChosenTemplate.SourcePath;
+                ShowLargeMessageWindow ( message, templatePath );
                 _buildButtonIsTapped = true;
             }
             else
@@ -228,17 +198,12 @@ internal sealed class MainViewModel : ReactiveObject
             {
                 EndWaiting();
                 string limit = _sceneViewModel.GetLimit().ToString() + ".";
-                MessageDialog messegeDialog =
-                                 new MessageDialog( MainView.Instance, _buildingLimitIsExhaustedMessage + limit );
-
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( MainWin.Window );
+                ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
             }
         }
         else if (args.PropertyName == "EditIncorrectsIsSelected")
         {
-            MainView mainView = MainView.Instance;
-            mainView.EditIncorrectBadges( _sceneViewModel.ProcessableBadges, _sceneViewModel.VisiblePage );
+            EditionIsChosen?.Invoke ( _sceneViewModel.ProcessableBadges, _sceneViewModel.VisiblePage );
         }
         else if (args.PropertyName == "PdfIsWanted")
         {
@@ -295,7 +260,7 @@ internal sealed class MainViewModel : ReactiveObject
     }
 
 
-    internal void HandleDialogClosing()
+    private void HandleDialogClosing()
     {
         _waitingViewModel.HandleDialogClosing();
 
@@ -325,17 +290,10 @@ internal sealed class MainViewModel : ReactiveObject
     }
 
 
-    internal void PassView(MainView view)
-    {
-        _view = view;
-    }
-
-
     internal void SetWaitingUpdatingLayout()
     {
         _waitingViewModel.Show();
         MainViewIsWaiting = true;
-
         InWaitingState = true;
     }
 
@@ -358,8 +316,7 @@ internal sealed class MainViewModel : ReactiveObject
         options.Title = _saveTitle;
         options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType>( fileExtentions );
         options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString();
-        IStorageFile chosenFile = await MainWin.CommonStorageProvider.SaveFilePickerAsync( options );
-
+        IStorageFile chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync( options );
         bool savingCancelled = chosenFile == null;
 
         if (savingCancelled)
@@ -367,10 +324,7 @@ internal sealed class MainViewModel : ReactiveObject
             return;
         }
 
-        PdfFileName = chosenFile.Path.ToString();
-        int uriTypeLength = ListerApp.ResourceUriType.Length;
-        PdfFileName = PdfFileName.Substring( uriTypeLength, PdfFileName.Length - uriTypeLength );
-
+        PdfFileName = chosenFile.Path.AbsolutePath;
         FileInfo fileInfo = new FileInfo( PdfFileName );
 
         if (fileInfo.Exists)
@@ -382,9 +336,7 @@ internal sealed class MainViewModel : ReactiveObject
             }
             catch (IOException ex)
             {
-                var messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
-                _waitingViewModel.Darken();
-                messegeDialog.ShowDialog( MainWin.Window );
+                ShowMessageWindow ( _fileIsOpenMessage );
 
                 return;
             }
@@ -458,10 +410,29 @@ internal sealed class MainViewModel : ReactiveObject
         }
         else
         {
-            MessageDialog messegeDialog = new MessageDialog( MainView.Instance, _fileIsOpenMessage );
-            _waitingViewModel.Darken();
-            messegeDialog.ShowDialog( MainWin.Window );
+            ShowMessageWindow ( _fileIsOpenMessage );
         }
+    }
+
+
+    private void ShowMessageWindow ( string message )
+    {
+        MessageWindow messegeWindow = new MessageWindow ( message );
+        MainWindow.Window.ModalWindow = messegeWindow;
+        messegeWindow.Closed += ( s, a ) => { HandleDialogClosing (); };
+        _waitingViewModel.Darken ();
+        messegeWindow.ShowDialog ( MainWindow.Window );
+    }
+
+
+    private void ShowLargeMessageWindow ( List<string> message, string path )
+    {
+        LargeMessageDialog messegeDialog = new LargeMessageDialog ( message, path );
+        messegeDialog.Closed += ( s, a ) => { HandleDialogClosing (); };
+        _waitingViewModel.Darken ();
+        messegeDialog.ShowDialog ( MainWindow.Window );
+        messegeDialog.Focusable = true;
+        messegeDialog.Focus ();
     }
 
 
@@ -470,7 +441,7 @@ internal sealed class MainViewModel : ReactiveObject
         _printAdjusting = new();
         _printDialog = PrintDialog.GetPreparedDialog( _sceneViewModel.AllPages.Count, _printAdjusting );
         _waitingViewModel.Darken();
-        _printDialog.ShowDialog( MainWin.Window );
+        _printDialog.ShowDialog( MainWindow.Window );
     }
 
 
@@ -499,10 +470,6 @@ internal sealed class MainViewModel : ReactiveObject
             _printingShouldStart = false;
             _pdfPrinter.PrintDuringWaiting( _printAdjusting, _osName );
             return;
-        }
-        else if (MainView.TappedGoToEditorButton == 1)
-        {
-            _view.SwitchToEditor();
         }
     }
 

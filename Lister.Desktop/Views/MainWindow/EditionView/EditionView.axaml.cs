@@ -12,7 +12,6 @@ using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.DialogMessageWindows.Dialog;
 using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
-using Lister.Desktop.Views.ViewBase;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using mainView = Lister.Desktop.Views.MainWindow.MainView;
@@ -22,7 +21,7 @@ namespace Lister.Desktop.Views.MainWindow.EditionView;
 /// <summary>
 /// Is view for edition of current badge collection.
 /// </summary>
-public sealed partial class BadgeEditorView : ShowingDialog
+public sealed partial class BadgeEditorView : UserControl
 {
     private static readonly string _question ="Сохранить изменения и вернуться к макету ?";
     private static readonly int _focusedTextLineLengthLimit = 100;
@@ -59,19 +58,15 @@ public sealed partial class BadgeEditorView : ShowingDialog
     }
 
 
-    public BadgeEditorView ( bool newEditorIsNeeded, int incorrectBadgesAmmount ) : this()
+    public BadgeEditorView ( int incorrectBadgesAmmount ) : this()
     {
-        if ( newEditorIsNeeded   ||   _viewModel == null )
-        {
-            EditorViewModelArgs args = ListerApp.Services.GetRequiredService <EditorViewModelArgs> ();
-            BadgeEditorViewModel viewModel = new BadgeEditorViewModel (incorrectBadgesAmmount, args);
-            this.DataContext = viewModel;
-            _viewModel = viewModel;
-        }
-        else
-        {
-            this.DataContext = _viewModel;
-        }
+        EditorViewModelArgs args = ListerApp.Services.GetRequiredService<EditorViewModelArgs> ();
+        BadgeEditorViewModel viewModel = new BadgeEditorViewModel ( incorrectBadgesAmmount, args );
+        DataContext = viewModel;
+        _viewModel = viewModel;
+        _viewModel.BackingActivated += CheckBacking;
+        _viewModel.BackingComplated += ComplateBacking;
+        _viewModel.PeopleGotEmpty += () => { cancel.IsEnabled = false; };
 
         DisableFocusAdorner ();
         editorTextBox.AddHandler (TextBox.PointerReleasedEvent, PreventPasting, RoutingStrategies.Tunnel);
@@ -145,15 +140,9 @@ public sealed partial class BadgeEditorView : ShowingDialog
     }
 
 
-    public override void HandleDialogClosing ()
+    private void ComplateBacking ( )
     {
-        _viewModel.HandleDialogClosing ();
-    }
-
-
-    internal void CompleteBacking ( )
-    {
-        MainWin mainWindow = Parent as MainWin;
+        MainWindow mainWindow = Parent as MainWindow;
         _back.SetProperSize ( _viewModel.ViewWidth, _viewModel.ViewHeight );
         mainWindow.CancelSizeDifference ();
         _back.RefreshTemplateAppearences ();
@@ -248,25 +237,15 @@ public sealed partial class BadgeEditorView : ShowingDialog
     internal void PassBackPoint ( mainView.MainView back )
     {
         _back = back;
-        _viewModel.PassView (this);
     }
 
 
-    internal void CorrespondToEmptyCurrentCollection ( int currentCount )
-    {
-        if ( currentCount < 1 )
-        {
-            cancel.IsEnabled = false;
-        }
-    }
-
-
-    internal void CheckBacking ( )
+    private void CheckBacking ( )
     {
         _viewModel.HandleDialogOpenig ( );
-        var dialog = new DialogWindow (this);
-        dialog.Message = _question;
-        Task result = dialog.ShowDialog ( ListerApp.MainWindow );
+        DialogWindow dialog = new DialogWindow (_question);
+        dialog.Closed += (s,a) => { _viewModel.HandleDialogClosing (); };
+        Task<bool> result = dialog.ShowDialog<bool> ( MainWindow.Window );
         TaskScheduler uiScheduler = TaskScheduler.FromCurrentSynchronizationContext ();
 
         result.ContinueWith 
@@ -274,10 +253,7 @@ public sealed partial class BadgeEditorView : ShowingDialog
             ( Action<Task> ) 
             ( task => 
                 {
-                    if ( dialog.Result == dialog.YesStr )
-                    {
-                        _viewModel.ComplateGoBack (this);
-                    }
+                    if ( result.Result ) _viewModel.GoBack ( );
                 }
             ),
             uiScheduler

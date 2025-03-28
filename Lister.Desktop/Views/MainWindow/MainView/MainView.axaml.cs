@@ -4,33 +4,28 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using Lister.Desktop.App;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.MainWindow.EditionView;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
-using Lister.Desktop.Views.ViewBase;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView;
 
 /// <summary>
 /// Is start and main view.
 /// </summary>
-public sealed partial class MainView : ShowingDialog
+public sealed partial class MainView : UserControl
 {
     private static bool _widthIsChanged;
     private static bool _heightIsChanged;
 
     internal static bool SomeControlPressed;
     internal static bool IsPathSet;
-    internal static MainView Instance { get; private set; }
     internal static int TappedGoToEditorButton { get; private set; }
     internal static double ProperWidth { get; private set; }
     internal static double ProperHeight { get; private set; }
 
-    private MainViewModel _viewModel;
+    private readonly MainViewModel _viewModel;
     private List <BadgeViewModel> _processableBadges;
     private PageViewModel _firstPage;
 
@@ -39,33 +34,37 @@ public sealed partial class MainView : ShowingDialog
     public MainView ()
     {
         InitializeComponent ();
+    }
 
-        waiting.Margin = new Avalonia.Thickness(0,12);
-        Instance = this;
+
+    public MainView ( MainViewModel viewModel ) : this()
+    {
+        waiting.Margin = new Avalonia.Thickness ( 0, 12 );
         ProperWidth = Width;
         ProperHeight = Height;
-        DataContext = ListerApp.Services.GetRequiredService<MainViewModel> ();
-        _viewModel = ( MainViewModel ) DataContext;
-        _viewModel.PassView (this);
+        DataContext = viewModel;
+        _viewModel = viewModel;
+        _viewModel.EditionIsChosen += EditIncorrectBadges;
         FocusAdorner = null;
 
         Loaded += OnLoaded;
         LayoutUpdated += LayoutUpdatedHandler;
         PointerPressed += PointerIsPressed;
 
-        this.AddHandler (UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel);
-    }
-
-
-    public override void HandleDialogClosing ()
-    {
-        _viewModel.HandleDialogClosing ();
+        this.AddHandler ( UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel );
     }
 
 
     internal void LayoutUpdatedHandler ( object sender, EventArgs args )
     {
-        _viewModel.LayoutUpdated ();
+        if ( TappedGoToEditorButton == 1 )
+        {
+            SwitchToEditor ();
+        }
+        else 
+        {
+            _viewModel.LayoutUpdated ();
+        }
     }
 
 
@@ -199,16 +198,16 @@ public sealed partial class MainView : ShowingDialog
     }
 
 
-    internal void EditIncorrectBadges ( List <BadgeViewModel> processableBadges, PageViewModel firstPage )
+    private void EditIncorrectBadges ( List <BadgeViewModel> processableBadges, PageViewModel firstPage )
     {
         _processableBadges = processableBadges;
         _firstPage = firstPage;
         MainView mainView = this;
-        MainWin window = MainWin.GetMainWindow ();
+        MainWindow window = MainWindow.GetMainWindow ();
 
         if ( ( window != null )   &&   ( processableBadges.Count > 0 ) )
         {
-            EditorView = new BadgeEditorView ( BadgesBuildingViewModel.BuildingOccured, processableBadges.Count );
+            EditorView = new BadgeEditorView ( processableBadges.Count );
             EditorView.SetProperSize (ProperWidth, ProperHeight);
             window.CancelSizeDifference ();
             TappedGoToEditorButton = 1;
@@ -220,7 +219,7 @@ public sealed partial class MainView : ShowingDialog
     internal void SwitchToEditor ( )
     {
         TappedGoToEditorButton = 0;
-        MainWin window = MainWin.GetMainWindow ();
+        MainWindow window = MainWindow.GetMainWindow ();
 
         Task task = new Task
         (

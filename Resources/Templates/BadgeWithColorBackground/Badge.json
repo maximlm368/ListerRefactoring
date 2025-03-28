@@ -1,6 +1,6 @@
 {
-	"TemplateName": "Бейдж без фона",
-	"BackgroundImagePath": "nurses2.jpg",
+	"TemplateName":"Бейдж с фоном",
+	"BackgroundImagePath": "Background.jpg",
 	"CommonDefaultFontFamily": "Century Gothic",
 	"Width": 350,
 	"Height": 214,

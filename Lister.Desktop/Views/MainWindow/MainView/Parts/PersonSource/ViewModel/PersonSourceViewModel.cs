@@ -10,7 +10,7 @@ public class PersonSourceViewModel : ReactiveObject
 {
     private readonly string _pickerTitle;
     private readonly string _filePickerTitle;
-
+    private readonly string _configPath;
     private IReadOnlyList<string> _patterns;
     private IReadOnlyList<string> _xslxHeaders;
     private string _sourcePathKeeper;
@@ -94,7 +94,7 @@ public class PersonSourceViewModel : ReactiveObject
 
 
     public PersonSourceViewModel (string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders
-                                 , int limit, string sourceKeeper, BadgeCreator badgesCreator)
+                                 , int limit, string sourceKeeper, BadgeCreator badgesCreator, string configPath)
     {
         _pickerTitle = pickerTitle;
         _filePickerTitle = filePickerTitle;
@@ -105,6 +105,7 @@ public class PersonSourceViewModel : ReactiveObject
 
         _sourcePathKeeper = sourceKeeper;
         _badgeCreator = badgesCreator;
+        _configPath = configPath;
     }
 
 
@@ -128,16 +129,16 @@ public class PersonSourceViewModel : ReactiveObject
     }
 
 
-    internal async void ChooseFile()
+    internal async void ChooseFile ()
     {
         IReadOnlyList<IStorageFile> files =
-            await MainWin.CommonStorageProvider.OpenFilePickerAsync( FilePickerOptions );
+            await MainWindow.CommonStorageProvider.OpenFilePickerAsync ( FilePickerOptions );
 
-        if (files.Count == 1 && files[0] is not null)
+        if ( files.Count == 1 && files [0] is not null )
         {
-            string path = files[0].Path.LocalPath;
+            string path = files [0].Path.LocalPath;
 
-            CheckIfOpenOrIncorrectAndUse( path, true );
+            CheckIfOpenOrIncorrectAndUse ( path, true );
         }
     }
 
@@ -231,7 +232,7 @@ public class PersonSourceViewModel : ReactiveObject
 
     private void SavePath()
     {
-        SetterInJson.WritePersonSource( ListerApp.ConfigPath, SourceFilePath );
+        SetterInJson.WritePersonSource( _configPath, SourceFilePath );
     }
 
 

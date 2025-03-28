@@ -1,6 +1,6 @@
 {
 	"TemplateName":"Бейдж с фоном",
-	"BackgroundImagePath": "doctors2.jpg",
+	"BackgroundImagePath": "Background.jpg",
 	"CommonDefaultFontFamily": "Century Gothic",
 	"Width": 350,
 	"Height": 214,

@@ -112,7 +112,7 @@
 											PointerPressed="HandleChoosingByTapping"
 											PointerEntered="HoverComboboxItem"
 											PointerExited="ExitComboboxItem"
-											Content="{Binding   Path = Person.FullName,  Mode=OneWay }"/>
+											Content="{Binding   Path = Model.FullName,  Mode=OneWay }"/>
 
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>

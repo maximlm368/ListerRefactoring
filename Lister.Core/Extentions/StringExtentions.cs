@@ -1,6 +1,6 @@
-﻿namespace Lister.Core.ExtentionsAndAuxiliary;
+﻿namespace Lister.Core.Extentions;
 
-public static class StringExtention
+public static class StringExtentions
 {
     /// <summary>
     /// Once separates tail of string defining it by any of separators. 

@@ -7,7 +7,7 @@
 		mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
 		
         xmlns:views="clr-namespace:Lister.Desktop.Views.MainWindow.MainView;assembly=Lister.Desktop"
-        x:Class="Lister.Desktop.Views.MainWindow.MainWin"
+        x:Class="Lister.Desktop.Views.MainWindow.MainWindow"
 		
         Icon="/Assets/Icons/badge.ico"
         Title="Lister"

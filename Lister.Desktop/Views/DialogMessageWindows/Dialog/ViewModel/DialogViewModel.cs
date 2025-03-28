@@ -4,23 +4,36 @@ namespace Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel;
 
 public sealed class DialogViewModel : ReactiveObject
 {
-    private DialogWindow _view;
+    public delegate void YesHandler ();
+    public event YesHandler? YesChosen;
+    public delegate void NoHandler ();
+    public event NoHandler? NoChosen;
 
-
-    public DialogViewModel(DialogWindow view)
+    private string _question;
+    internal string Question
     {
-        _view = view;
+        get => _question;
+        set
+        {
+            if ( value == null ) return;
+            this.RaiseAndSetIfChanged ( ref _question, value, nameof ( Question ) );
+        }
+    }
+
+    public DialogViewModel ( string question ) 
+    {
+        Question = question;
     }
 
 
     internal void ChooseYes()
     {
-        _view.ChooseYes();
+        YesChosen?.Invoke();
     }
 
 
     internal void ChooseNo()
     {
-        _view.ChooseNo();
+        NoChosen?.Invoke();
     }
 }

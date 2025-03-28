@@ -12,6 +12,7 @@
 		x:DataType="vm:PrintDialogViewModel"
 		
 		SystemDecorations="None"
+		CanResize="False"
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"

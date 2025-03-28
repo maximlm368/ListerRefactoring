@@ -1,5 +1,5 @@
 {
-	"maketLimit": 3000,
+	"maketLimit": 1000,
 
 	"personSource": "D:\\MML\\Doctors.csv"
 }

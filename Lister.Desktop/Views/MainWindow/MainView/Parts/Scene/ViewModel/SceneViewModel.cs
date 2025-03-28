@@ -231,9 +231,6 @@ public partial class SceneViewModel : ReactiveObject
 
         _documentScale = 1;
         AllPages = new List <PageViewModel> ();
-        //PageViewModel firstPage = new PageViewModel (_documentScale);
-        //VisiblePage = firstPage;
-
         VisiblePage = new PageViewModel ( new Page (), _documentScale );
         _lastPage = VisiblePage;
         AllPages.Add (VisiblePage);

@@ -62,7 +62,6 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="8.3.0.1" />
     <PackageReference Include="JsonSchema.Net" Version="7.2.3" />
-    <PackageReference Include="MessageBox.Avalonia-mainthread" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.3" />
     <PackageReference Include="NJsonSchema" Version="11.1.0" />
@@ -81,10 +80,10 @@
     <None Update="Resources\Templates\Aurse2\Images\nurses2.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Templates\Doctor-release\Doctor-release.json">
+    <None Update="Resources\Templates\BadgeWithColorBackground\Badge.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Templates\Doctor-release\Images\doctors2.jpg">
+    <None Update="Resources\Templates\BadgeWithColorBackground\Images\Background.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor2\Doctor2.json">
@@ -102,7 +101,7 @@
     <None Update="Assets\JsonSchema\Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\ListerConfig.json">
+    <None Update="Resources\Config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Images\doctors2.jpg">
@@ -123,10 +122,10 @@
     <None Update="Resources\Templates\Incorrect\Images\nurses2.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Templates\Nurse-release\Images\nurses2.jpg">
+    <None Update="Resources\Templates\BadgeWithoutColorBackground\Images\Background.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Templates\Nurse-release\Nurse-release.json">
+    <None Update="Resources\Templates\BadgeWithoutColorBackground\Badge.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

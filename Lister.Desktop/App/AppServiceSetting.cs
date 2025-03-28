@@ -25,8 +25,15 @@ namespace Lister.Desktop.App;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddNeededServices(this IServiceCollection collection)
+    private static string _configPath;
+    private static string _osName;
+
+
+    public static void AddNeededServices(this IServiceCollection collection, string configPath, string osName)
     {
+        _configPath = configPath;
+        _osName = osName;
+
         collection.AddSingleton( typeof( PdfCreationAndPrintingStarter ), PdfPrinterFactory );
         collection.AddSingleton( typeof( DocumentProcessor ), DocumentBuilderFactory );
 
@@ -45,8 +52,8 @@ public static class ServiceCollectionExtensions
 
     private static DocumentProcessor DocumentBuilderFactory(IServiceProvider serviceProvider)
     {
-        return DocumentProcessor.GetInstance( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
-            , PdfPrinterImplementation.GetInstance( ListerApp.OsName, PdfCreator.GetInstance( ListerApp.OsName ) )
+        return DocumentProcessor.GetInstance( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( _osName )
+            , PdfPrinterImplementation.GetInstance( _osName, PdfCreator.GetInstance( _osName ) )
             , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance() );
     }
 
@@ -54,8 +61,8 @@ public static class ServiceCollectionExtensions
     private static PdfCreationAndPrintingStarter PdfPrinterFactory(IServiceProvider serviceProvider)
     {
         DocumentProcessor model =
-        DocumentProcessor.GetInstance( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
-            , PdfPrinterImplementation.GetInstance( ListerApp.OsName, PdfCreator.GetInstance( ListerApp.OsName ) )
+        DocumentProcessor.GetInstance( TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( _osName )
+            , PdfPrinterImplementation.GetInstance( _osName, PdfCreator.GetInstance( _osName ) )
             , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance() );
 
         return new PdfCreationAndPrintingStarter( model );
@@ -83,7 +90,7 @@ public static class ServiceCollectionExtensions
             serviceProvider.GetRequiredService<WaitingViewModel> ()
         };
 
-        return new MainViewModel( ListerApp.OsName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
+        return new MainViewModel( _osName, suggestedName, saveTitle, incorrectXSLX, limitIsExhaustedMessage
                                  , fileIsOpenMessage, fileIsTooBigMessage, dependencies );
     }
 
@@ -99,13 +106,14 @@ public static class ServiceCollectionExtensions
         int badgeLimit = PersonSourceConfigs.BadgeCountLimit;
 
         string sourcePathKeeper =
-        GetterFromJson.GetSectionStrValue( new List<string> { "personSource" }, ListerApp.ConfigPath, false );
+        GetterFromJson.GetSectionStrValue( new List<string> { "personSource" }, _configPath, false );
 
         BadgeCreator badgesCreator = BadgeCreator.GetInstance( BadgeLayoutProvider.GetInstance()
                                                               , PeopleSourceFactory.GetInstance() );
 
         PersonSourceViewModel result =
-        new PersonSourceViewModel( pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper, badgesCreator );
+        new PersonSourceViewModel( pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper, badgesCreator
+                                   , _configPath );
 
         return result;
     }
@@ -179,8 +187,8 @@ public static class ServiceCollectionExtensions
                 badgeLimit, extentionToolTip, shrinkingToolTip, fileIsOpenMessage
                 , DocumentProcessor.GetInstance
                 (
-                    TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( ListerApp.OsName )
-                    , PdfPrinterImplementation.GetInstance( ListerApp.OsName, PdfCreator.GetInstance( ListerApp.OsName ) )
+                    TextWidthMeasurer.GetMesurer(), PdfCreator.GetInstance( _osName )
+                    , PdfPrinterImplementation.GetInstance( _osName, PdfCreator.GetInstance( _osName ) )
                     , BadgeLayoutProvider.GetInstance(), PeopleSourceFactory.GetInstance()
                 )
              );
@@ -190,9 +198,7 @@ public static class ServiceCollectionExtensions
     private static NavigationZoomViewModel NavigationZoomerViewModelFactory(IServiceProvider serviceProvider)
     {
         string procentSymbol = NavigationZoomerConfigs.ProcentSymbol;
-
         short maxDepth = NavigationZoomerConfigs.MaxDepth;
-
         short minDepth = NavigationZoomerConfigs.MinDepth;
 
         return new NavigationZoomViewModel( procentSymbol, maxDepth, minDepth );
@@ -201,12 +207,11 @@ public static class ServiceCollectionExtensions
 
     private static PrintDialogViewModel PrintDialogViewModelFactory(IServiceProvider serviceProvider)
     {
-        string warnImagePath = PrintDialogConfigs.WarnImagePath;
         string emptyCopies = PrintDialogConfigs.EmptyCopies;
         string emptyPages = PrintDialogConfigs.EmptyPages;
         string emptyPrinters = PrintDialogConfigs.EmptyPrinters;
 
-        return new PrintDialogViewModel( warnImagePath, emptyCopies, emptyPages, emptyPrinters, ListerApp.OsName );
+        return new PrintDialogViewModel( emptyCopies, emptyPages, emptyPrinters, _osName );
     }
 
 
@@ -216,13 +221,9 @@ public static class ServiceCollectionExtensions
         string shrinkingToolTip = EditionViewConfigs.ShrinkingToolTip;
         string allFilter = EditionViewConfigs.AllFilter;
         string incorrectFilter = EditionViewConfigs.IncorrectFilter;
-
         string correctFilter = EditionViewConfigs.CorrectFilter;
-
         string allTip = EditionViewConfigs.AllTip;
-
         string correctTip = EditionViewConfigs.CorrectTip;
-
         string incorrectTip = EditionViewConfigs.IncorrectTip;
 
         SolidColorBrush focusedFontColor = GetColor( EditionViewConfigs.FocusedFontColor );

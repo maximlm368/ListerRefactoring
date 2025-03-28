@@ -1,9 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Lister.Desktop.Extentions;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
-using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
@@ -12,8 +12,6 @@ namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
 public sealed partial class BadgeEditorViewModel : ReactiveObject
 {
-    internal static event BackingToMainViewHandler BackingToMainViewEvent;
-
     private readonly string _extentionToolTip;
     private readonly string _shrinkingToolTip;
     private readonly BadgeComparer _comparer;
@@ -29,7 +27,6 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
     private TextLineViewModel _splittable;
     private TextLineViewModel _focusedLine;
     private bool _incorrectsAreSet = false;
-    private BadgeEditorView _view;
     private int _visibleRangeStart = 0;
     private int _visibleRangeEnd;
 
@@ -190,16 +187,14 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         }
     }
 
+    public delegate void BackingActivatedHandler ( );
+    public event BackingActivatedHandler? BackingActivated;
 
-    private static void OnBackingToMainView ()
-    {
-        if ( BackingToMainViewEvent == null )
-        {
-            return;
-        }
+    public delegate void BackingComplatedHandler ();
+    public event BackingComplatedHandler? BackingComplated;
 
-        BackingToMainViewEvent ();
-    }
+    public delegate void PeopleGotEmptyHandler ();
+    public event PeopleGotEmptyHandler? PeopleGotEmpty;
 
 
     public BadgeEditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
@@ -354,12 +349,6 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
     }
 
 
-    internal void PassView ( BadgeEditorView view )
-    {
-        _view = view;
-    }
-
-
     private bool ChangesExist ( )
     {
         bool exist = false;
@@ -383,7 +372,7 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
 
         if ( changesExist )
         {
-            _view.CheckBacking ();
+            BackingActivated?.Invoke ();
         }
         else
         {
@@ -392,17 +381,7 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
     }
 
 
-    internal void ComplateGoBack ( BadgeEditorView caller )
-    {
-        if ( _view.Equals(caller) )
-        {
-            GoBack();
-        }
-        
-    }
-
-
-    private void GoBack ()
+    internal void GoBack ()
     {
         foreach ( KeyValuePair <BadgeViewModel, double> badgeToScale   in   _scaleStorage )
         {
@@ -422,10 +401,8 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         }
 
         ReleaseCaptured ();
-        OnBackingToMainView ();
         _scale = _startScale;
-        _view.CompleteBacking ();
-        _firstPage.Show ();
+        BackingComplated?.Invoke ();
     }
 
 
