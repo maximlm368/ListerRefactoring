@@ -21,7 +21,8 @@ public class CustomViewbox : Viewbox
         set { SetAndRaise( IsScrollableProperty, ref _isScrollable, value ); }
     }
 
-
-    public CustomViewbox() : base() { }
-
+    public CustomViewbox() : base() 
+    {
+    
+    }
 }

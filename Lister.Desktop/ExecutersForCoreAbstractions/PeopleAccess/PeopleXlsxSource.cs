@@ -10,71 +10,74 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 /// </summary>
 public sealed class PeopleXlsxSource : IPeopleSource
 {
-    private static PeopleXlsxSource _instance;
+    private static PeopleXlsxSource? _instance;
 
-
-    private PeopleXlsxSource() { }
-
-
-    public static PeopleXlsxSource GetInstance()
+    private PeopleXlsxSource ()
     {
-        if (_instance == null)
-        {
-            _instance = new PeopleXlsxSource();
-        }
+
+    }
+
+    public static PeopleXlsxSource GetInstance ()
+    {
+        _instance ??= new PeopleXlsxSource ();
 
         return _instance;
     }
 
-
-    public List<Person>? Get(string? filePath, int gettingLimit)
+    public List<Person>? Get ( string? filePath, int gettingLimit )
     {
         List<Person> result = [];
 
-        if (filePath == null)
+        if ( filePath == null )
         {
             return null;
         }
 
-        FileInfo fileInfo = new FileInfo( filePath );
+        FileInfo fileInfo = new ( filePath );
 
-        if (fileInfo.Exists)
+        if ( fileInfo.Exists )
         {
-            using Stream stream = File.OpenRead( filePath );
-            using IExcelDataReader reader = ExcelReaderFactory.CreateReader( stream );
+            using Stream stream = File.OpenRead ( filePath );
+            using IExcelDataReader reader = ExcelReaderFactory.CreateReader ( stream );
             int rowCount = reader.RowCount;
 
-            if (rowCount > gettingLimit)
+            if ( rowCount > gettingLimit )
             {
                 return null;
             }
 
-            ExcelDataSetConfiguration conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new ()
             {
-                ConfigureDataTable = (reader) => new ExcelDataTableConfiguration
+                ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
                 {
                     UseHeaderRow = false,
                 }
             };
 
-            DataSet dataSet = reader.AsDataSet( conf );
-            DataTable dataTable = dataSet.Tables[0];
+            DataSet dataSet = reader.AsDataSet ( conf );
+            DataTable dataTable = dataSet.Tables [0];
 
-            for (var i = 1; i < dataTable.Rows.Count; i++)
+            for ( var i = 1; i < dataTable.Rows.Count; i++ )
             {
                 List<string> rowData = [];
 
-                for (var j = 0; j < dataTable.Columns.Count; j++)
+                for ( var j = 0; j < dataTable.Columns.Count; j++ )
                 {
-                    var data = dataTable.Rows[i][j];
-                    rowData.Add( data.ToString() );
+                    var data = dataTable.Rows [i] [j];
+
+                    string? strData = data.ToString ();
+
+                    if ( strData != null )
+                    {
+                        rowData.Add ( strData );
+                    }
                 }
 
-                Person person = Person.Create( rowData.ToArray() );
+                Person? person = Person.Create ( [.. rowData] );
 
-                if (person != null)
+                if ( person != null )
                 {
-                    result.Add( person );
+                    result.Add ( person );
                 }
             }
         }
@@ -87,35 +90,40 @@ public sealed class PeopleXlsxSource : IPeopleSource
     }
 
 
-    public List<string> GetRow(string filePath, int rowNumZeroBased)
+    public static List<string> GetRow ( string filePath )
     {
         List<string> resultRow = [];
+        bool isXSLX = filePath.Last () == 'x';
 
-        bool extentionIsXSLX = filePath.Last() == 'x';
-
-        if (extentionIsXSLX)
+        if ( isXSLX )
         {
-            using Stream stream = File.OpenRead( filePath );
-            using IExcelDataReader reader = ExcelReaderFactory.CreateReader( stream );
+            using Stream stream = File.OpenRead ( filePath );
+            using IExcelDataReader reader = ExcelReaderFactory.CreateReader ( stream );
             int rowCounts = reader.RowCount;
 
-            ExcelDataSetConfiguration conf = new ExcelDataSetConfiguration
+            ExcelDataSetConfiguration conf = new ()
             {
-                ConfigureDataTable = (reader) => new ExcelDataTableConfiguration
+                ConfigureDataTable = ( reader ) => new ExcelDataTableConfiguration
                 {
                     UseHeaderRow = false,
                 }
             };
 
-            DataSet dataSet = reader.AsDataSet( conf );
-            DataTable dataTable = dataSet.Tables[0];
+            DataSet dataSet = reader.AsDataSet ( conf );
+            DataTable dataTable = dataSet.Tables [0];
 
-            for (int i = 0; i < 1; i++)
+            for ( int i = 0; i < 1; i++ )
             {
-                for (int j = 0; j < dataTable.Columns.Count; j++)
+                for ( int j = 0; j < dataTable.Columns.Count; j++ )
                 {
-                    object data = dataTable.Rows[i][j];
-                    resultRow.Add( data.ToString() );
+                    object data = dataTable.Rows [i] [j];
+
+                    string? strData = data.ToString ();
+
+                    if ( strData != null ) 
+                    {
+                        resultRow.Add ( strData );
+                    } 
                 }
             }
         }

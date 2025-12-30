@@ -12,9 +12,7 @@
 	},
 
 	"CorrectMemberSettings": {
-
 		"BorderColor": "#4aacfe",
-
 		"BorderThickness": {
 			"Left": 2,
 			"Top": 2,
@@ -24,11 +22,8 @@
 	},
 
 	"IncorrectMemberSettings": {
-
 		"Background": "#c8c8c8",
-
 		"BorderColor": "#d23650",
-
 		"BorderThickness": {
 			"Left": 2,
 			"Top": 2,
@@ -45,9 +40,7 @@
 		"Alignment": "Right",
 		"FontSize": 26,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#730000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": false
 	},
@@ -60,9 +53,7 @@
 		"Alignment": "Right",
 		"FontSize": 15,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#730000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": false
 	},
@@ -75,9 +66,7 @@
 		"Alignment": "Right",
 		"FontSize": 15,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#730000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": false
 	},
@@ -90,9 +79,7 @@
 		"Alignment": "Right",
 		"FontSize": 11,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#000000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": true
 	},
@@ -105,9 +92,7 @@
 		"Alignment": "Right",
 		"FontSize": 11,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#000000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": true
 	},
@@ -128,13 +113,71 @@
 				"Alignment": "Right",
 				"FontSize": 15,
 				"FontName": "Century Gothic",
-
 				"Foreground": "#730000",
-
 				"FontWeight": "Bold",
 				"IsSplitable": false
 			}
 		]
-	}
+	},
 
+
+
+	"InsideImages": {
+		"Items": [
+			{
+				"Path": "RedCross.png",
+				"Width": 36,
+				"TopOffset": 0,
+				"LeftOffset": 0,
+				"BindingObject": "FamilyName1",
+				"IsAboveOfBinding": "no"
+			},
+
+			{
+				"Path": "GreenCheckMarker.jpg",
+				"Width": 28,
+				"TopOffset": 10,
+				"LeftOffset": 100,
+				"BindingObject": "FamilyName1",
+				"IsAboveOfBinding": "no"
+			}
+		]
+	},
+
+	"InsideShapes": {
+		"Items": [
+			{
+				"Type": "Rectangle",
+				"FillColor": "#000000",
+				"Width": 120,
+				"Height": 1,
+				"TopOffset": 0,
+				"LeftOffset": 200,
+				"BindingObject": "FirstAndPatronymic",
+				"IsAboveOfBinding": "no"
+			},
+
+			{
+				"Type": "Rectangle",
+				"FillColor": "#ff0000",
+				"Width": 200,
+				"Height": 2,
+				"TopOffset": 50,
+				"LeftOffset": 100,
+				"BindingObject": "FamilyName",
+				"IsAboveOfBinding": "yes"
+			},
+
+			{
+				"Type": "Ellipse",
+				"FillColor": "#888888",
+				"Width": 80,
+				"Height": 10,
+				"TopOffset": 0,
+				"LeftOffset": 212,
+				"BindingObject": "Department1",
+				"IsAboveOfBinding": "no"
+			}
+		]
+	}
 }

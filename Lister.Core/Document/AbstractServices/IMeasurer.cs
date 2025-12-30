@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.DocumentProcessor.Abstractions;
+﻿namespace Lister.Core.Document.AbstractServices;
 
 /// <summary>
 /// Defines abstraction implementation of wich is needed to measure widht of text in units of current platform.

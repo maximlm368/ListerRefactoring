@@ -1,45 +1,59 @@
 ﻿using Avalonia.Media;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
 /// <summary>
 /// Represents visible entity that reflects badge correctness.
 /// </summary>
-internal sealed class BadgeCorrectnessViewModel : ReactiveObject
+internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
 {
     private static readonly string _correctIcon;
     private static readonly string _incorrectIcon;
-    private static SolidColorBrush _focusedBackground;
-    private static SolidColorBrush _defaultBackground;
+    private static readonly SolidColorBrush _focusedBackground;
+    private static readonly SolidColorBrush _defaultBackground;
 
-    private double _extendedScrollableMaxIconWidth;
-    private double _mostExtendedMaxIconWidth;
-    private double _shrinkedIconWidth;
+    private readonly double _extendedScrollableMaxIconWidth;
+    private readonly double _shrinkedIconWidth;
 
+    [ObservableProperty]
     private bool _correctness;
-    internal bool Correctness
-    {
-        get { return _correctness; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _correctness, value, nameof( Correctness ) );
-        }
-    }
 
-    private string _correctnessIcon;
+    [ObservableProperty]
+    private SolidColorBrush _background = new ( new Color ( 0, 0, 0, 0 ) );
+
+    [ObservableProperty]
+    private string _boundPersonName = string.Empty;
+
+    [ObservableProperty]
+    private double _personNameExpending;
+
+    [ObservableProperty]
+    private double _insideBorderWidth;
+
+    [ObservableProperty]
+    private FontFamily _boundFontFamily;
+
+    [ObservableProperty]
+    private SolidColorBrush _correctnessColor = new ( new Color ( 0, 0, 0, 0 ) );
+
+    private string _correctnessIcon = string.Empty;
     internal string CorrectnessIcon
     {
-        get { return _correctnessIcon; }
+        get
+        {
+            return _correctnessIcon;
+        }
+
         private set
         {
-            if (value == _correctIcon)
+            if ( value == _correctIcon )
             {
                 byte red = 0x3a;
                 byte green = 0x81;
                 byte blue = 0x3A;
 
-                CorrectnessColor = new SolidColorBrush( new Color( 255, red, green, blue ) );
+                CorrectnessColor = new SolidColorBrush ( new Color ( 255, red, green, blue ) );
             }
             else
             {
@@ -47,71 +61,46 @@ internal sealed class BadgeCorrectnessViewModel : ReactiveObject
                 byte green = 0x36;
                 byte blue = 0x50;
 
-                CorrectnessColor = new SolidColorBrush( new Color( 255, red, green, blue ) );
+                CorrectnessColor = new SolidColorBrush ( new Color ( 255, red, green, blue ) );
             }
 
-            this.RaiseAndSetIfChanged( ref _correctnessIcon, value, nameof( CorrectnessIcon ) );
-        }
-    }
-
-    private SolidColorBrush _background;
-    internal SolidColorBrush Background
-    {
-        get { return _background; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _background, value, nameof( Background ) );
-        }
-    }
-
-    private string _boundPersonName;
-    internal string BoundPersonName
-    {
-        get { return _boundPersonName; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _boundPersonName, value, nameof( BoundPersonName ) );
-        }
-    }
-
-    private double _personNameExpending;
-    internal double PersonNameExpending
-    {
-        get { return _personNameExpending; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _personNameExpending, value, nameof( PersonNameExpending ) );
+            _correctnessIcon = value;
+            OnPropertyChanged ();
         }
     }
 
     private double _width;
     internal double Width
     {
-        get { return _width; }
+        get
+        {
+            return _width;
+        }
+
         set
         {
             InsideBorderWidth = value - 2;
-            this.RaiseAndSetIfChanged( ref _width, value, nameof( Width ) );
+            _width = value;
+            OnPropertyChanged ();
         }
     }
 
-    private double _insideBorderWidth;
-    internal double InsideBorderWidth
-    {
-        get { return _insideBorderWidth; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _insideBorderWidth, value, nameof( InsideBorderWidth ) );
-        }
-    }
-
-    private FontWeight _boundFontWeight;
+    private FontWeight _boundFontWeight = FontWeight.Normal;
     internal FontWeight BoundFontWeight
     {
-        get { return _boundFontWeight; }
+        get
+        {
+            return _boundFontWeight;
+        }
+
         set
         {
-            if (value == FontWeight.Bold)
+            if ( !Enum.IsDefined ( typeof ( FontWeight ), value ) )
+            {
+                return;
+            }
+
+            if ( value == FontWeight.Bold )
             {
                 Background = _focusedBackground;
             }
@@ -120,52 +109,32 @@ internal sealed class BadgeCorrectnessViewModel : ReactiveObject
                 Background = _defaultBackground;
             }
 
-            this.RaiseAndSetIfChanged( ref _boundFontWeight, value, nameof( BoundFontWeight ) );
-        }
-    }
-
-    private FontFamily _boundFontFamily;
-    internal FontFamily BoundFontFamily
-    {
-        get { return _boundFontFamily; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _boundFontFamily, value, nameof( BoundFontFamily ) );
-        }
-    }
-
-    private SolidColorBrush _correctnessColor;
-    internal SolidColorBrush CorrectnessColor
-    {
-        get { return _correctnessColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _correctnessColor, value, nameof( CorrectnessColor ) );
+            _boundFontWeight = value;
+            OnPropertyChanged ();
         }
     }
 
     internal BadgeViewModel BoundBadge { get; private set; }
 
-
-    static BadgeCorrectnessViewModel()
+    static BadgeCorrectnessViewModel ()
     {
         _correctIcon = "\uf00c";
         _incorrectIcon = "\uf00d";
-        _focusedBackground = new SolidColorBrush( new Color( 255, 186, 220, 248 ) );
-        _defaultBackground = new SolidColorBrush( new Color( 255, 238, 238, 238 ) );
+        _focusedBackground = new SolidColorBrush ( new Color ( 255, 186, 220, 248 ) );
+        _defaultBackground = new SolidColorBrush ( new Color ( 255, 238, 238, 238 ) );
     }
 
-
-    internal BadgeCorrectnessViewModel(BadgeViewModel boundBadge, double extendedScrollableWidth, double shortWidth
-                                        , double widthLimit, bool isExtended)
+    internal BadgeCorrectnessViewModel ( BadgeViewModel badge, double extendedScrollableWidth, double shortWidth, double widthLimit,
+        bool isExtended
+    )
     {
-        BoundBadge = boundBadge;
+        BoundBadge = badge;
         BoundFontWeight = FontWeight.Normal;
         BoundFontFamily = FontManager.Current.DefaultFontFamily.Name;
 
-        CalcStringPresentation( widthLimit );
+        CalcStringPresentation ( widthLimit );
 
-        if (boundBadge.IsCorrect)
+        if ( badge.IsCorrect )
         {
             Correctness = true;
             CorrectnessIcon = _correctIcon;
@@ -179,7 +148,7 @@ internal sealed class BadgeCorrectnessViewModel : ReactiveObject
         _extendedScrollableMaxIconWidth = extendedScrollableWidth;
         _shrinkedIconWidth = shortWidth;
 
-        if (isExtended)
+        if ( isExtended )
         {
             Width = _extendedScrollableMaxIconWidth;
         }
@@ -189,10 +158,9 @@ internal sealed class BadgeCorrectnessViewModel : ReactiveObject
         }
     }
 
-
-    internal void SwitchCorrectness()
+    internal void SwitchCorrectness ()
     {
-        if (Correctness)
+        if ( Correctness )
         {
             Correctness = false;
             CorrectnessIcon = _incorrectIcon;
@@ -204,41 +172,42 @@ internal sealed class BadgeCorrectnessViewModel : ReactiveObject
         }
     }
 
-
-    internal void CalcStringPresentation(double widthLimit)
+    internal void CalcStringPresentation ( double widthLimit )
     {
         string tail = "...";
         string personPresentation = BoundBadge.Model.Person.FullName;
 
-        FormattedText formatted = new FormattedText( personPresentation, System.Globalization.CultureInfo.CurrentCulture
-                                       , FlowDirection.LeftToRight, Typeface.Default, 16, null );
+        FormattedText formatted = new ( personPresentation, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+            Typeface.Default, 16, null
+        );
 
-        formatted.SetFontWeight( BoundFontWeight );
+        formatted.SetFontWeight ( BoundFontWeight );
 
-        if (formatted.Width <= widthLimit)
+        if ( formatted.Width <= widthLimit )
         {
             BoundPersonName = personPresentation;
+
             return;
         }
         else
         {
-            personPresentation = personPresentation.Substring( 0, personPresentation.Length - 1 ) + tail;
+            personPresentation = personPresentation[..^1] + tail;
         }
 
-        for (int index = personPresentation.Length - 1; index > 0; index--)
+        for ( int index = personPresentation.Length - 1; index > 0; index-- )
         {
-            string subStr = personPresentation.Substring( 0, index - 4 ) + tail;
+            string subStr = personPresentation [..( index - 4 )] + tail;
 
-            formatted = new FormattedText( subStr, System.Globalization.CultureInfo.CurrentCulture
-                                                       , FlowDirection.LeftToRight, Typeface.Default, 16, null );
+            formatted = new ( subStr, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Typeface.Default, 16, null );
 
-            formatted.SetFontWeight( BoundFontWeight );
-            formatted.SetFontSize( 16 );
-            formatted.SetFontFamily( BoundFontFamily );
+            formatted.SetFontWeight ( BoundFontWeight );
+            formatted.SetFontSize ( 16 );
+            formatted.SetFontFamily ( BoundFontFamily );
 
-            if (formatted.Width <= widthLimit)
+            if ( formatted.Width <= widthLimit )
             {
                 personPresentation = subStr;
+
                 break;
             }
         }

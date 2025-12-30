@@ -1,12 +1,12 @@
 ﻿using AnimatedImage.Avalonia;
 using Avalonia;
 using Avalonia.Platform;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
-using ReactiveUI;
 
 namespace Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
 
-public partial class WaitingViewModel : ReactiveObject
+public partial class WaitingViewModel : ObservableObject
 {
     private readonly double _canvasHiddenVerticalMargin = 12;
 
@@ -15,139 +15,70 @@ public partial class WaitingViewModel : ReactiveObject
     private double _canvasHeightStorage = 506;
     private double _canvasWidthStorage = 830;
     private double _canvasShownVerticalMargin = -494;
-    private double _imageHeightStorage = 300;
-    private string _gifPath;
-    private AnimatedImageSource _gifSourceStorage;
+    private readonly string? _gifPath;
+    private AnimatedImageSource? _gifSourceStorage;
 
+    [ObservableProperty]
     private AnimatedImageSource? _gifSource;
-    public AnimatedImageSource? GifSource
-    {
-        get { return _gifSource; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _gifSource, value, nameof( GifSource ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _canvasTop;
-    public double CanvasTop
-    {
-        get { return _canvasTop; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _canvasTop, value, nameof( CanvasTop ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _canvasLeft;
-    public double CanvasLeft
-    {
-        get { return _canvasLeft; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _canvasLeft, value, nameof( CanvasLeft ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _canvasHeight;
-    public double CanvasHeight
-    {
-        get { return _canvasHeight; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _canvasHeight, value, nameof( CanvasHeight ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _canvasWidth;
-    public double CanvasWidth
-    {
-        get { return _canvasWidth; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _canvasWidth, value, nameof( CanvasWidth ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _imageHeight;
-    public double ImageHeight
-    {
-        get { return _imageHeight; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _imageHeight, value, nameof( ImageHeight ) );
-        }
-    }
 
+    [ObservableProperty]
     private bool _imageIsVisible;
-    public bool ImageIsVisible
-    {
-        get { return _imageIsVisible; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _imageIsVisible, value, nameof( ImageIsVisible ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _progressWidth;
-    public double ProgressWidth
-    {
-        get { return _progressWidth; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _progressWidth, value, nameof( ProgressWidth ) );
-        }
-    }
 
+    [ObservableProperty]
     private Thickness _margin;
-    public Thickness Margin
-    {
-        get { return _margin; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _margin, value, nameof( Margin ) );
-        }
-    }
 
-
-    public WaitingViewModel ( )
+    public WaitingViewModel ()
     {
         Margin = new Thickness ( 0, _canvasHiddenVerticalMargin );
     }
 
-
-    public WaitingViewModel(string gifPath)
+    public WaitingViewModel ( string gifPath )
     {
         _gifPath = gifPath;
-        Margin = new Thickness( 0, _canvasHiddenVerticalMargin );
+        Margin = new Thickness ( 0, _canvasHiddenVerticalMargin );
     }
 
-
-    internal void Darken()
+    internal void Darken ()
     {
         CanvasHeight = _canvasHeightStorage;
         CanvasWidth = _canvasWidthStorage;
-        Margin = new Thickness( 0, _canvasShownVerticalMargin );
+        Margin = new Thickness ( 0, _canvasShownVerticalMargin );
         CanvasTop = _canvasTopStorage;
         CanvasLeft = _canvasLeftStorage;
     }
 
-
-    internal void HandleDialogClosing()
+    internal void HandleDialogClosing ()
     {
-        Margin = new Thickness( 0, _canvasHiddenVerticalMargin );
+        Margin = new Thickness ( 0, _canvasHiddenVerticalMargin );
     }
 
-
-    public void Show()
+    public void Show ()
     {
         CanvasHeight = _canvasHeightStorage;
         CanvasWidth = _canvasWidthStorage;
-        Margin = new Thickness( 0, _canvasShownVerticalMargin );
+        Margin = new Thickness ( 0, _canvasShownVerticalMargin );
         CanvasTop = _canvasTopStorage;
         CanvasLeft = _canvasLeftStorage;
 
-        if (_gifSourceStorage == null)
+        if ( _gifSourceStorage == null && _gifPath != null )
         {
             _gifSourceStorage = new AnimatedImageSourceStream ( AssetLoader.Open ( new Uri ( _gifPath ) ) );
         }
@@ -155,15 +86,13 @@ public partial class WaitingViewModel : ReactiveObject
         GifSource = _gifSourceStorage;
     }
 
-
-    public void Hide()
+    public void Hide ()
     {
-        Margin = new Thickness( 0, _canvasHiddenVerticalMargin );
+        Margin = new Thickness ( 0, _canvasHiddenVerticalMargin );
         GifSource = null;
     }
 
-
-    public void ChangeSize(double heightDiff, double widthDiff)
+    public void ChangeSize ( double heightDiff, double widthDiff )
     {
         CanvasWidth -= widthDiff;
         _canvasWidthStorage -= widthDiff;
@@ -175,9 +104,9 @@ public partial class WaitingViewModel : ReactiveObject
         _canvasLeftStorage -= widthDiff / 2;
         _canvasShownVerticalMargin += heightDiff;
 
-        if (MainViewModel.MainViewIsWaiting)
+        if ( MainViewModel.MainViewIsWaiting )
         {
-            Margin = new Thickness( 0, _canvasShownVerticalMargin );
+            Margin = new Thickness ( 0, _canvasShownVerticalMargin );
         }
     }
 }

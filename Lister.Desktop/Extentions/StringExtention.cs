@@ -2,16 +2,16 @@
 
 internal static class StringExtention
 {
-    public static string TrimLastNewLineChar(this string beingProcessed)
+    public static string TrimLastNewLineChar ( this string beingProcessed )
     {
-        if (!string.IsNullOrEmpty( beingProcessed ))
+        if ( !string.IsNullOrEmpty ( beingProcessed ) )
         {
-            char lastChar = beingProcessed[beingProcessed.Length - 1];
+            char lastChar = beingProcessed [^1];
             bool isGoal = lastChar == '\n';
 
-            if (isGoal)
+            if ( isGoal )
             {
-                beingProcessed = beingProcessed.Substring( 0, beingProcessed.Length - 1 );
+                beingProcessed = beingProcessed [..^1];
             }
         }
 

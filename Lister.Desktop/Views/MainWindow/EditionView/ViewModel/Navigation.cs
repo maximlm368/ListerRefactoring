@@ -1,31 +1,29 @@
-﻿using Lister.Desktop.ModelMappings.BadgeVM;
-using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Lister.Desktop.ModelMappings.BadgeVM;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public partial class BadgeEditorViewModel : ReactiveObject
+internal partial class BadgeEditorViewModel : ObservableObject
 {
     private int _numberAmongVisibleIcons = 1;
 
+    [ObservableProperty]
     private bool _firstIsEnable;
-    internal bool FirstIsEnable
-    {
-        get { return _firstIsEnable; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _firstIsEnable, value, nameof (FirstIsEnable));
-        }
-    }
 
     private bool _previousIsEnable;
     internal bool PreviousIsEnable
     {
-        get { return _previousIsEnable; }
+        get
+        {
+            return _previousIsEnable;
+        }
+
         private set
         {
-            this.RaiseAndSetIfChanged (ref _previousIsEnable, value, nameof (PreviousIsEnable));
+            _previousIsEnable = value;
+            OnPropertyChanged ();
             PreviousOnSliderIsEnable = value;
         }
     }
@@ -33,63 +31,56 @@ public partial class BadgeEditorViewModel : ReactiveObject
     private bool _nextIsEnable;
     internal bool NextIsEnable
     {
-        get { return _nextIsEnable; }
+        get
+        {
+            return _nextIsEnable;
+        }
+
         private set
         {
-            this.RaiseAndSetIfChanged (ref _nextIsEnable, value, nameof (NextIsEnable));
+            _nextIsEnable = value;
+            OnPropertyChanged ();
             NextOnSliderIsEnable = value;
         }
     }
 
+    [ObservableProperty]
     private bool _lastIsEnable;
-    internal bool LastIsEnable
-    {
-        get { return _lastIsEnable; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _lastIsEnable, value, nameof (LastIsEnable));
-        }
-    }
 
     private int _beingProcessedNumber;
     internal int BeingProcessedNumber
     {
-        get { return _beingProcessedNumber; }
+        get
+        {
+            return _beingProcessedNumber;
+        }
+
         private set
         {
             if ( value < 1 )
             {
                 BeingProcessedNumberText = string.Empty;
             }
-            else 
+            else
             {
                 BeingProcessedNumberText = value.ToString ();
             }
 
-            this.RaiseAndSetIfChanged (ref _beingProcessedNumber, value, nameof (BeingProcessedNumber));
+            _beingProcessedNumber = value;
+            OnPropertyChanged ();
         }
     }
 
-    private string _beingProcessedNumberText;
-    internal string BeingProcessedNumberText
-    {
-        get { return _beingProcessedNumberText; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _beingProcessedNumberText, value, nameof (BeingProcessedNumberText));
-        }
-    }
-
+    [ObservableProperty]
+    private string? _beingProcessedNumberText;
 
     internal void ToFirst ()
     {
         ResetIncorrectCountValue ();
-        int absoluteNumber = BeingProcessedNumber + 1;
-        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
 
-        if ( isProcessableChangedInSpecificFilter )
+        if ( IsProcessableChangedInAppropriateFilter ( BeingProcessedNumber ) )
         {
-            ReduceCurrentCollection (BeingProcessedNumber - 1);
+            ReduceCurrentCollection ( BeingProcessedNumber - 1 );
 
             if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
             {
@@ -99,40 +90,42 @@ public partial class BadgeEditorViewModel : ReactiveObject
             }
         }
 
-        VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
+        VisibleIcons = [];
         _visibleIconsStorage = VisibleIcons;
         BeingProcessedNumber = 1;
 
-        for ( int index = 0;   index < _visibleRange;   index++ )
+        for ( int index = 0; index < _visibleRange; index++ )
         {
-            BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
-            VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                 , _correctnessWidthLimit, FilterIsExtended));
+            VisibleIcons.Add (
+                new BadgeCorrectnessViewModel ( CurrentVisibleCollection.ElementAt ( index ), _extendedScrollableIconWidth, _shrinkedIconWidth,
+                    _correctnessWidthLimit, FilterIsExtended
+                )
+            );
 
-            if ( index == 0 ) 
+            if ( index == 0 )
             {
-                BeingProcessedBadge?.Hide ();
-                BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
+                ProcessableBadge?.Hide ();
+                ProcessableBadge = GetAppropriateDraft ( BeingProcessedNumber );
             }
         }
 
         _numberAmongVisibleIcons = 1;
-        SetToCorrectScale (BeingProcessedBadge);
-        BeingProcessedBadge?.Show ();
+        SetToCorrectScale ( ProcessableBadge );
+        ProcessableBadge?.Show ();
         ScrollOffset = 0;
         _scrollStepIndex = 0;
         _runnerHasWalked = 0;
         _visibleRangeEnd = _visibleRange - 1;
-        CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
-        ReplaceActiveIcon (VisibleIcons [0]);
+        CalcRunnerHeightAndStep ( CurrentVisibleCollection.Count );
+        ReplaceActiveIcon ( VisibleIcons [0] );
         ResetManagingControlsEnablings ();
-        SetScrollerItemsCorrectWidth (CurrentVisibleCollection.Count);
+        SetScrollerItemsCorrectWidth ( CurrentVisibleCollection.Count );
     }
 
 
     internal void ToPrevious ()
     {
-        if ( (BeingProcessedNumber <= 1)   ||   (IsDropDownOpen) )
+        if ( ( BeingProcessedNumber <= 1 ) || ( IsDropDownOpen ) )
         {
             return;
         }
@@ -142,7 +135,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
         int possableRemovableAmongVisibleNumber = _numberAmongVisibleIcons;
         SetScrollerToStateBeforeScrollingIfShould ();
         int absoluteNumber = BeingProcessedNumber + 1;
-        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInAppropriateFilter ( BeingProcessedNumber );
         bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
         BeingProcessedNumber--;
         _numberAmongVisibleIcons--;
@@ -150,14 +143,14 @@ public partial class BadgeEditorViewModel : ReactiveObject
         if ( isProcessableChangedInSpecificFilter )
         {
             bool endIsNotAchieved = ( _visibleRangeEnd < ( CurrentVisibleCollection.Count - 1 ) );
-            bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
+            bool shiftToSideLast = ( endIsNotAchieved || !sliderIsScrollable );
 
-            ReduceCurrentCollectionAndIcons 
-            (possableRemovableNumber-1, possableRemovableAmongVisibleNumber-1, shiftToSideLast, true, sliderIsScrollable);
+            ReduceCurrentCollectionAndIcons
+            ( possableRemovableNumber - 1, possableRemovableAmongVisibleNumber - 1, shiftToSideLast, true, sliderIsScrollable );
 
-            CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
+            CalcRunnerHeightAndStep ( CurrentVisibleCollection.Count );
 
-            if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+            if ( !endIsNotAchieved && sliderIsScrollable )
             {
                 _numberAmongVisibleIcons++;
                 _visibleRangeEnd--;
@@ -177,34 +170,34 @@ public partial class BadgeEditorViewModel : ReactiveObject
             _visibleRangeEnd--;
         }
 
-        BeingProcessedBadge.Hide ();
-        BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
-        SetToCorrectScale (BeingProcessedBadge);
-        BeingProcessedBadge?.Show ();
+        ProcessableBadge.Hide ();
+        ProcessableBadge = GetAppropriateDraft ( BeingProcessedNumber );
+        SetToCorrectScale ( ProcessableBadge );
+        ProcessableBadge?.Show ();
         BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
-        ReplaceActiveIcon (newActiveIcon);
+        ReplaceActiveIcon ( newActiveIcon );
         sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
-        if ( ! sliderIsScrollable )
+        if ( !sliderIsScrollable )
         {
             ScrollWidth = 0;
         }
 
         ResetManagingControlsEnablings ();
-        SetScrollerItemsCorrectWidth (CurrentVisibleCollection.Count);
+        SetScrollerItemsCorrectWidth ( CurrentVisibleCollection.Count );
     }
 
 
     internal void ToNext ()
     {
-        if ( (BeingProcessedNumber >= ProcessableCount)   ||   (IsDropDownOpen) )
+        if ( ( BeingProcessedNumber >= ProcessableCount ) || ( IsDropDownOpen ) )
         {
             return;
         }
 
         ResetIncorrectCountValue ();
         SetScrollerToStateBeforeScrollingIfShould ();
-        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInAppropriateFilter ( BeingProcessedNumber );
         bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
         BeingProcessedNumber++;
         _numberAmongVisibleIcons++;
@@ -213,16 +206,16 @@ public partial class BadgeEditorViewModel : ReactiveObject
         {
             BeingProcessedNumber--;
             _numberAmongVisibleIcons--;
-            
-            bool endIsNotAchieved = (_visibleRangeEnd < (CurrentVisibleCollection.Count - 1));
-            bool shiftToSideLast = (endIsNotAchieved   ||   ! sliderIsScrollable);
+
+            bool endIsNotAchieved = ( _visibleRangeEnd < ( CurrentVisibleCollection.Count - 1 ) );
+            bool shiftToSideLast = ( endIsNotAchieved || !sliderIsScrollable );
 
             ReduceCurrentCollectionAndIcons
-            ((BeingProcessedNumber - 1), (_numberAmongVisibleIcons - 1), shiftToSideLast, true, sliderIsScrollable);
+            ( ( BeingProcessedNumber - 1 ), ( _numberAmongVisibleIcons - 1 ), shiftToSideLast, true, sliderIsScrollable );
 
-            CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
+            CalcRunnerHeightAndStep ( CurrentVisibleCollection.Count );
 
-            if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+            if ( !endIsNotAchieved && sliderIsScrollable )
             {
                 _numberAmongVisibleIcons++;
                 _visibleRangeEnd--;
@@ -241,21 +234,21 @@ public partial class BadgeEditorViewModel : ReactiveObject
             _visibleRangeEnd++;
         }
 
-        BeingProcessedBadge.Hide ();
-        BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
-        BeingProcessedBadge?.Show ();
-        SetToCorrectScale (BeingProcessedBadge);
+        ProcessableBadge.Hide ();
+        ProcessableBadge = GetAppropriateDraft ( BeingProcessedNumber );
+        ProcessableBadge?.Show ();
+        SetToCorrectScale ( ProcessableBadge );
         BadgeCorrectnessViewModel newActiveIcon = VisibleIcons [_numberAmongVisibleIcons - 1];
-        ReplaceActiveIcon (newActiveIcon);
+        ReplaceActiveIcon ( newActiveIcon );
         sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
-        if ( ! sliderIsScrollable ) 
+        if ( !sliderIsScrollable )
         {
             ScrollWidth = 0;
         }
 
         ResetManagingControlsEnablings ();
-        SetScrollerItemsCorrectWidth (CurrentVisibleCollection.Count);
+        SetScrollerItemsCorrectWidth ( CurrentVisibleCollection.Count );
     }
 
 
@@ -264,13 +257,13 @@ public partial class BadgeEditorViewModel : ReactiveObject
         ResetIncorrectCountValue ();
         BadgeViewModel newProcessable = null;
         int oldNumber = BeingProcessedNumber;
-        VisibleIcons = new ObservableCollection <BadgeCorrectnessViewModel> ();
+        VisibleIcons = [];
         _visibleIconsStorage = VisibleIcons;
-        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+        bool isProcessableChangedInSpecificFilter = IsProcessableChangedInAppropriateFilter ( BeingProcessedNumber );
 
         if ( isProcessableChangedInSpecificFilter )
         {
-            ReduceCurrentCollection (BeingProcessedNumber - 1);
+            ReduceCurrentCollection ( BeingProcessedNumber - 1 );
 
             if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
             {
@@ -282,33 +275,33 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
         int visibleCountBeforeEnd = CurrentVisibleCollection.Count - _visibleRange;
 
-        for ( int index = visibleCountBeforeEnd;   index < CurrentVisibleCollection.Count;   index++ )
+        for ( int index = visibleCountBeforeEnd; index < CurrentVisibleCollection.Count; index++ )
         {
-            BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt (index);
-            VisibleIcons.Add (new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                                 , _correctnessWidthLimit, FilterIsExtended));
+            BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt ( index );
+            VisibleIcons.Add ( new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                                 , _correctnessWidthLimit, FilterIsExtended ) );
         }
 
-        _numberAmongVisibleIcons = VisibleIcons. Count;
-        ReplaceActiveIcon (VisibleIcons [_numberAmongVisibleIcons - 1]);
+        _numberAmongVisibleIcons = VisibleIcons.Count;
+        ReplaceActiveIcon ( VisibleIcons [_numberAmongVisibleIcons - 1] );
         BeingProcessedNumber = CurrentVisibleCollection.Count;
         BeingProcessedNumber = GetAppropriateLastNumber ();
-        BeingProcessedBadge.Hide ();
-        BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
-        BeingProcessedBadge?.Show ();
-        SetToCorrectScale (BeingProcessedBadge);
+        ProcessableBadge.Hide ();
+        ProcessableBadge = GetAppropriateDraft ( BeingProcessedNumber );
+        ProcessableBadge?.Show ();
+        SetToCorrectScale ( ProcessableBadge );
         bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
         _visibleRangeEnd = CurrentVisibleCollection.Count - 1;
-        CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
+        CalcRunnerHeightAndStep ( CurrentVisibleCollection.Count );
 
-        if ( ! sliderIsScrollable )
+        if ( !sliderIsScrollable )
         {
             ScrollWidth = 0;
             _visibleRange = CurrentVisibleCollection.Count;
             _scrollStepIndex = 0;
             _runnerHasWalked = 0;
         }
-        else 
+        else
         {
             _scrollStepIndex = CurrentVisibleCollection.Count - _visibleRange;
             _runnerHasWalked = _scrollStepIndex * _runnerStep;
@@ -316,7 +309,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
         }
 
         ResetManagingControlsEnablings ();
-        SetScrollerItemsCorrectWidth (CurrentVisibleCollection.Count);
+        SetScrollerItemsCorrectWidth ( CurrentVisibleCollection.Count );
     }
 
 
@@ -324,23 +317,23 @@ public partial class BadgeEditorViewModel : ReactiveObject
     {
         BadgeViewModel destinationBadge = destinationIcon.BoundBadge;
 
-        if ( destinationBadge.Equals (BeingProcessedBadge) )
+        if ( destinationBadge.Equals ( ProcessableBadge ) )
         {
             return;
         }
 
         string destinationNumberText = string.Empty;
 
-        for ( int index = 0;   index < CurrentVisibleCollection.Count;   index++ )
+        for ( int index = 0; index < CurrentVisibleCollection.Count; index++ )
         {
-            if ( destinationBadge.Equals (CurrentVisibleCollection.ElementAt (index)) )
+            if ( destinationBadge.Equals ( CurrentVisibleCollection.ElementAt ( index ) ) )
             {
                 destinationNumberText = ( index + 1 ).ToString ();
                 break;
             }
         }
 
-        ToParticularBadge (destinationNumberText, destinationIcon);
+        ToParticularBadge ( destinationNumberText, destinationIcon );
     }
 
 
@@ -349,28 +342,28 @@ public partial class BadgeEditorViewModel : ReactiveObject
         try
         {
             ResetIncorrectCountValue ();
-            int destinationNumber = int.Parse (destinationNumberAsText);
-            bool isProcessableChangedInSpecificFilter = IsProcessableChangedInSpecificFilter (BeingProcessedNumber);
+            int destinationNumber = int.Parse ( destinationNumberAsText );
+            bool isProcessableChangedInSpecificFilter = IsProcessableChangedInAppropriateFilter ( BeingProcessedNumber );
             int oldNumber = BeingProcessedNumber;
             int oldNumberAmongVisibleIcons = oldNumber - _scrollStepIndex;
             BeingProcessedNumber = destinationNumber;
             int amongVisibleIconsDestinationNum = destinationNumber - _scrollStepIndex;
             _numberAmongVisibleIcons = BeingProcessedNumber - _scrollStepIndex;
-            BeingProcessedBadge.Hide ();
-            BeingProcessedBadge = GetAppropriateDraft (BeingProcessedNumber);
+            ProcessableBadge.Hide ();
+            ProcessableBadge = GetAppropriateDraft ( BeingProcessedNumber );
             bool sliderIsScrollable = ( CurrentVisibleCollection.Count > _visibleRange );
             _visibleRangeEnd = _scrollStepIndex + _visibleRange - 1;
 
             if ( isProcessableChangedInSpecificFilter )
             {
                 bool endIsNotAchieved = ( _visibleRangeEnd < ( CurrentVisibleCollection.Count - 1 ) );
-                bool exProcessableIsNotInVisibleRange = ( oldNumber > ( _visibleRangeEnd + 1 ) ) 
-                                                        ||  ( oldNumber < (_visibleRangeEnd - _visibleRange + 2) );
+                bool exProcessableIsNotInVisibleRange = ( oldNumber > ( _visibleRangeEnd + 1 ) )
+                                                        || ( oldNumber < ( _visibleRangeEnd - _visibleRange + 2 ) );
 
                 if ( endIsNotAchieved )
                 {
-                    ReduceCurrentCollectionAndIcons (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 )
-                                                     , true, ! exProcessableIsNotInVisibleRange, sliderIsScrollable);
+                    ReduceCurrentCollectionAndIcons ( ( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 )
+                                                     , true, !exProcessableIsNotInVisibleRange, sliderIsScrollable );
 
                     newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
 
@@ -390,7 +383,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
                             newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 2];
                         }
                     }
-                    else 
+                    else
                     {
                         newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
                     }
@@ -399,8 +392,8 @@ public partial class BadgeEditorViewModel : ReactiveObject
                 {
                     if ( CurrentVisibleCollection.Count <= _maxVisibleCount )
                     {
-                        ReduceCurrentCollectionAndIcons 
-                        (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), true, true, sliderIsScrollable);
+                        ReduceCurrentCollectionAndIcons
+                        ( ( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), true, true, sliderIsScrollable );
 
                         if ( oldNumber < BeingProcessedNumber )
                         {
@@ -411,11 +404,11 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
                         newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
                     }
-                    else 
+                    else
                     {
-                        ReduceCurrentCollectionAndIcons 
-                        (( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), false, true, sliderIsScrollable);
-                        
+                        ReduceCurrentCollectionAndIcons
+                        ( ( oldNumber - 1 ), ( oldNumberAmongVisibleIcons - 1 ), false, true, sliderIsScrollable );
+
                         if ( oldNumber < BeingProcessedNumber )
                         {
                             newActiveIcon = VisibleIcons [amongVisibleIconsDestinationNum - 1];
@@ -427,26 +420,26 @@ public partial class BadgeEditorViewModel : ReactiveObject
                             _numberAmongVisibleIcons++;
                             BeingProcessedNumber++;
                             BeingProcessedNumber--;
-                        } 
+                        }
 
                         _scrollStepIndex--;
                         _visibleRangeEnd--;
                     }
                 }
 
-                CalcRunnerHeightAndStep (CurrentVisibleCollection.Count);
+                CalcRunnerHeightAndStep ( CurrentVisibleCollection.Count );
 
-                if ( ! endIsNotAchieved   &&   sliderIsScrollable )
+                if ( !endIsNotAchieved && sliderIsScrollable )
                 {
                     _runnerHasWalked = _scrollStepIndex * _runnerStep;
                     ScrollOffset = _runnerHasWalked;
                 }
             }
 
-            ReplaceActiveIcon (newActiveIcon);
+            ReplaceActiveIcon ( newActiveIcon );
             SaveScrollerState ();
-            SetToCorrectScale (BeingProcessedBadge);
-            BeingProcessedBadge.Show ();
+            SetToCorrectScale ( ProcessableBadge );
+            ProcessableBadge.Show ();
             sliderIsScrollable = ( CurrentVisibleCollection.Count > _maxVisibleCount );
 
             if ( !sliderIsScrollable )
@@ -455,7 +448,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
             }
 
             ResetManagingControlsEnablings ();
-            SetScrollerItemsCorrectWidth (CurrentVisibleCollection.Count);
+            SetScrollerItemsCorrectWidth ( CurrentVisibleCollection.Count );
         }
         catch ( Exception ex )
         {
@@ -464,23 +457,23 @@ public partial class BadgeEditorViewModel : ReactiveObject
     }
 
 
-    private void ResetIncorrectCountValue () 
+    private void ResetIncorrectCountValue ()
     {
-        if ( (_filterState == FilterChoosing.Corrects)   &&   ( ! BeingProcessedBadge. IsCorrect) ) 
+        if ( ( _filterState == FilterChoosing.Corrects ) && ( !ProcessableBadge.IsCorrect ) )
         {
             IncorrectBadgesCount = 0;
         }
     }
 
 
-    private void ResetManagingControlsEnablings ( )
+    private void ResetManagingControlsEnablings ()
     {
         EnableNavigationIfShould ();
         MoversAreEnable = false;
         SplitterIsEnable = false;
         ZoommerIsEnable = false;
         ReleaseCaptured ();
-        TryEnableScroller (_visibleRange);
+        TryEnableScroller ( _visibleRange );
     }
 
 
@@ -494,7 +487,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
             {
                 SliderCollectionWidth = _mostExtendedIconWidth;
 
-                foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+                foreach ( BadgeCorrectnessViewModel item in VisibleIcons )
                 {
                     item.Width = _mostExtendedIconWidth;
                 }
@@ -506,7 +499,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
             {
                 SliderCollectionWidth = _extendedScrollableIconWidth;
 
-                foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+                foreach ( BadgeCorrectnessViewModel item in VisibleIcons )
                 {
                     item.Width = _extendedScrollableIconWidth;
                 }
@@ -517,22 +510,22 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
     private void ReplaceActiveIcon ( BadgeCorrectnessViewModel newActiveIcon )
     {
-        FadeIcon (ActiveIcon);
+        FadeIcon ( ActiveIcon );
         ActiveIcon = newActiveIcon;
-        HighLightChosenIcon (ActiveIcon);
+        HighLightChosenIcon ( ActiveIcon );
     }
 
 
-    private BadgeViewModel ? GetAppropriateDraft ( int number )
+    private BadgeViewModel? GetAppropriateDraft ( int number )
     {
-        BadgeViewModel goalBadge = null;
-        goalBadge = CurrentVisibleCollection.ElementAt (number - 1);
+        BadgeViewModel? goalBadge = null;
+        goalBadge = CurrentVisibleCollection?.ElementAt ( number - 1 );
 
         return goalBadge;
     }
 
 
-    private int GetAppropriateLastNumber ( )
+    private int GetAppropriateLastNumber ()
     {
         int result = 0;
         result = CurrentVisibleCollection.Count;
@@ -541,32 +534,32 @@ public partial class BadgeEditorViewModel : ReactiveObject
     }
 
 
-    private void EnableNavigationIfShould ( )
+    private void EnableNavigationIfShould ()
     {
         int badgeCount = CurrentVisibleCollection.Count;
 
-        if ( ( BeingProcessedNumber > 1 )   &&   ( BeingProcessedNumber == badgeCount ) )
+        if ( ( BeingProcessedNumber > 1 ) && ( BeingProcessedNumber == badgeCount ) )
         {
             FirstIsEnable = true;
             PreviousIsEnable = true;
             NextIsEnable = false;
             LastIsEnable = false;
         }
-        else if ( ( BeingProcessedNumber > 1 )   &&   ( BeingProcessedNumber < badgeCount ) )
+        else if ( ( BeingProcessedNumber > 1 ) && ( BeingProcessedNumber < badgeCount ) )
         {
             FirstIsEnable = true;
             PreviousIsEnable = true;
             NextIsEnable = true;
             LastIsEnable = true;
         }
-        else if ( ( BeingProcessedNumber == 1 )   &&   ( badgeCount == 1 ) )
+        else if ( ( BeingProcessedNumber == 1 ) && ( badgeCount == 1 ) )
         {
             FirstIsEnable = false;
             PreviousIsEnable = false;
             NextIsEnable = false;
             LastIsEnable = false;
         }
-        else if ( ( BeingProcessedNumber == 1 )   &&   ( badgeCount > 1 ) )
+        else if ( ( BeingProcessedNumber == 1 ) && ( badgeCount > 1 ) )
         {
             FirstIsEnable = false;
             PreviousIsEnable = false;

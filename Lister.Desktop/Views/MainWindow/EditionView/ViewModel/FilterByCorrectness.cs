@@ -1,22 +1,20 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Desktop.ModelMappings.BadgeVM;
-using ReactiveUI;
 using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public partial class BadgeEditorViewModel : ReactiveObject
+internal partial class BadgeEditorViewModel : ObservableObject
 {
-    private readonly double _switcherWidth = 32;
-    private readonly double _filterLabelWidth = 70;
+    private readonly double _switcherWidthh = 32;
+    private readonly double _filterLabelWidthh = 70;
 
-    private readonly SolidColorBrush _switcherAllForeground = 
-                                                      new SolidColorBrush (new Avalonia.Media.Color (255, 250, 250, 250));
-    private readonly SolidColorBrush _switcherCorrectForeground = 
-                                                      new SolidColorBrush (new Avalonia.Media.Color (255, 97, 184, 97));
-    private readonly SolidColorBrush _switcherIncorrectForeground = 
-                                                      new SolidColorBrush (new Avalonia.Media.Color (255, 210, 54, 80));
+    private readonly SolidColorBrush _switcherAllForeground = new ( new Avalonia.Media.Color ( 255, 250, 250, 250 ) );
+    private readonly SolidColorBrush _switcherCorrectForeground = new ( new Avalonia.Media.Color ( 255, 97, 184, 97 ) );
+    private readonly SolidColorBrush _switcherIncorrectForeground = new ( new Avalonia.Media.Color ( 255, 210, 54, 80 ) );
 
     private readonly string _allFilter;
     private readonly string _incorrectFilter;
@@ -33,81 +31,29 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
     private FilterChoosing _filterState = FilterChoosing.All;
     private double _correctnessWidthLimit;
-    private int _minCorrectnessTextLength;
-    private int _maxCorrectnessTextLength;
 
-    private bool _isDropOpen;
-    internal bool IsDropDownOpen
-    {
-        get { return _isDropOpen; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _isDropOpen, value, nameof (IsDropDownOpen));
-        }
-    }
+    [ObservableProperty]
+    private bool _isDropDownOpen;
 
+    [ObservableProperty]
     private bool _isComboboxEnabled;
-    internal bool IsComboboxEnabled
-    {
-        get { return _isComboboxEnabled; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _isComboboxEnabled, value, nameof (IsComboboxEnabled));
-        }
-    }
 
-    private double _switcherWidt;
-    internal double SwitcherWidth
-    {
-        get { return _switcherWidt; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _switcherWidt, value, nameof (SwitcherWidth));
-        }
-    }
+    [ObservableProperty]
+    private double _switcherWidth;
 
-    private double _filterLableWidth;
-    internal double FilterLabelWidth
-    {
-        get { return _filterLableWidth; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _filterLableWidth, value, nameof (FilterLabelWidth));
-        }
-    }
+    [ObservableProperty]
+    private double _filterLabelWidth;
 
-    private int _comboboxSelectedIndex;
-    internal int FilterSelectedIndex
-    {
-        get { return _comboboxSelectedIndex; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _comboboxSelectedIndex, value, nameof (FilterSelectedIndex));
-        }
-    }
+    [ObservableProperty]
+    private int _filterSelectedIndex;
 
-    private string _switcherTip;
-    internal string SwitcherTip
-    {
-        get { return _switcherTip; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _switcherTip, value, nameof (SwitcherTip));
-        }
-    }
+    [ObservableProperty]
+    private string? _switcherTip;
 
-    private SolidColorBrush _switcherForeground;
-    internal SolidColorBrush SwitcherForeground
-    {
-        get { return _switcherForeground; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _switcherForeground, value, nameof (SwitcherForeground));
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush? _switcherForeground;
 
-
-    internal bool IsProcessableChangedInSpecificFilter ( int filterableNumber )
+    private bool IsProcessableChangedInAppropriateFilter ( int filterableNumber )
     {
         bool filterOccured = false;
 
@@ -117,14 +63,14 @@ public partial class BadgeEditorViewModel : ReactiveObject
         }
         else if ( _filterState == FilterChoosing.Corrects )
         {
-            if ( ! BeingProcessedBadge.IsCorrect )
+            if ( ProcessableBadge != null && !ProcessableBadge.IsCorrect )
             {
                 filterOccured = true;
             }
         }
         else if ( _filterState == FilterChoosing.Incorrects )
         {
-            if ( BeingProcessedBadge.IsCorrect )
+            if ( ProcessableBadge != null && ProcessableBadge.IsCorrect )
             {
                 filterOccured = true;
             }
@@ -133,7 +79,7 @@ public partial class BadgeEditorViewModel : ReactiveObject
         return filterOccured;
     }
 
-
+    [RelayCommand]
     internal void Filter ()
     {
         _runnerHasWalked = 0;
@@ -144,9 +90,9 @@ public partial class BadgeEditorViewModel : ReactiveObject
             SwitcherForeground = _switcherCorrectForeground;
             SwitcherTip = _correctTip;
             FilterSelectedIndex = 1;
-            TryChangeSpecificLists ();
+            SetProcessableInMatchFilter ();
             ScrollWidth = 0;
-            CorrectNumbered.Sort (_comparer);
+            CorrectNumbered.Sort ( _comparer );
             CurrentVisibleCollection = CorrectNumbered;
             IncorrectBadgesCount = 0;
         }
@@ -156,8 +102,8 @@ public partial class BadgeEditorViewModel : ReactiveObject
             SwitcherForeground = _switcherIncorrectForeground;
             SwitcherTip = _incorrectTip;
             FilterSelectedIndex = 2;
-            TryChangeSpecificLists ();
-            IncorrectNumbered.Sort (_comparer);
+            SetProcessableInMatchFilter ();
+            IncorrectNumbered.Sort ( _comparer );
             CurrentVisibleCollection = IncorrectNumbered;
             IncorrectBadgesCount = CurrentVisibleCollection.Count;
         }
@@ -168,23 +114,77 @@ public partial class BadgeEditorViewModel : ReactiveObject
             SwitcherForeground = _switcherAllForeground;
             SwitcherTip = _allTip;
             FilterSelectedIndex = 0;
-            TryChangeSpecificLists ();
-            IncorrectBadgesCount = IncorrectNumbered. Count;
+            SetProcessableInMatchFilter ();
+            IncorrectBadgesCount = IncorrectNumbered.Count;
         }
 
-        ProcessableCount = CurrentVisibleCollection.Count;
+        ProcessableCount = CurrentVisibleCollection != null ? CurrentVisibleCollection.Count : 0;
         SetSliderWideness ();
-        CalcVisibleRange (CurrentVisibleCollection.Count);
-        SetScroller (CurrentVisibleCollection.Count);
+        CalcVisibleRange ( CurrentVisibleCollection != null ? CurrentVisibleCollection.Count : 0 );
+        SetScroller ( CurrentVisibleCollection != null ? CurrentVisibleCollection.Count : 0 );
         SetAccordingIcons ();
         EnableNavigationIfShould ();
     }
 
+    internal void Filter ( string? filterName )
+    {
+        ReleaseCaptured ();
+        _runnerHasWalked = 0;
+
+        bool appIsLoadingYet = ( AllNumbered.Count < 1 )
+            || ( CorrectNumbered.Count < 1 )
+            || ( IncorrectNumbered.Count < 1 );
+
+        if ( appIsLoadingYet )
+        {
+            return;
+        }
+
+        if ( filterName == _allFilter )
+        {
+            _filterState = FilterChoosing.All;
+            CurrentVisibleCollection = AllNumbered;
+            SwitcherForeground = _switcherAllForeground;
+            SwitcherTip = _allTip;
+            SetProcessableInMatchFilter ();
+            IncorrectBadgesCount = IncorrectNumbered.Count;
+        }
+        else if ( filterName == _correctFilter )
+        {
+            _filterState = FilterChoosing.Corrects;
+
+            SwitcherForeground = _switcherCorrectForeground;
+            SwitcherTip = _correctTip;
+            SetProcessableInMatchFilter ();
+            CorrectNumbered.Sort ( _comparer );
+            CurrentVisibleCollection = CorrectNumbered;
+            IncorrectBadgesCount = 0;
+        }
+        else if ( filterName == _incorrectFilter )
+        {
+            _filterState = FilterChoosing.Incorrects;
+
+            SwitcherForeground = _switcherIncorrectForeground;
+            SwitcherTip = _incorrectTip;
+            SetProcessableInMatchFilter ();
+            IncorrectNumbered.Sort ( _comparer );
+            CurrentVisibleCollection = IncorrectNumbered;
+            IncorrectBadgesCount = CurrentVisibleCollection.Count;
+        }
+
+        ProcessableCount = CurrentVisibleCollection.Count;
+        SetSliderWideness ();
+        CalcVisibleRange ( CurrentVisibleCollection.Count );
+        SetScroller ( CurrentVisibleCollection.Count );
+        SetAccordingIcons ();
+        EnableNavigationIfShould ();
+        ExtendOrShrinkSliderItems ();
+    }
 
     private void SetAccordingIcons ()
     {
-        BeingProcessedBadge = null;
-        VisibleIcons = new ();
+        ProcessableBadge = null;
+        VisibleIcons = [];
         NextOnSliderIsEnable = true;
         NextIsEnable = true;
         LastIsEnable = true;
@@ -205,19 +205,19 @@ public partial class BadgeEditorViewModel : ReactiveObject
         _numberAmongVisibleIcons = 1;
         _scrollStepIndex = 0;
 
-        if ( BeingProcessedBadge != null )
+        if ( ProcessableBadge != null )
         {
-            SetToCorrectScale (BeingProcessedBadge);
+            SetToCorrectScale ( ProcessableBadge );
             BeingProcessedNumber = 1;
-            BeingProcessedBadge.Show ();
-            ZeroScrollerState (VisibleIcons);
+            ProcessableBadge.Show ();
+            ZeroScrollerState ( VisibleIcons );
         }
-        else 
+        else
         {
             BeingProcessedNumber = 0;
         }
 
-        if ( VisibleIcons. Count == 0 )
+        if ( VisibleIcons.Count == 0 )
         {
             UpDownWidth = 0;
             UpDownIsFocusable = false;
@@ -226,56 +226,57 @@ public partial class BadgeEditorViewModel : ReactiveObject
             NextIsEnable = false;
             LastIsEnable = false;
         }
-        else 
+        else
         {
-            UpDownWidth = _upDownWidth;
+            UpDownWidth = _upDownWidthh;
             UpDownIsFocusable = true;
         }
     }
-
 
     private void SetMixedIcons ()
     {
         int counter = 0;
 
-        foreach ( BadgeViewModel badge   in   AllNumbered )
+        foreach ( BadgeViewModel badge in AllNumbered )
         {
             if ( counter == _visibleRange )
             {
                 break;
             }
 
-            VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                              , _correctnessWidthLimit, FilterIsExtended));
+            VisibleIcons.Add ( new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth, _correctnessWidthLimit,
+                                    FilterIsExtended
+                               )
+            );
+
             counter++;
         }
 
-        BeingProcessedBadge = AllNumbered.ElementAt (0);
+        ProcessableBadge = AllNumbered.ElementAt ( 0 );
         VisibleIcons [0].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-        VisibleIcons [0].CalcStringPresentation (_correctnessWidthLimit);
+        VisibleIcons [0].CalcStringPresentation ( _correctnessWidthLimit );
         ActiveIcon = VisibleIcons [0];
     }
-
 
     private void SetIconsForCorrectFilter ()
     {
         int existingCounter = 0;
         int firstExistingCommonNumber = -1;
 
-        foreach ( BadgeViewModel badge   in   CorrectNumbered )
+        foreach ( BadgeViewModel badge in CorrectNumbered )
         {
             if ( existingCounter == _visibleRange )
             {
                 break;
             }
 
-            VisibleIcons.Add (new BadgeCorrectnessViewModel (badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                              , _correctnessWidthLimit, FilterIsExtended));
+            VisibleIcons.Add ( new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                              , _correctnessWidthLimit, FilterIsExtended ) );
 
             if ( existingCounter == 0 )
             {
                 VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-                VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit);
+                VisibleIcons [existingCounter].CalcStringPresentation ( _correctnessWidthLimit );
                 firstExistingCommonNumber = badge.Id;
             }
 
@@ -285,29 +286,28 @@ public partial class BadgeEditorViewModel : ReactiveObject
         if ( firstExistingCommonNumber > -1 )
         {
             ActiveIcon = VisibleIcons [0];
-            BeingProcessedBadge = CorrectNumbered.ElementAt (0);
+            ProcessableBadge = CorrectNumbered.ElementAt ( 0 );
         }
     }
-
 
     private void SetIconsForIncorrectFilter ()
     {
         int existingCounter = 0;
         int firstExistingCommonNumber = -1;
 
-        foreach ( BadgeViewModel badge   in   IncorrectNumbered )
+        foreach ( BadgeViewModel badge in IncorrectNumbered )
         {
             if ( existingCounter == _visibleRange )
             {
                 break;
             }
 
-            VisibleIcons.Add (new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
-                                                                               , _correctnessWidthLimit, FilterIsExtended));
+            VisibleIcons.Add ( new BadgeCorrectnessViewModel ( badge, _extendedScrollableIconWidth, _shrinkedIconWidth
+                                                                               , _correctnessWidthLimit, FilterIsExtended ) );
             if ( existingCounter == 0 )
             {
                 VisibleIcons [existingCounter].BoundFontWeight = Avalonia.Media.FontWeight.Bold;
-                VisibleIcons [existingCounter].CalcStringPresentation (_correctnessWidthLimit);
+                VisibleIcons [existingCounter].CalcStringPresentation ( _correctnessWidthLimit );
                 firstExistingCommonNumber = badge.Id;
             }
 
@@ -317,146 +317,82 @@ public partial class BadgeEditorViewModel : ReactiveObject
         if ( firstExistingCommonNumber > -1 )
         {
             ActiveIcon = VisibleIcons [0];
-            BeingProcessedBadge = IncorrectNumbered.ElementAt (0);
+            ProcessableBadge = IncorrectNumbered.ElementAt ( 0 );
         }
     }
 
-
-    private void TryChangeSpecificLists () 
+    private void SetProcessableInMatchFilter ()
     {
-        if ( BeingProcessedBadge == null ) 
+        if ( ProcessableBadge == null )
         {
             return;
         }
 
-        if ( BeingProcessedBadge. IsCorrect )
+        if ( ProcessableBadge.IsCorrect )
         {
-            if( ! CorrectNumbered.Contains(BeingProcessedBadge) )
+            if ( !CorrectNumbered.Contains ( ProcessableBadge ) )
             {
-                CorrectNumbered.Add (BeingProcessedBadge);
+                CorrectNumbered.Add ( ProcessableBadge );
 
-                if ( IncorrectNumbered.Contains (BeingProcessedBadge) )
+                if ( IncorrectNumbered.Contains ( ProcessableBadge ) )
                 {
-                    IncorrectNumbered.Remove (BeingProcessedBadge);
+                    IncorrectNumbered.Remove ( ProcessableBadge );
                 }
             }
         }
-        else if ( ! BeingProcessedBadge. IsCorrect )
+        else if ( !ProcessableBadge.IsCorrect )
         {
-            if ( ! IncorrectNumbered.Contains (BeingProcessedBadge) )
+            if ( !IncorrectNumbered.Contains ( ProcessableBadge ) )
             {
-                IncorrectNumbered.Add (BeingProcessedBadge);
+                IncorrectNumbered.Add ( ProcessableBadge );
 
-                if ( CorrectNumbered.Contains (BeingProcessedBadge) )
+                if ( CorrectNumbered.Contains ( ProcessableBadge ) )
                 {
-                    CorrectNumbered.Remove (BeingProcessedBadge);
-                }      
+                    CorrectNumbered.Remove ( ProcessableBadge );
+                }
             }
         }
     }
 
-
-    private void SetSliderWideness ( )
+    private void SetSliderWideness ()
     {
         if ( CurrentVisibleCollection.Count > _visibleRange )
         {
             _correctnessWidthLimit = _narrowCorrectnessWidthLimit;
-            _minCorrectnessTextLength = _narrowMinCorrectnessTextLength;
-            _maxCorrectnessTextLength = _narrowMaxCorrectnessTextLength;
         }
         else
         {
             _correctnessWidthLimit = _wideCorrectnessWidthLimit;
-            _minCorrectnessTextLength = _wideMinCorrectnessTextLength;
-            _maxCorrectnessTextLength = _wideMaxCorrectnessTextLength;
         }
     }
-
-
-    internal void Filter ( string filterName )
-    {
-        ReleaseCaptured ();
-        _runnerHasWalked = 0;
-
-        bool appLoadingIs = ( AllNumbered == null ) 
-                            || ( CorrectNumbered == null ) 
-                            || ( IncorrectNumbered == null );
-
-        if (appLoadingIs) 
-        {
-            return;
-        }
-
-        if ( filterName == _allFilter )
-        {
-            _filterState = FilterChoosing.All;
-            CurrentVisibleCollection = AllNumbered;
-            SwitcherForeground = _switcherAllForeground;
-            SwitcherTip = _allTip;
-            TryChangeSpecificLists ();
-            IncorrectBadgesCount = IncorrectNumbered.Count;
-        }
-        else if ( filterName == _correctFilter )
-        {
-            _filterState = FilterChoosing.Corrects;
-
-            SwitcherForeground = _switcherCorrectForeground;
-            SwitcherTip = _correctTip;
-            TryChangeSpecificLists ();
-            CorrectNumbered.Sort (_comparer);
-            CurrentVisibleCollection = CorrectNumbered;
-            IncorrectBadgesCount = 0;
-        }
-        else if ( filterName == _incorrectFilter )
-        {
-            _filterState = FilterChoosing.Incorrects;
-
-            SwitcherForeground = _switcherIncorrectForeground;
-            SwitcherTip = _incorrectTip;
-            TryChangeSpecificLists ();
-            IncorrectNumbered.Sort (_comparer);
-            CurrentVisibleCollection = IncorrectNumbered;
-            IncorrectBadgesCount = CurrentVisibleCollection.Count;
-        }
-
-        ProcessableCount = CurrentVisibleCollection.Count;
-        SetSliderWideness ();
-        CalcVisibleRange (CurrentVisibleCollection.Count);
-        SetScroller (CurrentVisibleCollection.Count);
-        SetAccordingIcons ();
-        EnableNavigationIfShould ();
-        ExtendOrShrinkSliderItems ();
-    }
-
 
     internal void ExtendOrShrinkCollectionManagement ()
     {
         if ( FilterIsExtended )
         {
-            FilterBlockMargin = new Thickness (_collectionFilterMarginLeft, 0);
+            FilterBlockMargin = new Thickness ( _collectionFilterMarginLeft, 0 );
             FilterIsExtended = false;
             ExtenderContent = "\uF060";
-            SwitcherWidth = _switcherWidth;
+            SwitcherWidth = _switcherWidthh;
             FilterLabelWidth = 0;
             IsComboboxEnabled = false;
             ExtentionTip = _extentionToolTip;
-            TryEnableScroller (VisibleIcons.Count);
+            TryEnableScroller ( VisibleIcons.Count );
             ExtendOrShrinkSliderItems ();
         }
         else
         {
-            FilterBlockMargin = new Thickness (0, 0);
+            FilterBlockMargin = new Thickness ( 0, 0 );
             FilterIsExtended = true;
             ExtenderContent = "\uF061";
             SwitcherWidth = 0;
-            FilterLabelWidth = _filterLabelWidth;
+            FilterLabelWidth = _filterLabelWidthh;
             IsComboboxEnabled = true;
             ExtentionTip = _shrinkingToolTip;
-            TryEnableScroller (0);
+            TryEnableScroller ( 0 );
             ExtendOrShrinkSliderItems ();
         }
     }
-
 
     internal void ExtendOrShrinkSliderItems ()
     {
@@ -466,21 +402,21 @@ public partial class BadgeEditorViewModel : ReactiveObject
         {
             double scrollerItemsCount = _scrollerHeight / _itemHeightWithMargin;
 
-            if ( CurrentVisibleCollection. Count > scrollerItemsCount )
+            if ( CurrentVisibleCollection.Count > scrollerItemsCount )
             {
                 width = _extendedScrollableIconWidth;
             }
-            else 
+            else
             {
                 width = _mostExtendedIconWidth;
             }
         }
-        else 
+        else
         {
             width = _shrinkedIconWidth;
         }
 
-        foreach ( BadgeCorrectnessViewModel item   in   VisibleIcons )
+        foreach ( BadgeCorrectnessViewModel item in VisibleIcons )
         {
             item.Width = width;
         }

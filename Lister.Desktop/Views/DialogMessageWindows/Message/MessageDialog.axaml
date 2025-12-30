@@ -5,13 +5,12 @@
         mc:Ignorable="d" d:DesignWidth="568" d:DesignHeight="134"
         x:Class="Lister.Desktop.Views.DialogMessageWindows.Message.MessageWindow"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message; assembly=Lister.Desktop"
+		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel"
+		x:DataType="vm:MessageViewModel"
 		
 		MaxWidth="568"
 		MaxHeight="134"
 		WindowStartupLocation="CenterOwner"
-		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.Message.ViewModel"
-
-		x:DataType="vm:MessageViewModel"
 		
 		SystemDecorations="None"
 		CanResize="False"
@@ -31,23 +30,19 @@
 			<Label
 				Classes="modalLabel"
 				Height="16"
-				Content ="Ошибка"/>
-
+				Content ="Ошибка"
+			/>
 			<Grid Height="70"
 				  Width="544"
+				  ColumnDefinitions="36 408"
 				  HorizontalAlignment="Left">
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition  Width="36"></ColumnDefinition>
-					<ColumnDefinition  Width="408"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
 
 				<Image
 					Grid.Column="0"
 					Width="35"
 					Margin ="16,0,0,0"
-					Source = "/Assets/Icons/warning-alert.ico"/>
-
+					Source = "/Assets/Icons/warning-alert.ico"
+				/>
 				<Border
 					Grid.Column="1"
 					Width="493"
@@ -61,10 +56,9 @@
 						FontSize="12"
 						TextWrapping="WrapWithOverflow"
 						Text="{Binding Path=Message, Mode=OneWay}"
-						MaxLines="3"/>
-
+						MaxLines="3"
+					/>
 				</Border>
-
 			</Grid>
 
 			<Canvas
@@ -72,8 +66,8 @@
 				Width="566"
 				Height="1"
 				Margin ="0,-5,0,0"
-				Background ="#ececec"/>
-
+				Background ="#ececec"
+			/>
 			<Canvas
 				Width="566"
 				Height="47"
@@ -88,13 +82,11 @@
 					Canvas.Top="8"
 					Canvas.Left="470"
 					Content="Ok"
-					Command="{Binding  Path=Close}"/>
-
+					Command="{Binding  Path=Close}"
+				/>
 			</Canvas>
-
 		</StackPanel>
 	</UserControl>
-
 </Window>
 
 

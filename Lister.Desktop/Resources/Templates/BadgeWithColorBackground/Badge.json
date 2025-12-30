@@ -12,9 +12,7 @@
 	},
 
 	"CorrectMemberSettings": {
-
 		"BorderColor": "#4aacfe",
-
 		"BorderThickness": {
 			"Left": 2,
 			"Top": 2,
@@ -24,11 +22,8 @@
 	},
 
 	"IncorrectMemberSettings": {
-
 		"Background": "#c8c8c8",
-
 		"BorderColor": "#d23650",
-
 		"BorderThickness": {
 			"Left": 2,
 			"Top": 2,
@@ -60,9 +55,7 @@
 		"Alignment": "Right",
 		"FontSize": 15,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#730000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": false
 	},
@@ -75,9 +68,7 @@
 		"Alignment": "Right",
 		"FontSize": 15,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#730000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": false
 	},
@@ -90,9 +81,7 @@
 		"Alignment": "Right",
 		"FontSize": 11,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#000000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": true
 	},
@@ -105,9 +94,7 @@
 		"Alignment": "Right",
 		"FontSize": 11,
 		"FontName": "Century Gothic",
-
 		"Foreground": "#000000",
-
 		"FontWeight": "Bold",
 		"IsSplitable": true
 	},
@@ -128,9 +115,7 @@
 				"Alignment": "Right",
 				"FontSize": 15,
 				"FontName": "Century Gothic",
-
 				"Foreground": "#730000",
-
 				"FontWeight": "Bold",
 				"IsSplitable": false
 			}

@@ -1,5 +1,4 @@
 ﻿using Lister.Core.Models.Badge;
-using ReactiveUI;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
@@ -13,23 +12,32 @@ public abstract class BoundToTextLineBase : BadgeComponentBase
     private string? _binding;
     public string? Binding
     {
-        get { return _binding; }
+        get 
+        { 
+            return _binding; 
+        }
+
         protected set
         {
-            this.RaiseAndSetIfChanged ( ref _binding, value, nameof ( Binding ) );
+            _binding = value;
+            OnPropertyChanged ();
         }
     }
 
     private bool _isAboveOfBinding;
     public bool IsAboveOfBinding
     {
-        get { return _isAboveOfBinding; }
+        get 
+        { 
+            return _isAboveOfBinding; 
+        }
+
         protected set
         {
-            this.RaiseAndSetIfChanged ( ref _isAboveOfBinding, value, nameof ( IsAboveOfBinding ) );
+            _isAboveOfBinding = value;
+            OnPropertyChanged ();
         }
     }
-
 
     protected void HandleModelChanged ( LayoutComponentBase model )
     {

@@ -1,6 +1,5 @@
 ﻿using Lister.Core.Models.Badge;
 
-
 namespace Lister.Core.BadgesCreator.Abstractions;
 
 /// <summary>
@@ -10,5 +9,5 @@ public interface IBadgeLayoutProvider
 {
     public string GetBadgeImageUri ( string templateName );
 
-    public Layout GetBadgeLayout ( string templateName );
+    public Layout? GetBadgeLayout ( string templateName );
 }

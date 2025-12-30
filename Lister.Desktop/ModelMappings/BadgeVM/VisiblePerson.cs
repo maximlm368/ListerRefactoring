@@ -1,46 +1,48 @@
 ﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Models;
-using ReactiveUI;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
 /// <summary>
 /// Maps Person model into visible entity.
 /// </summary>
-internal sealed class VisiblePerson : ReactiveObject
+internal sealed partial class VisiblePerson : ObservableObject
 {
-    private static bool _colorsIsSet = false;
+    private static SolidColorBrush? _defaultBorderColor;
+    private static SolidColorBrush? _defaultBackgroundColor;
+    private static SolidColorBrush? _defaultForegroundColor;
 
-    private static SolidColorBrush _defaultBorderColor;
-    private static SolidColorBrush _defaultBackgroundColor;
-    private static SolidColorBrush _defaultForegroundColor;
+    private static SolidColorBrush? _selectedBorderColor;
+    private static SolidColorBrush? _selectedBackgroundColor;
+    private static SolidColorBrush? _selectedForegroundColor;
 
-    private static SolidColorBrush _selectedBorderColor;
-    private static SolidColorBrush _selectedBackgroundColor;
-    private static SolidColorBrush _selectedForegroundColor;
-
-    private static SolidColorBrush _focusedBorderColor;
-    private static SolidColorBrush _focusedBackgroundColor;
+    private static SolidColorBrush? _focusedBorderColor;
+    private static SolidColorBrush? _focusedBackgroundColor;
 
     private bool _isFocused;
     internal bool IsFocused
     {
-        get { return _isFocused; }
+        get 
+        { 
+            return _isFocused; 
+        }
+
         set
         {
-            if (value)
+            if ( value )
             {
                 BorderColor = _focusedBorderColor;
                 BackgroundColor = _focusedBackgroundColor;
 
-                if (IsSelected)
+                if ( IsSelected )
                 {
                     ForegroundColor = _selectedForegroundColor;
                 }
             }
             else
             {
-                CancelFocused();
+                CancelFocused ();
             }
 
             _isFocused = value;
@@ -50,24 +52,28 @@ internal sealed class VisiblePerson : ReactiveObject
     private bool _isSelected;
     internal bool IsSelected
     {
-        get { return _isSelected; }
+        get
+        { 
+            return _isSelected; 
+        }
+
         set
         {
-            if (value)
+            if ( value )
             {
                 BorderColor = _selectedBorderColor;
                 BackgroundColor = _selectedBackgroundColor;
                 ForegroundColor = _selectedForegroundColor;
                 FontWeight = FontWeight.Bold;
 
-                if (!IsFocused)
+                if ( !IsFocused )
                 {
                     IsFocused = true;
                 }
             }
             else
             {
-                CancelSeleted();
+                CancelSeleted ();
             }
 
             _isSelected = value;
@@ -76,81 +82,44 @@ internal sealed class VisiblePerson : ReactiveObject
 
     internal Person Model { get; private set; }
 
-    private SolidColorBrush _borderColor;
-    internal SolidColorBrush BorderColor
-    {
-        get { return _borderColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _borderColor, value, nameof( BorderColor ) );
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush? _borderColor;
 
-    private SolidColorBrush _backgroundColor;
-    internal SolidColorBrush BackgroundColor
-    {
-        get { return _backgroundColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _backgroundColor, value, nameof( BackgroundColor ) );
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush? _backgroundColor;
 
-    private SolidColorBrush _foregroundColor;
-    internal SolidColorBrush ForegroundColor
-    {
-        get { return _foregroundColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _foregroundColor, value, nameof( ForegroundColor ) );
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush? _foregroundColor;
 
+    [ObservableProperty]
     private FontWeight _fontWeight;
-    internal FontWeight FontWeight
+
+    public static void SetColors ( List<SolidColorBrush> defaultColors, List<SolidColorBrush> focusedColors, List<SolidColorBrush> selectedColors )
     {
-        get { return _fontWeight; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _fontWeight, value, nameof( FontWeight ) );
-        }
+        _defaultBackgroundColor = defaultColors [0];
+        _defaultBorderColor = defaultColors [1];
+        _defaultForegroundColor = defaultColors [2];
+
+        _selectedBackgroundColor = selectedColors [0];
+        _selectedBorderColor = selectedColors [1];
+        _selectedForegroundColor = selectedColors [2];
+
+        _focusedBackgroundColor = focusedColors [0];
+        _focusedBorderColor = focusedColors [1];
     }
 
-
-    public static void SetColors(List<SolidColorBrush> defaultColors, List<SolidColorBrush> focusedColors
-                                                                      , List<SolidColorBrush> selectedColors)
-    {
-        if (!_colorsIsSet)
-        {
-            _defaultBackgroundColor = defaultColors[0];
-            _defaultBorderColor = defaultColors[1];
-            _defaultForegroundColor = defaultColors[2];
-
-            _selectedBackgroundColor = selectedColors[0];
-            _selectedBorderColor = selectedColors[1];
-            _selectedForegroundColor = selectedColors[2];
-
-            _focusedBackgroundColor = focusedColors[0];
-            _focusedBorderColor = focusedColors[1];
-
-            _colorsIsSet = true;
-        }
-    }
-
-
-    internal VisiblePerson(Person person)
+    internal VisiblePerson ( Person person )
     {
         Model = person;
         IsFocused = false;
         IsSelected = false;
     }
 
-
-    private void CancelFocused()
+    private void CancelFocused ()
     {
         BorderColor = _defaultBorderColor;
 
-        if (!IsSelected)
+        if ( !IsSelected )
         {
             ForegroundColor = _defaultForegroundColor;
             BackgroundColor = _defaultBackgroundColor;
@@ -158,10 +127,9 @@ internal sealed class VisiblePerson : ReactiveObject
         }
     }
 
-
-    private void CancelSeleted()
+    private void CancelSeleted ()
     {
-        if (IsFocused)
+        if ( IsFocused )
         {
             BorderColor = _focusedBorderColor;
             BackgroundColor = _focusedBackgroundColor;

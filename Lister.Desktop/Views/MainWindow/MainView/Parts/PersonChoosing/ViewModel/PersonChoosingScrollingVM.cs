@@ -1,20 +1,18 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
-public partial class PersonChoosingViewModel : ReactiveObject
+internal partial class PersonChoosingViewModel : ObservableObject
 {
-    #region Scrolling
-
     private double _scrollValue;
     private double _runnerStep;
     private double _scrollingLength;
 
     private bool _entireIsFocused;
-    internal bool EntireIsFocused 
+    internal bool EntireIsFocused
     {
         get { return _entireIsFocused; }
-        private set 
+        private set
         {
             _entireIsFocused = value;
 
@@ -23,7 +21,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 EntireBackgroundColor = _focusedBackgroundColor;
                 EntireBorderColor = _focusedBorderColor;
             }
-            else 
+            else
             {
                 if ( EntireIsSelected )
                 {
@@ -31,7 +29,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
                     EntireBorderColor = _selectedBorderColor;
                     EntireForegroundColor = _selectedForegroundColor;
                 }
-                else 
+                else
                 {
                     EntireBackgroundColor = _defaultBackgroundColor;
                     EntireBorderColor = _defaultBorderColor;
@@ -41,7 +39,6 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         }
     }
-
 
     internal void ScrollByWheel ( bool isDirectionUp )
     {
@@ -59,26 +56,26 @@ public partial class PersonChoosingViewModel : ReactiveObject
             scrollerIsInvolved = false;
         }
 
-        CompleteScrolling (isDirectionUp, step, runnerStep, scrollerIsInvolved);
+        CompleteScrolling ( isDirectionUp, step, runnerStep, scrollerIsInvolved );
     }
 
-
-    internal void ScrollByButton ( bool isDirectionUp, int count )
+    internal void ScrollByButton ( bool isDirectionUp )
     {
         if ( IsPersonsScrollable )
         {
-            TimerCallback callBack = new TimerCallback (ShiftCaller);
             double spanHeightLimit = 0;
-            object [] args = new object [2];
-            args [0] = isDirectionUp;
-            args [1] = spanHeightLimit;
-            _timer = new Timer (callBack, args, 0, 100);
+            object [] args = [isDirectionUp, spanHeightLimit];
+            _timer = new Timer ( new TimerCallback ( ShiftCaller ), args, 0, 100 );
         }
     }
 
-
-    private void ShiftCaller ( object args )
+    private void ShiftCaller ( object? args )
     {
+        if ( args == null )
+        {
+            return;
+        }
+
         object [] directionAndCount = ( object [] ) args;
         bool isDirectionUp = ( bool ) directionAndCount [0];
         double spanHeightLimit = ( double ) directionAndCount [1];
@@ -100,18 +97,13 @@ public partial class PersonChoosingViewModel : ReactiveObject
             }
         }
 
-        CompleteScrolling (isDirectionUp, step, runnerStep, true);
+        CompleteScrolling ( isDirectionUp, step, runnerStep, true );
     }
-
 
     internal void StopScrolling ()
     {
-        if ( _timer != null )
-        {
-            _timer.Dispose ();
-        }
+        _timer?.Dispose ();
     }
-
 
     internal void ShiftRunner ( bool isDirectionUp, double limit )
     {
@@ -137,19 +129,22 @@ public partial class PersonChoosingViewModel : ReactiveObject
                     }
                 }
 
-                CompleteScrolling (isDirectionUp, step, runnerStep, true);
+                CompleteScrolling ( isDirectionUp, step, runnerStep, true );
             }
         }
     }
 
-
     internal void MoveRunner ( double runnerStep )
     {
-        double listHeight = _oneHeight * InvolvedPeople. Count;
-        listHeight = listHeight - VisibleHeight;
+        if ( InvolvedPeople == null ) 
+        {
+            return;
+        }   
+
+        double listHeight = _oneHeight * InvolvedPeople.Count - VisibleHeight;
         double proportion = listHeight / _scrollingLength;
         double step = runnerStep * proportion;
-        step = _oneHeight * Math.Round (step / _oneHeight);
+        step = _oneHeight * Math.Round ( step / _oneHeight );
         bool isDirectionUp = false;
 
         if ( step > 0 )
@@ -160,13 +155,11 @@ public partial class PersonChoosingViewModel : ReactiveObject
         else if ( step < 0 )
         {
             isDirectionUp = false;
-            step = step * ( -1 );
-            runnerStep = step / proportion;
+            runnerStep = step * ( -1 ) / proportion;
         }
 
-        CompleteMoving (isDirectionUp, step, runnerStep, true);
+        CompleteMoving ( isDirectionUp, step, runnerStep, true );
     }
-
 
     internal void ScrollByKey ( bool isDirectionUp )
     {
@@ -184,12 +177,16 @@ public partial class PersonChoosingViewModel : ReactiveObject
             scrollerIsInvolved = false;
         }
 
-        CompleteScrolling (isDirectionUp, step, runnerStep, scrollerIsInvolved);
+        CompleteScrolling ( isDirectionUp, step, runnerStep, scrollerIsInvolved );
     }
-
 
     private void CompleteScrolling ( bool isDirectionUp, double step, double runnerStep, bool scrollerIsInvolved )
     {
+        if ( InvolvedPeople == null )
+        {
+            return;
+        }
+
         double currentScrollValue = _scrollValue;
 
         if ( isDirectionUp )
@@ -224,7 +221,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
                             if ( scrollerIsInvolved )
                             {
-                                UpRunner (runnerStep);
+                                UpRunner ( runnerStep );
                             }
 
                             _focusedEdge--;
@@ -252,7 +249,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
                         if ( scrollerIsInvolved )
                         {
-                            UpRunner (runnerStep);
+                            UpRunner ( runnerStep );
                         }
 
                         _focusedEdge--;
@@ -277,7 +274,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 return;
             }
 
-            bool focusedIsInRange = ( _focusedNumber < ( InvolvedPeople. Count - 1 ) );
+            bool focusedIsInRange = ( _focusedNumber < ( InvolvedPeople.Count - 1 ) );
 
             if ( focusedIsInRange )
             {
@@ -295,13 +292,11 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 if ( _focusedNumber > _focusedEdge )
                 {
                     _focusedEdge++;
-
-                    double itemHeight = _oneHeight;
                     currentScrollValue -= step;
 
                     if ( scrollerIsInvolved )
                     {
-                        DownRunner (runnerStep);
+                        DownRunner ( runnerStep );
                     }
                 }
             }
@@ -309,12 +304,15 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         _scrollValue = currentScrollValue;
         SetVisiblePeople ();
-        ScrollingIsOccured = true;
     }
-
 
     private void CompleteMoving ( bool isDirectionUp, double step, double runnerStep, bool scrollerIsInvolved )
     {
+        if ( InvolvedPeople == null )
+        {
+            return;
+        }
+
         double currentScrollValue = _scrollValue;
 
         if ( isDirectionUp )
@@ -328,14 +326,13 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 topBorder = -1;
             }
 
-            double stepLoss = 0;
+            double stepLoss;
             int focusedMustStepAlone = visibleCount - ( _focusedEdge - _focusedNumber );
             int stepInItems = ( int ) ( step / _oneHeight );
             bool onlyFocusedWillShift = ( stepInItems <= focusedMustStepAlone );
 
             if ( onlyFocusedWillShift )
             {
-                focusedMustStepAlone = stepInItems;
                 _focusedNumber -= stepInItems;
             }
             else
@@ -375,7 +372,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
                     if ( scrollerIsInvolved )
                     {
-                        UpRunner (runnerStep);
+                        UpRunner ( runnerStep );
                     }
 
                     _focusedEdge = _focusedNumber + visibleCount;
@@ -395,14 +392,13 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 EntireIsFocused = false;
             }
 
-            double stepLoss = 0;
+            double stepLoss;
             int focusedMustStepAlone = _focusedEdge - _focusedNumber;
             int stepInItems = ( int ) ( step / _oneHeight );
             bool onlyFocusedWillShift = ( stepInItems <= focusedMustStepAlone );
 
             if ( onlyFocusedWillShift )
             {
-                focusedMustStepAlone = stepInItems;
                 _focusedNumber += stepInItems;
             }
             else
@@ -410,13 +406,13 @@ public partial class PersonChoosingViewModel : ReactiveObject
                 stepLoss = ( _oneHeight * focusedMustStepAlone );
                 _focusedNumber += stepInItems;
                 step -= stepLoss;
-                bool isBottomViolation = ( _focusedNumber > ( InvolvedPeople. Count - 1 ) );
+                bool isBottomViolation = ( _focusedNumber > ( InvolvedPeople.Count - 1 ) );
 
                 if ( isBottomViolation )
                 {
-                    int excess = _focusedNumber - ( InvolvedPeople. Count - 1 );
+                    int excess = _focusedNumber - ( InvolvedPeople.Count - 1 );
                     step -= excess * _oneHeight;
-                    _focusedNumber = ( InvolvedPeople. Count - 1 );
+                    _focusedNumber = ( InvolvedPeople.Count - 1 );
                 }
 
                 if ( _focused != null )
@@ -433,7 +429,7 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
                     if ( scrollerIsInvolved )
                     {
-                        DownRunner (runnerStep);
+                        DownRunner ( runnerStep );
                     }
 
                     _focusedEdge = _focusedNumber;
@@ -443,20 +439,11 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         _scrollValue = currentScrollValue;
         SetVisiblePeople ();
-        ScrollingIsOccured = true;
     }
-
 
     private void SetVisiblePeople ()
     {
-        int allListLineAddition = 0;
-
-        if ( _allListMustBe )
-        {
-            allListLineAddition++;
-        }
-
-        int shiftInLines = (int) (_scrollValue / _oneHeight) * (-1);
+        int shiftInLines = ( int ) ( _scrollValue / _oneHeight ) * ( -1 );
 
         if ( shiftInLines < 0 )
         {
@@ -467,19 +454,20 @@ public partial class PersonChoosingViewModel : ReactiveObject
         SetVisiblePeopleStartingFrom ( shiftInLines );
     }
 
-
     private double GetScrollLimit ()
     {
         double scrollingLimit = 0;
 
-        if ( InvolvedPeople. Count == PeopleStorage. Count )
+        if ( PeopleStorage != null 
+             && InvolvedPeople != null 
+             && PeopleStorage.Count == InvolvedPeople.Count 
+        )
         {
             scrollingLimit = _scrollingScratch;
         }
 
         return scrollingLimit;
     }
-
 
     private void UpRunner ( double runnerStep )
     {
@@ -505,7 +493,6 @@ public partial class PersonChoosingViewModel : ReactiveObject
             BottomSpanHeight = maxHeight;
         }
     }
-
 
     private void DownRunner ( double runnerStep )
     {
@@ -533,6 +520,4 @@ public partial class PersonChoosingViewModel : ReactiveObject
             BottomSpanHeight = 0;
         }
     }
-
-    #endregion Scrolling
 }

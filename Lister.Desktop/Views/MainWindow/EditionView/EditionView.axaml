@@ -7,38 +7,25 @@
 			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView"
 			 x:Class="Lister.Desktop.Views.MainWindow.EditionView.BadgeEditorView"
 			 x:DataType="vm:BadgeEditorViewModel"
-			 
-			 
 			 xmlns:WaitingUc="clr-namespace:Lister.Desktop.Views.MainWindow.WaitingView"
-			 
+			 xmlns:CenterShadowUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents.CenterShadow"
+			 xmlns:TextLines="clr-namespace:Lister.Desktop.ModelMappings.BadgeVM"
 			 KeyDown="ToSide"
-			 
 			 Height="{Binding  Path=ViewHeight,  Mode=OneWay}"
 			 Width="{Binding  Path=ViewWidth,  Mode=OneWay}">
-	
+
 	<StackPanel
-		Name="editionPanel"
+		Name="EditionPanel"
 		ZIndex="1">
 
 		<Grid
-			Name="backBlock"
+			ColumnDefinitions="* 216 *"
+			RowDefinitions="22 2 24"
 			Height="47"
 			Background="#EEEEEE">
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="216" ></ColumnDefinition>
-				<ColumnDefinition ></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-
-			<Grid.RowDefinitions>
-				<RowDefinition  Height="22"></RowDefinition>
-				<RowDefinition  Height="2"></RowDefinition>
-				<RowDefinition Height="24"></RowDefinition>
-			</Grid.RowDefinitions>
-
 			<Button
-				Name="Back"
+				Name="BackButton"
 				Classes="superButton"
 				ToolTip.Tip="Сохранить изменения и вернуться к макету"
 				ToolTip.HorizontalOffset="10"
@@ -53,27 +40,25 @@
 				Command="{Binding  Path = GoBackCommand}"
 				PointerPressed="SomeButtonPressed">
 
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="30"></ColumnDefinition>
-						<ColumnDefinition Width="170"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					
+				<Grid
+					ColumnDefinitions="30 170">
+
 					<Label
 						Classes="picture"
 						Grid.Column="0"
 						Content="&#xf52b;"
 						Width="25"
-						Padding="3,8"/>
+						Padding="3,8"
+					/>
 					<Label
 						Grid.Column="1"
 						Content="Вернуться к макету"
 						Width="175"
-						Padding="1,6"/>
+						Padding="1,6"
+					/>
 				</Grid>
-				
-				</Button>
-			
+			</Button>
+
 			<Border
 				Grid.Column="0"
 				Grid.Row="2"
@@ -81,121 +66,135 @@
 				CornerRadius="0,5,0,0"
 				Background="#fafafa">
 
-				<Canvas Name="leftShadow">
+				<Canvas Name="LeftShadow">
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="0"
 						Width="302"
 						Height="1"
 						Opacity="0.35"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="1"
 						Width="301"
 						Height="1"
 						Opacity="0.3"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="2"
 						Width="300"
 						Height="1"
 						Opacity="0.25"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="3"
 						Width="299"
 						Height="1"
 						Opacity="0.2"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="4"
 						Width="298"
 						Height="1"
 						Opacity="0.15"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="5"
 						Width="297"
 						Height="1"
 						Opacity="0.1"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="6"
 						Width="296"
 						Height="1"
 						Opacity="0.05"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="7"
 						Width="295"
 						Height="1"
 						Opacity="0.02"
-						Background="Black"/>
-
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="306"
 						Canvas.Top="5"
 						Width="1"
 						Height="12"
 						Opacity="0.35"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="305"
 						Canvas.Top="6"
 						Width="1"
 						Height="11"
 						Opacity="0.3"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="304"
 						Canvas.Top="7"
 						Width="1"
 						Height="10"
 						Opacity="0.25"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="303"
 						Canvas.Top="8"
 						Width="1"
 						Height="9"
 						Opacity="0.2"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="302"
 						Canvas.Top="9"
 						Width="1"
 						Height="8"
 						Opacity="0.15"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="301"
 						Canvas.Top="10"
 						Width="1"
 						Height="7"
 						Opacity="0.1"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="300"
 						Canvas.Top="11"
 						Width="1"
 						Height="6"
 						Opacity="0.05"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="299"
 						Canvas.Top="12"
 						Width="1"
 						Height="5"
 						Opacity="0.02"
-						Background="Black"/>
-
+						Background="Black"
+					/>
 					<Border
 						Canvas.Left="302" Canvas.Top="0"
 						Width="5"
@@ -203,7 +202,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,6,0,0"
-						Opacity="0.4"/>
+						Opacity="0.4"
+					/>
 					<Border
 						Canvas.Left="301" Canvas.Top="1"
 						Width="5"
@@ -211,7 +211,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,5,0,0"
-						Opacity="0.35"/>
+						Opacity="0.35"
+					/>
 					<Border
 						Canvas.Left="300" Canvas.Top="2"
 						Width="5"
@@ -219,7 +220,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,4,0,0"
-						Opacity="0.25"/>
+						Opacity="0.25"
+					/>
 					<Border
 						Canvas.Left="299" Canvas.Top="3"
 						Width="5"
@@ -227,7 +229,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,3,0,0"
-						Opacity="0.2"/>
+						Opacity="0.2"
+					/>
 					<Border
 						Canvas.Left="298" Canvas.Top="4"
 						Width="5"
@@ -235,7 +238,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,2,0,0"
-						Opacity="0.15"/>
+						Opacity="0.15"
+					/>
 					<Border
 						Canvas.Left="297" Canvas.Top="5"
 						Width="5"
@@ -243,7 +247,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,2,0,0"
-						Opacity="0.1"/>
+						Opacity="0.1"
+					/>
 					<Border
 						Canvas.Left="296" Canvas.Top="6"
 						Width="5"
@@ -251,7 +256,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,2,0,0"
-						Opacity="0.05"/>
+						Opacity="0.05"
+					/>
 					<Border
 						Canvas.Left="295" Canvas.Top="7"
 						Width="5"
@@ -259,10 +265,9 @@
 						BorderBrush="Black"
 						BorderThickness="0,1,1,0"
 						CornerRadius="0,2,0,0"
-						Opacity="0.02"/>
-
+						Opacity="0.02"
+					/>
 				</Canvas>
-				
 			</Border>
 
 			<Border
@@ -272,121 +277,135 @@
 				CornerRadius="5,0,0,0"
 				Background="#fafafa">
 
-				<Canvas Name="rightShadow">
+				<Canvas Name="RightShadow">
 					<Canvas
 						Canvas.Left="5"
 						Canvas.Top="0"
 						Width="302"
 						Height="1"
 						Opacity="0.35"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="6"
 						Canvas.Top="1"
 						Width="301"
 						Height="1"
 						Opacity="0.3"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="7"
 						Canvas.Top="2"
 						Width="300"
 						Height="1"
 						Opacity="0.25"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="8"
 						Canvas.Top="3"
 						Width="299"
 						Height="1"
 						Opacity="0.2"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="9"
 						Canvas.Top="4"
 						Width="298"
 						Height="1"
 						Opacity="0.15"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="10"
 						Canvas.Top="5"
 						Width="297"
 						Height="1"
 						Opacity="0.1"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="11"
 						Canvas.Top="6"
 						Width="296"
 						Height="1"
 						Opacity="0.05"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="12"
 						Canvas.Top="7"
 						Width="295"
 						Height="1"
 						Opacity="0.02"
-						Background="Black"/>
-
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="0"
 						Canvas.Top="5"
 						Width="1"
 						Height="12"
 						Opacity="0.35"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="1"
 						Canvas.Top="6"
 						Width="1"
 						Height="11"
 						Opacity="0.3"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="2"
 						Canvas.Top="7"
 						Width="1"
 						Height="10"
 						Opacity="0.25"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="3"
 						Canvas.Top="8"
 						Width="1"
 						Height="9"
 						Opacity="0.2"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="4"
 						Canvas.Top="9"
 						Width="1"
 						Height="8"
 						Opacity="0.15"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="5"
 						Canvas.Top="10"
 						Width="1"
 						Height="7"
 						Opacity="0.1"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="6"
 						Canvas.Top="11"
 						Width="1"
 						Height="6"
 						Opacity="0.05"
-						Background="Black"/>
+						Background="Black"
+					/>
 					<Canvas
 						Canvas.Left="7"
 						Canvas.Top="12"
 						Width="1"
 						Height="5"
 						Opacity="0.02"
-						Background="Black"/>
-
+						Background="Black"
+					/>
 					<Border
 						Canvas.Left="0" Canvas.Top="0"
 						Width="5"
@@ -394,7 +413,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="6,0,0,0"
-						Opacity="0.4"/>
+						Opacity="0.4"
+					/>
 					<Border
 						Canvas.Left="1" Canvas.Top="1"
 						Width="5"
@@ -402,7 +422,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="5,0,0,0"
-						Opacity="0.35"/>
+						Opacity="0.35"
+					/>
 					<Border
 						Canvas.Left="2" Canvas.Top="2"
 						Width="5"
@@ -410,7 +431,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="4,0,0,0"
-						Opacity="0.25"/>
+						Opacity="0.25"
+					/>
 					<Border
 						Canvas.Left="3" Canvas.Top="3"
 						Width="5"
@@ -418,7 +440,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="3,0,0,0"
-						Opacity="0.2"/>
+						Opacity="0.2"
+					/>
 					<Border
 						Canvas.Left="4" Canvas.Top="4"
 						Width="5"
@@ -426,7 +449,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="2,0,0,0"
-						Opacity="0.15"/>
+						Opacity="0.15"
+					/>
 					<Border
 						Canvas.Left="5" Canvas.Top="5"
 						Width="5"
@@ -434,7 +458,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="2,0,0,0"
-						Opacity="0.1"/>
+						Opacity="0.1"
+					/>
 					<Border
 						Canvas.Left="6" Canvas.Top="6"
 						Width="5"
@@ -442,7 +467,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="2,0,0,0"
-						Opacity="0.05"/>
+						Opacity="0.05"
+					/>
 					<Border
 						Canvas.Left="7" Canvas.Top="7"
 						Width="5"
@@ -450,7 +476,8 @@
 						BorderBrush="Black"
 						BorderThickness="1,1,0,0"
 						CornerRadius="2,0,0,0"
-						Opacity="0.02"/>
+						Opacity="0.02"
+					/>
 				</Canvas>
 			</Border>
 
@@ -459,97 +486,117 @@
 				Grid.Row="2"
 				Height="20"
 				CornerRadius="0,0,0,0"
-				Background="White"/>
-
+				Background="White"
+			/>
 			<Border
 				Grid.Column="1"
 				Grid.Row="2"
 				Height="20"
 				CornerRadius="0,0,5,5"
-				Background="#EEEEEE"/>
-			
+				Background="#EEEEEE"
+			/>
 		</Grid>
 
-		<Border
-			Name="complexShadow"
+		<CenterShadowUc:CenterShadowUserControl
+			Name="CenterShadow"
+			Margin="200,-4"
+			ZIndex="2"
+		/>
+
+		<!--Border
+			Name="CenterShadow"
 			Margin="200,0"
 			BorderThickness="0"
 			ZIndex="2">
 
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+			<StackPanel 
+				Orientation="Horizontal" 
+				HorizontalAlignment="Center">
 
-				<Canvas Width="16" Height="8">
+				<Canvas 
+					Width="16" 
+					Height="8">
+
 					<Border
-						Canvas.Left="2" Canvas.Top="-5"
+						Canvas.Left="2" 
+						Canvas.Top="-5"
 						Width="6"
 						Height="6"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,6"
-						Opacity="0.35"/>
-
+						Opacity="0.35"
+					/>
 					<Border
-						Canvas.Left="1" Canvas.Top="-5"
+						Canvas.Left="1" 
+						Canvas.Top="-5"
 						Width="7"
 						Height="7"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,7"
-						Opacity="0.3"/>
-
+						Opacity="0.3"
+					/>
 					<Border
-						Canvas.Left="0" Canvas.Top="-5"
+						Canvas.Left="0" 
+						Canvas.Top="-5"
 						Width="8"
 						Height="8"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,8"
-						Opacity="0.25"/>
-
+						Opacity="0.25"
+					/>
 					<Border
-						Canvas.Left="-1" Canvas.Top="-5"
+						Canvas.Left="-1"
+						Canvas.Top="-5"
 						Width="9"
 						Height="9"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,9"
-						Opacity="0.2"/>
-
+						Opacity="0.2"
+					/>
 					<Border
-						Canvas.Left="-2" Canvas.Top="-5"
+						Canvas.Left="-2" 
+						Canvas.Top="-5"
 						Width="10"
 						Height="10"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,10"
-						Opacity="0.15"/>
-
+						Opacity="0.15"
+					/>
 					<Border
-						Canvas.Left="-3" Canvas.Top="-5"
+						Canvas.Left="-3" 
+						Canvas.Top="-5"
 						Width="11"
 						Height="11"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,11"
-						Opacity="0.1"/>
-
+						Opacity="0.1"
+					/>
 					<Border
-						Canvas.Left="-4" Canvas.Top="-5"
+						Canvas.Left="-4" 
+						Canvas.Top="-5"
 						Width="12"
 						Height="12"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,12"
-						Opacity="0.05"/>
-
+						Opacity="0.05"
+					/>
 					<Border
-						Canvas.Left="-5" Canvas.Top="-5"
+						Canvas.Left="-5" 
+						Canvas.Top="-5"
 						Width="13"
 						Height="13"
 						BorderBrush="Black"
 						BorderThickness="1,0,0,1"
 						CornerRadius="0,0,0,13"
-						Opacity="0.02"/>
+						Opacity="0.02"
+					/>
 				</Canvas>
 
 				<StackPanel Margin="-8,0">
@@ -563,7 +610,10 @@
 					<Rectangle Width="206" Height="1" Fill="Black" Opacity="0.02"/>
 				</StackPanel>
 
-				<Canvas Width="16" Height="8">
+				<Canvas 
+					Width="16" 
+					Height="8">
+
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="6"
@@ -571,8 +621,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,6,0"
-						Opacity="0.35"/>
-
+						Opacity="0.35"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="7"
@@ -580,8 +630,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,7,0"
-						Opacity="0.3"/>
-
+						Opacity="0.3"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="8"
@@ -589,8 +639,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,8,0"
-						Opacity="0.25"/>
-
+						Opacity="0.25"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="9"
@@ -598,8 +648,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,9,0"
-						Opacity="0.2"/>
-
+						Opacity="0.2"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="10"
@@ -607,8 +657,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,10,0"
-						Opacity="0.15"/>
-
+						Opacity="0.15"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="11"
@@ -616,8 +666,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,11,0"
-						Opacity="0.1"/>
-
+						Opacity="0.1"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="12"
@@ -625,8 +675,8 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,12,0"
-						Opacity="0.05"/>
-
+						Opacity="0.05"
+					/>
 					<Border
 						Canvas.Left="8" Canvas.Top="-5"
 						Width="13"
@@ -634,31 +684,25 @@
 						BorderBrush="Black"
 						BorderThickness="0,0,1,1"
 						CornerRadius="0,0,13,0"
-						Opacity="0.02"/>
+						Opacity="0.02"
+					/>
 				</Canvas>
-
 			</StackPanel>
+		</Border-->
 
-		</Border>
-		
 		<Grid
-		   Name="badgeArea"
-		   Background="#fafafa"
-		   Margin="0,-8"
-		   ZIndex="1">
+			ColumnDefinitions="* 250"
+			Background="#fafafa"
+			Margin="0,-8"
+			ZIndex="1">
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="250" ></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-			
 			<StackPanel
-				Name="itemEditionBlock"
+				Name="ItemEditionBlock"
 				Grid.Column="0"
 				Orientation="Horizontal">
 
 				<Border
-					Name="editionButtonsBlock"
+					Name="EditionButtonsBlock"
 					Width="232"
 					Height="357"
 					Margin="0,14"
@@ -666,64 +710,43 @@
 					Background="#eeeeee"
 					BoxShadow="3 3 10 0 #817974"
 					ZIndex="2">
-					
-					<Grid>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="16"></RowDefinition>
-							<RowDefinition Height="48" ></RowDefinition>
-							<RowDefinition Height="8" ></RowDefinition>
-							<RowDefinition Height="20" ></RowDefinition>
-							<RowDefinition Height="32" ></RowDefinition>
-							<RowDefinition Height="16"></RowDefinition>
-							<RowDefinition Height="10" ></RowDefinition>
-							<RowDefinition Height="80" ></RowDefinition>
-							<RowDefinition Height="16" ></RowDefinition>
-							<RowDefinition Height="1" ></RowDefinition>
-							<RowDefinition Height="4" ></RowDefinition>
-							<RowDefinition Height="32" ></RowDefinition>
-						</Grid.RowDefinitions>
-						
+
+					<Grid
+						RowDefinitions="16 48 8 20 32 16 10 80 16 1 4 32">
+
 						<Grid
-							Name="entireCount"
+							Name="Counter"
+							ColumnDefinitions="62 158"
+							RowDefinitions="24 24"
 							Grid.Row="1">
-
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="62"></ColumnDefinition>
-								<ColumnDefinition Width="158" ></ColumnDefinition>
-							</Grid.ColumnDefinitions>
-
-							<Grid.RowDefinitions>
-								<RowDefinition Height="24"></RowDefinition>
-								<RowDefinition Height="24" ></RowDefinition>
-							</Grid.RowDefinitions>
 
 							<Label
 								Grid.Column="0"
 								Grid.Row="0"
 								Padding="16,0,4,0"
 								ToolTip.Tip="Всего бейджей"
-								Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"/>
-
+								Content="{Binding ProcessableCount, Mode=OneWay}"
+							/>
 							<Label
 								Grid.Column="1"
 								Grid.Row="0"
 								Padding="4,0"
-								Content="Всего бейджей"/>
-
+								Content="Всего бейджей"
+							/>
 							<Label
 								Grid.Column="0"
 								Grid.Row="1"
 								Padding="16,0,4,0"
 								Foreground="Red"
 								ToolTip.Tip="Из них с ошибками"
-								Content="{Binding  Path = IncorrectBadgesCount,  Mode=OneWay}"/>
-
+								Content="{Binding IncorrectBadgesCount, Mode=OneWay}"
+							/>
 							<Label
 								Grid.Column="1"
 								Grid.Row="1"
 								Padding="4,0"
-								Content="Из них с ошибками"/>
-
+								Content="Из них с ошибками"
+							/>
 						</Grid>
 
 						<Label
@@ -731,15 +754,14 @@
 							Height="24"
 							Margin="16,0"
 							Padding="0,0"
-							Content="Размер шрифта"/>
-						
+							Content="Размер шрифта"
+						/>
 						<StackPanel
-							Name="textSize"
 							Grid.Row="4"
 							Orientation="Horizontal">
 
 							<Button
-								Name="zoomOut"
+								Name="ZoomOut"
 								Classes="transparent"
 								Margin="16,0"
 								Padding="8,7"
@@ -749,29 +771,29 @@
 								KeyDown="ChangeFocusedFontSize"
 								GotFocus="ZoomOnOutGotFocus"
 								LostFocus="ZoomOnOutLostFocus"
-								Command="{Binding  Path = ReduceFontSize}"
+								Command="{Binding ReduceFontSize}"
 								PointerPressed="SomeButtonPressed"
-								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
-
+								IsEnabled="{Binding ZoommerIsEnable, Mode=OneWay}"
+							/>
 							<Label
-								Name="scalabilityGrade"
+								Name="ScalabilityGrade"
 								Width="128"
-								Background="{Binding  Path = FocusedFontSizeColor,  Mode=OneWay}"
-								BorderBrush="{Binding  Path = FocusedFontSizeBorderColor,  Mode=OneWay}"
+								Background="{Binding FocusedFontSizeColor, Mode=OneWay}"
+								BorderBrush="{Binding FocusedFontSizeBorderColor, Mode=OneWay}"
 								Margin="-12,0"
 								GotFocus="HandleGettingFocus"
 								KeyDown="ToParticularBadge"
-								Content="{Binding  Path = BeingProcessedBadge.FocusedFontSize,  Mode=OneWay}"
+								Content="{Binding ProcessableBadge.FocusedFontSize, Mode=OneWay}"
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								CornerRadius = "3"
 								BorderThickness="1"
 								IsTabStop="False"
 								Focusable="False"
-								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
-
+								IsEnabled="{Binding ZoommerIsEnable, Mode=OneWay}"
+							/>
 							<Button
-								Name="zoomOn"
+								Name="ZoomOn"
 								Classes="transparent"
 								Margin="16,0"
 								Padding="7,7"
@@ -781,9 +803,10 @@
 								KeyDown="ChangeFocusedFontSize"
 								GotFocus="ZoomOnOutGotFocus"
 								LostFocus="ZoomOnOutLostFocus"
-								Command="{Binding  Path = IncreaseFontSize}"
+								Command="{Binding IncreaseFontSize}"
 								PointerPressed="SomeButtonPressed"
-								IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"/>
+								IsEnabled="{Binding ZoommerIsEnable, Mode=OneWay}"
+							/>
 						</StackPanel>
 
 						<Label
@@ -791,24 +814,24 @@
 							Height="24"
 							Margin="16,5"
 							Padding="0,2"
-							Content="Текст"/>
-						
+							Content="Текст"
+						/>
 						<TextBox
-							Name="editorTextBox"
+							Name="EditorTextBox"
 							Grid.Row="7"
 							Width="200"
 							Height="80"
 							HorizontalAlignment="Center"
 							TextWrapping="Wrap"
-							IsEnabled="{Binding  Path = ZoommerIsEnable,  Mode=OneWay}"
-							Text="{Binding  Path = BeingProcessedBadge.FocusedText,  Mode=OneWay}"
+							IsEnabled="{Binding ZoommerIsEnable, Mode=OneWay}"
+							Text="{Binding ProcessableBadge.FocusedText, Mode=OneWay}"
 							KeyDown="ToParticularBadge"
 							GotFocus="HandleGettingFocus"
 							LostFocus="TextEditorLostFocus"
-							TextChanged="HandleTextEdition"/>
-
+							TextChanged="HandleTextEdition"
+						/>
 						<Button
-							Name="spliter"
+							Name="Spliter"
 							Classes="Primary"
 							Grid.Row="9"
 							ToolTip.Tip="Разделить текст на слова"
@@ -816,28 +839,28 @@
 							Width="200"
 							Height="32"
 							Margin="0,17"
-							Command="{Binding   Path = Split}"
+							Command="{Binding Split}"
 							PointerPressed="SomeButtonPressed"
 							KeyDown="ToParticularBadge"
-							IsEnabled="{Binding   Path = SplitterIsEnable,  Mode=OneWay}">
+							IsEnabled="{Binding SplitterIsEnable, Mode=OneWay}">
 
 							<StackPanel Orientation="Horizontal">
 								<Label
 									Classes="picture"
 									Content="&#xf529;"
 									Width="20"
-									Padding="0,8"/>
-
+									Padding="0,8"
+								/>
 								<Label
 									Content="Разделить"
 									Width="190"
-									Padding="40,6"/>
+									Padding="40,6"
+								/>
 							</StackPanel>
-
 						</Button>
 
 						<Button
-							Name="cancel"
+							Name="Cancel"
 							Classes="Primary"
 							Grid.Row="11"
 							ToolTip.Tip="Отменить все изменения"
@@ -845,8 +868,8 @@
 							Height="32"
 							HorizontalAlignment="Center"
 							Margin="0,-11"
-							IsEnabled="{Binding  Path = BeingProcessedBadge.IsChanged,  Mode=OneWay }"
-							Command="{Binding  Path = CancelChanges}"
+							IsEnabled="{Binding ProcessableBadge.IsChanged, Mode=OneWay}"
+							Command="{Binding CancelChanges}"
 							PointerPressed="SomeButtonPressed"
 							KeyDown="ToParticularBadge">
 
@@ -855,21 +878,19 @@
 									FontFamily="{StaticResource FA}"
 									Content="&#xf2ea;"
 									Width="20"
-									Padding="0,8"/>
-
+									Padding="0,8"
+								/>
 								<Label
 									Content="Отмена"
 									Width="190"
-									Padding="50,6"/>
+									Padding="50,6"
+								/>
 							</StackPanel>
-							
 						</Button>
-					
 					</Grid>
 				</Border>
-				
+
 				<Border
-					Name="workArea"
 					HorizontalAlignment="Left"
 					Width="{Binding  Path=WorkAreaWidth,  Mode=OneWay}"
 					Height="{Binding  Path=WorkAreaHeight,  Mode=OneWay}"
@@ -877,53 +898,54 @@
 					BorderThickness="0">
 
 					<ScrollViewer
-						Name="scroller"
+						Name="Scroller"
 						VerticalScrollBarVisibility="Auto"
 						HorizontalScrollBarVisibility="Auto"
 						AllowAutoHide="False">
 
 						<Border
-							Name="badge"
 							BorderThickness="1"
 							BorderBrush="Gray"
-							Width="{Binding  Path = BeingProcessedBadge.BorderWidth,  Mode=OneWay }"
-							Height="{Binding  Path = BeingProcessedBadge.BorderHeight,  Mode=OneWay }"
+							Width="{Binding ProcessableBadge.BorderWidth, Mode=OneWay}"
+							Height="{Binding ProcessableBadge.BorderHeight, Mode=OneWay}"
 							VerticalAlignment="Center"
 							HorizontalAlignment="Center">
 
 							<Canvas
-								Name="incorrectBadge"
+								Name="Badge"
 								VerticalAlignment="Center"
 								HorizontalAlignment="Center"
-								Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
-								Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+								Width="{Binding ProcessableBadge.BadgeWidth, Mode=OneWay}"
+								Height="{Binding ProcessableBadge.BadgeHeight, Mode=OneWay}"
 								PointerPressed="CaptureBadge">
 
 								<Image
 									Name="backgroundImage"
 									Canvas.Top="0"
 									Canvas.Left="0"
-									Width="{Binding  Path = BeingProcessedBadge.BadgeWidth,  Mode=OneWay }"
-									Height="{Binding  Path = BeingProcessedBadge.BadgeHeight,  Mode=OneWay }"
+									Width="{Binding ProcessableBadge.BadgeWidth, Mode=OneWay}"
+									Height="{Binding ProcessableBadge.BadgeHeight, Mode=OneWay}"
 									VerticalAlignment="Top"
-									Source = "{Binding  Path = BeingProcessedBadge.ImageBitmap,  Mode=OneWay }"/>
-
+									Source = "{Binding ProcessableBadge.ImageBitmap, Mode=OneWay}"
+								/>
 								<ItemsControl
-									Name="textLines"
-									ItemsSource="{Binding  Path = BeingProcessedBadge.TextLines,  Mode=OneWay }">
+									Name="TextLines"
+									ItemsSource="{Binding ProcessableBadge.TextLines, Mode=OneWay}">
 
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<Canvas
-												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+												Width="{Binding $parent[Canvas].Width, Mode=OneWay}"
+												Height="{Binding $parent[Canvas].Height, Mode=OneWay}"
+											/>
 										</ItemsPanelTemplate>
 									</ItemsControl.ItemsPanel>
 
 									<ItemsControl.Styles>
-										<Style Selector="ItemsControl ContentPresenter">
-											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+										<Style Selector="ItemsControl ContentPresenter" 
+											   x:DataType="TextLines:TextLineViewModel">
+											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
+											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
 									</ItemsControl.Styles>
 
@@ -931,50 +953,52 @@
 										<DataTemplate>
 
 											<Border
-												Background="{Binding   Path = Background,  Mode=OneWay }"
-												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
-												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}"
-												Height="{Binding Path = HeightWithBorder,  Mode=OneWay}">
+												x:DataType="TextLines:TextLineViewModel"
+												Background="{Binding Background, Mode=OneWay }"
+												BorderThickness="{Binding BorderThickness, Mode=OneWay}"
+												BorderBrush="{Binding BorderColor, Mode=OneWay}"
+												Height="{Binding HeightWithBorder, Mode=OneWay}">
 
 												<TextBlock
-													Width="{Binding  Path = UsefullWidth,  Mode=OneWay}"
+													Width="{Binding UsefullWidth, Mode=OneWay}"
 													VerticalAlignment="Center"
-													Padding="{Binding  Path = Padding,  Mode=OneWay}"
-													Height="{Binding  Path = Height,  Mode=OneWay}"
-													FontSize="{Binding  Path = FontSize,  Mode=OneWay}"
-													FontFamily="{Binding   Path = FontFamily,  Mode=OneWay }"
-													FontWeight="{Binding   Path = FontWeight,  Mode=OneWay }"
-													Foreground="{Binding   Path = Foreground,  Mode=OneWay }"
+													Padding="{Binding Padding, Mode=OneWay}"
+													Height="{Binding Height, Mode=OneWay}"
+													FontSize="{Binding FontSize, Mode=OneWay}"
+													FontFamily="{Binding FontFamily, Mode=OneWay }"
+													FontWeight="{Binding FontWeight, Mode=OneWay }"
+													Foreground="{Binding Foreground, Mode=OneWay }"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
 													PointerExited="SetArrowCursor"
 													IsEnabled="True"
-													Text="{Binding   Path = Content,  Mode=OneWay }" />
-
+													Text="{Binding Content, Mode=OneWay }"
+												/>
 											</Border>
-
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
 
 								<ItemsControl
 									Name="images"
-									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideImages,  Mode=OneWay }">
+									ItemsSource="{Binding ProcessableBadge.InsideImages, Mode=OneWay }">
 
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<Canvas
-												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+												Width="{Binding $parent[Canvas].Width, Mode=OneWay }"
+												Height="{Binding $parent[Canvas].Height, Mode=OneWay }"
+											/>
 										</ItemsPanelTemplate>
 									</ItemsControl.ItemsPanel>
 
 									<ItemsControl.Styles>
-										<Style Selector="ItemsControl ContentPresenter">
-											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+										<Style Selector="ItemsControl ContentPresenter" 
+											   x:DataType="TextLines:TextLineViewModel">
+											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
+											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
 									</ItemsControl.Styles>
 
@@ -982,146 +1006,146 @@
 										<DataTemplate>
 
 											<Border
-												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
-												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}"
-												Width="{Binding Path = WidthWithBorder,  Mode=OneWay}">
+												BorderThickness="{Binding BorderThickness, Mode=OneWay}"
+												BorderBrush="{Binding BorderColor, Mode=OneWay}"
+												Width="{Binding WidthWithBorder, Mode=OneWay}">
 
 												<Image
-													Source = "{Binding   Path = BitMap,  Mode=OneWay }"
-													Width="{Binding Path = Width,  Mode=OneWay}"
+													Source = "{Binding BitMap, Mode=OneWay }"
+													Width="{Binding Width, Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"/>
+													PointerExited="SetArrowCursor"
+												/>
 											</Border>
-												
-										</DataTemplate>
+									</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
 
 								<ItemsControl
 									Name="rects"
-									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideRectangles,  Mode=OneWay }">
+									ItemsSource="{Binding ProcessableBadge.InsideRectangles, Mode=OneWay }">
 
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<Canvas
-												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+												Width="{Binding $parent[Canvas].Width, Mode=OneWay }"
+												Height="{Binding $parent[Canvas].Height, Mode=OneWay }"
+											/>
 										</ItemsPanelTemplate>
 									</ItemsControl.ItemsPanel>
 
 									<ItemsControl.Styles>
-										<Style Selector="ItemsControl ContentPresenter">
-											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+										<Style Selector="ItemsControl ContentPresenter" 
+											   x:DataType="TextLines:TextLineViewModel">
+											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
+											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
 									</ItemsControl.Styles>
 
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
 											<Border
-												Width="{Binding  Path = WidthWithBorder,  Mode=OneWay}"
-												Height="{Binding  Path = HeightWithBorder,  Mode=OneWay}"
-												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
-												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}">
-											
+												Width="{Binding WidthWithBorder, Mode=OneWay}"
+												Height="{Binding HeightWithBorder, Mode=OneWay}"
+												BorderThickness="{Binding BorderThickness, Mode=OneWay}"
+												BorderBrush="{Binding BorderColor, Mode=OneWay}">
+
 												<Rectangle
-													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
-													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
-													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
+													Stroke="{Binding OutlineRGB, Mode=OneWay}"
+													StrokeThickness="{Binding OutlineThickness, Mode=OneWay}"
+													Fill="{Binding FillColor, Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"/>
-												</Border>
+													PointerExited="SetArrowCursor"
+												/>
+											</Border>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
 
 								<ItemsControl
 									Name="ellipses"
-									ItemsSource="{Binding  Path = BeingProcessedBadge.InsideEllipses,  Mode=OneWay }">
+									ItemsSource="{Binding ProcessableBadge.InsideEllipses, Mode=OneWay }">
 
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<Canvas
-												Width="{Binding  $parent[Canvas].Width,  Mode=OneWay }"
-												Height="{Binding  $parent[Canvas].Height,  Mode=OneWay }"/>
+												Width="{Binding $parent[Canvas].Width, Mode=OneWay }"
+												Height="{Binding $parent[Canvas].Height, Mode=OneWay }"
+											/>
 										</ItemsPanelTemplate>
 									</ItemsControl.ItemsPanel>
 
 									<ItemsControl.Styles>
-										<Style Selector="ItemsControl ContentPresenter">
-											<Setter Property="Canvas.Left" Value="{Binding Path = LeftOffsetWithBorder,  Mode=OneWay}" />
-											<Setter Property="Canvas.Top" Value="{Binding Path = TopOffsetWithBorder,  Mode=OneWay}" />
+										<Style Selector="ItemsControl ContentPresenter" 
+											   x:DataType="TextLines:TextLineViewModel">
+											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
+											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
 									</ItemsControl.Styles>
 
 									<ItemsControl.ItemTemplate>
 										<DataTemplate>
 											<Border
-												Width="{Binding  Path = WidthWithBorder,  Mode=OneWay}"
-												Height="{Binding  Path = HeightWithBorder,  Mode=OneWay}"
-												BorderThickness="{Binding  Path = BorderThickness,  Mode=OneWay}"
-												BorderBrush="{Binding  Path = BorderColor,  Mode=OneWay}">
-											
+												Width="{Binding WidthWithBorder, Mode=OneWay}"
+												Height="{Binding HeightWithBorder, Mode=OneWay}"
+												BorderThickness="{Binding BorderThickness, Mode=OneWay}"
+												BorderBrush="{Binding BorderColor, Mode=OneWay}">
+
 												<Ellipse
-													Height="{Binding Path = Height,  Mode=OneWay}"
-													Width="{Binding Path = Width,  Mode=OneWay}"
-													Stroke="{Binding  Path = OutlineRGB,  Mode=OneWay}"
-													StrokeThickness="{Binding  Path = OutlineThickness,  Mode=OneWay}"
-													Fill="{Binding  Path = FillColor,  Mode=OneWay}"
+													Height="{Binding Height, Mode=OneWay}"
+													Width="{Binding Width, Mode=OneWay}"
+													Stroke="{Binding OutlineRGB, Mode=OneWay}"
+													StrokeThickness="{Binding OutlineThickness, Mode=OneWay}"
+													Fill="{Binding FillColor, Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
 													PointerMoved="Move"
 													PointerEntered="SetCrossCursor"
-													PointerExited="SetArrowCursor"/>
-												</Border>
+													PointerExited="SetArrowCursor"
+												/>
+											</Border>
 										</DataTemplate>
 									</ItemsControl.ItemTemplate>
 								</ItemsControl>
-								
 							</Canvas>
 						</Border>
-
 					</ScrollViewer>
 				</Border>
-
 			</StackPanel>
 
 			<Border
-				Name="collectionManagement"
 				Grid.Column="1"
 				Width="250"
-				Margin="{Binding  Path=FilterBlockMargin,  Mode=OneWay}"
+				Margin="{Binding FilterBlockMargin, Mode=OneWay}"
 				Height="392"
 				CornerRadius="5,0,0,5"
 				PointerWheelChanged="ScrollByWheel"
 				Background="#EEEEEE"
 				BoxShadow="-3 3 10 0 #817974">
-						
+
 				<StackPanel
-					Name="sliderPanel"
 					Width="248"
 					Height="386">
 
 					<Button
-						Name="extender"
+						Name="Extender"
 						Classes="extender"
 						CornerRadius="5,0,0,0"
 						HorizontalAlignment="Left"
 						Margin="8,6"
 						Padding="4,4"
-						Command="{Binding  Path=ExtendOrShrinkCollectionManagement}"
+						Command="{Binding ExtendOrShrinkCollectionManagement}"
 						PointerPressed="SomeButtonPressed"
-						ToolTip.Tip="{Binding  Path=ExtentionTip,  Mode=OneWay}"
-						Content="{Binding  Path=ExtenderContent,  Mode=OneWay}" />
-					
+						ToolTip.Tip="{Binding ExtentionTip, Mode=OneWay}"
+						Content="{Binding ExtenderContent, Mode=OneWay}"
+					/>
 					<Border
-						Name="filterSwitcher"
 						Height="24"
 						Margin="7,5"
 						KeyDown="ToParticularBadge">
@@ -1130,86 +1154,82 @@
 							Orientation="Horizontal">
 
 							<Button
-								Name="switcher"
+								Name="Switcher"
 								Classes="Switcher"
-								Width="{Binding  Path=SwitcherWidth,  Mode=OneWay}"
+								Width="{Binding SwitcherWidth, Mode=OneWay}"
 								Height="32"
 								Margin="1,2"
 								Padding="3,3"
-								Focusable="{Binding  Path=FilterIsShrinked,  Mode=OneWay}"
-								ToolTip.Tip="{Binding  Path=SwitcherTip,  Mode=OneWay}"
+								Focusable="{Binding FilterIsShrinked, Mode=OneWay}"
+								ToolTip.Tip="{Binding SwitcherTip, Mode=OneWay}"
 								Command="{Binding  Path = Filter}"
 								PointerPressed="SomeButtonPressed">
-							
+
 								<Label
 									FontFamily="{StaticResource FA}"
 									FontSize="16"
 									VerticalContentAlignment="Center"
 									Content="&#xf0b0;"
-									Foreground="{Binding  Path=SwitcherForeground,  Mode=OneWay}"/>
-								
+									Foreground="{Binding SwitcherForeground, Mode=OneWay}"
+								/>
 							</Button>
-							
+
 							<Label
-								Name="filterLabel"
-								Width="{Binding  Path=FilterLabelWidth,  Mode=OneWay}"
+								Width="{Binding FilterLabelWidth, Mode=OneWay}"
 								Margin="0,4"
 								Padding="0, 5"
-								Content="Фильтры"/>
-
+								Content="Фильтры"
+							/>
 							<ComboBox
-								Name="filterChoosing"
+								Name="FilterChoosing"
 								Background="White"
 								Height="32"
 								Width="143"
 								Margin="10,-4"
 								Padding="4,1"
 								MaxDropDownHeight="200"
-								Focusable="{Binding  Path=FilterIsExtended,  Mode=OneWay}"
-								IsEnabled="{Binding  Path=IsComboboxEnabled,  Mode=OneWay}"
-								SelectedIndex="{Binding  Path=FilterSelectedIndex,  Mode=OneWay}"
-								IsDropDownOpen="{Binding  Path=IsDropDownOpen,  Mode=OneWayToSource}"
+								Focusable="{Binding FilterIsExtended, Mode=OneWay}"
+								IsEnabled="{Binding IsComboboxEnabled, Mode=OneWay}"
+								SelectedIndex="{Binding FilterSelectedIndex, Mode=OneWay}"
+								IsDropDownOpen="{Binding IsDropDownOpen, Mode=OneWayToSource}"
 								SelectionChanged="SelectionChanged"
-								ItemsSource="{Binding  Path=FilterNames,  Mode=OneWay}">
+								ItemsSource="{Binding FilterNames, Mode=OneWay}">
 
 								<ComboBox.ItemTemplate >
 									<DataTemplate >
 										<Label
 											Classes="narrow"
 											Padding="-5,2"
-											Content="{Binding,  Mode=OneWay}"/>
+											Content="{Binding,  Mode=OneWay}"
+										/>
 									</DataTemplate>
 								</ComboBox.ItemTemplate>
-
 							</ComboBox>
-
 						</StackPanel>
 					</Border>
 
 					<Button
-						Name="up"
+						Name="Up"
 						Classes="upDownArrows"
 						Margin ="11,10"
-						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+						Focusable="{Binding UpDownIsFocusable, Mode=OneWay}"
 						ToolTip.Tip="К предыдущему бейджу"
-						IsEnabled="{Binding   Path = PreviousOnSliderIsEnable,   Mode=OneWay}"
-						IsVisible="{Binding   Path = UpDownIsVisible,   Mode=OneWay}"
-						Command="{Binding   Path = ToPrevious}"
+						IsEnabled="{Binding PreviousOnSliderIsEnable, Mode=OneWay}"
+						IsVisible="{Binding UpDownIsVisible, Mode=OneWay}"
+						Command="{Binding ToPrevious}"
 						PointerPressed="SomeButtonPressed"
-						Content="&#xf0d8;"/>
-					
-					<StackPanel 
-						Name="slider"
+						Content="&#xf0d8;"
+					/>
+					<StackPanel
 						Height="226"
-						Margin="{Binding  Path=SliderMargin,  Mode=OneWay}"
+						Margin="{Binding SliderMargin, Mode=OneWay}"
 						Orientation="Horizontal">
-						
+
 						<ItemsControl
-							Name="badgeStates"
-							Width="{Binding  Path=SliderCollectionWidth,  Mode=OneWay}"
+							Width="{Binding SliderCollectionWidth, Mode=OneWay}"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Top"
-							ItemsSource="{Binding  Path=VisibleIcons,  Mode=OneWay}">
+							ItemsSource="{Binding VisibleIcons, Mode=OneWay}">
 
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
@@ -1217,22 +1237,18 @@
 									<Border
 										Grid.Column="0"
 										HorizontalAlignment="Left"
-										Width="{Binding  Path=Width,  Mode=OneWay}"
+										Width="{Binding Width, Mode=OneWay}"
 										Height="24"
 										Margin="0,2"
 										BorderThickness="1"
 										Tapped="ToParticularBadge"
 										PointerEntered="SliderItemPointerEntered"
 										PointerExited="SliderItemPointerExited">
-									
+
 										<Grid
-											Width="{Binding  Path=InsideBorderWidth,  Mode=OneWay}"
+											ColumnDefinitions="22 *"
+											Width="{Binding InsideBorderWidth, Mode=OneWay}"
 											Margin="-1,0">
-										
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition  Width="22"></ColumnDefinition>
-												<ColumnDefinition ></ColumnDefinition>
-											</Grid.ColumnDefinitions>
 
 											<Label
 												Grid.Column="0"
@@ -1242,19 +1258,19 @@
 												VerticalContentAlignment="Center"
 												FontFamily="{StaticResource FA}"
 												HorizontalAlignment="Left"
-												Background="{Binding  Path = Background,  Mode=OneWay }"
-												Foreground="{Binding  Path = CorrectnessColor,  Mode=OneWay }"
-												Content="{Binding  Path = CorrectnessIcon,  Mode=OneWay }"/>
-																						
-											<Label 
+												Background="{Binding Background, Mode=OneWay }"
+												Foreground="{Binding CorrectnessColor, Mode=OneWay }"
+												Content="{Binding CorrectnessIcon, Mode=OneWay }"
+											/>
+											<Label
 												Grid.Column="1"
 												Height="22"
 												Padding="16,6,0,0"
-											    Background="{Binding  Path = Background,  Mode=OneWay }"
-												FontWeight="{Binding  Path = BoundFontWeight,  Mode=OneWay }"
-												FontFamily="{Binding  Path = BoundFontFamily,  Mode=OneWay }"
-												Content="{Binding  Path = BoundPersonName,  Mode=OneWay }"/>
-												
+												Background="{Binding Background, Mode=OneWay }"
+												FontWeight="{Binding BoundFontWeight, Mode=OneWay }"
+												FontFamily="{Binding BoundFontFamily, Mode=OneWay }"
+												Content="{Binding BoundPersonName, Mode=OneWay }"
+											/>
 										</Grid>
 									</Border>
 								</DataTemplate>
@@ -1262,96 +1278,87 @@
 						</ItemsControl>
 
 						<Grid
-							Name="scroll"
 							VerticalAlignment="Top"
 							Margin="1,0"
-							Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-							Height="{Binding   Path = ScrollerHeight,  Mode=OneWay}"
+							Width="{Binding ScrollWidth, Mode=OneWay}"
 							Background="White">
-							
+
 							<Grid.RowDefinitions>
 								<RowDefinition Height="15"></RowDefinition>
-								<RowDefinition Height="{Binding   Path = RunnerBruttoWalkSpace,  Mode=OneWay}"></RowDefinition>
+								<RowDefinition Height="{Binding RunnerBruttoWalkSpace, Mode=OneWay}"></RowDefinition>
 								<RowDefinition Height="15"></RowDefinition>
 							</Grid.RowDefinitions>
-							
 
 							<Button
-								Name="upper"
+								Name="Upper"
 								Classes="scrollButton"
 								Grid.Row="0"
-								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+								Width="{Binding ScrollWidth, Mode=OneWay}"
 								Padding="2,2"
 								Content="&#xF077;"
-								Focusable="{Binding   Path = FilterIsExtended,   Mode=OneWay}"
-								Command="{Binding Path=ScrollUp}"
-								PointerPressed="SomeButtonPressed"/>
-
+								Focusable="{Binding FilterIsExtended, Mode=OneWay}"
+								Command="{Binding ScrollUp}"
+								PointerPressed="SomeButtonPressed"
+							/>
 							<Canvas
-								Name="runnerWay"
 								Grid.Row="1"
 								Background="#EEEEEE"
-								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-								Height="{Binding   Path = RunnerBruttoWalkSpace,  Mode=OneWay}"
+								Width="{Binding ScrollWidth, Mode=OneWay}"
+								Height="{Binding RunnerBruttoWalkSpace, Mode=OneWay}"
 								VerticalAlignment="Center"
 								Tapped="ShiftRunner">
-							
+
 								<Canvas
-									Name="runner"
 									Classes="Runner"
-									Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
-									Height="{Binding   Path = RunnerHeight,  Mode=OneWay}"
+									Width="{Binding ScrollWidth, Mode=OneWay}"
+									Height="{Binding RunnerHeight, Mode=OneWay}"
 									Canvas.Left="0"
-									Canvas.Top="{Binding   Path = ScrollOffset,  Mode=OneWay}"
+									Canvas.Top="{Binding ScrollOffset, Mode=OneWay}"
 									Background="#817974"
 									PointerPressed="CaptureRunner"
 									PointerMoved="MoveRunner"
 									PointerEntered="OverRunner"
 									PointerExited="ExitedRunner"
-									PointerReleased="ReleaseRunner"/>
-							
+									PointerReleased="ReleaseRunner"
+								/>
 							</Canvas>
 
 							<Button
-								Name="downer"
+								Name="Downer"
 								Classes="scrollButton"
 								Grid.Row="2"
-								Width="{Binding   Path = ScrollWidth,  Mode=OneWay}"
+								Width="{Binding ScrollWidth, Mode=OneWay}"
 								Padding="2,2"
-								Focusable="{Binding   Path = FilterIsExtended,   Mode=OneWay}"
+								Focusable="{Binding FilterIsExtended, Mode=OneWay}"
 								Content="&#xF078;"
-								Command="{Binding Path=ScrollDown}"
-								PointerPressed="SomeButtonPressed"/>
-
+								Command="{Binding ScrollDown}"
+								PointerPressed="SomeButtonPressed"
+							/>
 						</Grid>
-						
-					</StackPanel>	
-						
-				    <Button
-						Name="down"
+					</StackPanel>
+
+					<Button
+						Name="Down"
 						Classes="upDownArrows"
 						Margin ="11,8"
-						Focusable="{Binding   Path = UpDownIsFocusable,   Mode=OneWay}"
+						Focusable="{Binding UpDownIsFocusable, Mode=OneWay}"
 						ToolTip.Tip="К следующему бейджу"
-						IsEnabled="{Binding   Path = NextOnSliderIsEnable,   Mode=OneWay}"
-						IsVisible="{Binding   Path = UpDownIsVisible,   Mode=OneWay}"
-						Command="{Binding   Path = ToNext}"
+						IsEnabled="{Binding NextOnSliderIsEnable, Mode=OneWay}"
+						IsVisible="{Binding UpDownIsVisible, Mode=OneWay}"
+						Command="{Binding ToNext}"
 						PointerPressed="SomeButtonPressed"
-						Content="&#xf0d7;"/>
-				
+						Content="&#xf0d7;"
+					/>
 				</StackPanel>
-				
 			</Border>
-		
 		</Grid>
 
 		<Border
-			Name="shadow"
 			Margin="0,8"
 			BorderThickness="0"
 			ZIndex="2">
 
-			<StackPanel Name="simpleShadow" Margin="0,-8">
+			<StackPanel Name="SimpleShadow" Margin="0,-8">
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.02"/>
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.05"/>
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.1"/>
@@ -1359,67 +1366,43 @@
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.2"/>
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.25"/>
 				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.3"/>
-				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.35" />
+				<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.35"/>
 			</StackPanel>
-
 		</Border>
-		
+
 		<Grid
-			Name="navigation"
+			ColumnDefinitions="* 34 34 64 60 50 34 34 * 34 64 34 4"
 			Height="44"
 			Margin="0,-8"
 			Background="#eeeeee">
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="64"></ColumnDefinition>
-				
-				<ColumnDefinition Width="60"></ColumnDefinition>
-				<ColumnDefinition Width="50"></ColumnDefinition>
-				
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition ></ColumnDefinition>
-
-
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="64"></ColumnDefinition>
-				<ColumnDefinition Width="34"></ColumnDefinition>
-				<ColumnDefinition Width="4"></ColumnDefinition>
-				
-			</Grid.ColumnDefinitions>
-
-
 			<Button
-				Name="firstBadge"
+				Name="FirstBadge"
 				Classes="transparent"
 				ToolTip.Tip="К первому бейджу"
 				ToolTip.HorizontalOffset="20"
 				Grid.Column="1"
 				Width="32"
 				Padding="8,6"
-				Command="{Binding   Path = ToFirst}"
+				Command="{Binding ToFirst}"
 				PointerPressed="SomeButtonPressed"
 				Content="&#xf048;"
-				IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}" />
-
+				IsEnabled="{Binding FirstIsEnable, Mode=OneWay}"
+			/>
 			<Button
-				Name="previousBadge"
+				Name="PreviousBadge"
 				Classes="littlePicture"
 				ToolTip.Tip="К предыдущему бейджу"
 				ToolTip.HorizontalOffset="20"
 				Grid.Column="2"
 				Width="32"
 				Padding="8,4"
-				Command="{Binding   Path = ToPrevious}"
+				Command="{Binding ToPrevious}"
 				PointerPressed="SomeButtonPressed"
 				Content="&#xf0d9;"
-				IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"/>
-
+				IsEnabled="{Binding PreviousIsEnable, Mode=OneWay}"
+			/>
 			<Label
-				Name="visibleBadgeNumber"
 				Width="60"
 				Grid.Column="3"
 				Margin="0,3"
@@ -1430,64 +1413,64 @@
 				CornerRadius = "3"
 				BorderThickness="1"
 				Background="White"
-				Content="{Binding   Path = BeingProcessedNumberText,   Mode=OneWay}"/>
-			
+				Content="{Binding BeingProcessedNumberText, Mode=OneWay}"
+			/>
 			<Label
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
 				Margin="0,8"
 				Content="из"
-				Grid.Column="4"/>
-
+				Grid.Column="4"
+			/>
 			<Label
 				HorizontalContentAlignment="Center"
 				VerticalContentAlignment="Center"
 				Margin="0,9"
-				Content="{Binding  Path = ProcessableCount,  Mode=OneWay}"
-				Grid.Column="5"/>
-
+				Content="{Binding ProcessableCount, Mode=OneWay}"
+				Grid.Column="5"
+			/>
 			<Button
-				Name="nextBadge"
+				Name="ToNextBadge"
 				Classes="littlePicture"
 				ToolTip.Tip="К следующему бейджу"
 				ToolTip.HorizontalOffset="20"
 				Grid.Column="6"
 				Width="32"
 				Padding="8,4"
-				Command="{Binding   Path = ToNext}"
+				Command="{Binding ToNext}"
 				PointerPressed="SomeButtonPressed"
 				Content="&#xf0da;"
-				IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}" />
-
+				IsEnabled="{Binding NextIsEnable, Mode=OneWay}"
+			/>
 			<Button
-				Name="lastBadge"
+				Name="ToLastBadge"
 				Classes="transparent"
 				Grid.Column="7"
 				Width="32"
 				Padding="8,6"
 				ToolTip.Tip="К последнему бейджу"
 				ToolTip.HorizontalOffset="20"
-				Command="{Binding   Path = ToLast}"
+				Command="{Binding ToLast}"
 				PointerPressed="SomeButtonPressed"
 				Content="&#xf051;"
-				IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"/>
-
+				IsEnabled="{Binding LastIsEnable, Mode=OneWay}"
+			/>
 			<Button
-				Name="zoomOutBadge"
+				Name="ZoomOutBadge"
 				Classes="transparent"
 				Grid.Column="9"
 				HorizontalAlignment="Center"
 				Width="32"
 				Padding="8,6"
-				IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
-				Command="{Binding   Path = ZoomOut}"
+				IsEnabled="{Binding ZoomOutIsEnable, Mode=OneWay}"
+				Command="{Binding ZoomOut}"
 				PointerPressed="SomeButtonPressed"
 				ToolTip.Tip="Уменьшить масштаб"
 				ToolTip.VerticalOffset="-40"
-				Content="&#xf068;"/>
-
+				Content="&#xf068;"
+			/>
 			<Label
-				Name="badgeScalabilityGrade"
+				Name="BadgeScalabilityGrade"
 				Grid.Column="10"
 				Width="60"
 				Padding="5,5"
@@ -1496,40 +1479,36 @@
 				CornerRadius = "3"
 				BorderThickness="1"
 				Background="White"
-				Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}"/>
-
+				Content="{Binding ZoomDegreeInView, Mode=OneWay}"
+			/>
 			<Button
-				Name="zoomOnBadge"
+				Name="ZoomOnBadge"
 				Classes="transparent"
 				Grid.Column="11"
 				Margin="0,3"
 				HorizontalAlignment="Center"
 				Width="32"
 				Padding="7,6"
-				IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
+				IsEnabled="{Binding ZoomOnIsEnable, Mode=OneWay}"
 				ToolTip.Tip="Увеличить масштаб"
 				ToolTip.VerticalOffset="-40"
-				Command="{Binding   Path = ZoomOn}"
+				Command="{Binding ZoomOn}"
 				PointerPressed="SomeButtonPressed"
-				Content="&#x2b;" />
-
-
+				Content="&#x2b;"
+			/>
 		</Grid>
 
 		<StackPanel
-			Name="underDialogCurtain"
-			Margin="{Binding  Path=Margin,  Mode=OneWay}"
+			Margin="{Binding Margin, Mode=OneWay}"
 			ZIndex="10">
 
 			<Canvas
-				Name="canvas"
-				Width="{Binding Path=ViewWidth, Mode=OneWay}"
-				Height="{Binding Path=ViewHeight, Mode=OneWay}"
+				Width="{Binding ViewWidth, Mode=OneWay}"
+				Height="{Binding ViewHeight, Mode=OneWay}"
 				Opacity="0.5"
-				Background="Black"/>
-
+				Background="Black"
+			/>
 		</StackPanel>
-
 	</StackPanel>
 </UserControl>
 

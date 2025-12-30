@@ -1,25 +1,27 @@
 ﻿using Avalonia.Platform.Storage;
 using Lister.Core.BadgesCreator;
+using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 using ReactiveUI;
-using Lister.Desktop.App;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 
-public class PersonSourceViewModel : ReactiveObject
+public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders,
+    int limit, string sourceKeeper, BadgeCreator badgesCreator, string configPath
+) : ReactiveObject
 {
-    private readonly string _pickerTitle;
-    private readonly string _filePickerTitle;
-    private readonly string _configPath;
-    private IReadOnlyList<string> _patterns;
-    private IReadOnlyList<string> _xslxHeaders;
-    private string _sourcePathKeeper;
+    private readonly string _pickerTitle = pickerTitle;
+    private readonly string _filePickerTitle = filePickerTitle;
+    private readonly string _configPath = configPath;
+    private readonly IReadOnlyList<string> _patterns = patterns;
+    private readonly List<string> _xslxHeaders = xslxHeaders;
+    private string? _sourcePathKeeper = sourceKeeper;
     private bool _isFirstTimeLoading = true;
-    private string _declinedFilePath;
-    private BadgeCreator _badgeCreator;
+    private readonly string? _declinedFilePath;
+    private readonly BadgeCreator _badgeCreator = badgesCreator;
 
-    private FilePickerOpenOptions _filePickerOptions;
-    private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new()
+    private FilePickerOpenOptions? _filePickerOptions;
+    private FilePickerOpenOptions FilePickerOptions => _filePickerOptions ??= new ()
     {
         Title = _filePickerTitle,
         AllowMultiple = false,
@@ -32,18 +34,18 @@ public class PersonSourceViewModel : ReactiveObject
         ]
     };
 
-    private string _sourceFilePath;
-    internal string SourceFilePath
+    private string? _sourceFilePath;
+    internal string? SourceFilePath
     {
         get { return _sourceFilePath; }
         private set
         {
             _sourcePathKeeper = value;
-            this.RaiseAndSetIfChanged( ref _sourceFilePath, value, nameof( SourceFilePath ) );
+            this.RaiseAndSetIfChanged ( ref _sourceFilePath, value, nameof ( SourceFilePath ) );
         }
     }
 
-    internal readonly int personsLimitForSource;
+    internal readonly int personsLimitForSource = limit;
 
     private bool _personsFileIsOpen;
     public bool FileIsOpen
@@ -51,12 +53,12 @@ public class PersonSourceViewModel : ReactiveObject
         get { return _personsFileIsOpen; }
         private set
         {
-            if (_personsFileIsOpen == value)
+            if ( _personsFileIsOpen == value )
             {
                 _personsFileIsOpen = !_personsFileIsOpen;
             }
 
-            this.RaiseAndSetIfChanged( ref _personsFileIsOpen, value, nameof( FileIsOpen ) );
+            this.RaiseAndSetIfChanged ( ref _personsFileIsOpen, value, nameof ( FileIsOpen ) );
         }
     }
 
@@ -66,12 +68,12 @@ public class PersonSourceViewModel : ReactiveObject
         get { return _fileIsDeclined; }
         private set
         {
-            if (_fileIsDeclined == value)
+            if ( _fileIsDeclined == value )
             {
                 _fileIsDeclined = !_fileIsDeclined;
             }
 
-            this.RaiseAndSetIfChanged( ref _fileIsDeclined, value, nameof( FileIsDeclined ) );
+            this.RaiseAndSetIfChanged ( ref _fileIsDeclined, value, nameof ( FileIsDeclined ) );
         }
     }
 
@@ -81,94 +83,67 @@ public class PersonSourceViewModel : ReactiveObject
         get { return _fileIsTooBig; }
         private set
         {
-            if (_fileIsTooBig == value)
+            if ( _fileIsTooBig == value )
             {
                 _fileIsTooBig = !_fileIsTooBig;
             }
 
-            this.RaiseAndSetIfChanged( ref _fileIsTooBig, value, nameof( FileIsTooBig ) );
+            this.RaiseAndSetIfChanged ( ref _fileIsTooBig, value, nameof ( FileIsTooBig ) );
         }
     }
 
-    internal string FilePath { get; private set; }
+    internal string? FilePath { get; private set; }
 
-
-    public PersonSourceViewModel (string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders
-                                 , int limit, string sourceKeeper, BadgeCreator badgesCreator, string configPath)
+    internal void OnLoaded ()
     {
-        _pickerTitle = pickerTitle;
-        _filePickerTitle = filePickerTitle;
-
-        _patterns = patterns;
-        _xslxHeaders = xslxHeaders;
-        personsLimitForSource = limit;
-
-        _sourcePathKeeper = sourceKeeper;
-        _badgeCreator = badgesCreator;
-        _configPath = configPath;
-    }
-
-
-    internal void OnLoaded()
-    {
-        if (!_isFirstTimeLoading)
+        if ( !_isFirstTimeLoading )
         {
             return;
         }
 
         try
         {
-            SetPath( _sourcePathKeeper );
+            SetPath ( _sourcePathKeeper );
         }
-        catch (IndexOutOfRangeException ex)
+        catch ( IndexOutOfRangeException )
         {
-            SetPath( null );
+            SetPath ( null );
         }
 
         _isFirstTimeLoading = false;
     }
 
-
     internal async void ChooseFile ()
     {
-        IReadOnlyList<IStorageFile> files =
-            await MainWindow.CommonStorageProvider.OpenFilePickerAsync ( FilePickerOptions );
+        IReadOnlyList<IStorageFile> files = await MainWindow.CommonStorageProvider.OpenFilePickerAsync ( FilePickerOptions );
 
         if ( files.Count == 1 && files [0] is not null )
         {
             string path = files [0].Path.LocalPath;
-
-            CheckIfOpenOrIncorrectAndUse ( path, true );
+            TryUse ( path, true );
         }
     }
 
-
-    internal void DeclineKeepedFileIfIncorrect()
+    internal void DeclineKeepedFileIfIncorrect ()
     {
-        if (string.IsNullOrWhiteSpace( _declinedFilePath ))
+        if ( string.IsNullOrWhiteSpace ( _declinedFilePath ) )
         {
             return;
         }
 
-        DeclineIncorrectFile( _declinedFilePath );
+        DeclineIncorrectFile ( _declinedFilePath );
     }
 
-
-    internal void EmptySourcePath()
+    internal void EmptySourcePath ()
     {
         SourceFilePath = string.Empty;
     }
 
-
-    private void SetPath(string? path)
+    private void SetPath ( string? path )
     {
-        bool pathExists = path != null
-                          && 
-                          path != string.Empty;
-
-        if (pathExists)
+        if ( !string.IsNullOrWhiteSpace ( path ) )
         {
-            CheckIfOpenOrIncorrectAndUse( path, false );
+            TryUse ( path, false );
         }
         else
         {
@@ -176,82 +151,79 @@ public class PersonSourceViewModel : ReactiveObject
         }
     }
 
-
-    private void CheckIfOpenOrIncorrectAndUse(string path, bool shouldSave)
+    private void TryUse ( string path, bool shouldSave )
     {
-        FileInfo fileInfo = new FileInfo( path );
+        FileInfo fileInfo = new ( path );
 
-        if (fileInfo.Exists)
+        if ( fileInfo.Exists )
         {
             try
             {
-                FileStream stream = fileInfo.OpenWrite();
-                stream.Close();
+                FileStream stream = fileInfo.OpenWrite ();
+                stream.Close ();
             }
-            catch (IOException ex)
+            catch ( IOException )
             {
                 FileIsOpen = true;
+
                 return;
             }
         }
         else
         {
             SourceFilePath = null;
+
             return;
         }
 
-        XlsxFileState fileState = CheckCorrectnessIfXSLX( path );
+        XlsxFileState fileState = CheckCorrectnessIfXSLX ( path );
 
-        if (fileState == XlsxFileState.IsIncorrect)
+        if ( fileState == XlsxFileState.IsIncorrect )
         {
-            DeclineIncorrectFile( path );
+            DeclineIncorrectFile ( path );
+
             return;
         }
-        else if (! TryUse( path ))
+        else if ( !_badgeCreator.TrySetPeopleFrom ( path, personsLimitForSource ) )
         {
             FilePath = path;
             FileIsTooBig = true;
+
             return;
         }
-        else if (fileState == XlsxFileState.IsOpen)
+        else if ( fileState == XlsxFileState.IsOpen )
         {
             FileIsOpen = true;
+
             return;
         }
-        else if (fileState == XlsxFileState.NotXlsxFile)
+        else if ( fileState == XlsxFileState.NotXlsxFile )
         {
             SourceFilePath = path;
 
-            if (shouldSave)
+            if ( shouldSave )
             {
-                SavePath();
+                JsonProcessor.WritePersonSource ( _configPath, SourceFilePath );
             }
         }
     }
 
-
-    private void SavePath()
-    {
-        SetterInJson.WritePersonSource( _configPath, SourceFilePath );
-    }
-
-
-    private XlsxFileState CheckCorrectnessIfXSLX(string path)
+    private XlsxFileState CheckCorrectnessIfXSLX ( string path )
     {
         XlsxFileState fileState = XlsxFileState.NotXlsxFile;
 
-        if (path.Last() == 'x')
+        if ( path.Last () == 'x' )
         {
             try
             {
                 PeopleXlsxSource headersSource = PeopleXlsxSource.GetInstance ();
-                List<string> headers = headersSource.GetRow( path, 0 );
+                List<string> headers = PeopleXlsxSource.GetRow ( path );
 
-                for (int index = 0;   index < _xslxHeaders.Count;   index++)
+                for ( int index = 0; index < _xslxHeaders.Count; index++ )
                 {
-                    bool isNotCoincident = headers[index] != _xslxHeaders[index];
+                    bool isNotCoincident = headers [index] != _xslxHeaders [index];
 
-                    if (isNotCoincident)
+                    if ( isNotCoincident )
                     {
                         fileState = XlsxFileState.IsIncorrect;
 
@@ -259,7 +231,7 @@ public class PersonSourceViewModel : ReactiveObject
                     }
                 }
             }
-            catch (IOException ex)
+            catch ( IOException )
             {
                 fileState = XlsxFileState.IsOpen;
             }
@@ -268,21 +240,11 @@ public class PersonSourceViewModel : ReactiveObject
         return fileState;
     }
 
-
-    private bool TryUse(string path)
-    {
-        bool fileIsAcceptable = _badgeCreator.TrySetPeopleFrom ( path, personsLimitForSource );
-
-        return fileIsAcceptable;
-    }
-
-
-    private void DeclineIncorrectFile (string filePath)
+    private void DeclineIncorrectFile ( string filePath )
     {
         FilePath = filePath;
         FileIsDeclined = true;
     }
-
 
     private enum XlsxFileState
     {
@@ -292,8 +254,3 @@ public class PersonSourceViewModel : ReactiveObject
         IsTooBig = 3
     }
 }
-
-
-
-
-

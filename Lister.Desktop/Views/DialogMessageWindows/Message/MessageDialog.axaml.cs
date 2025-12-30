@@ -11,7 +11,6 @@ public sealed partial class MessageWindow : Window
         InitializeComponent ();
     }
 
-
     public MessageWindow ( string message ) : this ()
     {
         MessageViewModel viewModel = new ( message );

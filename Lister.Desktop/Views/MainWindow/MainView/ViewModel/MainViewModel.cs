@@ -16,7 +16,6 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 
@@ -40,58 +39,55 @@ public sealed class MainViewModel : ReactiveObject
     private readonly string _fileIsTooBigMessage;
     private readonly string _buildingLimitIsExhaustedMessage;
     private readonly string _fileIsOpenMessage;
-    private FilePickerSaveOptions _filePickerOptions;
-    private FilePickerSaveOptions FilePickerOptions => _filePickerOptions ??= new()
-    {
-        Title = _saveTitle,
-        FileTypeChoices =
-        [
-            new FilePickerFileType ("Источники данных")
-            {
-                Patterns = ["*.pdf"]
-            }
-        ],
-        SuggestedFileName = _suggestedFileNames + GenerateNowDateString()
-    };
-
-    private string _osName;
-    private PdfCreationAndPrintingStarter _pdfPrinter;
-    private PrintDialog _printDialog;
-    private PrintDialogViewModel _printDialogViewModel;
-    private PersonSourceViewModel _personSourceViewModel;
-    private PersonChoosingViewModel _personChoosingViewModel;
-    private BadgesBuildingViewModel _badgesBuildingViewModel;
-    private NavigationZoomViewModel _zoomNavigationViewModel;
-    private SceneViewModel _sceneViewModel;
-    private WaitingViewModel _waitingViewModel;
+    //private FilePickerSaveOptions _filePickerOptions;
+    //private FilePickerSaveOptions FilePickerOptions => _filePickerOptions ??= new ()
+    //{
+    //    Title = _saveTitle,
+    //    FileTypeChoices =
+    //    [
+    //        new FilePickerFileType ("Источники данных")
+    //        {
+    //            Patterns = ["*.pdf"]
+    //        }
+    //    ],
+    //    SuggestedFileName = _suggestedFileNames + GenerateNowDateString ()
+    //};
+    private readonly string _osName;
+    private readonly Printer _pdfPrinter;
+    private PrintDialog? _printDialog;
+    private readonly PrintDialogViewModel _printDialogViewModel;
+    private readonly PersonSourceViewModel _personSourceViewModel;
+    private readonly PersonChoosingViewModel _personChoosingViewModel;
+    private readonly BadgesBuildingViewModel _badgesBuildingViewModel;
+    private readonly NavigationZoomViewModel _zoomNavigationViewModel;
+    private readonly SceneViewModel _sceneViewModel;
+    private readonly WaitingViewModel _waitingViewModel;
     private bool _buildButtonIsTapped = false;
-    private PrintAdjustingData _printAdjusting;
+    private PrintAdjustingData? _printAdjusting;
 
-    internal string PdfFileName { get; private set; }
-    public delegate void EditionIsChosenHandler ( List<BadgeViewModel> processableBadges, PageViewModel firstPage );
+    internal string? PdfName { get; private set; } = string.Empty;
+
+    public delegate void EditionIsChosenHandler ( List<BadgeViewModel> processableBadges );
     public event EditionIsChosenHandler? EditionIsChosen;
 
-
-    internal MainViewModel(string osName, string suggestedFileNames, string saveTitle, string incorrectXSLX
-                         , string buildingLimitIsExhaustedMessage, string fileIsOpenMessage, string fileIsTooBigMessage
-                         , object [] dependecies )
+    internal MainViewModel ( MainViewModelArgs args )
     {
-        _osName = osName;
-        _suggestedFileNames = suggestedFileNames;
-        _saveTitle = saveTitle;
-        _incorrectXSLX = incorrectXSLX;
-        _buildingLimitIsExhaustedMessage = buildingLimitIsExhaustedMessage;
-        _fileIsOpenMessage = fileIsOpenMessage;
-        _fileIsTooBigMessage = fileIsTooBigMessage;
+        _osName = args.OsName;
+        _suggestedFileNames = args.SuggestedFileNames;
+        _saveTitle = args.SaveTitle;
+        _incorrectXSLX = args.IncorrectXSLX;
+        _buildingLimitIsExhaustedMessage = args.BuildingLimitExhaustedMessage;
+        _fileIsOpenMessage = args.FileIsOpenMessage;
+        _fileIsTooBigMessage = args.FileIsTooBigMessage;
 
-        _pdfPrinter = dependecies [0] as PdfCreationAndPrintingStarter;
-        _printDialogViewModel = dependecies[1] as PrintDialogViewModel;
-        _personChoosingViewModel = dependecies[2] as PersonChoosingViewModel;
-        _personSourceViewModel = dependecies[3] as PersonSourceViewModel;
-        _badgesBuildingViewModel = dependecies[4] as BadgesBuildingViewModel;
-        _zoomNavigationViewModel = dependecies[5] as NavigationZoomViewModel;
-        _sceneViewModel = dependecies[6] as SceneViewModel;
-        _waitingViewModel = dependecies[7] as WaitingViewModel;
+        _pdfPrinter = args.Printer;
+        _printDialogViewModel = args.PrintDialogViewModel;
+        _personChoosingViewModel = args.PersonChoosingViewModel;
+        _personSourceViewModel = args.PersonSourceViewModel;
+        _badgesBuildingViewModel = args.BadgesBuildingViewModel;
+        _zoomNavigationViewModel = args.NavigationZoomViewModel;
+        _sceneViewModel = args.SceneViewModel;
+        _waitingViewModel = args.WaitingViewModel;
 
         _pdfPrinter.PropertyChanged += PrinterChanged;
         _printDialogViewModel.PropertyChanged += PrintDialogChanged;
@@ -102,239 +98,239 @@ public sealed class MainViewModel : ReactiveObject
         _zoomNavigationViewModel.PropertyChanged += ZoomNavigationChanged;
     }
 
-
-    private void PersonSourceChanged(object? sender, PropertyChangedEventArgs args)
+    private void PersonSourceChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "SourceFilePath")
+        if ( args.PropertyName == "SourceFilePath" )
         {
-            PersonSourceViewModel personSource = (PersonSourceViewModel)sender;
-            _personChoosingViewModel.SetPersonsFromFile( personSource.SourceFilePath );
+            _personChoosingViewModel.ResetPersons ();
         }
-        else
+        else if ( args.PropertyName == "FileIsDeclined" )
         {
-            if (args.PropertyName == "FileIsDeclined")
-            {
-                ShowMessageWindow ( _personSourceViewModel.FilePath + _incorrectXSLX );
-            }
-            else if (args.PropertyName == "FileIsTooBig")
-            {
-                string limit = _sceneViewModel.GetLimit().ToString() + ".";
-                ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
-            }
-            else if (args.PropertyName == "FileIsOpen")
-            {
-                ShowMessageWindow (_fileIsOpenMessage);
-            }
+            ShowMessageWindow ( _personSourceViewModel.FilePath + _incorrectXSLX );
+        }
+        else if ( args.PropertyName == "FileIsTooBig" )
+        {
+            string limit = _sceneViewModel.GetLimit ().ToString () + ".";
+            ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
+        }
+        else if ( args.PropertyName == "FileIsOpen" )
+        {
+            ShowMessageWindow ( _fileIsOpenMessage );
         }
     }
 
-
-    private void PersonChoosingChanged(object? sender, PropertyChangedEventArgs args)
+    private void PersonChoosingChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "AllAreReady")
+        if ( args.PropertyName == "SettingsIsComplated" )
         {
-            PersonChoosingViewModel personChoosingViewModel = (PersonChoosingViewModel)sender;
-
-            _badgesBuildingViewModel.TryToEnableBadgeCreation( personChoosingViewModel.AllAreReady );
+            _badgesBuildingViewModel.BuildingIsPossible = sender is PersonChoosingViewModel personChoosingViewModel
+                && personChoosingViewModel.SettingsIsComplated;
         }
-        else if (args.PropertyName == "SickTemplateIsSet")
+        else if ( args.PropertyName == "SickTemplateIsSet" )
         {
-            if (_personChoosingViewModel.SickTemplateIsSet)
+            if ( _personChoosingViewModel.SickTemplateIsSet )
             {
-                TemplateViewModel template = _personChoosingViewModel.ChosenTemplate;
-                ShowLargeMessageWindow ( template.CorrectnessMessage, template.SourcePath );
+                TemplateViewModel? template = _personChoosingViewModel.ChosenTemplate;
+                ShowTemplateErrors ( template?.CorrectnessMessage, template?.SourcePath );
             }
         }
-        else if (args.PropertyName == "FileNotFound")
+        else if ( args.PropertyName == "FileNotFound" )
         {
-            _personSourceViewModel.EmptySourcePath();
+            _personSourceViewModel.EmptySourcePath ();
         }
     }
 
-
-    private void BuildButtonTapped(object? sender, PropertyChangedEventArgs args)
+    private void BuildButtonTapped ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "BuildButtonIsTapped")
+        if ( args.PropertyName == "BuildButtonIsTapped" )
         {
-            if (string.IsNullOrWhiteSpace( _personChoosingViewModel.ChosenTemplate.Name ))
+            if ( _personChoosingViewModel.ChosenTemplate == null
+                 || string.IsNullOrWhiteSpace ( _personChoosingViewModel.ChosenTemplate.Name )
+            )
             {
                 return;
             }
 
             bool shouldShowMessage = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage != null
-                                     && 
-                                     _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
-            if (shouldShowMessage)
+                && _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
+
+            if ( shouldShowMessage )
             {
-                List<string> message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
+                List<string>? message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
                 string templatePath = _personChoosingViewModel.ChosenTemplate.SourcePath;
-                ShowLargeMessageWindow ( message, templatePath );
+                ShowTemplateErrors ( message, templatePath );
                 _buildButtonIsTapped = true;
             }
             else
             {
-                InduceBadgeBuilding();
+                InduceBadgeBuilding ();
             }
         }
     }
 
-
-    private void SceneChanged(object? sender, PropertyChangedEventArgs args)
+    private void SceneChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "BadgesAreCleared")
+        if ( args.PropertyName == "BadgesAreCleared" )
         {
-            _zoomNavigationViewModel.ToZeroState();
+            _zoomNavigationViewModel.ToZeroState ();
         }
-        else if (args.PropertyName == "BuildingIsOccured")
+        else if ( args.PropertyName == "BuildingIsOccured" )
         {
-            if (_sceneViewModel.BuildingIsOccured)
+            if ( _sceneViewModel.BuildingIsOccured )
             {
-                EndWaiting();
-                _zoomNavigationViewModel.EnableZoomIfPossible( _sceneViewModel.BuildingIsOccured );
-                _zoomNavigationViewModel.SetEnablePageNavigation( _sceneViewModel.PageCount
-                                                                , _sceneViewModel.VisiblePageNumber );
+                EndWaiting ();
+                _zoomNavigationViewModel.EnableZoomIfPossible ( _sceneViewModel.BuildingIsOccured );
+                _zoomNavigationViewModel.SetEnablePageNavigation ( _sceneViewModel.PageCount, _sceneViewModel.VisiblePageNumber );
             }
             else
             {
-                EndWaiting();
-                string limit = _sceneViewModel.GetLimit().ToString() + ".";
+                EndWaiting ();
+                string limit = _sceneViewModel.GetLimit ().ToString () + ".";
                 ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
             }
         }
-        else if (args.PropertyName == "EditIncorrectsIsSelected")
+        else if ( args.PropertyName == "EditIsSelected" )
         {
-            EditionIsChosen?.Invoke ( _sceneViewModel.ProcessableBadges, _sceneViewModel.VisiblePage );
+            EditionIsChosen?.Invoke ( _sceneViewModel.ProcessableBadges );
         }
-        else if (args.PropertyName == "PdfIsWanted")
+        else if ( args.PropertyName == "PdfIsWanted" )
         {
-            PreparePdfGeneration();
+            PreparePdfGeneration ();
         }
-        else if (args.PropertyName == "PrintingIsWanted")
+        else if ( args.PropertyName == "PrintingIsWanted" )
         {
-            PreparePrinting();
-        }
-    }
-
-
-    private void PrinterChanged (object? sender, PropertyChangedEventArgs args)
-    {
-        if (args.PropertyName == "PdfGenerationSuccesseeded")
-        {
-            EndWaiting();
-            ShowInFileExplorer();
-        }
-        else if (args.PropertyName == "PrintingIsFinished" )
-        {
-            EndWaiting();
+            PreparePrinting ();
         }
     }
 
-
-    private void PrintDialogChanged(object? sender, PropertyChangedEventArgs args)
+    private void PrinterChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "NeedClose")
+        if ( args.PropertyName == "PdfGenerationSuccesseeded" )
         {
-            _printDialog.Close();
-            HandleDialogClosing();
+            EndWaiting ();
+            ShowInFileExplorer ();
+        }
+        else if ( args.PropertyName == "PrintingIsFinished" )
+        {
+            EndWaiting ();
+        }
+    }
 
-            if (_printAdjusting.Cancelled)
+    private void PrintDialogChanged ( object? sender, PropertyChangedEventArgs args )
+    {
+        if ( args.PropertyName == "NeedClose" )
+        {
+            _printDialog?.Close ();
+            HandleDialogClosing ();
+
+            if ( _printAdjusting == null || _printAdjusting.IsCancelled )
             {
                 return;
             }
 
-            WaitForPrinting();
+            WaitForPrinting ();
         }
     }
 
-
-    private void ZoomNavigationChanged(object? sender, PropertyChangedEventArgs args)
+    private void ZoomNavigationChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if (args.PropertyName == "ZoomDegree")
+        if ( args.PropertyName == "ZoomDegree" )
         {
-            _sceneViewModel.Zoom( _zoomNavigationViewModel.ZoomDegree );
+            _sceneViewModel.Zoom ( _zoomNavigationViewModel.ZoomDegree );
         }
-        else if (args.PropertyName == "VisiblePageNumber")
+        else if ( args.PropertyName == "VisiblePageNumber" )
         {
-            _sceneViewModel.ShowPageWithNumber( _zoomNavigationViewModel.VisiblePageNumber );
+            _sceneViewModel.ShowPageWithNumber ( _zoomNavigationViewModel.VisiblePageNumber );
         }
     }
 
-
-    private void HandleDialogClosing()
+    private void HandleDialogClosing ()
     {
-        _waitingViewModel.HandleDialogClosing();
+        _waitingViewModel.HandleDialogClosing ();
 
-        if (_buildButtonIsTapped)
+        if ( _buildButtonIsTapped )
         {
-            InduceBadgeBuilding();
+            InduceBadgeBuilding ();
             _buildButtonIsTapped = false;
         }
     }
 
-
-    internal void InduceBadgeBuilding()
+    internal void InduceBadgeBuilding ()
     {
-        _sceneViewModel.Build( _personChoosingViewModel.ChosenTemplate.Name, _personChoosingViewModel.ChosenPerson );
-
-        if (_personChoosingViewModel.ChosenPerson == null)
+        if ( _personChoosingViewModel.ChosenTemplate == null )
         {
-            SetWaitingUpdatingLayout();
+            return;
+        }
+
+        _sceneViewModel.Build ( _personChoosingViewModel.ChosenTemplate.Name, _personChoosingViewModel.ChosenPerson );
+
+        if ( _personChoosingViewModel.ChosenPerson == null )
+        {
+            WaitingWhileBuilding ();
         }
     }
 
-
-    internal void RefreshAppearences()
+    internal void RefreshAppearences ()
     {
-        _sceneViewModel.ResetIncorrects();
-        _personChoosingViewModel.RefreshTemplateChoosingAppearence();
+        _sceneViewModel.ResetIncorrects ();
     }
 
-
-    internal void SetWaitingUpdatingLayout()
+    internal void WaitingWhileBuilding ()
     {
-        _waitingViewModel.Show();
+        _waitingViewModel.Show ();
         MainViewIsWaiting = true;
         InWaitingState = true;
     }
 
-
-    internal void EndWaiting()
+    internal void EndWaiting ()
     {
         _badgesBuildingViewModel.BuildingIsPossible = true;
-        _waitingViewModel.Hide();
+        _waitingViewModel.Hide ();
         MainViewIsWaiting = false;
 
         InWaitingState = false;
     }
 
-
-    private async void PreparePdfGeneration()
+    private async void PreparePdfGeneration ()
     {
         List<FilePickerFileType> fileExtentions = [];
-        fileExtentions.Add( FilePickerFileTypes.Pdf );
-        FilePickerSaveOptions options = new();
-        options.Title = _saveTitle;
-        options.FileTypeChoices = new ReadOnlyCollection<FilePickerFileType>( fileExtentions );
-        options.SuggestedFileName = _suggestedFileNames + GenerateNowDateString();
-        IStorageFile chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync( options );
+        fileExtentions.Add ( FilePickerFileTypes.Pdf );
+
+        FilePickerSaveOptions options = new ()
+        {
+            Title = _saveTitle,
+            FileTypeChoices = new ReadOnlyCollection<FilePickerFileType> ( fileExtentions ),
+            SuggestedFileName = _suggestedFileNames + GenerateNowDateString ()
+        };
+
+        IStorageFile? chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync ( options );
+        PdfName = chosenFile?.Path.AbsolutePath;
         bool savingCancelled = chosenFile == null;
 
-        if (savingCancelled)
+        if ( savingCancelled || PdfName == null )
         {
             return;
         }
 
-        PdfFileName = chosenFile.Path.AbsolutePath;
-        FileInfo fileInfo = new FileInfo( PdfFileName );
+        FileInfo fileInfo;
 
-        if (fileInfo.Exists)
+        try
+        {
+            fileInfo = new ( PdfName );
+        }
+        catch ( UnauthorizedAccessException )
+        {
+            return;
+        }
+
+        if ( fileInfo.Exists )
         {
             try
             {
-                FileStream stream = fileInfo.OpenWrite();
-                stream.Close();
+                FileStream stream = fileInfo.OpenWrite ();
+                stream.Close ();
             }
-            catch (IOException ex)
+            catch ( IOException )
             {
                 ShowMessageWindow ( _fileIsOpenMessage );
 
@@ -343,62 +339,61 @@ public sealed class MainViewModel : ReactiveObject
         }
 
         _pdfGenerationShouldStart = true;
-        SetWaitingUpdatingLayout();
+        WaitingWhileBuilding ();
     }
 
-
-    private string GenerateNowDateString()
+    private static string GenerateNowDateString ()
     {
         DateTime now = DateTime.Now;
 
-        string day = now.Day.ToString();
+        string day = now.Day.ToString ();
 
-        if (int.Parse( day ) < 10)
+        if ( int.Parse ( day ) < 10 )
         {
             day = "0" + day;
         }
 
-        string month = now.Month.ToString();
+        string month = now.Month.ToString ();
 
-        if (int.Parse( month ) < 10)
+        if ( int.Parse ( month ) < 10 )
         {
             month = "0" + month;
         }
 
-        string hour = now.Hour.ToString();
+        string hour = now.Hour.ToString ();
 
-        if (int.Parse( hour ) < 10)
+        if ( int.Parse ( hour ) < 10 )
         {
             hour = "0" + hour;
         }
 
-        string minute = now.Minute.ToString();
+        string minute = now.Minute.ToString ();
 
-        if (int.Parse( minute ) < 10)
+        if ( int.Parse ( minute ) < 10 )
         {
             minute = "0" + minute;
         }
 
-        string result = "_" + day + month + now.Year.ToString() + "_" + hour + minute;
+        string result = "_" + day + month + now.Year.ToString () + "_" + hour + minute;
+
         return result;
     }
 
-
-    private void ShowInFileExplorer()
+    private void ShowInFileExplorer ()
     {
-        if (_pdfPrinter.PdfGenerationSuccesseeded)
+        if ( _pdfPrinter.PdfGenerationSuccesseeded )
         {
             string procName = string.Empty;
 
-            Process fileExplorer = new Process();
-            string pdfFileName = ExtractPathWithoutFileName( PdfFileName );
+            Process fileExplorer = new ();
+            string pdfFileName = ExtractPathWithoutFileName ( PdfName );
 
-            if (_osName == "Windows")
+            if ( _osName == "Windows" )
             {
                 procName = "explorer.exe";
-                pdfFileName = pdfFileName.Replace( '/', '\\' );
+                pdfFileName = pdfFileName.Replace ( '/', '\\' );
             }
-            else if (_osName == "Linux")
+            else if ( _osName == "Linux" )
             {
                 procName = "nautilus";
             }
@@ -406,7 +401,7 @@ public sealed class MainViewModel : ReactiveObject
             fileExplorer.StartInfo.FileName = procName;
             fileExplorer.StartInfo.Arguments = pdfFileName;
             fileExplorer.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-            fileExplorer.Start();
+            fileExplorer.Start ();
         }
         else
         {
@@ -414,20 +409,26 @@ public sealed class MainViewModel : ReactiveObject
         }
     }
 
-
     private void ShowMessageWindow ( string message )
     {
-        MessageWindow messegeWindow = new MessageWindow ( message );
+        MessageWindow messegeWindow = new ( message );
         MainWindow.Window.ModalWindow = messegeWindow;
         messegeWindow.Closed += ( s, a ) => { HandleDialogClosing (); };
         _waitingViewModel.Darken ();
         messegeWindow.ShowDialog ( MainWindow.Window );
     }
 
-
-    private void ShowLargeMessageWindow ( List<string> message, string path )
+    private void ShowTemplateErrors ( List<string>? message, string? errorSource )
     {
-        LargeMessageDialog messegeDialog = new LargeMessageDialog ( message, path );
+        if ( message == null
+            || message.Count < 1
+            || errorSource == null
+        )
+        {
+            return;
+        }
+
+        LargeMessageDialog messegeDialog = new ( message, errorSource );
         messegeDialog.Closed += ( s, a ) => { HandleDialogClosing (); };
         _waitingViewModel.Darken ();
         messegeDialog.ShowDialog ( MainWindow.Window );
@@ -435,70 +436,84 @@ public sealed class MainViewModel : ReactiveObject
         messegeDialog.Focus ();
     }
 
-
-    private void PreparePrinting()
+    private void PreparePrinting ()
     {
-        _printAdjusting = new();
-        _printDialog = PrintDialog.GetPreparedDialog( _sceneViewModel.AllPages.Count, _printAdjusting );
-        _waitingViewModel.Darken();
-        _printDialog.ShowDialog( MainWindow.Window );
+        _printAdjusting = new ();
+        _printDialog = new ( _sceneViewModel.AllPages.Count, _printAdjusting );
+        _waitingViewModel.Darken ();
+        _printDialog.ShowDialog ( MainWindow.Window );
     }
 
-
-    private void WaitForPrinting()
+    private void WaitForPrinting ()
     {
         _printingShouldStart = true;
-        SetWaitingUpdatingLayout();
+        WaitingWhileBuilding ();
     }
 
-
-    internal void LayoutUpdated()
+    internal void ProcessDocument ()
     {
-        if (SceneViewModel.EntireListBuildingIsChosen   &&   MainViewIsWaiting)
+        if ( SceneViewModel.EntireListBuildingIsChosen && MainViewIsWaiting )
         {
-            _sceneViewModel.BuildDuringWaiting();
+            _sceneViewModel.BuildDuringWaiting ();
+
             return;
         }
-        else if (_pdfGenerationShouldStart)
+        else if ( _pdfGenerationShouldStart )
         {
             _pdfGenerationShouldStart = false;
-            _pdfPrinter.GeneratePdfDuringWaiting ( PdfFileName );
+
+            if ( string.IsNullOrWhiteSpace ( PdfName ) )
+            {
+                EndWaiting ();
+
+                return;
+            }
+
+            _pdfPrinter.GeneratePdfDuringWaiting ( PdfName );
+
             return;
         }
-        else if (_printingShouldStart)
+        else if ( _printingShouldStart )
         {
             _printingShouldStart = false;
-            _pdfPrinter.PrintDuringWaiting( _printAdjusting, _osName );
-            return;
+
+            if ( _printAdjusting == null ) 
+            {
+                EndWaiting ();
+
+                return;
+            }
+
+            _pdfPrinter.PrintDuringWaiting ( _printAdjusting );
         }
     }
 
-
-    internal void OnLoaded()
+    internal void OnLoaded ()
     {
-        _personSourceViewModel.DeclineKeepedFileIfIncorrect();
+        _personSourceViewModel.DeclineKeepedFileIfIncorrect ();
     }
 
-
-    private string ExtractPathWithoutFileName(string wholePath)
+    private static string ExtractPathWithoutFileName ( string? wholePath )
     {
-        var builder = new StringBuilder();
-        string goalPath = string.Empty;
+        string result = string.Empty;
 
-        for (var index = wholePath.Length - 1; index >= 0; index--)
+        if ( wholePath == null )
         {
-            bool fileNameIsAchieved = wholePath[index] == '/'
-                                 || wholePath[index] == '\\';
+            return result;
+        }
 
-            if (fileNameIsAchieved)
+        for ( var index = wholePath.Length - 1; index >= 0; index-- )
+        {
+            bool fileNameIsAchieved = wholePath [index] == '/' || wholePath [index] == '\\';
+
+            if ( fileNameIsAchieved )
             {
-                goalPath = wholePath.Substring( 0, index );
+                result = wholePath [..index];
+
                 break;
             }
         }
 
-        return goalPath;
+        return result;
     }
 }
-
-

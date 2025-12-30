@@ -1,113 +1,49 @@
-﻿using Avalonia.Controls;
-using Avalonia.Media;
+﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Models.Badge;
 using QuestPDF.Infrastructure;
-using ReactiveUI;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
 /// <summary>
 /// Maps TextLine model into visible entity.
 /// </summary>
-public sealed class TextLineViewModel : BadgeComponentBase
+public sealed partial class TextLineViewModel : BadgeComponentBase
 {
-    private static readonly double _maxFontSizeLimit = 30;
-    private static readonly double _minFontSizeLimit = 6;
-    private static TextBlock _textBlock;
-    private string _alignmentName;
+    private readonly string _alignmentName;
 
     internal TextLine Model { get; private set; }
     internal string StartContent { get; private set; }
 
+    [ObservableProperty]
     private HorizontalAlignment _alignment;
-    internal HorizontalAlignment Alignment
-    {
-        get { return _alignment; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _alignment, value, nameof( Alignment ) );
-        }
-    }
 
+    [ObservableProperty]
     private Avalonia.Thickness _padding;
-    internal Avalonia.Thickness Padding
-    {
-        get { return _padding; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _padding, value, nameof( Padding ) );
-        }
-    }
 
+    [ObservableProperty]
     private double _fontSize;
-    internal double FontSize
-    {
-        get { return _fontSize; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _fontSize, value, nameof( FontSize ) );
-        }
-    }
 
-    private FontFamily _fontFamily;
-    internal FontFamily FontFamily
-    {
-        get { return _fontFamily; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _fontFamily, value, nameof( FontFamily ) );
-        }
-    }
+    [ObservableProperty]
+    private FontFamily? _fontFamily;
 
+    [ObservableProperty]
     private Avalonia.Media.FontWeight _fontWeight;
-    internal Avalonia.Media.FontWeight FontWeight
-    {
-        get { return _fontWeight; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _fontWeight, value, nameof( FontWeight ) );
-        }
-    }
 
-    private string _content;
-    internal string Content
-    {
-        get { return _content; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _content, value, nameof( Content ) );
-        }
-    }
+    [ObservableProperty]
+    private string? _content;
 
-    private IBrush _foreground;
-    internal IBrush Foreground
-    {
-        get { return _foreground; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _foreground, value, nameof( Foreground ) );
-        }
-    }
+    [ObservableProperty]
+    private IBrush? _foreground;
 
-    private IBrush _background;
-    internal IBrush Background
-    {
-        get { return _background; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _background, value, nameof( Background ) );
-        }
-    }
+    [ObservableProperty]
+    private IBrush? _background;
 
+    [ObservableProperty]
     private bool _isSplitable;
-    internal bool IsSplitable
-    {
-        get { return _isSplitable; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _isSplitable, value, nameof( IsSplitable ) );
-        }
-    }
+
+    [ObservableProperty]
+    private double _usefullHeight;
 
     private double _usefullWidth;
     internal double UsefullWidth
@@ -115,71 +51,49 @@ public sealed class TextLineViewModel : BadgeComponentBase
         get { return _usefullWidth; }
         set
         {
-            this.RaiseAndSetIfChanged( ref _usefullWidth, value, nameof( UsefullWidth ) );
+            _usefullWidth = value;
+            OnPropertyChanged ();
             Width = value;
-        }
-    }
-
-    private double _usefullHeight;
-    internal double UsefullHeight
-    {
-        get { return _usefullHeight; }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _usefullHeight, value, nameof( UsefullHeight ) );
         }
     }
 
     internal bool IsBorderViolent = false;
     internal bool IsOverLayViolent = false;
 
-
-    public TextLineViewModel(TextLine model)
+    public TextLineViewModel ( TextLine model )
     {
         _alignmentName = model.Alignment;
         Model = model;
-        base.Model = model;
-
-        bool fontSizeIsOutOfRange = model.FontSize < _minFontSizeLimit
-                                    ||
-                                    model.FontSize > _maxFontSizeLimit;
-        if (fontSizeIsOutOfRange)
-        {
-
-        }
-
         FontSize = model.FontSize;
-        FontWeight = GetFontWeight( model.FontWeight );
+        FontWeight = GetFontWeight ( model.FontWeight );
         string fontName = model.FontName;
-        FontFamily = new FontFamily( fontName );
+        FontFamily = new FontFamily ( fontName );
 
         Content = model.Content;
         StartContent = model.Content;
         IsSplitable = model.IsSplitable;
 
-        Avalonia.Media.Color color;
-        bool isColor = Avalonia.Media.Color.TryParse( model.ForegroundHexStr, out color );
+        bool isColor = Avalonia.Media.Color.TryParse ( model.ForegroundHexStr, out Avalonia.Media.Color color );
 
-        if (!Avalonia.Media.Color.TryParse( model.ForegroundHexStr, out color ))
+        if ( !Avalonia.Media.Color.TryParse ( model.ForegroundHexStr, out color ) )
         {
-            color = new Avalonia.Media.Color( 255, 200, 200, 200 );
+            color = new Avalonia.Media.Color ( 255, 200, 200, 200 );
         }
 
-        SolidColorBrush foreground = new SolidColorBrush( color );
+        SolidColorBrush foreground = new ( color );
         Foreground = foreground;
 
         Height = model.Height;
-        Padding = new Avalonia.Thickness( model.Padding.Left, model.Padding.Top );
+        Padding = new Avalonia.Thickness ( model.Padding.Left, model.Padding.Top );
 
-        SetUp( model.Width, FontSize, model.TopOffset, model.LeftOffset );
-        SetUsefullWidth();
+        SetUp ( model.Width, FontSize, model.TopOffset, model.LeftOffset );
+        SetUsefullWidth ();
 
         Model.Changed += SetViaModel;
         Model.TextChanged += SetViaModel;
     }
 
-
-    private TextLineViewModel(TextLineViewModel source)
+    private TextLineViewModel ( TextLineViewModel source )
     {
         _alignmentName = source._alignmentName;
         Model = source.Model;
@@ -196,21 +110,20 @@ public sealed class TextLineViewModel : BadgeComponentBase
         Background = source.Background;
         Padding = source.Padding;
 
-        SetUp( source.UsefullWidth, source.Height, source.TopOffset, source.LeftOffset );
+        SetUp ( source.UsefullWidth, source.Height, source.TopOffset, source.LeftOffset );
 
         Model.TextChanged += SetViaModel;
     }
 
-
-    private static Avalonia.Media.FontWeight GetFontWeight(string weightName)
+    private static Avalonia.Media.FontWeight GetFontWeight ( string weightName )
     {
         Avalonia.Media.FontWeight weight = Avalonia.Media.FontWeight.Normal;
 
-        if (weightName == "Bold")
+        if ( weightName == "Bold" )
         {
             weight = Avalonia.Media.FontWeight.Bold;
         }
-        else if (weightName == "Thin")
+        else if ( weightName == "Thin" )
         {
             weight = Avalonia.Media.FontWeight.Thin;
         }
@@ -218,49 +131,44 @@ public sealed class TextLineViewModel : BadgeComponentBase
         return weight;
     }
 
-
-    private void SetUsefullWidth()
+    private void SetUsefullWidth ()
     {
         UsefullWidth = Model.UsefullWidth * _scale;
         UsefullHeight = HeightWithBorder * _scale;
     }
 
-
-    internal TextLineViewModel Clone()
+    internal TextLineViewModel Clone ()
     {
-        TextLineViewModel clone = new TextLineViewModel( this );
+        TextLineViewModel clone = new ( this );
         return clone;
     }
 
-
-    internal void ZoomOn(double coefficient)
+    internal override void ZoomOn ( double coefficient )
     {
-        base.ZoomOn( coefficient );
+        base.ZoomOn ( coefficient );
         FontSize *= coefficient;
         UsefullWidth *= coefficient;
         UsefullHeight *= coefficient;
-        Padding = new Avalonia.Thickness( Padding.Left * coefficient, Padding.Top * coefficient );
+        Padding = new Avalonia.Thickness ( Padding.Left * coefficient, Padding.Top * coefficient );
     }
 
-
-    internal void ZoomOut(double coefficient)
+    internal override void ZoomOut ( double coefficient )
     {
-        base.ZoomOut( coefficient );
+        base.ZoomOut ( coefficient );
         FontSize /= coefficient;
         UsefullWidth /= coefficient;
         UsefullHeight /= coefficient;
-        Padding = new Avalonia.Thickness( Padding.Left / coefficient, Padding.Top / coefficient );
+        Padding = new Avalonia.Thickness ( Padding.Left / coefficient, Padding.Top / coefficient );
     }
 
-
-    private void SetViaModel(LayoutComponentBase source)
+    private void SetViaModel ( LayoutComponentBase source )
     {
         FontSize = Model.FontSize * _scale;
         Content = Model.Content;
-        SetUp( Model.Width, Model.FontSize, Model.TopOffset, Model.LeftOffset );
-        SetUsefullWidth();
+        SetUp ( Model.Width, Model.FontSize, Model.TopOffset, Model.LeftOffset );
+        SetUsefullWidth ();
 
-        IsBorderViolent = Model.IsPaddingViolent;
-        IsOverLayViolent = Model.IsOverLayViolent;
+        IsBorderViolent = Model.IsBoundViolating;
+        IsOverLayViolent = Model.IsOverLaying;
     }
 }

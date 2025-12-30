@@ -2,18 +2,9 @@
 
 public static class DigitalStringParser
 {
-    public static int ParseToInt(string parsable)
+    public static int ParseToInt ( string? parsable )
     {
-        if (string.IsNullOrEmpty( parsable ))
-        {
-            return 0;
-        }
-
-        int result = 0;
-
-        bool isInt = int.TryParse( parsable, out result );
-
-        if (!isInt)
+        if ( string.IsNullOrEmpty ( parsable ) || !int.TryParse ( parsable, out int result ) )
         {
             return 0;
         }

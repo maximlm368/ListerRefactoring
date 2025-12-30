@@ -1,5 +1,5 @@
-﻿using Lister.Core.DocumentProcessor;
-using Lister.Core.DocumentProcessor.Abstractions;
+﻿using Lister.Core.Document;
+using Lister.Core.Document.AbstractServices;
 using System.Diagnostics;
 using System.Drawing.Printing;
 
@@ -10,102 +10,96 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 /// </summary>
 public sealed class PdfPrinterImplementation : IPdfPrinter
 {
-    private static PdfPrinterImplementation _instance = null;
+    private static readonly PdfPrinterImplementation? _instance = null;
 
-    private string _osName;
-    private IPdfCreator _pdgCreator;
+    private readonly string _osName;
 
-
-    private PdfPrinterImplementation(string osName, IPdfCreator pdfCreator)
+    private PdfPrinterImplementation ( string osName )
     {
         _osName = osName;
-        _pdgCreator = pdfCreator;
     }
 
-
-    internal static PdfPrinterImplementation GetInstance(string osName, IPdfCreator pdfCreator)
+    internal static PdfPrinterImplementation GetInstance ( string osName )
     {
-        PdfPrinterImplementation instance = _instance ?? new PdfPrinterImplementation( osName, pdfCreator );
-
-        return instance;
+        return _instance ?? new PdfPrinterImplementation ( osName );
     }
 
-
-    public void Print(List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
+    public void Print ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
     {
-        if (_osName == "Windows")
+        if ( _osName == "Windows" )
         {
-            PrintOnWindows( printables, creator, printerName, copiesAmount );
+            PrintOnWindows ( printables, creator, printerName, copiesAmount );
         }
-        else if (_osName == "Linux")
+        else if ( _osName == "Linux" )
         {
-            PrintOnLinux( printables, creator, printerName, copiesAmount );
+            PrintOnLinux ( printables, creator, printerName, copiesAmount );
         }
     }
 
-
-    internal static string ExecuteBashCommand(string command)
+    internal static string ExecuteBashCommand ( string command )
     {
-        using (Process process = new Process())
+        using Process process = new ();
+
+        process.StartInfo = new ProcessStartInfo
         {
-            process.StartInfo = new ProcessStartInfo
+            FileName = "/bin/bash",
+            Arguments = $"-c \"{command}\"",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        process.Start ();
+
+        string result = process.StandardOutput.ReadToEnd ();
+
+        process.WaitForExit ();
+
+        return result;
+    }
+
+    private void PrintOnWindows ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
+    {
+        if ( _osName == "Windows" && OperatingSystem.IsWindowsVersionAtLeast ( 6, 1 ) ) 
+        {
+            IEnumerable<byte []> intermediateBytes = creator.Create ( printables );
+
+            if ( intermediateBytes != null && intermediateBytes.Any () )
             {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            process.Start();
-
-            string result = process.StandardOutput.ReadToEnd();
-
-            process.WaitForExit();
-
-            return result;
-        }
-    }
-
-
-    private void PrintOnWindows(List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
-    {
-        IEnumerable<byte[]> intermediateBytes = creator.Create( printables );
-
-        if (intermediateBytes != null || intermediateBytes.Count() > 0)
-        {
-            foreach (byte[] pageBytes in intermediateBytes)
-            {
-                using Stream intermediateStream = new MemoryStream( pageBytes );
-                using PrintDocument pd = new PrintDocument();
-
-                pd.PrinterSettings.PrinterName = printerName;
-                pd.PrinterSettings.Copies = (short)copiesAmount;
-
-                pd.PrintPage += (sender, args) =>
+                foreach ( byte [] pageBytes in intermediateBytes )
                 {
-                    System.Drawing.Image img = System.Drawing.Image.FromStream( intermediateStream );
-                    args.Graphics.DrawImage( img, args.Graphics.VisibleClipBounds );
-                };
+                    using Stream intermediateStream = new MemoryStream ( pageBytes );
+                    using PrintDocument document = new ();
 
-                pd.Print();
+                    document.PrinterSettings.PrinterName = printerName;
+                    document.PrinterSettings.Copies = ( short ) copiesAmount;
+
+                    document.PrintPage += ( sender, args ) =>
+                    {
+#pragma warning disable CA1416 // Is supported only Windows 6.1 version and later.
+                        System.Drawing.Image img = System.Drawing.Image.FromStream ( intermediateStream );
+                        args.Graphics?.DrawImage ( img, args.Graphics.VisibleClipBounds );
+#pragma warning disable CA1416 // Is supported only Windows 6.1 version and later.
+                    };
+
+                    document.Print ();
+                }
             }
         }
     }
 
-
-    private void PrintOnLinux(List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount)
+    private static void PrintOnLinux ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
     {
         string pdfProxyName = @"./proxy.pdf";
-        bool dataIsGenerated = creator.CreateAndSave( printables, pdfProxyName );
+        bool dataIsGenerated = creator.CreateAndSave ( printables, pdfProxyName );
 
-        if (dataIsGenerated)
+        if ( dataIsGenerated )
         {
             string printer = printerName;
-            string copies = copiesAmount.ToString();
+            string copies = copiesAmount.ToString ();
             string bashPrintCommand = "lp -d " + printer + " -n " + copies + " " + pdfProxyName;
 
-            ExecuteBashCommand( bashPrintCommand );
+            ExecuteBashCommand ( bashPrintCommand );
         }
     }
 }

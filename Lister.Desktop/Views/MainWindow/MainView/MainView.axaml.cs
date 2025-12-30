@@ -4,7 +4,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.MainWindow.EditionView;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
@@ -17,7 +16,6 @@ namespace Lister.Desktop.Views.MainWindow.MainView;
 public sealed partial class MainView : UserControl
 {
     private static bool _widthIsChanged;
-    private static bool _heightIsChanged;
 
     internal static bool SomeControlPressed;
     internal static bool IsPathSet;
@@ -25,21 +23,19 @@ public sealed partial class MainView : UserControl
     internal static double ProperWidth { get; private set; }
     internal static double ProperHeight { get; private set; }
 
-    private readonly MainViewModel _viewModel;
-    private List <BadgeViewModel> _processableBadges;
-    private PageViewModel _firstPage;
+    private readonly MainViewModel? _viewModel;
+    private List<BadgeViewModel>? _processableBadges;
 
-    internal BadgeEditorView EditorView { get; private set; }
+    internal BadgeEditorView? EditorView { get; private set; }
 
     public MainView ()
     {
         InitializeComponent ();
     }
 
-
-    public MainView ( MainViewModel viewModel ) : this()
+    public MainView ( MainViewModel viewModel ) : this ()
     {
-        waiting.Margin = new Avalonia.Thickness ( 0, 12 );
+        Waiting.Margin = new Avalonia.Thickness ( 0, 12 );
         ProperWidth = Width;
         ProperHeight = Height;
         DataContext = viewModel;
@@ -54,43 +50,68 @@ public sealed partial class MainView : UserControl
         this.AddHandler ( UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel );
     }
 
-
-    internal void LayoutUpdatedHandler ( object sender, EventArgs args )
+    internal void LayoutUpdatedHandler ( object? sender, EventArgs args )
     {
         if ( TappedGoToEditorButton == 1 )
         {
             SwitchToEditor ();
         }
-        else 
+        else
         {
-            _viewModel.LayoutUpdated ();
+            _viewModel?.ProcessDocument ();
         }
     }
 
+    private void SwitchToEditor ()
+    {
+        if ( EditorView == null )
+        {
+            return;
+        }
 
-    private void PreventPasting ( object sender, TappedEventArgs args )
+        TappedGoToEditorButton = 0;
+        MainWindow? window = MainWindow.GetMainWindow ();
+
+        if ( window == null )
+        {
+            return;
+        }
+
+        Task task = new
+        (
+            () =>
+            {
+                if ( _processableBadges != null && _processableBadges.Count > 0 )
+                {
+                    EditorView.PrepareBy ( _processableBadges, this );
+                }
+
+                Dispatcher.UIThread.Invoke
+                (
+                    () =>
+                    {
+                        _viewModel?.EndWaiting ();
+                        window.Content = EditorView;
+                    }
+                );
+            }
+        );
+
+        task.Start ();
+    }
+
+    private void PreventPasting ( object? sender, TappedEventArgs args )
     {
         args.Handled = true;
     }
 
-
-    private void PointerIsPressed ( object sender, PointerPressedEventArgs args )
+    private void PointerIsPressed ( object? sender, PointerPressedEventArgs args )
     {
-        var point = args.GetCurrentPoint (sender as Control);
+        PointerPoint point = args.GetCurrentPoint ( sender as Control );
 
-        if ( point.Properties.IsRightButtonPressed )
+        if ( point.Properties.IsRightButtonPressed || point.Properties.IsLeftButtonPressed )
         {
-            if ( ! SomeControlPressed ) 
-            {
-                Focusable = true;
-                this.Focus ();
-            }
-
-            SomeControlPressed = false;
-        }
-        else if ( point.Properties.IsLeftButtonPressed ) 
-        {
-            if ( ! SomeControlPressed )
+            if ( !SomeControlPressed )
             {
                 Focusable = true;
                 this.Focus ();
@@ -102,19 +123,16 @@ public sealed partial class MainView : UserControl
         Focusable = false;
     }
 
-
-    internal void OnLoaded ( object sender, RoutedEventArgs args )
+    internal void OnLoaded ( object? sender, RoutedEventArgs args )
     {
-        _viewModel.OnLoaded ();
+        _viewModel?.OnLoaded ();
     }
 
-
-    internal void ReleaseCaptured () 
+    internal void ReleaseCaptured ()
     {
-        personChoosing.ReleaseScrollingLeverage ();
-        scene.ReleasePage ();
+        PersonChoosing.ReleaseScrollingLeverage ();
+        Scene.ReleasePage ();
     }
-
 
     internal void ChangeSize ( double widthDifference, double heightDifference )
     {
@@ -124,34 +142,32 @@ public sealed partial class MainView : UserControl
         ProperWidth = Width;
         ProperHeight = Height;
 
-        scene.Width -= widthDifference;
-        scene.Height -= heightDifference;
+        Scene.Width -= widthDifference;
+        Scene.Height -= heightDifference;
 
-        scene.workArea.Width -= widthDifference;
-        scene.workArea.Height -= heightDifference;
+        Scene.WorkArea.Width -= widthDifference;
+        Scene.WorkArea.Height -= heightDifference;
 
-        waiting.ChangeSize (heightDifference, widthDifference);
+        Waiting.ChangeSize ( heightDifference, widthDifference );
 
-        personChoosing.AdjustComboboxWidth (widthDifference, true);
-        personChoosing.CloseCustomCombobox ();
+        PersonChoosing.AdjustComboboxWidth ( widthDifference, true );
+        PersonChoosing.CloseCustomCombobox ();
 
-        badgeBuilding.ChangeSize (widthDifference);
+        BadgeBuilding.ChangeSize ( widthDifference );
 
-        ChangeSimpleShadow (widthDifference);
+        ChangeSimpleShadow ( widthDifference );
     }
-
 
     private void ChangeSimpleShadow ( double widthDifference )
     {
-        var logicChildren = simpleShadow.GetVisualChildren ();
+        var logicChildren = SimpleShadow.GetVisualChildren ();
 
-        foreach ( var child   in   logicChildren )
+        foreach ( var child in logicChildren )
         {
             Rectangle rectangle = ( Rectangle ) child;
             rectangle.Width -= widthDifference;
         }
     }
-
 
     internal void SetProperSize ( double properWidth, double properHeight )
     {
@@ -164,15 +180,6 @@ public sealed partial class MainView : UserControl
             _widthIsChanged = false;
         }
 
-        if ( properHeight != ProperHeight )
-        {
-            _heightIsChanged = true;
-        }
-        else
-        {
-            _heightIsChanged = false;
-        }
-
         double widthDifference = Width - properWidth;
         double heightDifference = Height - properHeight;
 
@@ -182,73 +189,37 @@ public sealed partial class MainView : UserControl
         ProperWidth = Width;
         ProperHeight = Height;
 
-        scene.workArea.Width -= widthDifference;
-        scene.workArea.Height -= heightDifference;
+        Scene.WorkArea.Width -= widthDifference;
+        Scene.WorkArea.Height -= heightDifference;
 
-        ChangeSimpleShadow (widthDifference);
-        badgeBuilding.ChangeSize (widthDifference);
+        ChangeSimpleShadow ( widthDifference );
+        BadgeBuilding.ChangeSize ( widthDifference );
 
-        personChoosing.AdjustComboboxWidth (widthDifference, _widthIsChanged);
+        PersonChoosing.AdjustComboboxWidth ( widthDifference, _widthIsChanged );
     }
 
-
-    internal void RefreshTemplateAppearences ( )
+    internal void RefreshTemplateAppearences ()
     {
-        _viewModel.RefreshAppearences ();
+        _viewModel?.RefreshAppearences ();
     }
 
-
-    private void EditIncorrectBadges ( List <BadgeViewModel> processableBadges, PageViewModel firstPage )
+    private void EditIncorrectBadges ( List<BadgeViewModel> processableBadges )
     {
         _processableBadges = processableBadges;
-        _firstPage = firstPage;
-        MainView mainView = this;
-        MainWindow window = MainWindow.GetMainWindow ();
+        MainWindow? window = MainWindow.GetMainWindow ();
 
-        if ( ( window != null )   &&   ( processableBadges.Count > 0 ) )
+        if ( ( window != null ) && ( processableBadges.Count > 0 ) )
         {
             EditorView = new BadgeEditorView ( processableBadges.Count );
-            EditorView.SetProperSize (ProperWidth, ProperHeight);
+            EditorView.SetProperSize ( ProperWidth, ProperHeight );
             window.CancelSizeDifference ();
             TappedGoToEditorButton = 1;
-            _viewModel.SetWaitingUpdatingLayout ();
+            _viewModel?.WaitingWhileBuilding ();
         }
     }
 
-
-    internal void SwitchToEditor ( )
-    {
-        TappedGoToEditorButton = 0;
-        MainWindow window = MainWindow.GetMainWindow ();
-
-        Task task = new Task
-        (
-            () =>
-            {
-                EditorView.SetProcessableBadges ( _processableBadges, _firstPage );
-                EditorView.PassBackPoint ( this );
-
-                Dispatcher.UIThread.Invoke
-                (
-                    () =>
-                    {
-                        _viewModel.EndWaiting ();
-                        window.Content = EditorView;
-                    }
-                );
-            }
-        );
-
-        task.Start ();
-    }
-
-
     internal void MovePage ( PointerEventArgs args )
     {
-        scene.MovePage ( args );
+        Scene.MovePage ( args );
     }
 }
-
-
-
-

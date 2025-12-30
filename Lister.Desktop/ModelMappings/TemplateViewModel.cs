@@ -1,65 +1,34 @@
 ﻿using Avalonia.Media;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lister.Desktop.ModelMappings;
 
 /// <summary>
 /// Represents visible entity for badge template that corresponds particular badge layout.
 /// </summary>
-public sealed class TemplateViewModel : ReactiveObject
+public sealed partial class TemplateViewModel : ObservableObject
 {
     public string SourcePath { get; private set; }
 
-    private string _name;
-    public string Name
-    {
-        get
-        {
-            return _name;
-        }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _name, value, nameof( Name ) );
-        }
-    }
+    [ObservableProperty]
+    private string _name = string.Empty;
 
-    private SolidColorBrush _color;
-    public SolidColorBrush Color
-    {
-        get
-        {
-            return _color;
-        }
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _color, value, nameof( Color ) );
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush? _color;
 
-    private List<string> _correctnessMessage;
-    public List<string> CorrectnessMessage
-    {
-        get
-        {
-            return _correctnessMessage;
-        }
-        set
-        {
-            _correctnessMessage = value;
-        }
-    }
+    public List<string> CorrectnessMessage { get; private set; }
 
-
-    public TemplateViewModel(TemplateName templateName, SolidColorBrush colorIfCorrect, SolidColorBrush colorIfIncorrect
-                              , List<string> correctnessMessage, string sourcePath)
+    public TemplateViewModel ( TemplateName templateName, SolidColorBrush colorIfCorrect, SolidColorBrush colorIfIncorrect,
+        List<string> errors, string sourcePath
+    )
     {
         Name = templateName.Name;
-        CorrectnessMessage = correctnessMessage;
+        CorrectnessMessage = errors;
         SourcePath = sourcePath;
 
-        bool isCorrect = correctnessMessage.Count == 0;
+        bool isCorrect = errors.Count == 0;
 
-        if (isCorrect)
+        if ( isCorrect )
         {
             Color = colorIfCorrect;
         }

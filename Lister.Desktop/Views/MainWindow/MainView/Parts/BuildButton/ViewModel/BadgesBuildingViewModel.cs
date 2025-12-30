@@ -1,58 +1,36 @@
-﻿using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
-using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 
-public class BadgesBuildingViewModel : ReactiveObject
+public partial class BadgesBuildingViewModel : ObservableObject
 {
-    private WaitingViewModel _waitingVM;
-
+    [ObservableProperty]
     private bool _buildingIsPossible;
-    internal bool BuildingIsPossible
-    {
-        set
-        {
-            this.RaiseAndSetIfChanged( ref _buildingIsPossible, value, nameof( BuildingIsPossible ) );
-        }
-        get
-        {
-            return _buildingIsPossible;
-        }
-    }
 
     private bool _buildButtonIsTapped;
     internal bool BuildButtonIsTapped
     {
-        private set
-        {
-            if (value)
-            {
-                this.RaiseAndSetIfChanged( ref _buildButtonIsTapped, value, nameof( BuildButtonIsTapped ) );
-            }
-            else
-            {
-                _buildButtonIsTapped = false;
-            }
-        }
         get
         {
             return _buildButtonIsTapped;
         }
+
+        private set
+        {
+            _buildButtonIsTapped = value;
+
+            if ( _buildButtonIsTapped )
+            {
+                OnPropertyChanged ();
+            }
+        }
     }
 
-
-    internal void TryToEnableBadgeCreation(bool shouldEnable)
-    {
-        BuildingIsPossible = shouldEnable;
-    }
-
-
-    internal void BuildBadges()
+    [RelayCommand]
+    internal void BuildBadges ()
     {
         BuildButtonIsTapped = true;
         BuildButtonIsTapped = false;
     }
 }
-
-
-

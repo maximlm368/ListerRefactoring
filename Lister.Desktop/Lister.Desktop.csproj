@@ -60,6 +60,7 @@
     <PackageReference Include="Avalonia.Skia" Version="11.2.0" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="8.3.0.1" />
     <PackageReference Include="JsonSchema.Net" Version="7.2.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
@@ -96,7 +97,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Doctor3.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Assets\JsonSchema\Schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -105,16 +106,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Images\doctors2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Images\GreenCheckMarker.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Images\nurses2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Doctor3\Images\RedCross.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Templates\Incorrect\Images\doctors2.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -176,5 +177,9 @@
     <Compile Update="Views\MainWindow\WaitingView\WaitingView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\MainWindow\EditionView\Parts\" />
   </ItemGroup>
 </Project>

@@ -24,8 +24,8 @@
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				FontSize="12"
-				Content ="Ошибка"/>
-
+				Content ="Ошибка"
+			/>
 			<Image
 				Grid.Column="0"
 				Grid.Row="2"
@@ -33,26 +33,21 @@
 				Width="35"
 				Margin ="16,24"
 				VerticalAlignment="Top"
-				Source = "/Assets/Icons/warning-alert.ico"/>
-
+				Source = "/Assets/Icons/warning-alert.ico"
+			/>
 			<Grid
 				Grid.Row="2"
 				Grid.Column="1"
+				ColumnDefinitions="55 370 175"
 				Height="35">
-					
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition  Width="55"></ColumnDefinition>
-					<ColumnDefinition  Width="370"></ColumnDefinition>
-					<ColumnDefinition  Width="175"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
 
 				<TextBlock
 					Grid.Column="0"
 					Height="35"
 					FontSize="16"
 					Padding="0,6"
-					Text="Файл:"/>
-
+					Text="Файл:"
+				/>
 				<TextBox
 					Grid.Column="1"
 					FontSize="16"
@@ -64,19 +59,21 @@
 
 					<TextBox.ContextMenu>
 						<ContextMenu>
-							<MenuItem Header="Копировать    (Ctrl+C)" Command="{Binding $parent[TextBox].Copy}" IsEnabled="{Binding $parent[TextBox].CanCopy}"/>
+							<MenuItem 
+								Header="Копировать    (Ctrl+C)"
+								Command="{Binding $parent[TextBox].Copy}" 
+								IsEnabled="{Binding $parent[TextBox].CanCopy}"
+							/>
 						</ContextMenu>
-					</TextBox.ContextMenu>
-							
+					</TextBox.ContextMenu>	
 				</TextBox>
-					
 				<TextBlock
 					Grid.Column="2"
 					Height="35"
 					FontSize="16"
 					Padding="2,6"
-					Text=" - содержит ошибки,"/>
-					
+					Text=" - содержит ошибки,"
+				/>	
 			</Grid>
 				
 			<TextBlock
@@ -85,8 +82,8 @@
 				Height="35"
 				FontSize="16"
 				Padding="0,6"
-				Text="макет будет построен с дефолтными значениями !"/>
-
+				Text="макет будет построен с дефолтными значениями !"
+			/>
 			<ScrollViewer
 				Grid.Row="5"
 				Grid.Column="1"
@@ -111,14 +108,14 @@
 
 					<SelectableTextBlock.ContextMenu>
 						<ContextMenu>
-							<MenuItem Header="Копировать    
-										(Ctrl+C)" Command="{Binding $parent[SelectableTextBlock].Copy}"
-									  IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"/>
+							<MenuItem 
+								Header="Копировать  (Ctrl+C)" 
+								Command="{Binding $parent[SelectableTextBlock].Copy}"
+								IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"
+							/>
 						</ContextMenu>
 					</SelectableTextBlock.ContextMenu>
-
 				</SelectableTextBlock>
-
 			</ScrollViewer>
 				
 			<Canvas
@@ -128,8 +125,8 @@
 				Grid.ColumnSpan="2"
 				Width="688"
 				Height="1"
-				Background ="#ececec"/>
-
+				Background ="#ececec"
+			/>
 			<Canvas
 				Grid.Row="7"
 				Grid.Column="0"
@@ -145,37 +142,8 @@
 					Canvas.Top="8"
 					Canvas.Left="580"
 					Content="Ok"
-					Command="{Binding  Path=Close}"/>
-
+					Command="{Binding  Path=Close}"
+				/>
 			</Canvas>
-			
-		</Grid>
-    
-		
+		</Grid>	
 </Window>
-
-
-<!--
-
-			<Grid
-				Grid.Row="2"
-				ColumnDefinitions="35 *"
-				RowDefinitions="*"
-				MaxHeight="304"
-				Width="668">
-				
-				
-								<Grid
-					Grid.Column="1"
-					Grid.Row="2"
-					Width="592">
-				
-					<Grid.RowDefinitions>
-						<RowDefinition  Height="35"></RowDefinition>
-						<RowDefinition  Height="35"></RowDefinition>
-						<RowDefinition  Height="8"></RowDefinition>
-						<RowDefinition  Height="*"></RowDefinition>
-					</Grid.RowDefinitions>
-
-
--->

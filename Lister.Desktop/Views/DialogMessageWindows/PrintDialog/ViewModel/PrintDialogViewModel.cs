@@ -1,11 +1,10 @@
 ﻿using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 using Lister.Desktop.Extentions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
-using Lister.Desktop.App;
+using Lister.Core.Extentions;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
@@ -18,193 +17,170 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
     private readonly string _emptyPrinters;
     private readonly int _copiesMaxCount = 10;
     private readonly int _pagesStrMaxGlyphCount = 30;
-    private readonly List<char> _pageNumsAcceptables
-                               = new List<char>() { ' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-    private readonly List<char> _copiesCountAcceptables
-                               = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private readonly List<char> _pageNumsAcceptables = [' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    private readonly List<char> _copiesCountAcceptables = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     private readonly string _osName;
-
-    private List<char> _numAsChars;
-    private List<int> _pageNumbers;
-    private List<int> _currentRange;
+    private readonly List<char> _intAsCharList = [];
+    private readonly List<int> _pageNumbers = [];
     private ParserStates _state;
     private int _rangeStart;
-    private int _passedPagesAmount;
-    private PrintAdjustingData _printingAdjusting;
-    private bool _copiesHinderPrinting;
-    private string _pagesListError;
+    private int _pagesAmount;
+    private PrintAdjustingData? _adjusting;
+    private bool _isPageInputPossable = false;
 
-    private SolidColorBrush _lineBackgraund;
-    internal SolidColorBrush LineBackground
-    {
-        get { return _lineBackgraund; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _lineBackgraund, value, nameof( LineBackground ) );
-        }
-    }
-
-    private SolidColorBrush _canvasBackground;
-    internal SolidColorBrush CanvasBackground
-    {
-        get { return _canvasBackground; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _canvasBackground, value, nameof( CanvasBackground ) );
-        }
-    }
-
-    private ObservableCollection<PrinterPresentation> _printers;
-    internal ObservableCollection<PrinterPresentation> Printers
+    private ObservableCollection<PrinterPresentation>? _printers;
+    internal ObservableCollection<PrinterPresentation>? Printers
     {
         get { return _printers; }
         private set
         {
-            this.RaiseAndSetIfChanged( ref _printers, value, nameof( Printers ) );
+            this.RaiseAndSetIfChanged ( ref _printers, value, nameof ( Printers ) );
         }
     }
 
-    private bool _some;
-    internal bool Some
+    private bool _isSomePages;
+    internal bool IsSomePages
     {
-        get { return _some; }
+        get { return _isSomePages; }
         private set
         {
-            if ( ! value )
+            if ( !value )
             {
-                Pages = string.Empty;
+                PagesInString = string.Empty;
             }
 
-            this.RaiseAndSetIfChanged( ref _some, value, nameof( Some ) );
+            this.RaiseAndSetIfChanged ( ref _isSomePages, value, nameof ( IsSomePages ) );
         }
     }
 
-    private string _pages;
-    internal string Pages
+    private string? _pagesInString;
+    internal string? PagesInString
     {
-        get { return _pages; }
+        get { return _pagesInString; }
         set
         {
-            PagesError = string.Empty;
-            value = RemoveUnacceptableGlyph ( value, _pageNumsAcceptables );
+            value = value.RemoveUnacceptableGlyphs ( _pageNumsAcceptables );
 
-            if ( ! string.IsNullOrEmpty( value )   &&   (value.Length > _pagesStrMaxGlyphCount))
+            if ( !string.IsNullOrEmpty ( value ) && ( value.Length > _pagesStrMaxGlyphCount ) )
             {
-                value = Pages;
+                value = PagesInString;
             }
 
-            string errMessage = null;
-            bool canContinue = false;
-            GetPagesFromString ( value, out errMessage, out canContinue );
+            PagesError = SetPagesFrom ( value );
 
-            if ( ! canContinue   &&   ! string.IsNullOrWhiteSpace ( errMessage ) ) return;
-
-            for ( int index = 0;   index < _pageNumbers.Count;   index++ )
+            if ( !_isPageInputPossable && !string.IsNullOrWhiteSpace ( PagesError ) )
             {
-                if ( _pageNumbers [index] > _passedPagesAmount )
+                return;
+            }
+
+            for ( int index = 0; index < _pageNumbers.Count; index++ )
+            {
+                if ( _pageNumbers [index] > _pagesAmount )
                 {
-                    value = Pages;
+                    value = PagesInString;
+
                     break;
                 }
             }
 
-            _pages = value;
+            _pagesInString = value;
         }
     }
 
-    private SolidColorBrush _pagesBorderColor;
-    internal SolidColorBrush PagesBorderColor
+    private SolidColorBrush? _pagesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
+    internal SolidColorBrush? PagesBorderColor
     {
         get { return _pagesBorderColor; }
         set
         {
-            this.RaiseAndSetIfChanged( ref _pagesBorderColor, value, nameof( PagesBorderColor ) );
+            this.RaiseAndSetIfChanged ( ref _pagesBorderColor, value, nameof ( PagesBorderColor ) );
         }
     }
 
-    private string _pagesError;
+    private string _pagesError = string.Empty;
     internal string PagesError
     {
         get { return _pagesError; }
         set
         {
-            if (string.IsNullOrEmpty( value ))
+            if ( string.IsNullOrEmpty ( value ) )
             {
-                PagesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
+                PagesBorderColor = new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
             }
             else
             {
-                PagesBorderColor = new SolidColorBrush( new Color( 255, 255, 0, 0 ) );
+                PagesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
             }
 
-            this.RaiseAndSetIfChanged( ref _pagesError, value, nameof( PagesError ) );
+            this.RaiseAndSetIfChanged ( ref _pagesError, value, nameof ( PagesError ) );
         }
     }
 
-    private string _copies;
-    internal string Copies
+    private string? _copies;
+    internal string? Copies
     {
         get { return _copies; }
         set
         {
-            value = RemoveUnacceptableGlyph( value, _copiesCountAcceptables );
-            _copiesHinderPrinting = false;
+            value = value.RemoveUnacceptableGlyphs ( _copiesCountAcceptables );
 
-            if (CopiesError == _emptyCopies)
+            if ( CopiesError == _emptyCopies )
             {
                 CopiesError = string.Empty;
             }
 
-            if (!string.IsNullOrEmpty( value ))
+            if ( !string.IsNullOrEmpty ( value ) )
             {
-                if (IsFirstDigitZero( value ) || int.Parse( value ) > _copiesMaxCount)
+                if ( IsFirstDigitZero ( value ) || int.Parse ( value ) > _copiesMaxCount )
                 {
-                    string changer = value;
-                    value = _copies;
-                    _copies = changer;
+                    (_copies, value) = (value, _copies);
                 }
             }
+            else
+            {
+                CopiesError = _emptyCopies;
+            }
 
-            this.RaiseAndSetIfChanged( ref _copies, value, nameof( Copies ) );
+            this.RaiseAndSetIfChanged ( ref _copies, value, nameof ( Copies ) );
         }
     }
 
-    private SolidColorBrush _copiesBorderColor;
-    internal SolidColorBrush CopiesBorderColor
+    private SolidColorBrush? _copiesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
+    internal SolidColorBrush? CopiesBorderColor
     {
         get { return _copiesBorderColor; }
         set
         {
-            this.RaiseAndSetIfChanged( ref _copiesBorderColor, value, nameof( CopiesBorderColor ) );
+            this.RaiseAndSetIfChanged ( ref _copiesBorderColor, value, nameof ( CopiesBorderColor ) );
         }
     }
 
-    private string _copiesError;
-    internal string CopiesError
+    private string? _copiesError;
+    internal string? CopiesError
     {
         get { return _copiesError; }
         set
         {
-            if (string.IsNullOrEmpty( value ))
+            if ( string.IsNullOrEmpty ( value ) )
             {
-                CopiesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
+                CopiesBorderColor = new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
             }
             else
             {
-                CopiesBorderColor = new SolidColorBrush( new Color( 255, 255, 0, 0 ) );
+                CopiesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
             }
 
-            this.RaiseAndSetIfChanged( ref _copiesError, value, nameof( CopiesError ) );
+            this.RaiseAndSetIfChanged ( ref _copiesError, value, nameof ( CopiesError ) );
         }
     }
 
-    private string _printersEmptyError;
-    internal string PrintersEmptyError
+    private string? _printersEmptyError;
+    internal string? PrintersEmptyError
     {
         get { return _printersEmptyError; }
         set
         {
-            this.RaiseAndSetIfChanged( ref _printersEmptyError, value, nameof( PrintersEmptyError ) );
+            this.RaiseAndSetIfChanged ( ref _printersEmptyError, value, nameof ( PrintersEmptyError ) );
         }
     }
 
@@ -214,7 +190,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         get { return _printingIsAvailable; }
         private set
         {
-            this.RaiseAndSetIfChanged( ref _printingIsAvailable, value, nameof( PrintingIsAvailable ) );
+            this.RaiseAndSetIfChanged ( ref _printingIsAvailable, value, nameof ( PrintingIsAvailable ) );
         }
     }
 
@@ -224,7 +200,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         get { return _selectedIndex; }
         private set
         {
-            this.RaiseAndSetIfChanged( ref _selectedIndex, value, nameof( SelectedIndex ) );
+            this.RaiseAndSetIfChanged ( ref _selectedIndex, value, nameof ( SelectedIndex ) );
         }
     }
 
@@ -234,133 +210,89 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         get { return _needClose; }
         private set
         {
-            if (_needClose == value)
+            if ( _needClose == value )
             {
                 _needClose = !_needClose;
             }
 
-            this.RaiseAndSetIfChanged( ref _needClose, value, nameof( NeedClose ) );
+            this.RaiseAndSetIfChanged ( ref _needClose, value, nameof ( NeedClose ) );
         }
     }
 
-
-    internal PrintDialogViewModel( string emptyCopies, string emptyPages, string emptyPrinters, string osName)
+    internal PrintDialogViewModel ( string emptyCopies, string emptyPages, string emptyPrinters, string osName )
     {
         _emptyCopies = emptyCopies;
         _emptyPages = emptyPages;
         _emptyPrinters = emptyPrinters;
         _osName = osName;
-
-        CanvasBackground = new SolidColorBrush( new Color( 255, 240, 240, 240 ) );
-        LineBackground = new SolidColorBrush( new Color( 255, 220, 220, 220 ) );
-        PagesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
-        CopiesBorderColor = new SolidColorBrush( new Color( 255, 0, 0, 0 ) );
     }
 
-
-    internal void PagesLostFocus()
+    internal void OpenPrinterSettings ()
     {
-        string errMessage = null;
-        bool canContinue = false;
-        GetPagesFromString ( Pages, out errMessage, out canContinue );
-
-        if ( ! string.IsNullOrWhiteSpace(errMessage) )
+        if ( _osName == "Windows"
+             && Printers != null
+             && Printers.Count > SelectedIndex
+        )
         {
-            PagesError = errMessage;
-            _pagesListError = errMessage;
-        }
-
-        if (string.IsNullOrEmpty( Pages ))
-        {
-            PagesError = _emptyPages;
-        }
-    }
-
-
-    internal void PagesGotFocus()
-    {
-        PagesError = string.Empty;
-    }
-
-
-    internal void CopiesLostFocus()
-    {
-        if (string.IsNullOrEmpty( Copies ))
-        {
-            CopiesError = _emptyCopies;
-            _copiesHinderPrinting = true;
-        }
-    }
-
-
-    internal void CopiesGotFocus()
-    {
-        CopiesError = string.Empty;
-    }
-
-
-    internal void OpenPrinterSettings()
-    {
-        if ( _osName == "Windows" )
-        {
-            string printerName = Printers [SelectedIndex].StringPresentation;
-            System.Diagnostics.Process process = new System.Diagnostics.Process ();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo ();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + printerName + "\"";
+            System.Diagnostics.Process process = new ();
+            System.Diagnostics.ProcessStartInfo startInfo = new ()
+            {
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                FileName = "cmd.exe",
+                Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + Printers [SelectedIndex].StringPresentation + "\""
+            };
             process.StartInfo = startInfo;
             process.Start ();
         }
-        else if ( _osName == "Linux" ) 
+        else if ( _osName == "Linux" )
         {
             string command = "gnome-control-center -s Printers";
             PdfPrinterImplementation.ExecuteBashCommand ( command );
         }
     }
 
-
     internal void Print ()
     {
-        if ( HasError () ) return;
-
-        PrinterPresentation printer = Printers [SelectedIndex];
-        _printingAdjusting.PrinterName = printer.StringPresentation;
-
-        if ( ! Some )
+        if ( HasError ()
+             || Printers == null
+             || Printers.Count < SelectedIndex + 1
+             || _adjusting == null
+        )
         {
-            _pageNumbers = new List<int> ();
+            return;
+        }
 
-            for ( int index = 0;   index < _passedPagesAmount;   index++ )
+        _adjusting.PrinterName = Printers [SelectedIndex].StringPresentation;
+
+        if ( !IsSomePages )
+        {
+            _pageNumbers.Clear ();
+
+            for ( int index = 0; index < _pagesAmount; index++ )
             {
                 _pageNumbers.Add ( index );
             }
         }
         else
         {
-            string errMessage = null;
-            bool canContinue = false;
-            GetPagesFromString ( Pages, out errMessage, out canContinue );
+            PagesError = SetPagesFrom ( PagesInString );
 
-            if ( ! string.IsNullOrWhiteSpace ( errMessage ) )
+            if ( !string.IsNullOrWhiteSpace ( PagesError ) )
             {
-                PagesError = errMessage;
-
                 return;
             }
 
-            for ( int index = 0;   index < _pageNumbers.Count;   index++ ) 
+            for ( int index = 0; index < _pageNumbers.Count; index++ )
             {
                 _pageNumbers [index] -= 1;
             }
         }
 
-        _printingAdjusting.PageNumbers = _pageNumbers;
-        _printingAdjusting.CopiesAmount = int.Parse ( Copies );
-        _printingAdjusting.Cancelled = false;
+        _adjusting.PageNumbers = _pageNumbers;
+        _adjusting.CopiesAmount = int.TryParse ( Copies, out int amount ) ? amount : 1;
+        _adjusting.IsCancelled = false;
         NeedClose = true;
     }
-
 
     private bool HasError ()
     {
@@ -371,14 +303,14 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
             return true;
         }
 
-        if ( string.IsNullOrEmpty ( Pages )   &&   Some )
+        if ( string.IsNullOrEmpty ( PagesInString ) && IsSomePages )
         {
             PagesError = _emptyPages;
 
             return true;
         }
 
-        if ( ! string.IsNullOrWhiteSpace ( _pages )   &&   PagesError.Contains ("Некорректный интервал") )
+        if ( !string.IsNullOrWhiteSpace ( _pagesInString ) && PagesError.Contains ( "Некорректный интервал" ) )
         {
             return true;
         }
@@ -386,195 +318,158 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         return false;
     }
 
-
     internal void Cancel ()
     {
         CopiesError = string.Empty;
         PagesError = string.Empty;
-        _printingAdjusting.Cancelled = true;
+
+        if ( _adjusting != null )
+        {
+            _adjusting.IsCancelled = true;
+        }
+
         NeedClose = true;
     }
 
-
-    internal void Prepare ()
+    internal void AdjustPrinting ( int pageAmmount, PrintAdjustingData adjusting )
     {
-        ObservableCollection<PrinterPresentation> printersList = null;
-
         if ( _osName == "Windows" )
         {
-            printersList = PreparePrintersListOnWindows ();
+            Printers = PreparePrintersListOnWindows ();
         }
         else if ( _osName == "Linux" )
         {
-            printersList = PreparePrintersListOnLinux ();
+            Printers = PreparePrintersListOnLinux ();
         }
 
-        HandleEmptyPrinters ( printersList );
-        Printers = printersList;
+        HandleEmptyPrinters ( Printers );
         Copies = "1";
+
+        _pagesAmount = pageAmmount;
+        _adjusting = adjusting;
     }
 
-
-    internal void TakeAmmountAndAdjusting ( int pageAmmount, PrintAdjustingData printAdjusting )
+    private string SetPagesFrom ( string? pageNumbersInString )
     {
-        _passedPagesAmount = pageAmmount;
-        _printingAdjusting = printAdjusting;
-    }
-
-
-    private void GetPagesFromString (string pageNumbers, out string errMessage, out bool canContinue)
-    {
-        List<int> result = new();
-        errMessage = string.Empty;
-        canContinue = false;
-
-        if (_printingAdjusting.Cancelled   ||   (pageNumbers == null))
+        if ( _adjusting == null
+             || _adjusting.IsCancelled
+             || pageNumbersInString == null
+        )
         {
-            return;
+            return string.Empty;
         }
 
         _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
-        _numAsChars = new();
-        _pageNumbers = new();
+        _intAsCharList.Clear ();
+        _pageNumbers.Clear ();
 
-        for (int index = 0;   index < pageNumbers.Length;   index++)
+        for ( int index = 0; index < pageNumbersInString.Length; index++ )
         {
-            bool isGlyphLast = ( index == pageNumbers.Length - 1 );
-            char glyph = pageNumbers[index];
-            string errorMessage = CalcNumbersReturningErrMessage ( glyph, isGlyphLast, out canContinue );
+            string errorMessage = HandleNextGlyph ( pageNumbersInString [index], index == pageNumbersInString.Length - 1 );
 
-            if ( errorMessage != string.Empty ) 
+            if ( !string.IsNullOrWhiteSpace ( errorMessage ) )
             {
-                errMessage = errorMessage;
-                
-                return;
+                return errorMessage;
             }
         }
 
-        _pageNumbers.Sort();
+        _pageNumbers.Sort ();
+
+        return string.Empty;
     }
 
-
-    private string CalcNumbersReturningErrMessage (char glyph, bool isGlyphLast, out bool canContinue)
+    private string HandleNextGlyph ( char glyph, bool isGlyphLast )
     {
-        bool glyphIsInteger = _copiesCountAcceptables.Contains( glyph );
-        canContinue = false;
-        if (glyphIsInteger)
-        {
-            int num = int.Parse( glyph.ToString() );
+        _isPageInputPossable = false;
+        bool glyphIsInteger = _copiesCountAcceptables.Contains ( glyph );
 
-            if ((_state == ParserStates.BeforeOrBetweenOrAfterGlyph)   ||   (_state == ParserStates.InsideIntegerOrFirstInRange))
+        if ( glyphIsInteger )
+        {
+            if ( ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph ) || ( _state == ParserStates.InsideIntegerOrFirstInRange ) )
             {
-                if ((_state == ParserStates.BeforeOrBetweenOrAfterGlyph)   &&   (glyph == '0'))
+                if ( ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph ) && ( glyph == '0' ) )
                 {
                     return "Число не может начинаться с ноля";
                 }
 
                 _state = ParserStates.InsideIntegerOrFirstInRange;
-                _numAsChars.Add( glyph );
+                _intAsCharList.Add ( glyph );
 
-                if (isGlyphLast)
+                if ( isGlyphLast )
                 {
-                    string presentation = "";
-
-                    foreach (char ch   in   _numAsChars)
+                    if ( int.TryParse ( _intAsCharList.ToArray (), out int pageNumber ) )
                     {
-                        presentation += ch;
+                        _pageNumbers.Add ( pageNumber );
                     }
-
-                    int integer = int.Parse( presentation );
-
-                    _pageNumbers.Add( integer );
                 }
             }
-            else if (_state == ParserStates.InRange)
+            else if ( _state == ParserStates.InRange )
             {
-                if (glyph == '0')
+                if ( glyph == '0' )
                 {
                     return "Число не может начинаться с ноля";
                 }
 
-                string presentation = "";
+                bool startIsInt = int.TryParse ( _intAsCharList.ToArray (), out _rangeStart );
 
-                foreach (char ch   in   _numAsChars)
-                {
-                    presentation += ch;
-                }
-
-                _rangeStart = int.Parse ( presentation );
-                _numAsChars = new();
+                _intAsCharList.Clear ();
                 _state = ParserStates.InRangeEnd;
-                _numAsChars.Add ( glyph );
+                _intAsCharList.Add ( glyph );
 
-                presentation = "";
+                bool endIsInt = int.TryParse ( _intAsCharList.ToArray (), out int rangeEnd );
 
-                foreach (char ch   in   _numAsChars)
+                if ( startIsInt && endIsInt && _rangeStart > rangeEnd )
                 {
-                    presentation += ch;
-                }
-
-                int rangeEnd = int.Parse ( presentation );
-
-                if (_rangeStart > rangeEnd)
-                {
-                    if ((rangeEnd * 10) > _passedPagesAmount)
+                    if ( ( rangeEnd * 10 ) > _pagesAmount )
                     {
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
 
-                if (isGlyphLast)
+                if ( isGlyphLast )
                 {
-                    for (int index = _rangeStart;   index <= rangeEnd;   index++)
+                    for ( int index = _rangeStart; index <= rangeEnd; index++ )
                     {
                         _pageNumbers.Add ( index );
                     }
 
                     if ( _rangeStart > rangeEnd )
                     {
-                        canContinue = true;
+                        _isPageInputPossable = true;
 
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
             }
-            else if (_state == ParserStates.InRangeEnd)
+            else if ( _state == ParserStates.InRangeEnd )
             {
-                _numAsChars.Add ( glyph );
+                _intAsCharList.Add ( glyph );
+                bool endIsInt = int.TryParse ( _intAsCharList.ToArray (), out int rangeEnd );
 
-                string presentation = "";
-
-                foreach (char ch   in   _numAsChars)
+                if ( endIsInt && _rangeStart > rangeEnd )
                 {
-                    presentation += ch;
-                }
-
-                int rangeEnd = int.Parse ( presentation );
-
-                if (_rangeStart > rangeEnd)
-                {
-                    if ((rangeEnd * 10) > _passedPagesAmount)
+                    if ( ( rangeEnd * 10 ) > _pagesAmount )
                     {
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
 
-                if (isGlyphLast)
+                if ( isGlyphLast )
                 {
-                    for (int index = _rangeStart;   index <= rangeEnd;   index++)
+                    for ( int index = _rangeStart; index <= rangeEnd; index++ )
                     {
                         _pageNumbers.Add ( index );
                     }
 
                     if ( _rangeStart > rangeEnd )
                     {
-                        canContinue = true;
+                        _isPageInputPossable = true;
 
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
             }
-            else if (_state == ParserStates.AfterInteger)
+            else if ( _state == ParserStates.AfterInteger )
             {
                 return "Цифра не может идти после пробела";
             }
@@ -583,9 +478,9 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                 return "Отсутствует пунктуация";
             }
         }
-        else if( ! glyphIsInteger )
+        else if ( !glyphIsInteger )
         {
-            switch (glyph)
+            switch ( glyph )
             {
                 case ' ':
 
@@ -595,16 +490,9 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     }
                     else if ( _state == ParserStates.InRangeEnd )
                     {
-                        string presentation = "";
+                        bool endIsInt = int.TryParse ( _intAsCharList.ToArray (), out int rangeEnd );
 
-                        foreach ( char ch in _numAsChars )
-                        {
-                            presentation += ch;
-                        }
-
-                        int rangeEnd = int.Parse ( presentation );
-
-                        if ( _rangeStart > rangeEnd )
+                        if ( endIsInt && _rangeStart > rangeEnd )
                         {
                             return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                         }
@@ -614,14 +502,14 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                             _pageNumbers.Add ( index );
                         }
 
-                        _numAsChars = new ();
+                        _intAsCharList.Clear ();
                         _state = ParserStates.AfterSpaceWithoutPunctuation;
                     }
-                    else if ( _state == ParserStates.InRange ) 
+                    else if ( _state == ParserStates.InRange )
                     {
                         if ( isGlyphLast )
                         {
-                            canContinue = true;
+                            _isPageInputPossable = true;
 
                             return "Тире не может быть последним в строке";
                         }
@@ -630,13 +518,13 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     break;
                 case '-':
 
-                    if (( _state == ParserStates.InsideIntegerOrFirstInRange )   ||   ( _state == ParserStates.AfterInteger ))
+                    if ( ( _state == ParserStates.InsideIntegerOrFirstInRange ) || ( _state == ParserStates.AfterInteger ) )
                     {
                         _state = ParserStates.InRange;
 
                         if ( isGlyphLast )
                         {
-                            canContinue = true;
+                            _isPageInputPossable = true;
 
                             return "Тире не может быть последним в строке";
                         }
@@ -660,7 +548,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     {
                         return "Тире не может идти после интервала";
                     }
-                    else if ( _state == ParserStates.AfterSpaceWithoutPunctuation) 
+                    else if ( _state == ParserStates.AfterSpaceWithoutPunctuation )
                     {
                         return "Тире не может идти после интервала";
                     }
@@ -668,61 +556,52 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     break;
                 case ',':
 
-                    if ((_state == ParserStates.InsideIntegerOrFirstInRange)   ||   (_state == ParserStates.AfterInteger))
+                    if ( ( _state == ParserStates.InsideIntegerOrFirstInRange ) || ( _state == ParserStates.AfterInteger ) )
                     {
-                        string presentation = "";
+                        bool outIsInt = int.TryParse ( _intAsCharList.ToArray (), out int integer );
 
-                        foreach (char ch   in   _numAsChars)
+                        if ( outIsInt ) 
                         {
-                            presentation += ch;
+                            _pageNumbers.Add ( integer );
                         }
 
-                        _numAsChars = new();
-                        int integer = int.Parse( presentation );
-                        _pageNumbers.Add( integer );
+                        _intAsCharList.Clear ();
                         _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
 
-                        if (isGlyphLast)
+                        if ( isGlyphLast )
                         {
-                            canContinue = true;
+                            _isPageInputPossable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
                     }
-                    else if (_state == ParserStates.InRangeEnd)
+                    else if ( _state == ParserStates.InRangeEnd )
                     {
-                        string presentation = "";
+                        bool endIsInt = int.TryParse (_intAsCharList.ToArray (), out int rangeEnd);
 
-                        foreach (char ch   in   _numAsChars)
-                        {
-                            presentation += ch;
-                        }
-
-                        int rangeEnd = int.Parse( presentation );
-
-                        if (_rangeStart > rangeEnd)
+                        if ( endIsInt && _rangeStart > rangeEnd )
                         {
                             return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                         }
 
-                        for (int index = _rangeStart;   index <= rangeEnd;   index++)
+                        for ( int index = _rangeStart; index <= rangeEnd; index++ )
                         {
-                            _pageNumbers.Add( index );
+                            _pageNumbers.Add ( index );
                         }
 
-                        _numAsChars = new();
+                        _intAsCharList.Clear ();
                         _state = ParserStates.BeforeOrBetweenOrAfterGlyph;
 
-                        if (isGlyphLast)
+                        if ( isGlyphLast )
                         {
-                            canContinue = true;
+                            _isPageInputPossable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
                     }
-                    else if (_state == ParserStates.BeforeOrBetweenOrAfterGlyph)
+                    else if ( _state == ParserStates.BeforeOrBetweenOrAfterGlyph )
                     {
-                        if (_pageNumbers.Count < 1)
+                        if ( _pageNumbers.Count < 1 )
                         {
                             return "Запятая не может быть первой";
                         }
@@ -731,7 +610,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                             return "Запятые не могут идти подряд";
                         }
                     }
-                    else if (_state == ParserStates.InRange)
+                    else if ( _state == ParserStates.InRange )
                     {
                         return "Запятая не может идти после тире";
                     }
@@ -741,7 +620,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
 
                         if ( isGlyphLast )
                         {
-                            canContinue = true;
+                            _isPageInputPossable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
@@ -754,40 +633,13 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         return string.Empty;
     }
 
-
-    private string RemoveUnacceptableGlyph(string value, List<char> acceptableGlyphs)
-    {
-        if (string.IsNullOrWhiteSpace( value ))
-        {
-            return string.Empty;
-        }
-
-        bool glyphIsIncorrect = true;
-
-        for (int index = 0;   index < value.Length;   index++)
-        {
-            char ch = value[index];
-
-            glyphIsIncorrect = acceptableGlyphs.Contains( ch );
-
-            if ( ! glyphIsIncorrect )
-            {
-                value = value.Remove( index, 1 );
-                break;
-            }
-        }
-
-        return value;
-    }
-
-
-    private bool IsFirstDigitZero(string value)
+    private static bool IsFirstDigitZero ( string value )
     {
         bool firstDigitIsZero = false;
 
-        char ch = value[0];
+        char ch = value [0];
 
-        if (ch == '0')
+        if ( ch == '0' )
         {
             firstDigitIsZero = true;
         }
@@ -795,23 +647,48 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         return firstDigitIsZero;
     }
 
-
-    private ObservableCollection<PrinterPresentation> PreparePrintersListOnWindows()
+    private ObservableCollection<PrinterPresentation> PreparePrintersListOnWindows ()
     {
-        ObservableCollection<PrinterPresentation> printersList = new();
+        ObservableCollection<PrinterPresentation> availablePrinters = [];
 
-        PrinterSettings settings = new PrinterSettings();
-        string defaultPrinterName = settings.PrinterName;
+        if ( OperatingSystem.IsWindowsVersionAtLeast ( 6, 1 ) )
+        {
+            PrinterSettings settings = new ();
+            string defaultPrinterName = settings.PrinterName;
+            PrinterSettings.StringCollection printers = PrinterSettings.InstalledPrinters;
+            int counter = 0;
 
-        PrinterSettings.StringCollection printers = PrinterSettings.InstalledPrinters;
+            foreach ( string printer in printers )
+            {
+                availablePrinters.Add ( new PrinterPresentation ( printer ) );
 
+                if ( defaultPrinterName == printer )
+                {
+                    SelectedIndex = counter;
+                }
+
+                counter++;
+            }
+        }
+
+        return availablePrinters;
+    }
+
+    private ObservableCollection<PrinterPresentation> PreparePrintersListOnLinux ()
+    {
+        ObservableCollection<PrinterPresentation> availablePrinters = [];
+        string defaultPrinterName = TerminalCommandExecuter.ExecuteCommand ( _linuxGetDefaultPrinterBash );
+        string printersLine = TerminalCommandExecuter.ExecuteCommand ( _linuxGetPrintersBash );
+        string [] printers = printersLine.Split ( ['\n'], StringSplitOptions.RemoveEmptyEntries );
         int counter = 0;
 
-        foreach (string printer   in   printers)
+        foreach ( string printer in printers )
         {
-            printersList.Add( new PrinterPresentation( printer ) );
+            string prntr = printer.TrimLastNewLineChar ();
 
-            if (defaultPrinterName == printer)
+            availablePrinters.Add ( new PrinterPresentation ( prntr ) );
+
+            if ( defaultPrinterName == prntr )
             {
                 SelectedIndex = counter;
             }
@@ -819,45 +696,19 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
             counter++;
         }
 
-        return printersList;
+        return availablePrinters;
     }
 
-
-    private ObservableCollection<PrinterPresentation> PreparePrintersListOnLinux()
+    private void HandleEmptyPrinters ( ObservableCollection<PrinterPresentation>? printersList )
     {
-        ObservableCollection<PrinterPresentation> printersList = new();
-
-        string defaultPrinterName = TerminalCommandExecuter.ExecuteCommand( _linuxGetDefaultPrinterBash );
-
-        string printersLine = TerminalCommandExecuter.ExecuteCommand( _linuxGetPrintersBash );
-
-        string[] printers = printersLine.Split( new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries );
-
-        int counter = 0;
-
-        foreach (string printer   in   printers)
+        if ( printersList == null )
         {
-            string prntr = printer.TrimLastNewLineChar();
-
-            printersList.Add( new PrinterPresentation( prntr ) );
-
-            if (defaultPrinterName == prntr)
-            {
-                SelectedIndex = counter;
-            }
-
-            counter++;
+            return;
         }
 
-        return printersList;
-    }
-
-
-    private void HandleEmptyPrinters(ObservableCollection<PrinterPresentation> printersList)
-    {
         bool printersIsEmpty = printersList.Count < 1;
 
-        if (printersIsEmpty)
+        if ( printersIsEmpty )
         {
             PrintersEmptyError = _emptyPrinters;
         }
@@ -868,8 +719,6 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
 
         PrintingIsAvailable = !printersIsEmpty;
     }
-
-
 
     private enum ParserStates
     {

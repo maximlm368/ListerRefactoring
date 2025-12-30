@@ -2,18 +2,18 @@
 
 internal static class ListExtention
 {
-    public static List<T> Clone<T>(this List<T> source)
+    public static List<T>? Clone<T> ( this List<T>? source )
     {
-        List<T> result = new();
-
-        if (source == null)
+        if ( source == null )
         {
-            return result;
+            return null;
         }
 
-        for (int index = 0; index < source.Count; index++)
+        List<T> result = [];
+
+        for ( int index = 0; index < source.Count; index++ )
         {
-            result.Add( source[index] );
+            result.Add ( source [index] );
         }
 
         return result;

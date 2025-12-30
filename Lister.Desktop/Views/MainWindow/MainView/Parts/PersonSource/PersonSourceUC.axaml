@@ -5,22 +5,14 @@
              mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="48"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;assembly=Lister.Desktop"
              x:Class="Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.PersonSourceUserControl"
-			 x:DataType="vm:PersonSourceViewModel">
+			 x:DataType="vm:PersonSourceViewModel"
+			 Loaded="OnLoaded">
 
-
-	<Grid Name="source"  Background="#EEEEEE">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="70" ></ColumnDefinition>
-			<ColumnDefinition ></ColumnDefinition>
-			<ColumnDefinition Width="44" ></ColumnDefinition>
-			<ColumnDefinition Width="5" ></ColumnDefinition>
-		</Grid.ColumnDefinitions>
-
-		<Grid.RowDefinitions>
-			<RowDefinition Height="8" ></RowDefinition>
-			<RowDefinition></RowDefinition>
-			<RowDefinition Height="6" ></RowDefinition>
-		</Grid.RowDefinitions>
+	<Grid 
+		Name="source"
+		Background="#EEEEEE"
+		ColumnDefinitions="70 * 44 5"
+		RowDefinitions="8 * 6">
 
 		<Label
 			Grid.Column="0"
@@ -28,8 +20,8 @@
 			FontSize="16"
 			Padding="10,5"
 			VerticalContentAlignment="Center"
-			Content="Файл:"/>
-
+			Content="Файл:"
+		/>
 		<Border
 			Grid.Column="1"
 			Grid.Row="1"
@@ -44,8 +36,8 @@
 				Height="28"
 				Padding="10,4"
 				Background="White"
-				Text="{Binding  Path = SourceFilePath,  Mode=OneWay}"/>
-
+				Text="{Binding  Path = SourceFilePath,  Mode=OneWay}"
+			/>
 		</Border>
 
 		<Button
@@ -61,10 +53,7 @@
 			Command="{Binding ChooseFile}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
 			FontFamily="{StaticResource FA}"
-			Content="&#xF141;" />
+			Content="&#xF141;"
+		/>
 	</Grid>
-	
 </UserControl>
-
-
-

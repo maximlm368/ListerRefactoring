@@ -4,15 +4,8 @@ namespace Lister.Desktop.Extentions;
 
 internal static class ImageHelper
 {
-    public static Bitmap? LoadFromResource(string source)
+    public static Bitmap? LoadFromResource ( string? source )
     {
-        Bitmap bitmap = null;
-
-        if (File.Exists( source ))
-        {
-            bitmap = new Bitmap( source );
-        }
-
-        return bitmap;
+        return File.Exists ( source ) ? new Bitmap ( source ) : null;
     }
 }

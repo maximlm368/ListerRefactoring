@@ -1,8 +1,6 @@
-﻿using ReactiveUI;
+﻿namespace Views.MainWindow;
 
-namespace Views.MainWindow;
-
-public sealed class MainWindowViewModel : ReactiveObject
+public sealed class MainWindowViewModel
 {
     public MainWindowViewModel ()
     {

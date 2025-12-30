@@ -1,193 +1,100 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Desktop.Extentions;
-using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public sealed partial class BadgeEditorViewModel : ReactiveObject
+internal sealed partial class BadgeEditorViewModel : ObservableObject
 {
     private readonly string _extentionToolTip;
     private readonly string _shrinkingToolTip;
     private readonly BadgeComparer _comparer;
     private readonly double _startScale = 1.5624;
-
     private double _scale = 1.5624;
-    private double _viewWidth = 830;
-    private double _viewHeight = 500;
-    private double _workAreaWidth = 580;
-    private double _workAreaHeight = 410;
-    private PageViewModel _firstPage;
-    private Dictionary <BadgeViewModel, double> _scaleStorage;
-    private TextLineViewModel _splittable;
-    private TextLineViewModel _focusedLine;
-    private bool _incorrectsAreSet = false;
-    private int _visibleRangeStart = 0;
+    private readonly double _viewWidthh = 830;
+    private readonly double _viewHeightt = 500;
+    private readonly double _workAreaWidthh = 580;
+    private readonly double _workAreaHeightt = 410;
+    private readonly Dictionary<BadgeViewModel, double> _scaleStorage = [];
     private int _visibleRangeEnd;
 
-    internal double WidthDelta;
-    internal double HeightDelta;
-    internal List<BadgeViewModel> AllNumbered { get; private set; }
-    internal List<BadgeViewModel> IncorrectNumbered { get; private set; }
-    internal List<BadgeViewModel> CorrectNumbered { get; private set; }
-    internal Dictionary<int, BadgeViewModel> BackupNumbered { get; private set; }
+    internal List<BadgeViewModel> AllNumbered { get; private set; } = [];
+    internal List<BadgeViewModel> IncorrectNumbered { get; private set; } = [];
+    internal List<BadgeViewModel> CorrectNumbered { get; private set; } = [];
+    internal Dictionary<int, BadgeViewModel?> BackupNumbered { get; private set; } = [];
 
-    private double _workAreaWidt;
-    internal double WorkAreaWidth
+    [ObservableProperty]
+    private double _workAreaWidth;
+
+    [ObservableProperty]
+    private double _workAreaHeight;
+
+    [ObservableProperty]
+    private double _viewWidth;
+
+    [ObservableProperty]
+    private double _viewHeight;
+
+    [ObservableProperty]
+    private Thickness _margin = new ( 0, 8 );
+
+    private List<BadgeViewModel> _currentVisibleCollection;
+    private List<BadgeViewModel> CurrentVisibleCollection
     {
-        get { return _workAreaWidt; }
+        get 
+        { 
+            return _currentVisibleCollection; 
+        }
+
         set
-        {
-            this.RaiseAndSetIfChanged (ref _workAreaWidt, value, nameof (WorkAreaWidth));
-        }
-    }
-
-    private double _workAreaHeightt;
-    internal double WorkAreaHeight
-    {
-        get { return _workAreaHeightt; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _workAreaHeightt, value, nameof (WorkAreaHeight));
-        }
-    }
-
-    private double _viewWidthh;
-    internal double ViewWidth
-    {
-        get { return _viewWidthh; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _viewWidthh, value, nameof (ViewWidth));
-        }
-    }
-
-    private double _viewHeightt;
-    internal double ViewHeight
-    {
-        get { return _viewHeightt; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _viewHeightt, value, nameof (ViewHeight));
-        }
-    }
-
-    private Thickness _margin;
-    public Thickness Margin
-    {
-        get { return _margin; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _margin, value, nameof (Margin));
-        }
-    }
-
-    private List <BadgeViewModel> _currentVisibleCollection;
-    private List <BadgeViewModel> CurrentVisibleCollection 
-    {
-        get { return _currentVisibleCollection; }
-
-        set 
         {
             if ( value != null )
             {
-                TryEnableScroller (value.Count);
+                TryEnableScroller ( value.Count );
+
+                _currentVisibleCollection = value;
             }
-            else 
+            else
             {
-                TryEnableScroller (0);
+                TryEnableScroller ( 0 );
             }
-
-            _currentVisibleCollection = value;
         }
     }
 
+    [ObservableProperty]
     private int _incorrectBadgesCount;
-    internal int IncorrectBadgesCount
-    {
-        get { return _incorrectBadgesCount; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _incorrectBadgesCount, value, nameof (IncorrectBadgesCount));
-        }
-    }
 
-    private BadgeViewModel _processableBadge;
-    internal BadgeViewModel BeingProcessedBadge
-    {
-        get { return _processableBadge; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _processableBadge, value, nameof (BeingProcessedBadge));
-        }
-    }
+    [ObservableProperty]
+    private BadgeViewModel? _processableBadge;
 
-    private string _focusedText;
-    internal string FocusedText
-    {
-        get { return _focusedText; }
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _focusedText, value, nameof (FocusedText));
-        }
-    }
+    [ObservableProperty]
+    private string? _focusedText;
 
+    [ObservableProperty]
     private int _processableCount;
-    internal int ProcessableCount
-    {
-        get { return _processableCount; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _processableCount, value, nameof (ProcessableCount));
-        }
-    }
 
-    private bool _moversEnabled;
-    internal bool MoversAreEnable
-    {
-        get { return _moversEnabled; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _moversEnabled, value, nameof (MoversAreEnable));
-        }
-    }
+    [ObservableProperty]
+    private bool _moversAreEnable;
 
-    private bool _splitterEnabled;
-    internal bool SplitterIsEnable
-    {
-        get { return _splitterEnabled; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _splitterEnabled, value, nameof (SplitterIsEnable));
-        }
-    }
+    [ObservableProperty]
+    private bool _splitterIsEnable;
 
+    [ObservableProperty]
     private string _extenderContent;
-    internal string ExtenderContent
-    {
-        get { return _extenderContent; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _extenderContent, value, nameof (ExtenderContent));
-        }
-    }
 
-    private string _extentionTip;
-    internal string ExtentionTip
-    {
-        get { return _extentionTip; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _extentionTip, value, nameof (ExtentionTip));
-        }
-    }
+    [ObservableProperty]
+    private string? _extentionTip;
 
-    public delegate void BackingActivatedHandler ( );
+    [ObservableProperty]
+    private ObservableCollection<BadgeCorrectnessViewModel> _visibleIcons = [];
+
+    public delegate void BackingActivatedHandler ();
     public event BackingActivatedHandler? BackingActivated;
 
     public delegate void BackingComplatedHandler ();
@@ -196,6 +103,12 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
     public delegate void PeopleGotEmptyHandler ();
     public event PeopleGotEmptyHandler? PeopleGotEmpty;
 
+    private enum FilterChoosing
+    {
+        All = 0,
+        Corrects = 1,
+        Incorrects = 2
+    }
 
     public BadgeEditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
     {
@@ -208,35 +121,33 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         _allTip = settingArgs.AllTip;
         _correctTip = settingArgs.CorrectTip;
         _incorrectTip = settingArgs.IncorrectTip;
-        _focusedFontSizeColor = settingArgs.FocusedFontSizeColor;
-        _releasedFontSizeColor = settingArgs.ReleasedFontSizeColor;
-        _focusedFontSizeBorderColor = settingArgs.FocusedFontSizeBorderColor;
-        _releasedFontSizeBorderColor = settingArgs.ReleasedFontSizeBorderColor;
-        ViewWidth = _viewWidth;
-        ViewHeight = _viewHeight;
+        _focusedFontsizeColor = settingArgs.FocusedFontSizeColor;
+        _releasedFontsizeColor = settingArgs.ReleasedFontSizeColor;
+        _focusedFontsizeBorderColor = settingArgs.FocusedFontSizeBorderColor;
+        _releasedFontsizeBorderColor = settingArgs.ReleasedFontSizeBorderColor;
+        ViewWidth = _viewWidthh;
+        ViewHeight = _viewHeightt;
         ExtenderContent = "\uF060";
-        WorkAreaWidth = _workAreaWidth + _namesFilterWidth;
-        WorkAreaHeight = _workAreaHeight;
+        WorkAreaWidth = _workAreaWidthh + _namesFilterWidthh;
+        WorkAreaHeight = _workAreaHeightt;
         SetUpScrollBlock ( incorrectBadgesAmmount );
         SetUpZoommer ();
         SplitterIsEnable = false;
-        FocusedFontSizeColor = _releasedFontSizeColor;
-        FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
-        Margin = new Thickness (0, 8);
-    }
+        FocusedFontSizeColor = _releasedFontsizeColor;
+        FocusedFontSizeBorderColor = _releasedFontsizeBorderColor;
 
+        _currentVisibleCollection = AllNumbered;
+    }
 
     internal void HandleDialogOpenig ()
     {
-        Margin = new Thickness (0, -(ViewHeight - 8));
+        Margin = new Thickness ( 0, -( ViewHeight - 8 ) );
     }
-
 
     internal void HandleDialogClosing ()
     {
-        Margin = new Thickness (0, 8);
+        Margin = new Thickness ( 0, 8 );
     }
-
 
     internal void ChangeSize ( double widthDifference, double heightDifference )
     {
@@ -247,10 +158,9 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         EntireBlockHeight -= heightDifference;
     }
 
-
     internal void CancelChanges ()
     {
-        if ( BeingProcessedBadge == null ) 
+        if ( ProcessableBadge == null )
         {
             return;
         }
@@ -258,46 +168,43 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         MoversAreEnable = false;
         SplitterIsEnable = false;
         ZoommerIsEnable = false;
-        BeingProcessedBadge.CancelChanges ();
+        ProcessableBadge.CancelChanges ();
         ReleaseCaptured ();
     }
 
-
-    internal void SetProcessables ( List <BadgeViewModel> processables, PageViewModel firstPage )
+    internal void SetProcessables ( List<BadgeViewModel> processables )
     {
-        if ( ( processables == null ) || ( processables.Count == 0 ) ) return;
+        if ( ( processables == null ) || ( processables.Count == 0 ) )
+        {
+            return;
+        }
 
-        _firstPage = firstPage;
-        AllNumbered = new ();
-        IncorrectNumbered = new ();
-        CorrectNumbered = new ();
-        BackupNumbered = new ();
-        _scaleStorage = new ();
+        _scaleStorage.Clear ();
 
         foreach ( BadgeViewModel badge in processables )
         {
             _scaleStorage.Add ( badge, badge.Scale );
             AllNumbered.Add ( badge );
 
-            if ( ! badge.IsCorrect )
+            if ( !badge.IsCorrect )
             {
-                IncorrectNumbered.Add (badge);
+                IncorrectNumbered.Add ( badge );
             }
 
-            if ( badge.IsCorrect  )
+            if ( badge.IsCorrect )
             {
-                CorrectNumbered.Add (badge);
+                CorrectNumbered.Add ( badge );
             }
 
-            if ( ! BackupNumbered.ContainsKey (badge.Id) )
+            if ( !BackupNumbered.ContainsKey ( badge.Id ) )
             {
-                BackupNumbered.Add (badge.Id, null);
+                BackupNumbered.Add ( badge.Id, null );
             }
         }
 
-        AllNumbered.Sort (_comparer);
-        IncorrectNumbered.Sort (_comparer);
-        CorrectNumbered.Sort (_comparer);
+        AllNumbered.Sort ( _comparer );
+        IncorrectNumbered.Sort ( _comparer );
+        CorrectNumbered.Sort ( _comparer );
         CurrentVisibleCollection = AllNumbered;
         SetSliderWideness ();
 
@@ -305,7 +212,7 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         (
             () =>
             {
-                SetBeingProcessed (AllNumbered.ElementAt (0));
+                SetBeingProcessed ( AllNumbered.ElementAt ( 0 ) );
                 EnableNavigationIfShould ();
                 SetVisibleIcons ();
                 ScrollOffset = 0;
@@ -315,21 +222,21 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         );
     }
 
-
     private void SetVisibleIcons ()
     {
-        VisibleIcons = new ObservableCollection<BadgeCorrectnessViewModel> ();
-        _visibleIconsStorage = new ObservableCollection<BadgeCorrectnessViewModel> ();
+        VisibleIcons ??= [];
+        _visibleIconsStorage?.Clear ();
 
-        if ( ( CurrentVisibleCollection.Count > 0 ) && ( _visibleRange > 0 ) )
+        if ( CurrentVisibleCollection != null && CurrentVisibleCollection.Count > 0 && _visibleRange > 0 )
         {
-            for ( int index = 0;   index < _visibleRange;   index++ )
+            for ( int index = 0; index < _visibleRange; index++ )
             {
-                BadgeViewModel boundBadge = CurrentVisibleCollection.ElementAt ( index );
-                BadgeCorrectnessViewModel icon = new BadgeCorrectnessViewModel ( boundBadge, _extendedScrollableIconWidth
-                                                               , _shrinkedIconWidth, _correctnessWidthLimit, FilterIsExtended );
+                BadgeCorrectnessViewModel icon = new ( CurrentVisibleCollection.ElementAt ( index ), _extendedScrollableIconWidth, 
+                    _shrinkedIconWidth, _correctnessWidthLimit, FilterIsExtended 
+                );
+
                 VisibleIcons.Add ( icon );
-                _visibleIconsStorage.Add ( icon );
+                _visibleIconsStorage?.Add ( icon );
                 FadeIcon ( icon );
 
                 if ( index == 0 )
@@ -341,36 +248,29 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         }
     }
 
-
     private void FadeIcon ( BadgeCorrectnessViewModel icon )
     {
         icon.BoundFontWeight = FontWeight.Normal;
         icon.CalcStringPresentation ( _correctnessWidthLimit );
     }
 
-
-    private bool ChangesExist ( )
+    private bool ChangesExist ()
     {
-        bool exist = false;
-
-        foreach ( BadgeViewModel badge   in   AllNumbered )
+        foreach ( BadgeViewModel badge in AllNumbered )
         {
             if ( badge.IsChanged )
             {
-                exist = true;
-                return exist;
+                return true;
             }
         }
 
-        return exist;
+        return false;
     }
 
-
+    [RelayCommand]
     internal void GoBackCommand ()
     {
-        bool changesExist = ChangesExist ();
-
-        if ( changesExist )
+        if ( ChangesExist () )
         {
             BackingActivated?.Invoke ();
         }
@@ -380,21 +280,20 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         }
     }
 
-
     internal void GoBack ()
     {
-        foreach ( KeyValuePair <BadgeViewModel, double> badgeToScale   in   _scaleStorage )
+        foreach ( KeyValuePair<BadgeViewModel, double> badgeToScale in _scaleStorage )
         {
             BadgeViewModel badge = badgeToScale.Key;
             double scale = badgeToScale.Value;
 
-            if ( scale != badge.Scale ) 
+            if ( scale != badge.Scale )
             {
-                badge.ZoomOut (badge.Scale);
-                SetOriginalScale (badge, scale);
+                badge.ZoomOut ( badge.Scale );
+                SetOriginalScale ( badge, scale );
             }
 
-            if ( badge.IsChanged ) 
+            if ( badge.IsChanged )
             {
                 badge.IsChanged = false;
             }
@@ -405,21 +304,11 @@ public sealed partial class BadgeEditorViewModel : ReactiveObject
         BackingComplated?.Invoke ();
     }
 
-
     private void SetBeingProcessed ( BadgeViewModel beingProcessed )
     {
         beingProcessed.Show ();
-        BeingProcessedBadge = beingProcessed;
-        SetToCorrectScale (BeingProcessedBadge);
+        ProcessableBadge = beingProcessed;
+        SetToCorrectScale ( ProcessableBadge );
         BeingProcessedNumber = 1;
-    }
-
-
-
-    private enum FilterChoosing 
-    {
-       All = 0,
-       Corrects = 1,
-       Incorrects = 2
     }
 }

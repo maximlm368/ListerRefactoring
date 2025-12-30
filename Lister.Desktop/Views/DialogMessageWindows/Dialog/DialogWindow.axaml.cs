@@ -11,7 +11,6 @@ public sealed partial class DialogWindow : Window
         InitializeComponent ();
     }
 
-
     public DialogWindow ( string question ) : this()
     {
         DialogViewModel viewModel = new (question);
@@ -21,15 +20,16 @@ public sealed partial class DialogWindow : Window
 
         Activated += ( s, a ) => { Yes.Focus ( NavigationMethod.Tab, KeyModifiers.None ); };
 
-        MainWindow.MainWindow.Window.ModalWindow = this;
+        if ( MainWindow.MainWindow.Window != null ) 
+        {
+            MainWindow.MainWindow.Window.ModalWindow = this;
+        }
     }
-
 
     internal void ChooseYes ()
     {
         Close (true);
     }
-
 
     internal void ChooseNo ()
     {

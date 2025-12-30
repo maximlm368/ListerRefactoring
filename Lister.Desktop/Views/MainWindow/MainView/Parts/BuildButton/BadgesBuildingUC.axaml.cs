@@ -1,65 +1,48 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Microsoft.Extensions.DependencyInjection;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 using Lister.Desktop.App;
-using Lister.Desktop.ModelMappings;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton;
 
 public partial class BadgesBuildingUserControl : UserControl
 {
-    private static readonly string _jsonError = 
-    "Невозможно загрузить этот шаблон.Обратитесь к разработчику по телефону 324-708";
-
-    private static TemplateViewModel _chosen;
-
-    private MainView _parent;
-    private BadgesBuildingViewModel _viewModel;
-    private string _theme;
-
-
     public BadgesBuildingUserControl ()
     {
         InitializeComponent ();
 
         DataContext = ListerApp.Services.GetRequiredService<BadgesBuildingViewModel> ();
-        _viewModel = ( BadgesBuildingViewModel ) DataContext;
-        buildBadges.FocusAdorner = null;
+        BuildBadges.FocusAdorner = null;
     }
-
 
     private void RightPointerPressed ( object sender, PointerPressedEventArgs args )
     {
-        var point = args.GetCurrentPoint (sender as Control);
+        PointerPoint point = args.GetCurrentPoint ( sender as Control );
 
         if ( point.Properties.IsRightButtonPressed )
         {
             MainView.SomeControlPressed = true;
-            this.Focus ();
+            Focus ();
         }
     }
 
-
     internal void ChangeSize ( double widthDifference )
     {
-        var leftChildren = leftShadow.Children;
-        var rightChildren = rightShadow.Children;
-
-        foreach ( var child   in   leftChildren )
+        foreach ( Control? child in LeftShadow.Children )
         {
             if ( child.Width > 10 )
             {
                 child.Width -= widthDifference / 2;
             }
-            else 
+            else
             {
-                double left = child.GetValue (Canvas.LeftProperty);
-                child.SetValue (Canvas.LeftProperty, left - widthDifference / 2);
+                double left = child.GetValue ( Canvas.LeftProperty );
+                child.SetValue ( Canvas.LeftProperty, left - widthDifference / 2 );
             }
         }
 
-        foreach ( var child   in   rightChildren )
+        foreach ( Control? child in RightShadow.Children )
         {
             if ( child.Width > 10 )
             {

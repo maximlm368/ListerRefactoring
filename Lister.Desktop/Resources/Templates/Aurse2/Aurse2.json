@@ -5,35 +5,34 @@
   "Width" : 350,
   "Height" : 214,
   "InsideSpan" : 
-  {
-    "Left": 11,
-    "Top": 11,
-    "Right": 11,
-    "Bottom": 11
-  },
+    {
+      "Left": 11,
+      "Top": 11,
+      "Right": 11,
+      "Bottom": 11
+    },
   "IncorrectLineBackground": 
-  {
-	"Red": 200,
-	"Green": 200,
-	"Blue": 200
-  },
-
+    {
+	  "Red": 200,
+	  "Green": 200,
+	  "Blue": 200
+    },
   "FamilyName": {
     "Width" : 210,
     "Height" : 33,
     "TopOffset" : 60,
-	"LeftOffset" : 130,
+	  "LeftOffset" : 130,
     "Alignment" : "Right",
     "FontSize" : 24,
     "FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
+	  "FontName": "Kramola",
+	  "Foreground": 
+	    {
+		    "Red": 0,
+		    "Green": 0,
+		    "Blue": 0
+	    },
+	  "FontWeight": "Bold",
     "IsSplitable": false
   },
 
@@ -44,18 +43,17 @@
     "LeftOffset": 130,
     "Alignment": "Right",
     "FontSize": 14,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
+	  "FontFile": "Kramola.ttf",
+	  "FontName": "Kramola",
+	  "Foreground": 
+	  {
+		  "Red": 0,
+		  "Green": 0,
+		  "Blue": 0
+	  },
+	  "FontWeight": "Bold",
     "IsSplitable": false
   },
-
   "PatronymicName": {
     "Width": 210,
     "Height": 21,
@@ -63,18 +61,17 @@
     "LeftOffset": 130,
     "Alignment": "Right",
     "FontSize": 14,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
+	  "FontFile": "Kramola.ttf",
+	  "FontName": "Kramola",
+	  "Foreground": 
+	  {
+		  "Red": 0,
+		  "Green": 0,
+		  "Blue": 0
+	  },
+	  "FontWeight": "Bold",
     "IsSplitable": false
   },
-
   "Post": {
     "Width": 210,
     "Height": 17,
@@ -82,18 +79,17 @@
     "LeftOffset": 130,
     "Alignment": "Right",
     "FontSize": 10,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
+	  "FontFile": "Kramola.ttf",
+	  "FontName": "Kramola",
+	  "Foreground": 
+	  {
+		  "Red": 0,
+		  "Green": 0,
+		  "Blue": 0
+	  },
+	  "FontWeight": "Bold",
     "IsSplitable": true
   },
-
   "Department": {
     "Width": 210,
     "Height": 17,
@@ -101,15 +97,15 @@
     "LeftOffset": 130,
     "Alignment": "Right",
     "FontSize": 10,
-	"FontFile": "Kramola.ttf",
-	"FontName": "Kramola",
-	"Foreground": 
-	{
-		"Red": 0,
-		"Green": 0,
-		"Blue": 0
-	},
-	"FontWeight": "Bold",
+	  "FontFile": "Kramola.ttf",
+	  "FontName": "Kramola",
+	  "Foreground": 
+	  {
+		  "Red": 0,
+		  "Green": 0,
+		  "Blue": 0
+	  },
+	  "FontWeight": "Bold",
     "IsSplitable": true
   },
   
@@ -117,10 +113,10 @@
     "Items": [
       {
         "United": [
-		  "FirstName",
+		      "FirstName",
           "PatronymicName"
         ],
-		"Number":"1",
+		    "Number":"1",
         "Name": "FirstAndPatronymic",
         "Width": "210",
         "Height": "21",
@@ -128,10 +124,10 @@
         "LeftOffset": "130",
         "Alignment": "Right",
         "FontSize": "14",
-		"FontFile": "Kramola.ttf",
-	    "FontName": "Kramola",
-		"Foreground": "0,0,0",
-		"FontWeight": "Bold",
+		    "FontFile": "Kramola.ttf",
+	      "FontName": "Kramola",
+		    "Foreground": "0,0,0",
+		    "FontWeight": "Bold",
         "IsSplitable": "0"
       }
     ]
@@ -149,6 +145,5 @@
         "LeftOffset": 212
       }
     ]
-
   }
 }

@@ -1,14 +1,13 @@
-﻿using Lister.Desktop.ModelMappings.BadgeVM;
-using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Lister.Desktop.ModelMappings.BadgeVM;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public partial class BadgeEditorViewModel : ReactiveObject
+internal partial class BadgeEditorViewModel : ObservableObject
 {
     public readonly double _scalabilityCoefficient = 1.25;
     private readonly short _maxDepth = 5;
     private readonly short _minDepth = 0;
-
     private double _zoomDegree = 100;
     private string procentSymbol = "%";
     private short _scalabilityDepth = 2;
@@ -16,83 +15,58 @@ public partial class BadgeEditorViewModel : ReactiveObject
     private bool _zoomerIsEnable;
     internal bool ZoommerIsEnable
     {
-        get { return _zoomerIsEnable; }
+        get 
+        { 
+            return _zoomerIsEnable; 
+        }
+
         private set
         {
             if ( value )
             {
-                FocusedFontSizeColor = _focusedFontSizeColor;
-                FocusedFontSizeBorderColor = _focusedFontSizeBorderColor;
+                FocusedFontSizeColor = _focusedFontsizeColor;
+                FocusedFontSizeBorderColor = _focusedFontsizeBorderColor;
             }
-            else 
+            else
             {
-                FocusedFontSizeColor = _releasedFontSizeColor;
-                FocusedFontSizeBorderColor = _releasedFontSizeBorderColor;
+                FocusedFontSizeColor = _releasedFontsizeColor;
+                FocusedFontSizeBorderColor = _releasedFontsizeBorderColor;
             }
 
-            this.RaiseAndSetIfChanged (ref _zoomerIsEnable, value, nameof (ZoommerIsEnable));
+            _zoomerIsEnable = value;
+            OnPropertyChanged ();
         }
     }
 
+    [ObservableProperty]
     private bool _zoomOnIsEnable;
-    internal bool ZoomOnIsEnable
-    {
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _zoomOnIsEnable, value, nameof (ZoomOnIsEnable));
-        }
-        get
-        {
-            return _zoomOnIsEnable;
-        }
-    }
 
+    [ObservableProperty]
     private bool _zoomOutIsEnable;
-    internal bool ZoomOutIsEnable
-    {
-        set
-        {
-            this.RaiseAndSetIfChanged (ref _zoomOutIsEnable, value, nameof (ZoomOutIsEnable));
-        }
-        get
-        {
-            return _zoomOutIsEnable;
-        }
-    }
 
-    private string _zoomDegreeInView;
-    internal string ZoomDegreeInView
-    {
-        get { return _zoomDegreeInView; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _zoomDegreeInView, value, nameof (ZoomDegreeInView));
-        }
-    }
+    [ObservableProperty]
+    private string? _zoomDegreeInView;
 
-
-    private void SetUpZoommer ( )
+    private void SetUpZoommer ()
     {
         ZoomOnIsEnable = true;
         ZoomOutIsEnable = true;
         _zoomDegree *= _scalabilityCoefficient;
         _zoomDegree *= _scalabilityCoefficient;
-        ZoomDegreeInView = Math.Round(_zoomDegree).ToString () + " " + procentSymbol;
+        ZoomDegreeInView = Math.Round ( _zoomDegree ).ToString () + " " + procentSymbol;
     }
 
-
     #region Zoom
-
     internal void ZoomOn ()
     {
-        if ( BeingProcessedBadge == null )
+        if ( ProcessableBadge == null )
         {
             return;
         }
 
         if ( _scalabilityDepth < _maxDepth )
         {
-            BeingProcessedBadge.ZoomOn (_scalabilityCoefficient);
+            ProcessableBadge.ZoomOn ( _scalabilityCoefficient );
             _scalabilityDepth++;
             _zoomDegree *= _scalabilityCoefficient;
             _scale *= _scalabilityCoefficient;
@@ -105,23 +79,22 @@ public partial class BadgeEditorViewModel : ReactiveObject
             ZoomOnIsEnable = false;
         }
 
-        if ( ! ZoomOutIsEnable )
+        if ( !ZoomOutIsEnable )
         {
             ZoomOutIsEnable = true;
         }
     }
 
-
     internal void ZoomOut ()
     {
-        if ( BeingProcessedBadge == null ) 
+        if ( ProcessableBadge == null )
         {
             return;
         }
 
         if ( _scalabilityDepth > _minDepth )
         {
-            BeingProcessedBadge.ZoomOut (_scalabilityCoefficient);
+            ProcessableBadge.ZoomOut ( _scalabilityCoefficient );
             _scalabilityDepth--;
             _zoomDegree /= _scalabilityCoefficient;
             _scale /= _scalabilityCoefficient;
@@ -134,37 +107,37 @@ public partial class BadgeEditorViewModel : ReactiveObject
             ZoomOutIsEnable = false;
         }
 
-        if ( ! ZoomOnIsEnable )
+        if ( !ZoomOnIsEnable )
         {
             ZoomOnIsEnable = true;
         }
     }
     #endregion
 
-
     #region Scale
-
     private void SetOriginalScale ( BadgeViewModel beingPrecessed, double scale )
     {
         if ( scale != 1 )
         {
-            beingPrecessed.ZoomOn (scale);
+            beingPrecessed.ZoomOn ( scale );
         }
     }
 
-
-    private void SetToCorrectScale ( BadgeViewModel ? processable )
+    private void SetToCorrectScale ( BadgeViewModel? processable )
     {
-        if ( processable == null ) return;
+        if ( processable == null ) 
+        {
+            return;
+        }
 
         if ( processable.Scale != _scale )
         {
             if ( processable.Scale != 1 )
             {
-                processable.ZoomOut (processable.Scale);
+                processable.ZoomOut ( processable.Scale );
             }
 
-            processable.ZoomOn (_scale);
+            processable.ZoomOn ( _scale );
         }
     }
     #endregion

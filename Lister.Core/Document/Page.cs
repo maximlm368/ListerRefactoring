@@ -1,6 +1,6 @@
 ﻿using Lister.Core.Models.Badge;
 
-namespace Lister.Core.DocumentProcessor;
+namespace Lister.Core.Document;
 
 /// <summary>
 /// Represents lines of badges for page.
@@ -8,10 +8,10 @@ namespace Lister.Core.DocumentProcessor;
 /// </summary>
 public sealed class Page
 {
-    private static double _topOffsetOfContent;
-    private static double _leftOffsetOfContent;
-    private static double _width;
-    private static double _height;
+    private static readonly double _topPadding;
+    private static readonly double _leftPadding;
+    private static readonly double _width;
+    private static readonly double _height;
 
     public static event ComplatingHandler? Complated;
 
@@ -21,35 +21,32 @@ public sealed class Page
     public double Height { get; private set; }
     public double ContentTopOffset { get; private set; }
     public double ContentLeftOffset { get; private set; }
-    public List <BadgeLine> Lines { get; private set; }
+    public List<BadgeLine> Lines { get; private set; }
     public int BadgeCount { get; private set; }
     public delegate void ComplatingHandler ( Page complated );
-
 
     static Page ()
     {
         _width = 825;
         _height = 1168;
-        _topOffsetOfContent = 40;
-        _leftOffsetOfContent = 60;
+        _topPadding = 40;
+        _leftPadding = 60;
     }
 
-
-    public Page ( )
+    public Page ()
     {
-        Lines = new ();
+        Lines = [];
         BadgeCount = 0;
         Width = _width;
         Height = _height;
-        ContentTopOffset = _topOffsetOfContent;
-        ContentLeftOffset = _leftOffsetOfContent;
+        ContentTopOffset = _topPadding;
+        ContentLeftOffset = _leftPadding;
         double usefullHeight = Height - 20;
         _fillableLine = new BadgeLine ( Width, usefullHeight, true );
         Lines.Add ( _fillableLine );
     }
 
-
-    internal Page AddAndGetIncludingPage ( Badge badge )
+    internal Page Add ( Badge badge )
     {
         Page fillablePage = this;
         AdditionSuccess additionSuccess = _fillableLine.AddBadge ( badge );
@@ -58,14 +55,14 @@ public sealed class Page
         {
             double restHeight = GetRestHeight ();
             bool isFirstLine = ( Lines.Count == 0 );
-            BadgeLine newLine = new BadgeLine ( Width, restHeight, isFirstLine );
+            BadgeLine newLine = new ( Width, restHeight, isFirstLine );
             additionSuccess = newLine.AddBadge ( badge );
 
             if ( additionSuccess == AdditionSuccess.FailureByHeight )
             {
-                fillablePage = new Page ( );
+                fillablePage = new Page ();
                 fillablePage.BadgeCount--;
-                fillablePage.AddAndGetIncludingPage ( badge );
+                fillablePage.Add ( badge );
             }
 
             fillablePage.Lines.Add ( newLine );
@@ -75,16 +72,15 @@ public sealed class Page
         if ( additionSuccess == AdditionSuccess.FailureByHeight )
         {
             Complated?.Invoke ( this );
-            fillablePage = new Page ( );
+            fillablePage = new Page ();
             fillablePage.BadgeCount--;
-            fillablePage.AddAndGetIncludingPage ( badge );
+            fillablePage.Add ( badge );
         }
 
         fillablePage.BadgeCount++;
 
         return fillablePage;
     }
-
 
     private double GetRestHeight ()
     {
@@ -99,7 +95,6 @@ public sealed class Page
 
         return restHeight;
     }
-
 
     internal void Clear ()
     {

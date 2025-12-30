@@ -8,7 +8,6 @@ public sealed class Person
     public string PatronymicName { get; private set; }
     public string Department { get; private set; }
     public string Post { get; private set; }
-
     public string FullName { get; private set; }
 
 
@@ -81,11 +80,11 @@ public sealed class Person
         bool isEmpty = false;
 
         isEmpty = isEmpty 
-                  || ( string.IsNullOrWhiteSpace ( FamilyName ) )
-                  || ( string.IsNullOrWhiteSpace ( FirstName ) )
-                  || ( string.IsNullOrWhiteSpace ( PatronymicName ) )
-                  || ( string.IsNullOrWhiteSpace ( Post ) )
-                  || ( string.IsNullOrWhiteSpace ( Department ) );
+                  || string.IsNullOrWhiteSpace ( FamilyName )
+                  || string.IsNullOrWhiteSpace ( FirstName )
+                  || string.IsNullOrWhiteSpace ( PatronymicName )
+                  || string.IsNullOrWhiteSpace ( Post )
+                  || string.IsNullOrWhiteSpace ( Department );
 
         return isEmpty;
     }
@@ -101,12 +100,14 @@ public sealed class Person
 
     public Dictionary<string, string> GetProperties ()
     {
-        Dictionary<string, string> result = new ();
-        result.Add ( "FamilyName", FamilyName );
-        result.Add ( "FirstName", FirstName );
-        result.Add ( "PatronymicName", PatronymicName );
-        result.Add ( "Post", Post );
-        result.Add ( "Department", Department );
+        Dictionary<string, string> result = new ()
+        {
+            { "FamilyName", FamilyName },
+            { "FirstName", FirstName },
+            { "PatronymicName", PatronymicName },
+            { "Post", Post },
+            { "Department", Department }
+        };
 
         return result;
     }

@@ -16,22 +16,20 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
 {
     private static readonly string _defaultSplitability = "0";
-    private static BadgeLayoutProvider _instance;
+    private static BadgeLayoutProvider? _instance;
 
-    private string _resourceFolder;
-    private string _schemeFile;
-    private JsonSchema _jsonSchema;
-    private Dictionary<string, string> _templateNameToDirectory;
-    private Dictionary<string, string> _templateNameToJson;
-    private Dictionary<string, string> _templateToIncorrectLineBackground;
-    private Dictionary<string, string> _templateToIncorrectMemberBorderColor;
-    private Dictionary<string, string> _templateToCorrectMemberBorderColor;
-    private Dictionary<string, List<byte>> _templateToIncorrectMemberBorderThickness;
-    private Dictionary<string, List<byte>> _templateToCorrectMemberBorderThickness;
-    private Dictionary<string, Layout> _badgeLayouts;
-    private Dictionary<string, ICollection<ValidationError>> _jsonAndErrors;
-    private Dictionary<string, string> _incorrectJsonAndError;
-    private string _osName;
+    private string _schemeFile = string.Empty;
+    private readonly Dictionary<string, string> _templateNameToDirectory = [];
+    private readonly Dictionary<string, string> _templateNameToJson = [];
+    private readonly Dictionary<string, string> _templateToIncorrectLineBackground = [];
+    private readonly Dictionary<string, string> _templateToIncorrectMemberBorderColor = [];
+    private readonly Dictionary<string, string> _templateToCorrectMemberBorderColor = [];
+    private readonly Dictionary<string, List<byte>> _templateToIncorrectMemberBorderThickness = [];
+    private readonly Dictionary<string, List<byte>> _templateToCorrectMemberBorderThickness = [];
+    private readonly Dictionary<string, Layout> _badgeLayouts = [];
+    private readonly Dictionary<string, ICollection<ValidationError>> _jsonAndErrors = [];
+    private readonly Dictionary<string, string> _incorrectJsonAndError = [];
+    private string _osName = string.Empty;
 
     private enum States
     {
@@ -41,76 +39,51 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         InName = 3
     }
 
-
-    private BadgeLayoutProvider() { }
-
-
-    public static BadgeLayoutProvider GetInstance()
+    public static BadgeLayoutProvider GetInstance ()
     {
-        if (_instance == null)
-        {
-            _instance = new BadgeLayoutProvider();
-        }
+        _instance ??= new BadgeLayoutProvider ();
 
         return _instance;
     }
 
-
-    public Task SetUp(string resourceFolder, string jsonSchemeFolder, string osName)
+    public Task SetUp ( string resourceFolder, string jsonSchemeFolder, string osName )
     {
-        Task task = new Task
-        ( () =>
-        {
-            SetLayouts( resourceFolder, jsonSchemeFolder );
-            Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
-            _osName = osName;
-        } );
+        Task task = new (
+            () =>
+            {
+                SetLayouts ( resourceFolder, jsonSchemeFolder );
+                Encoding.RegisterProvider ( CodePagesEncodingProvider.Instance );
+                _osName = osName;
+            }
+        );
 
-        task.Start();
+        task.Start ();
 
         return task;
     }
 
-
-    private void SetLayouts(string resourceFolder, string schemeFolder)
+    private void SetLayouts ( string resourceFolder, string schemeFile )
     {
-        _resourceFolder = resourceFolder; 
-        _badgeLayouts = new Dictionary<string, Layout>();
-        _templateNameToDirectory = new ();
-        _templateNameToJson = new();
-        _jsonAndErrors = new ();
-        _incorrectJsonAndError = new ();
+        _schemeFile = schemeFile;
+        string templatesFolder = Path.Combine ( resourceFolder, "Templates" );
+        DirectoryInfo containingDirectory = new ( templatesFolder );
+        DirectoryInfo [] templateDirectories = containingDirectory.GetDirectories ();
 
-        _templateToIncorrectLineBackground = new();
-        _templateToIncorrectMemberBorderColor = new();
-        _templateToCorrectMemberBorderColor = new();
-        _templateToIncorrectMemberBorderThickness = new();
-        _templateToCorrectMemberBorderThickness = new();
-
-        _schemeFile = schemeFolder;
-        string templatesFolder = Path.Combine(_resourceFolder, "Templates");
-        DirectoryInfo containingDirectory = new DirectoryInfo( templatesFolder );
-        DirectoryInfo[] templateDirectories = containingDirectory.GetDirectories ();
-
-        foreach ( DirectoryInfo templateDirectory in templateDirectories ) 
+        foreach ( DirectoryInfo templateDirectory in templateDirectories )
         {
-            string dirName = templateDirectory.FullName;
-            FileInfo [] fileInfos = templateDirectory.GetFiles ( "*.json" );
+            string directoryName = templateDirectory.FullName;
+            FileInfo [] templateFiles = templateDirectory.GetFiles ( "*.json" );
 
-            foreach ( FileInfo fileInfo in fileInfos )
+            foreach ( FileInfo fileInfo in templateFiles )
             {
                 string jsonPath = fileInfo.FullName;
-                string validationMessage = null;
-                bool jsonIsValid = GetterFromJson.CheckJsonCorrectness ( jsonPath, out validationMessage );
 
-                if ( jsonIsValid )
+                if ( JsonProcessor.TryValidJson ( jsonPath, out string validationMessage) )
                 {
-                    string templateName = GetSectionStrValue ( new List<string> { "TemplateName" }, jsonPath, false );
-                    _templateNameToDirectory.Add ( templateName, dirName );
+                    string templateName = JsonProcessor.GetSectionStrValue ( ["TemplateName"], jsonPath, false );
+                    _templateNameToDirectory.Add ( templateName, directoryName );
 
-                    bool nameShouldBeAdded = !string.IsNullOrEmpty ( templateName )
-                                             && 
-                                             !_templateNameToJson.ContainsKey ( templateName );
+                    bool nameShouldBeAdded = !string.IsNullOrEmpty ( templateName ) && !_templateNameToJson.ContainsKey ( templateName );
 
                     if ( nameShouldBeAdded )
                     {
@@ -126,12 +99,9 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                 }
                 else
                 {
-                    string templateName;
-                    bool isTemplate = TryFindTemplateFeature ( jsonPath, out templateName );
-
-                    if ( isTemplate )
+                    if ( IsJsonTemplate ( jsonPath, out string templateName ) )
                     {
-                        _templateNameToDirectory.Add ( templateName, dirName );
+                        _templateNameToDirectory.Add ( templateName, directoryName );
                         _incorrectJsonAndError.Add ( jsonPath, TranslateIncorrectJsonMessage ( validationMessage ) );
                         _templateNameToJson.Add ( templateName, jsonPath );
                         SetBadgeComponetMarkers ( jsonPath, templateName );
@@ -141,128 +111,123 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         }
     }
 
-
-    private void SetBadgeComponetMarkers(string jsonPath, string templateName)
+    private void SetBadgeComponetMarkers ( string jsonPath, string templateName )
     {
-        string background = GetIncorrectLineBackground( jsonPath );
-        _templateToIncorrectLineBackground.Add( templateName, background );
+        string background = GetIncorrectLineBackground ( jsonPath );
+        _templateToIncorrectLineBackground?.Add ( templateName, background );
 
-        string incorrectBorderColor = GetIncorrectLineBorderColor( jsonPath );
-        _templateToIncorrectMemberBorderColor.Add( templateName, incorrectBorderColor );
+        string incorrectBorderColor = GetIncorrectLineBorderColor ( jsonPath );
+        _templateToIncorrectMemberBorderColor?.Add ( templateName, incorrectBorderColor );
 
-        string correctBorderColor = GetCorrectLineBorderColor( jsonPath );
-        _templateToCorrectMemberBorderColor.Add( templateName, correctBorderColor );
+        string correctBorderColor = GetCorrectLineBorderColor ( jsonPath );
+        _templateToCorrectMemberBorderColor?.Add ( templateName, correctBorderColor );
 
-        List<byte> incorrectBorderThickness = GetIncorrectBorderThickness( jsonPath );
-        _templateToIncorrectMemberBorderThickness.Add( templateName, incorrectBorderThickness );
+        List<byte> incorrectBorderThickness = GetIncorrectBorderThickness ( jsonPath );
+        _templateToIncorrectMemberBorderThickness?.Add ( templateName, incorrectBorderThickness );
 
-        List<byte> correctBorderThickness = GetCorrectBorderThickness( jsonPath );
-        _templateToCorrectMemberBorderThickness.Add( templateName, correctBorderThickness );
+        List<byte> correctBorderThickness = GetCorrectBorderThickness ( jsonPath );
+        _templateToCorrectMemberBorderThickness?.Add ( templateName, correctBorderThickness );
     }
 
-
-    private string GetIncorrectLineBackground(string jsonPath)
+    private string GetIncorrectLineBackground ( string jsonPath )
     {
-        return GetSectionStrValueOrDefault( new List<string> { "IncorrectMemberSettings", "Background" }, jsonPath );
+        string background = GetSectionStrValueOrDefault ( ["IncorrectMemberSettings", "Background"], jsonPath );
+
+        if ( string.IsNullOrWhiteSpace ( background ) )
+        {
+            background = "#c8c8c8";
+        }
+
+        return background;
     }
 
-
-    private string GetIncorrectLineBorderColor(string jsonPath)
+    private string GetIncorrectLineBorderColor ( string jsonPath )
     {
-        return GetBorderColor( jsonPath, "IncorrectMemberSettings" );
+        return GetBorderColor ( jsonPath, "IncorrectMemberSettings" );
     }
 
-
-    private string GetCorrectLineBorderColor(string jsonPath)
+    private string GetCorrectLineBorderColor ( string jsonPath )
     {
-        return GetBorderColor( jsonPath, "CorrectMemberSettings" );
+        return GetBorderColor ( jsonPath, "CorrectMemberSettings" );
     }
 
-
-    private List<byte> GetIncorrectBorderThickness(string jsonPath)
+    private List<byte> GetIncorrectBorderThickness ( string jsonPath )
     {
-        return GetThickness( jsonPath, "IncorrectMemberSettings" );
+        return GetThickness ( jsonPath, "IncorrectMemberSettings" );
     }
 
-
-    private List<byte> GetCorrectBorderThickness(string jsonPath)
+    private List<byte> GetCorrectBorderThickness ( string jsonPath )
     {
-        return GetThickness( jsonPath, "CorrectMemberSettings" );
+        return GetThickness ( jsonPath, "CorrectMemberSettings" );
     }
 
-
-    private List<byte> GetThickness(string jsonPath, string tag)
+    private List<byte> GetThickness ( string jsonPath, string tag )
     {
-        List<byte> thickness = new();
+        List<byte> thickness = [];
 
-        byte left = (byte)GetSectionIntValueOrDefault
-            ( new List<string> { tag, "BorderThickness", "Left" }, jsonPath );
-        thickness.Add( left );
+        byte left = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Left"], jsonPath );
+        thickness.Add ( left );
 
-        byte top = (byte)GetSectionIntValueOrDefault
-            ( new List<string> { tag, "BorderThickness", "Top" }, jsonPath );
-        thickness.Add( top );
+        byte top = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Top"], jsonPath );
+        thickness.Add ( top );
 
-        byte right = (byte)GetSectionIntValueOrDefault
-            ( new List<string> { tag, "BorderThickness", "Right" }, jsonPath );
-        thickness.Add( right );
+        byte right = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Right"], jsonPath );
+        thickness.Add ( right );
 
-        byte bottom = (byte)GetSectionIntValueOrDefault
-            ( new List<string> { tag, "BorderThickness", "Bottom" }, jsonPath );
-        thickness.Add( bottom );
+        byte bottom = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Bottom"], jsonPath );
+        thickness.Add ( bottom );
 
         return thickness;
     }
 
-
-    private string GetBorderColor(string jsonPath, string tag)
+    private string GetBorderColor ( string jsonPath, string tag )
     {
-        return GetSectionStrValueOrDefault( new List<string> { tag, "BorderColor" }, jsonPath );
+        string borderColor = GetSectionStrValueOrDefault ( [tag, "BorderColor"], jsonPath );
+
+        if ( string.IsNullOrWhiteSpace ( borderColor ) )
+        {
+            borderColor = "#d23650";
+        }
+
+        return borderColor;
     }
 
-
-    private string TranslateIncorrectJsonMessage(string message)
+    private static string TranslateIncorrectJsonMessage ( string message )
     {
-        string result = null;
-
         string seekable = "LineNumber: ";
         int lenght = seekable.Length;
-        int incomingIndex = message.IndexOf( seekable );
-
-        int endIndex = message.IndexOf( "|" );
-
-        string lineNumStr = message.Substring( incomingIndex + lenght, endIndex - (incomingIndex + lenght) );
-
-        result = "Ошибка на строке " + lineNumStr + " (" + message + ")";
+        int incomingIndex = message.IndexOf ( seekable );
+        int endIndex = message.IndexOf ( '|' );
+        string lineNumStr = message.Substring ( incomingIndex + lenght, endIndex - incomingIndex - lenght );//??????????
+        string? result = "Ошибка на строке " + lineNumStr + " (" + message + ")";
 
         return result;
     }
 
-
-    private bool TryFindTemplateFeature(string jsonPath, out string templateName)
+    private static bool IsJsonTemplate ( string jsonPath, out string templateName )
     {
-        List<char> tempNameChars = new();
-        List<char> forbidenForName = new() { '\'', '(', ')', '{', '}', '[', ']' };
-        string jsonText = File.ReadAllText( jsonPath );
+        List<char> tempNameChars = [];
+        List<char> forbidenForName = ['\'', '(', ')', '{', '}', '[', ']'];
+        string jsonText = File.ReadAllText ( jsonPath );
         int lenght = "\"TemplateName\"".Length;
-        int incomingIndex = jsonText.IndexOf( "\"TemplateName\"" );
+        int incomingIndex = jsonText.IndexOf ( "\"TemplateName\"" );
 
-        if (incomingIndex > -1)
+        if ( incomingIndex > -1 )
         {
             States states = States.BeforeColon;
             int scratch = incomingIndex + lenght;
 
-            for (int index = scratch; index < jsonText.Length; index++)
+            for ( int index = scratch; index < jsonText.Length; index++ )
             {
-                char current = jsonText[index];
+                char current = jsonText [index];
 
-                if (states == States.BeforeColon)
+                if ( states == States.BeforeColon )
                 {
-                    if (current == ' ')
+                    if ( current == ' ' )
                     {
                         continue;
                     }
-                    else if (current == ':')
+                    else if ( current == ':' )
                     {
                         states = States.AfterColon;
                     }
@@ -272,13 +237,13 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                         return false;
                     }
                 }
-                else if (states == States.AfterColon)
+                else if ( states == States.AfterColon )
                 {
-                    if (current == ' ')
+                    if ( current == ' ' )
                     {
                         continue;
                     }
-                    else if (current == '"')
+                    else if ( current == '"' )
                     {
                         states = States.BeforeName;
                     }
@@ -289,9 +254,9 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                         return false;
                     }
                 }
-                else if (states == States.BeforeName)
+                else if ( states == States.BeforeName )
                 {
-                    if (current == ' ' || current == '"' || forbidenForName.Contains( current ))
+                    if ( current == ' ' || current == '"' || forbidenForName.Contains ( current ) )
                     {
                         templateName = string.Empty;
 
@@ -300,17 +265,17 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                     else
                     {
                         states = States.InName;
-                        tempNameChars.Add( current );
+                        tempNameChars.Add ( current );
                     }
                 }
-                else if (states == States.InName)
+                else if ( states == States.InName )
                 {
-                    if (current == '"')
+                    if ( current == '"' )
                     {
-                        templateName = new string( tempNameChars.ToArray() );
+                        templateName = new string ( [.. tempNameChars] );
                         return true;
                     }
-                    else if (forbidenForName.Contains( current ))
+                    else if ( forbidenForName.Contains ( current ) )
                     {
                         templateName = string.Empty;
 
@@ -318,7 +283,7 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                     }
                     else
                     {
-                        tempNameChars.Add( current );
+                        tempNameChars.Add ( current );
 
                         continue;
                     }
@@ -331,301 +296,250 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         return false;
     }
 
-
-    public string GetBadgeImageUri(string templateName)
+    public string GetBadgeImageUri ( string templateName )
     {
-        string fileName = _templateNameToJson[templateName];
-        fileName = GetSectionStrValueOrDefault( new List<string> { "BackgroundImagePath" }, fileName ) ?? "";
-        string folderName = _templateNameToDirectory[templateName];
+        string fileName = GetSectionStrValueOrDefault ( ["BackgroundImagePath"], _templateNameToJson [templateName] ) ?? "";
+        string folderName = _templateNameToDirectory [templateName];
         string imagesFolder = folderName + "\\Images\\";
         string fileUri = imagesFolder + fileName;
 
         return fileUri;
     }
 
-
-    public string GetIncorrectLineBackgroundStr(string templateName)
+    public string GetIncorrectLineBackgroundStr ( string templateName )
     {
-        return _templateToIncorrectLineBackground[templateName];
+        return _templateToIncorrectLineBackground [templateName];
     }
 
-
-    public string GetIncorrectMemberBorderStr(string templateName)
+    public string GetIncorrectMemberBorderStr ( string templateName )
     {
-        return _templateToIncorrectMemberBorderColor[templateName];
+        return _templateToIncorrectMemberBorderColor [templateName];
     }
 
-
-    public string GetCorrectMemberBorderStr(string templateName)
+    public string GetCorrectMemberBorderStr ( string templateName )
     {
-        return _templateToCorrectMemberBorderColor[templateName];
+        return _templateToCorrectMemberBorderColor [templateName];
     }
 
-
-    public List<byte> GetIncorrectMemberBorderThickness(string templateName)
+    public List<byte> GetIncorrectMemberBorderThickness ( string templateName )
     {
-        return _templateToIncorrectMemberBorderThickness[templateName];
+        return _templateToIncorrectMemberBorderThickness [templateName];
     }
 
-
-    public List<byte> GetCorrectMemberBorderThickness(string templateName)
+    public List<byte> GetCorrectMemberBorderThickness ( string templateName )
     {
-        return _templateToCorrectMemberBorderThickness[templateName];
+        return _templateToCorrectMemberBorderThickness [templateName];
     }
 
-
-    public Layout GetBadgeLayout(string templateName)
+    public Layout? GetBadgeLayout ( string templateName )
     {
-        if (_badgeLayouts.ContainsKey( templateName ))
+        if ( _badgeLayouts.TryGetValue ( templateName, out Layout? value ) )
         {
-            return _badgeLayouts[templateName];
+            return value;
         }
 
-        string jsonPath = _templateNameToJson[templateName];
+        string jsonPath = _templateNameToJson [templateName];
 
-        double badgeWidth = GetSectionIntValueOrDefault( new List<string> { "Width" }, jsonPath );
-        double badgeHeight = GetSectionIntValueOrDefault( new List<string> { "Height" }, jsonPath );
+        double badgeWidth = GetSectionIntValueOrDefault ( ["Width"], jsonPath );
+        double badgeHeight = GetSectionIntValueOrDefault ( ["Height"], jsonPath );
 
-        List<double> paddings = new List<double>();
+        List<double> paddings = [];
 
-        double leftSpan = GetSectionIntValueOrDefault( new List<string> { "Padding", "Left" }, jsonPath );
-        paddings.Add( leftSpan );
+        double leftSpan = GetSectionIntValueOrDefault ( ["Padding", "Left"], jsonPath );
+        paddings.Add ( leftSpan );
 
-        double topSpan = GetSectionIntValueOrDefault( new List<string> { "Padding", "Top" }, jsonPath );
-        paddings.Add( topSpan );
+        double topSpan = GetSectionIntValueOrDefault ( ["Padding", "Top"], jsonPath );
+        paddings.Add ( topSpan );
 
-        double rightSpan = GetSectionIntValueOrDefault( new List<string> { "Padding", "Right" }, jsonPath );
-        paddings.Add( rightSpan );
+        double rightSpan = GetSectionIntValueOrDefault ( ["Padding", "Right"], jsonPath );
+        paddings.Add ( rightSpan );
 
-        double bottomSpan = GetSectionIntValueOrDefault( new List<string> { "Padding", "Bottom" }, jsonPath );
-        paddings.Add( bottomSpan );
+        double bottomSpan = GetSectionIntValueOrDefault ( ["Padding", "Bottom"], jsonPath );
+        paddings.Add ( bottomSpan );
 
-        List<TextLine> lines = GetLines( jsonPath );
-        SetUnitingLines( lines, jsonPath );
+        List<TextLine> lines = GetLines ( jsonPath );
+        SetUnitingLines ( lines, jsonPath );
 
-        List<ComponentImage> images = GetImages( jsonPath, templateName );
-        List<ComponentShape> shapes = GetShapes( jsonPath );
+        List<ComponentImage> images = GetImages ( jsonPath, templateName );
+        List<ComponentShape> shapes = GetShapes ( jsonPath );
 
-        Layout result = new Layout( badgeWidth, badgeHeight, templateName, paddings, lines, images, shapes );
+        Layout? result = Layout.GetInstance ( badgeWidth, badgeHeight, templateName, paddings, lines, images, shapes );
 
         return result;
     }
 
-
-    private List<TextLine> GetLines(string jsonPath)
+    private List<TextLine> GetLines ( string jsonPath )
     {
-        List<TextLine> atoms = new();
+        List<TextLine> textLines =
+        [
+            BuildTextLine ( "FamilyName", jsonPath, 0 ),
+            BuildTextLine ( "FirstName", jsonPath, 1 ),
+            BuildTextLine ( "PatronymicName", jsonPath, 2 ),
+            BuildTextLine ( "Post", jsonPath, 3 ),
+            BuildTextLine ( "Department", jsonPath, 4 )
+        ];
 
-        atoms.Add( BuildTextLine( "FamilyName", jsonPath, 0 ) );
-        atoms.Add( BuildTextLine( "FirstName", jsonPath, 1 ) );
-        atoms.Add( BuildTextLine( "PatronymicName", jsonPath, 2 ) );
-        atoms.Add( BuildTextLine( "Post", jsonPath, 3 ) );
-        atoms.Add( BuildTextLine( "Department", jsonPath, 4 ) );
-
-        return atoms;
+        return textLines;
     }
 
-
-    private void SetUnitingLines(List<TextLine> atoms, string jsonPath)
+    private void SetUnitingLines ( List<TextLine> atoms, string jsonPath )
     {
-        IEnumerable<IConfigurationSection> items =
-                      GetterFromJson.GetIncludedItemsOfSection( new List<string> { "UnitedTextBlocks" }, jsonPath );
+        IEnumerable<IConfigurationSection> items = JsonProcessor.GetIncludedItemsOfSection ( ["UnitedTextBlocks"], jsonPath );
 
-        int count = items.Count();
-
-        //if (items.Count() < 1)
-        //{
-        //    List<string> sectionPath = new() { "default", "UnitedTextBlocks" };
-        //    items = GetterFromJson.GetIncludedItemsOfSection( sectionPath, _schemeFile.FullName );
-        //    jsonPath = _schemeFile.FullName;
-        //}
-
-        foreach (IConfigurationSection item in items)
+        foreach ( IConfigurationSection item in items )
         {
-            string path = item.Path;
+            int number = DigitalStringParser.ParseToInt ( item.GetSection ( "Number" )?.Value );
 
-            string numberStr = item.GetSection( "Number" )?.Value;
-
-            int number = 0;
-            number = DigitalStringParser.ParseToInt( numberStr );
-
-            if (number == 0)
+            if ( number == 0 )
             {
                 number = 1;
             }
 
-            IConfigurationSection unitedSection = item.GetSection( "United" );
-            IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren();
-            List<string> unitedAtomsNames = new List<string>();
+            IConfigurationSection unitedSection = item.GetSection ( "United" );
+            IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
+            List<string> unitedTextLinesNames = [];
 
-            foreach (IConfigurationSection name in unitedSections)
+            foreach ( IConfigurationSection name in unitedSections )
             {
-                unitedAtomsNames.Add( name.Value );
+                if ( name.Value == null )
+                {
+                    continue;
+                }
+
+                unitedTextLinesNames.Add ( name.Value );
             }
 
-            TextLine unitingAtom = BuildTextLine( item, jsonPath, unitedAtomsNames, number );
-            atoms.Add( unitingAtom );
+            TextLine complexTextLine = BuildTextLine ( item, jsonPath, unitedTextLinesNames, number );
+            atoms.Add ( complexTextLine );
         }
     }
 
-
-    private List<ComponentImage> GetImages(string jsonPath, string templateName)
+    private List<ComponentImage> GetImages ( string jsonPath, string templateName )
     {
-        List<ComponentImage> images = new();
+        List<ComponentImage> images = [];
+        IEnumerable<IConfigurationSection> imageSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideImages"], jsonPath );
 
-        IEnumerable<IConfigurationSection> imageSections =
-                          GetterFromJson.GetIncludedItemsOfSection( new List<string> { "InsideImages" }, jsonPath );
-
-        foreach (IConfigurationSection imageSection in imageSections)
+        foreach ( IConfigurationSection imageSection in imageSections )
         {
-            ComponentImage image = BuildInsideImage( imageSection, templateName );
-            images.Add( image );
+            ComponentImage image = BuildInsideImage ( imageSection, templateName );
+            images.Add ( image );
         }
 
         return images;
     }
 
-
-    private List<ComponentShape> GetShapes(string jsonPath)
+    private static List<ComponentShape> GetShapes ( string jsonPath )
     {
-        List<ComponentShape> shapes = new();
+        List<ComponentShape> shapes = [];
+        IEnumerable<IConfigurationSection> shapeSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideShapes"], jsonPath );
 
-        IEnumerable<IConfigurationSection> shapeSections =
-                          GetterFromJson.GetIncludedItemsOfSection( new List<string> { "InsideShapes" }, jsonPath );
-
-        foreach (IConfigurationSection shapeSection in shapeSections)
+        foreach ( IConfigurationSection shapeSection in shapeSections )
         {
-            ComponentShape shape = BuildInsideShape( shapeSection );
-            shapes.Add( shape );
+            ComponentShape shape = BuildInsideShape ( shapeSection );
+            shapes.Add ( shape );
         }
 
         return shapes;
     }
 
-
-    private TextLine BuildTextLine(string lineName, string jsonPath, int numberToLocate)
+    private TextLine BuildTextLine ( string lineName, string jsonPath, int numberToLocate )
     {
-        double width = GetSectionIntValueOrDefault( new List<string> { lineName, "Width" }, jsonPath );
-        double height = GetSectionIntValueOrDefault( new List<string> { lineName, "Height" }, jsonPath );
-        double topOffset = GetSectionIntValueOrDefault( new List<string> { lineName, "TopOffset" }, jsonPath );
-        double leftOffset = GetSectionIntValueOrDefault( new List<string> { lineName, "LeftOffset" }, jsonPath );
-        string alignment = GetSectionStrValueOrDefault( new List<string> { lineName, "Alignment" }, jsonPath ) ?? "";
-        double fontSize = GetSectionIntValueOrDefault( new List<string> { lineName, "FontSize" }, jsonPath );
-        string fontName = GetSectionStrValueOrDefault( new List<string> { lineName, "FontName" }, jsonPath ) ?? "";
-        string foreground = GetSectionStrValueOrDefault( new List<string> { lineName, "Foreground" }, jsonPath );
-        string fontWeight = GetSectionStrValueOrDefault( new List<string> { lineName, "FontWeight" }, jsonPath ) ?? "";
-        bool isShiftable = GetSectionBoolValueOrDefault( new List<string> { lineName, "IsSplitable" }, jsonPath );
+        TextLine line = new (
+            lineName,
+            GetSectionIntValueOrDefault ( [lineName, "Width"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "Height"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "TopOffset"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "LeftOffset"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "Alignment"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "FontSize"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "FontName"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "Foreground"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "FontWeight"], jsonPath ),
+            null,
+            GetSectionBoolValueOrDefault ( [lineName, "IsSplitable"], jsonPath ),
+            numberToLocate
+        );
 
-        TextLine line = new TextLine( lineName, width, height, topOffset, leftOffset, alignment, fontSize
-                                     , fontName, foreground, fontWeight, null, isShiftable, numberToLocate );
         return line;
     }
 
-
-    private TextLine BuildTextLine
-                    (IConfigurationSection section, string jsonPath, List<string> united, int numberToLocate)
+    private TextLine BuildTextLine ( IConfigurationSection section, string jsonPath, List<string> united, int numberToLocate )
     {
-        IConfigurationSection childSection = section.GetSection( "Name" );
-        string lineName = section.GetSection( "Name" )?.Value ?? "";
-
-        childSection = section.GetSection( "Width" );
-        double width = GetSectionIntValueOrDefault( childSection, jsonPath, "Width" );
-
-        childSection = section.GetSection( "Height" );
-        double height = GetSectionIntValueOrDefault( childSection, jsonPath, "Height" );
-
-        childSection = section.GetSection( "TopOffset" );
-        double topOffset = GetSectionIntValueOrDefault( childSection, jsonPath, "TopOffset" );
-
-        childSection = section.GetSection( "LeftOffset" );
-        double leftOffset = GetSectionIntValueOrDefault( childSection, jsonPath, "LeftOffset" );
-
-        childSection = section.GetSection( "Alignment" );
-        string alignment = GetSectionStrValueOrDefault( childSection, jsonPath, "Alignment" );
-
-        childSection = section.GetSection( "FontSize" );
-        double fontSize = GetSectionIntValueOrDefault( childSection, jsonPath, "FontSize" );
-
-        childSection = section.GetSection( "FontName" );
-        string fontName = GetSectionStrValueOrDefault( childSection, jsonPath, "FontName" );
-
-        childSection = section.GetSection( "Foreground" );
-        string foreground = GetSectionStrValueOrDefault( childSection, jsonPath, "Foreground" );
-
-        childSection = section.GetSection( "FontWeight" );
-        string fontWeight = GetSectionStrValueOrDefault( childSection, jsonPath, "FontWeight" );
-
-        string shiftableString = section.GetSection( "IsSplitable" )?.Value ?? _defaultSplitability;
-        bool isShiftable = false;
-
-        int shiftableInt = DigitalStringParser.ParseToInt( shiftableString );
-        isShiftable = Convert.ToBoolean( shiftableInt );
-
-        TextLine atom = new TextLine( lineName, width, height, topOffset, leftOffset, alignment, fontSize
-                                      , fontName, foreground, fontWeight, united, isShiftable, numberToLocate );
-        return atom;
+        string lineName = section.GetSection ( "Name" )?.Value ?? "";
+        double width = GetSectionIntValueOrDefault ( section.GetSection ( "Width" ), jsonPath );
+        double height = GetSectionIntValueOrDefault ( section.GetSection ( "Height" ), jsonPath );
+        double topOffset = GetSectionIntValueOrDefault ( section.GetSection ( "TopOffset" ), jsonPath );
+        double leftOffset = GetSectionIntValueOrDefault ( section.GetSection ( "LeftOffset" ), jsonPath );
+        double fontSize = GetSectionIntValueOrDefault ( section.GetSection ( "FontSize" ), jsonPath );
+#pragma warning disable CS8600 //Converting null literal or possible null value to non-nullable type.
+        string alignment = GetSectionStrValueOrDefault ( section.GetSection ( "Alignment" ), jsonPath );
+        string fontName = GetSectionStrValueOrDefault ( section.GetSection ( "FontName" ), jsonPath );
+        string foreground = GetSectionStrValueOrDefault ( section.GetSection ( "Foreground" ), jsonPath );
+        string fontWeight = GetSectionStrValueOrDefault ( section.GetSection ( "FontWeight" ), jsonPath );
+#pragma warning disable CS8600 //Converting null literal or possible null value to non-nullable type.
+        string shiftableString = section.GetSection ( "IsSplitable" )?.Value ?? _defaultSplitability;
+        int shiftableInt = DigitalStringParser.ParseToInt ( shiftableString );
+        bool isShiftable = Convert.ToBoolean ( shiftableInt );
+#pragma warning disable CS8604 //Possible null reference argument for parameter.
+        TextLine textLine = new ( lineName, width, height, topOffset, leftOffset, alignment, fontSize, fontName, foreground,
+            fontWeight, united, isShiftable, numberToLocate 
+        );
+#pragma warning disable CS8604 //Possible null reference argument for parameter.
+        return textLine;
     }
 
-
-    private ComponentImage BuildInsideImage(IConfigurationSection section, string templateName)
+    private ComponentImage BuildInsideImage ( IConfigurationSection section, string templateName )
     {
-        double[] commonData = GetSharedData( section );
-        string fileName = section.GetSection( "Path" )?.Value ?? "";
+        double [] commonData = GetSharedData ( section );
+        string fileName = section.GetSection ( "Path" )?.Value ?? "";
         string imagesFolder = _templateNameToDirectory [templateName] + "\\Images\\";
         string fileUri = imagesFolder + fileName;
-        string bindingObjectName = section.GetSection( "BindingObject" )?.Value ?? "";
-        string isAbove = section.GetSection( "IsAboveOfBinding" )?.Value ?? "";
+        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
+        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
         bool isAboveOfBinding = false;
 
-        if (isAbove == "yes")
+        if ( isAbove == "yes" )
         {
             isAboveOfBinding = true;
         }
 
-        ComponentImage image = new ComponentImage( fileUri, commonData[0], commonData[1], commonData[2], commonData[3]
-                                           , bindingObjectName, isAboveOfBinding );
+        ComponentImage image = new ( fileUri, commonData [0], commonData [1], commonData [2], commonData [3],
+            bindingObjectName, isAboveOfBinding );
+
         return image;
     }
 
-
-    private ComponentShape BuildInsideShape(IConfigurationSection section)
+    private static ComponentShape BuildInsideShape ( IConfigurationSection section )
     {
-        double[] commonData = GetSharedData( section );
-        string kind = section.GetSection( "Type" )?.Value ?? "";
-        string fillColor = section.GetSection( "FillColor" )?.Value ?? "#000000";
-        string bindingObjectName = section.GetSection( "BindingObject" )?.Value ?? "";
-        string isAbove = section.GetSection( "IsAboveOfBinding" )?.Value ?? "";
-        bool isAboveOfBinding = false;
+        double [] commonData = GetSharedData ( section );
+        string kind = section.GetSection ( "Type" )?.Value ?? "";
+        string fillColor = section.GetSection ( "FillColor" )?.Value ?? "#000000";
+        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
+        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
 
-        if (isAbove == "yes")
-        {
-            isAboveOfBinding = true;
-        }
+        ComponentShape shape = new ( commonData [0], commonData [1], commonData [2], commonData [3], fillColor, kind,
+            bindingObjectName, isAbove == "yes"
+        );
 
-        ComponentShape shape = new ComponentShape( commonData[0], commonData[1], commonData[2], commonData[3]
-                                           , fillColor, kind
-                                           , bindingObjectName, isAboveOfBinding );
         return shape;
     }
 
-
-    private double[] GetSharedData(IConfigurationSection section)
+    private static double [] GetSharedData ( IConfigurationSection section )
     {
-        double[] result = new double[4];
-        double.TryParse( section.GetSection( "Width" )?.Value, out result[0] );
-        double.TryParse( section.GetSection( "Height" )?.Value, out result[1] );
-        double.TryParse( section.GetSection( "TopOffset" )?.Value, out result[2] );
-        double.TryParse( section.GetSection( "LeftOffset" )?.Value, out result[3] );
+        double [] result = new double [4];
+        _ = double.TryParse ( section.GetSection ( "Width" )?.Value, out result [0] );
+        _ = double.TryParse ( section.GetSection ( "Height" )?.Value, out result [1] );
+        _ = double.TryParse ( section.GetSection ( "TopOffset" )?.Value, out result [2] );
+        _ = double.TryParse ( section.GetSection ( "LeftOffset" )?.Value, out result [3] );
 
         return result;
     }
 
-
     public Dictionary<Layout, KeyValuePair<string, List<string>>> GetBadgeLayouts ()
     {
-        Dictionary<Layout, KeyValuePair<string, List<string>>> layouts = new ();
+        Dictionary<Layout, KeyValuePair<string, List<string>>> layouts = [];
 
-        if ( _schemeFile == null )
+        if ( string.IsNullOrWhiteSpace ( _schemeFile ) )
         {
             return layouts;
         }
@@ -646,7 +560,7 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                 if ( result != null )
                 {
                     JsonSchemaValidator validator = new ();
-                    List<string> message = new ();
+                    List<string> message = [];
 
 
                     if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
@@ -663,13 +577,11 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
 
                         if ( templateIsIncorrect )
                         {
-                            List<ValidationError> children = new ();
+                            List<ValidationError> children = [];
 
                             foreach ( ValidationError err in errors )
                             {
-                                ChildSchemaValidationError childErr = err as ChildSchemaValidationError;
-
-                                if ( childErr != null )
+                                if ( err is ChildSchemaValidationError childErr )
                                 {
                                     var childErrors = childErr.Errors;
 
@@ -691,26 +603,25 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                                 errors.Add ( err );
                             }
 
-                            foreach ( ValidationError err in errors )
+                            foreach ( ValidationError error in errors )
                             {
                                 string messageLine = string.Empty;
-                                string errKind = TranslateErrorKindToRuss ( err.Kind );
+                                string errKind = TranslateErrorKindToRuss ( error.Kind );
                                 messageLine += errKind;
 
-                                if ( err.Kind != ValidationErrorKind.PropertyRequired )
+                                if ( error.Kind != ValidationErrorKind.PropertyRequired )
                                 {
                                     messageLine += " Ошибка в свойстве ";
-                                    string propertyPath = err.Path;
-                                    propertyPath = TrimWaste ( propertyPath );
+                                    string? propertyPath = TrimWaste ( error.Path );
                                     messageLine += propertyPath + " на строке номер ";
-                                    string lineNumber = err.LineNumber.ToString ();
+                                    string lineNumber = error.LineNumber.ToString ();
                                     messageLine += lineNumber;
                                 }
                                 else
                                 {
-                                    if ( ( err.Path != null ) && ( err.Path.Length > 2 ) )
+                                    if ( ( error.Path != null ) && ( error.Path.Length > 2 ) )
                                     {
-                                        messageLine += err.Path.Substring ( 2, err.Path.Length - 2 );
+                                        messageLine += error.Path.Substring ( 2, error.Path.Length - 2 );
                                     }
                                 }
 
@@ -718,10 +629,7 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                                 message.Add ( messageLine );
                             }
 
-                            if ( !_jsonAndErrors.ContainsKey ( jsonPath ) )
-                            {
-                                _jsonAndErrors.Add ( jsonPath, errors );
-                            }
+                            _jsonAndErrors.TryAdd ( jsonPath, errors );
                         }
                     }
 
@@ -734,113 +642,133 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                     }
 
                     KeyValuePair<string, List<string>> jsonAndErrors = KeyValuePair.Create ( jsonPath, message );
-                    layouts.Add ( GetBadgeLayout ( template.Key ), jsonAndErrors );
+
+                    if ( template.Key != null )
+                    {
+                        Layout? layout = GetBadgeLayout ( template.Key );
+
+                        if ( layout != null )
+                        {
+                            layouts.Add ( layout, jsonAndErrors );
+                        }
+                    }
                 }
             }
-            catch ( AggregateException ex )
+            catch ( AggregateException )
             {
-                var mess = ex.Message;
+
             }
         }
 
         return layouts;
     }
 
-
-    private List<string> GetUninstalledFontsFrom(string jsonPath)
+    private List<string> GetUninstalledFontsFrom ( string jsonPath )
     {
-        List<string> fontNames = new();
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "CommonDefaultFontFamily" }, jsonPath, false ) );
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "FamilyName", "FontName" }, jsonPath, false ) );
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "FirstName", "FontName" }, jsonPath, false) );
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "PatronymicName", "FontName" }, jsonPath, false ) );
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "Post", "FontName" }, jsonPath, false ) );
-        fontNames.Add( GetterFromJson.GetSectionStrValue( new List<string> { "Department", "FontName" }, jsonPath, false ) );
+        List<string> fontNames =
+        [
+            JsonProcessor.GetSectionStrValue ( ["CommonDefaultFontFamily"], jsonPath, false ),
+            JsonProcessor.GetSectionStrValue ( ["FamilyName", "FontName"], jsonPath, false ),
+            JsonProcessor.GetSectionStrValue ( ["FirstName", "FontName"], jsonPath, false ),
+            JsonProcessor.GetSectionStrValue ( ["PatronymicName", "FontName"], jsonPath, false ),
+            JsonProcessor.GetSectionStrValue ( ["Post", "FontName"], jsonPath, false ),
+            JsonProcessor.GetSectionStrValue ( ["Department", "FontName"], jsonPath, false ),
+        ];
 
-        IEnumerable<IConfigurationSection> unitings =
-                  GetterFromJson.GetIncludedItemsOfSection( new List<string> { "UnitedTextBlocks" }, jsonPath );
+        IEnumerable<IConfigurationSection> unitings = JsonProcessor.GetIncludedItemsOfSection ( ["UnitedTextBlocks"], jsonPath );
 
-        foreach (IConfigurationSection unit in unitings)
+        foreach ( IConfigurationSection unit in unitings )
         {
-            IConfigurationSection fontNameSection = unit.GetSection( "FontName" );
-            fontNames.Add( fontNameSection.Value );
+            IConfigurationSection fontNameSection = unit.GetSection ( "FontName" );
+            string? fontName = fontNameSection.Value;
+
+            if ( fontName != null )
+            {
+                fontNames.Add ( fontName );
+            }
         }
 
-        return GetUninstalledFontsAmong( fontNames );
+        return GetUninstalledFontsAmong ( fontNames );
     }
 
-
-    private List<string> GetUninstalledFontsAmong(List<string> fontNames)
+    private List<string> GetUninstalledFontsAmong ( List<string> fontNames )
     {
-        if (_osName == "Windows")
+        if ( _osName == "Windows" && OperatingSystem.IsWindowsVersionAtLeast ( 6, 1 ) )
         {
-            InstalledFontCollection ifc = new InstalledFontCollection();
-            System.Drawing.FontFamily[] families = ifc.Families;
-            List<string> installed = new List<string>();
+            InstalledFontCollection ifc = new ();
+            System.Drawing.FontFamily [] families = ifc.Families;
+            List<string> installed = [];
 
-            foreach ( System.Drawing.FontFamily family in families)
+            foreach ( System.Drawing.FontFamily family in families )
             {
-                installed.Add( family.Name );
+                string? familyName = family.Name;
+
+                if ( familyName != null )
+                {
+                    installed.Add ( familyName );
+                }
             }
 
-            return GetUninstalled( installed, fontNames );
+            return GetUninstalled ( installed, fontNames );
         }
-        else if (_osName == "Linux")
+        else if ( _osName == "Linux" )
         {
             string fontInstallingCommand = "fc-list : family | sort | uniq";
-            string result = TerminalCommandExecuter.ExecuteCommand( fontInstallingCommand );
-            List<string> installed = result.Split( '\n' ).ToList();
+            string result = TerminalCommandExecuter.ExecuteCommand ( fontInstallingCommand );
+            List<string> installed = [.. result.Split ( '\n' )];
 
-            return GetUninstalled( installed, fontNames );
+            return GetUninstalled ( installed, fontNames );
         }
 
-        return new List<string>();
+        return [];
     }
 
-
-    private List<string> GetUninstalled(List<string> installed, List<string> checkebles)
+    private static List<string> GetUninstalled ( List<string> installed, List<string> checkebles )
     {
-        List<string> uninstalled = new();
+        List<string> uninstalled = [];
 
-        foreach (var name in checkebles)
+        foreach ( var name in checkebles )
         {
-            bool isExisting = !string.IsNullOrWhiteSpace( name );
+            bool isExisting = !string.IsNullOrWhiteSpace ( name );
 
-            if (isExisting && !installed.Contains( name ))
+            if ( isExisting && !installed.Contains ( name ) )
             {
-                uninstalled.Add( name );
+                uninstalled.Add ( name );
             }
         }
 
-        uninstalled = uninstalled.Distinct( StringComparer.OrdinalIgnoreCase ).ToList();
+        uninstalled = [.. uninstalled.Distinct ( StringComparer.OrdinalIgnoreCase )];
 
         return uninstalled;
     }
 
-
-    private string TrimWaste(string propertyPath)
+    private static string TrimWaste ( string? propertyPath )
     {
-        string result = propertyPath;
-
-        if (result.First() == '#')
+        if ( string.IsNullOrWhiteSpace ( propertyPath ) )
         {
-            result = result.Substring( 1 );
+            return string.Empty;
         }
 
-        if (result.First() == '/')
+        string? result = propertyPath;
+
+        if ( result.First () == '#' )
         {
-            result = result.Substring( 1 );
+            result = result [1..];
+        }
+
+        if ( result.First () == '/' )
+        {
+            result = result [1..];
         }
 
         return result;
     }
 
-
-    private string TranslateErrorKindToRuss(ValidationErrorKind kind)
+    private static string TranslateErrorKindToRuss ( ValidationErrorKind kind )
     {
-        string errKind = string.Empty;
-
-        switch (kind)
+        string errKind;
+#pragma warning disable IDE0066 // Преобразовать оператор switch в выражение
+        switch ( kind )
         {
             case ValidationErrorKind.IntegerExpected:
                 errKind = "Ожидалось целое число.";
@@ -883,117 +811,111 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                 break;
 
             default:
-                errKind = kind.ToString() + ".";
+                errKind = kind.ToString () + ".";
                 break;
         }
+#pragma warning restore IDE0066 // Преобразовать оператор switch в выражение
 
         return errKind;
     }
 
-
-    private string GetSectionStrValueOrDefault(List<string> keyPathInJson, string jsonPath)
+    private string GetSectionStrValueOrDefault ( List<string> keyPathInJson, string jsonPath )
     {
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
+        if ( _jsonAndErrors.TryGetValue ( jsonPath, out ICollection<ValidationError>? errors ) )
         {
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
+            foreach ( ValidationError err in errors )
             {
-                string propertyPath = TrimWaste( err.Path );
-                string[] steps = propertyPath.Split( '.' );
+                string propertyPath = TrimWaste ( err.Path );
+                string [] steps = propertyPath.Split ( '.' );
 
-                if (keyPathInJson.SequenceEqual( steps ))
+                if ( keyPathInJson.SequenceEqual ( steps ) )
                 {
-                    return GetDefaultStrValue( steps );
+                    return GetDefaultStrValue ( steps );
                 }
             }
         }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
+        else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
         {
-            return GetDefaultStrValue( keyPathInJson );
+            return GetDefaultStrValue ( keyPathInJson );
         }
 
-        string result = GetterFromJson.GetSectionStrValue( keyPathInJson, jsonPath, false );
-        bool errorsAbsentButSectionNotFound = result == null;
+        string result = JsonProcessor.GetSectionStrValue ( keyPathInJson, jsonPath, false ) ?? string.Empty;
 
-        if (errorsAbsentButSectionNotFound)
+        if ( string.IsNullOrWhiteSpace ( result ) )
         {
-            result = GetDefaultStrValue( keyPathInJson );
+            result = GetDefaultStrValue ( keyPathInJson );
+        }
+
+        if ( result == null ) 
+        {
+            throw new Exception ( "Default value is absent in schema file" );
         }
 
         return result;
     }
 
-
-    private int GetSectionIntValueOrDefault(List<string> keyPathInJson, string jsonPath)
+    private int GetSectionIntValueOrDefault ( List<string> keyPathInJson, string jsonPath )
     {
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
+        if ( _jsonAndErrors.TryGetValue ( jsonPath, out ICollection<ValidationError>? errors ) )
         {
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
+            foreach ( ValidationError err in errors )
             {
-                string propertyPath = TrimWaste( err.Path );
-                string[] steps = propertyPath.Split( '.' );
+                string propertyPath = TrimWaste ( err.Path );
+                string [] steps = propertyPath.Split ( '.' );
 
-                if (keyPathInJson.SequenceEqual( steps ))
+                if ( keyPathInJson.SequenceEqual ( steps ) )
                 {
-                    return DigitalStringParser.ParseToInt( GetDefaultStrValue( steps ) );
+                    return DigitalStringParser.ParseToInt ( GetDefaultStrValue ( steps ) );
                 }
             }
         }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
+        else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
         {
-            return DigitalStringParser.ParseToInt( GetDefaultStrValue( keyPathInJson ) );
+            return DigitalStringParser.ParseToInt ( GetDefaultStrValue ( keyPathInJson ) );
         }
 
-        int result = GetterFromJson.GetSectionIntValue( keyPathInJson, jsonPath, false );
+        int result = JsonProcessor.GetSectionIntValue ( keyPathInJson, jsonPath, false );
         bool errorsAbsentButSectionNotFound = result == -1;
 
-        if (errorsAbsentButSectionNotFound)
+        if ( errorsAbsentButSectionNotFound )
         {
-            List<string> keyPathToDefault = BuildPathToDefaultValue( keyPathInJson );
-            result = GetterFromJson.GetSectionIntValue( keyPathToDefault, _schemeFile, true );
+            List<string> keyPathToDefault = BuildPathToDefaultValue ( keyPathInJson );
+            result = JsonProcessor.GetSectionIntValue ( keyPathToDefault, _schemeFile, true );
         }
 
         return result;
     }
 
-
-    private bool GetSectionBoolValueOrDefault(List<string> keyPathInJson, string jsonPath)
+    private bool GetSectionBoolValueOrDefault ( List<string> keyPathInJson, string jsonPath )
     {
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
+        if ( _jsonAndErrors.TryGetValue ( jsonPath, out ICollection<ValidationError>? errors ) )
         {
-
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
+            foreach ( ValidationError err in errors )
             {
-                string propertyPath = TrimWaste( err.Path );
+                string propertyPath = TrimWaste ( err.Path );
 
-                string[] steps = propertyPath.Split( '.' );
+                string [] steps = propertyPath.Split ( '.' );
 
-                if (keyPathInJson.SequenceEqual( steps ))
+                if ( keyPathInJson.SequenceEqual ( steps ) )
                 {
-                    return GetSectionDefaultBoolValue( steps );
+                    return GetSectionDefaultBoolValue ( steps );
                 }
             }
         }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
+        else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
         {
-            return GetSectionDefaultBoolValue( keyPathInJson );
+            return GetSectionDefaultBoolValue ( keyPathInJson );
         }
 
-        return GetterFromJson.GetSectionBoolValue( keyPathInJson, jsonPath );
+        return JsonProcessor.GetSectionBoolValue ( keyPathInJson, jsonPath );
     }
 
-
-    private bool GetSectionDefaultBoolValue(ICollection<string> keyPathInJson)
+    private bool GetSectionDefaultBoolValue ( ICollection<string> keyPathInJson )
     {
-        List<string> keyPathToDefault = BuildPathToDefaultValue( keyPathInJson );
-        string strValue = GetSectionStrValue( keyPathToDefault, _schemeFile, true );
+        List<string> keyPathToDefault = BuildPathToDefaultValue ( keyPathInJson );
+        string strValue = JsonProcessor.GetSectionStrValue ( keyPathToDefault, _schemeFile, true );
 
-        if (strValue == "True")
+        if ( strValue == "True" )
         {
             return true;
         }
@@ -1001,128 +923,73 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         return false;
     }
 
-
-    private string GetSectionStrValueOrDefault(IConfigurationSection section, string jsonPath
-                                                                                      , string propertyName)
+    private string? GetSectionStrValueOrDefault ( IConfigurationSection section, string jsonPath )
     {
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
+        if ( _jsonAndErrors.TryGetValue ( jsonPath, out ICollection<ValidationError>? errors ) )
         {
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
+            foreach ( ValidationError err in errors )
             {
-                if (PathesEqual( section, err ))
+                if ( PathesEqual ( section, err ) )
                 {
-                    return GetDefaultStrValue( section );
+                    return GetDefaultStrValue ( section );
                 }
             }
         }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
+        else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
         {
-            List<string> keyPathToDefault = BuildPathToDefaultValue( section );
-            string strValue = GetSectionStrValue( keyPathToDefault, _schemeFile, true );
-
-            return GetDefaultStrValue( section );
+            return GetDefaultStrValue ( section );
         }
 
         return section?.Value;
     }
 
-    private string GetDefaultStrValue(IConfigurationSection section)
+    private string GetDefaultStrValue ( IConfigurationSection section )
     {
-        List<string> keyPathToDefault = BuildPathToDefaultValue( section );
-        string defaultStr = GetSectionStrValue( keyPathToDefault, _schemeFile, true );
+        List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
+        string defaultStr = JsonProcessor.GetSectionStrValue ( keyPathToDefault, _schemeFile, true );
 
         return defaultStr;
     }
 
-
-    private string GetDefaultStrValue(ICollection<string> steps)
+    private string GetDefaultStrValue ( ICollection<string> steps )
     {
-        List<string> keyPathToDefault = BuildPathToDefaultValue( steps );
+        List<string> keyPathToDefault = BuildPathToDefaultValue ( steps );
 
-        return GetSectionStrValue( keyPathToDefault, _schemeFile, true );
+        return JsonProcessor.GetSectionStrValue ( keyPathToDefault, _schemeFile, true );
     }
 
-
-    private int GetSectionIntValueOrDefault(IConfigurationSection section, string jsonPath, string propertyName)
+    private int GetSectionIntValueOrDefault ( IConfigurationSection section, string jsonPath )
     {
-        string sectionPath = section.Path;
-        string[] sectionSteps = sectionPath.Split( ':' );
-
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
+        if ( _jsonAndErrors.TryGetValue ( jsonPath, out ICollection<ValidationError>? errors ) )
         {
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
+            foreach ( ValidationError err in errors )
             {
-                if (PathesEqual( section, err ))
+                if ( PathesEqual ( section, err ) )
                 {
-                    List<string> keyPathToDefault = BuildPathToDefaultValue( section );
-                    string strValue = GetSectionStrValue( keyPathToDefault, _schemeFile, true );
+                    List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
+                    string strValue = JsonProcessor.GetSectionStrValue ( keyPathToDefault, _schemeFile, true );
 
-                    return DigitalStringParser.ParseToInt( strValue );
+                    return DigitalStringParser.ParseToInt ( strValue );
                 }
             }
         }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
+        else if ( _incorrectJsonAndError.ContainsKey ( jsonPath ) )
         {
-            List<string> keyPathToDefault = BuildPathToDefaultValue( section );
-            string strValue = GetSectionStrValue( keyPathToDefault, _schemeFile, true );
+            List<string> keyPathToDefault = BuildPathToDefaultValue ( section );
+            string strValue = JsonProcessor.GetSectionStrValue ( keyPathToDefault, _schemeFile, true );
 
-            return DigitalStringParser.ParseToInt( strValue );
+            return DigitalStringParser.ParseToInt ( strValue );
         }
 
-        return DigitalStringParser.ParseToInt( section?.Value );
+        return DigitalStringParser.ParseToInt ( section?.Value );
     }
 
-    private bool GetSectionBoolValueOrDefault(IConfigurationSection section, string jsonPath
-                                                                                    , string propertyName)
+    private static bool PathesEqual ( IConfigurationSection section, ValidationError err )
     {
-        bool result = false;
+        string [] sectionSteps = section.Path.Split ( ':' );
 
-        if (_jsonAndErrors.ContainsKey( jsonPath ))
-        {
-            ICollection<ValidationError> errors = _jsonAndErrors[jsonPath];
-
-            foreach (ValidationError err in errors)
-            {
-                if (PathesEqual( section, err ))
-                {
-                    string strValue = GetDefaultStrValue( section );
-
-                    if (strValue == "True")
-                    {
-                        result = true;
-                    }
-
-                    return result;
-                }
-            }
-        }
-        else if (_incorrectJsonAndError.ContainsKey( jsonPath ))
-        {
-            string strValue = GetDefaultStrValue( section );
-
-            if (strValue == "True")
-            {
-                result = true;
-            }
-
-            return result;
-        }
-
-        result = string.Equals( section?.Value, "true", StringComparison.CurrentCultureIgnoreCase );
-
-        return result;
-    }
-
-    private bool PathesEqual(IConfigurationSection section, ValidationError err)
-    {
-        string[] sectionSteps = section.Path.Split( ':' );
-
-        string propertyPath = TrimWaste( err.Path );
-        string[] impureSteps = propertyPath.Split( '.', 10 );
+        string propertyPath = TrimWaste ( err.Path );
+        string [] impureSteps = propertyPath.Split ( '.', 10 );
 
         bool metArrayIndexer = false;
         string pureStep = string.Empty;
@@ -1131,24 +998,24 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         int indexatorNum = 0;
         int counter = 0;
 
-        foreach (string step in impureSteps)
+        foreach ( string step in impureSteps )
         {
-            bool stepInArray = step.Last() == ']';
+            bool stepInArray = step.Last () == ']';
 
-            if (stepInArray)
+            if ( stepInArray )
             {
                 int index = 0;
 
-                for (; index < step.Length; index++)
+                for ( ; index < step.Length; index++ )
                 {
-                    if (step[index] == '[')
+                    if ( step [index] == '[' )
                     {
                         break;
                     }
                 }
 
-                pureStep = step.Substring( 0, index );
-                indexator = step.Substring( index + 1, step.Length - index - 2 );
+                pureStep = step [..index];
+                indexator = step.Substring ( index + 1, step.Length - index - 2 );
                 metArrayIndexer = true;
                 indexatorNum = counter;
             }
@@ -1156,43 +1023,43 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
             counter++;
         }
 
-        string[] steps = impureSteps;
+        string [] steps = impureSteps;
 
-        if (metArrayIndexer)
+        if ( metArrayIndexer )
         {
-            steps = new string[impureSteps.Length + 1];
+            steps = new string [impureSteps.Length + 1];
 
-            for (int index = 0; index < steps.Length; index++)
+            for ( int index = 0; index < steps.Length; index++ )
             {
-                if (index < indexatorNum)
+                if ( index < indexatorNum )
                 {
-                    steps[index] = impureSteps[index];
+                    steps [index] = impureSteps [index];
                 }
-                else if (index == indexatorNum)
+                else if ( index == indexatorNum )
                 {
-                    steps[index] = pureStep;
+                    steps [index] = pureStep;
                 }
-                else if (index == indexatorNum + 1)
+                else if ( index == indexatorNum + 1 )
                 {
-                    steps[index] = indexator.ToString();
+                    steps [index] = indexator.ToString ();
                 }
                 else
                 {
-                    steps[index] = impureSteps[index - 1];
+                    steps [index] = impureSteps [index - 1];
                 }
             }
         }
 
         bool equals = true;
 
-        if (sectionSteps.Length != steps.Length)
+        if ( sectionSteps.Length != steps.Length )
         {
             return false;
         }
 
-        for (int index = 0; index < sectionSteps.Length; index++)
+        for ( int index = 0; index < sectionSteps.Length; index++ )
         {
-            if (steps[index] != sectionSteps[index])
+            if ( steps [index] != sectionSteps [index] )
             {
                 equals = false;
                 break;
@@ -1202,38 +1069,23 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         return equals;
     }
 
-
-    private string GetSectionStrValue(List<string> keyPathInJson, string jsonPath, bool isJsonFromDll )
+    private static List<string> BuildPathToDefaultValue ( IConfigurationSection section )
     {
-        string result = GetterFromJson.GetSectionStrValue( keyPathInJson, jsonPath, isJsonFromDll );
+        List<string> keyPathInJsonScheme = ["default"];
 
-        return result;
-    }
+        string [] keyPathInJson = section.Path.Split ( ':' );
 
-
-    private List<string> BuildPathToDefaultValue(IConfigurationSection section)
-    {
-        List<string> keyPathInJsonScheme = new() { "default" };
-
-        string[] keyPathInJson = section.Path.Split( ':' );
-
-        foreach (string step in keyPathInJson)
+        foreach ( string step in keyPathInJson )
         {
-            keyPathInJsonScheme.Add( step );
+            keyPathInJsonScheme.Add ( step );
         }
 
         return keyPathInJsonScheme;
     }
 
-
-    private List<string> BuildPathToDefaultValue(ICollection<string> keyPathInJson)
+    private static List<string> BuildPathToDefaultValue ( ICollection<string> keyPathInJson )
     {
-        List<string> keyPathInJsonScheme = new() { "default" };
-
-        foreach (string step in keyPathInJson)
-        {
-            keyPathInJsonScheme.Add( step );
-        }
+        List<string> keyPathInJsonScheme = ["default", .. keyPathInJson];
 
         return keyPathInJsonScheme;
     }

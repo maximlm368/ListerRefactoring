@@ -7,29 +7,15 @@
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;assembly=Lister.Desktop"
 			 x:DataType="vm:NavigationZoomViewModel">
 
-	<Border >
-
+	<Border>
 		<Grid
+			ColumnDefinitions="* 136"
 			Height="42">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition ></ColumnDefinition>
-				<ColumnDefinition  Width="136"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
 
 			<Grid
 				Name="navigation"
+				ColumnDefinitions="* 34 34 64 40 60 34 34 *"
 				Grid.Column="0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition ></ColumnDefinition>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="64"></ColumnDefinition>
-					<ColumnDefinition Width="40"></ColumnDefinition>
-					<ColumnDefinition Width="60"></ColumnDefinition>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition ></ColumnDefinition>
-				</Grid.ColumnDefinitions>
 
 				<Button
 					Name="firstPage"
@@ -37,13 +23,13 @@
 					Classes="transparent"
 					Width="32"
 					Padding="8,6"
-					IsEnabled="{Binding   Path = FirstIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ShowFirstPage}"
+					IsEnabled="{Binding FirstIsEnable, Mode=OneWay}"
+					Command="{Binding ShowFirstPage}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На первую страницу"
 					ToolTip.HorizontalOffset="20"
-					Content="&#xf048;"/>
-
+					Content="&#xf048;"
+				/>
 				<Button
 					Name="previousPage"
 					Grid.Column="2"
@@ -51,13 +37,13 @@
 					Width="32"
 					FontSize="20"
 					Padding="8,4"
-					IsEnabled="{Binding   Path = PreviousIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ShowPreviousPage}"
+					IsEnabled="{Binding PreviousIsEnable, Mode=OneWay}"
+					Command="{Binding ShowPreviousPage}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На предыдущую страницу"
 					ToolTip.HorizontalOffset="20"
-					Content="&#xf0d9;" />
-
+					Content="&#xf0d9;" 
+				/>
 				<TextBox
 					Name="visiblePageNumber"
 					Grid.Column="3"
@@ -71,23 +57,23 @@
 					ScrollViewer.VerticalScrollBarVisibility="Disabled"
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					TextChanged="StepOnPage"
-					Text="{Binding  Path = VisiblePageNumber,  Mode=OneWay}"
-					LostFocus="PageCounterLostFocus"/>
-
+					Text="{Binding VisiblePageNumber, Mode=OneWay}"
+					LostFocus="PageCounterLostFocus"
+				/>
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
 					Margin="0,9"
 					Grid.Column="4"
-					Content="из"/>
-
+					Content="из"
+				/>
 				<Label
 					HorizontalContentAlignment="Center"
 					VerticalContentAlignment="Center"
 					Margin="0,9"
 					Grid.Column="5"
-					Content="{Binding   Path = PageCount,   Mode=OneWay}"/>
-
+					Content="{Binding PageCount, Mode=OneWay}"
+				/>
 				<Button
 					Name="nextPage"
 					Grid.Column="6"
@@ -95,37 +81,31 @@
 					Width="32"
 					FontSize="20"
 					Padding="8,4"
-					IsEnabled="{Binding   Path = NextIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ShowNextPage}"
+					IsEnabled="{Binding NextIsEnable, Mode=OneWay}"
+					Command="{Binding ShowNextPage}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На следующую страницу"
 					ToolTip.HorizontalOffset="20"
-					Content="&#xf0da;" />
-
+					Content="&#xf0da;"
+				/>
 				<Button
 					Name="lastPage"
 					Grid.Column="7"
 					Classes="transparent"
 					Width="32"
 					Padding="8,6"
-					IsEnabled="{Binding   Path = LastIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ShowLastPage}"
+					IsEnabled="{Binding LastIsEnable, Mode=OneWay}"
+					Command="{Binding ShowLastPage}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="На последнюю страницу"
 					ToolTip.HorizontalOffset="20"
-					Content="&#xf051;" />
-
+					Content="&#xf051;"
+				/>
 			</Grid>
-
 			<Grid
 				Name="zoom"
-				Grid.Column="1" >
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="64"></ColumnDefinition>
-					<ColumnDefinition Width="34"></ColumnDefinition>
-					<ColumnDefinition Width="4"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
+				Grid.Column="1"
+				ColumnDefinitions="34 64 34 4">
 
 				<Button
 					Name="zoomOut"
@@ -134,13 +114,13 @@
 					HorizontalAlignment="Center"
 					Width="32"
 					Padding="8,6"
-					IsEnabled="{Binding   Path = ZoomOutIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ZoomOut}"
+					IsEnabled="{Binding ZoomOutIsEnable, Mode=OneWay}"
+					Command="{Binding ZoomOut}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="Уменьшить масштаб"
 					ToolTip.VerticalOffset="-40"
-					Content="&#xf068;" />
-
+					Content="&#xf068;"
+				/>
 				<Label
 					Name="scalabilityGrade"
 					Grid.Column="1"
@@ -151,8 +131,8 @@
 					Background="White"
 					CornerRadius = "3"
 					BorderThickness="1"
-					Content="{Binding  Path = ZoomDegreeInView,  Mode=OneWay}" />
-
+					Content="{Binding ZoomDegreeInView, Mode=OneWay}"
+				/>
 				<Button
 					Name="zoomOn"
 					Grid.Column="2"
@@ -161,19 +141,14 @@
 					HorizontalAlignment="Center"
 					Width="32"
 					Padding="7,6"
-					IsEnabled="{Binding   Path = ZoomOnIsEnable,   Mode=OneWay}"
-					Command="{Binding   Path = ZoomOn}"
+					IsEnabled="{Binding ZoomOnIsEnable, Mode=OneWay}"
+					Command="{Binding ZoomOn}"
 					PointerPressed="SomeButtonPressed"
 					ToolTip.Tip="Увеличить масштаб"
 					ToolTip.VerticalOffset="-40"
-					Content="&#x2b;" />
-				
+					Content="&#x2b;"
+				/>
 			</Grid>
-
 		</Grid>
-		
-		
 	</Border>
-  
 </UserControl>
-

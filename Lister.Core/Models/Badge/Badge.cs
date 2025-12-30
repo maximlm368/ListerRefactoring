@@ -6,26 +6,22 @@
 public sealed class Badge
 {
     private static int _lastId;
-    private static Dictionary<int, Badge> _backup = new ();
+    private static Dictionary<int, Layout> _backup = [];
 
     /// <summary>
     /// Is margin in badge line of page for one unit (may be on display or printer) thickness frame.
     /// </summary>
-    public Thickness Margin { get; internal set; }
+    public Thickness? Margin { get; internal set; }
     public int Id { get; private set; }
     public Person Person { get; private set; }
-    public string BackgroundImagePath { get; private set; }
+    public string? BackgroundImagePath { get; private set; }
     public Layout Layout { get; private set; }
     public bool IsCorrect { get; private set; }
     public bool IsChanged { get; private set; }
     public delegate void RolledBackHandler ();
-    public event RolledBackHandler ? RolledBack;
+    public event RolledBackHandler? RolledBack;
     public delegate void CorrectnessChangedHandler ();
     public event CorrectnessChangedHandler? CorrectnessChanged;
-
-
-    private Badge ( ){}
-
 
     private Badge ( Person person, string backgroundImagePath, Layout layout )
     {
@@ -34,10 +30,9 @@ public sealed class Badge
         Layout = layout;
         Dictionary<string, string> personProperties = Person.GetProperties ();
         Layout.SetUpComponents ( personProperties );
-        IsCorrect = ! Layout.HasIncorrectLines;
+        IsCorrect = !Layout.HasIncorrectLines;
         Layout.RolledBack += LayoutRolledBackHandler;
     }
-
 
     private void LayoutRolledBackHandler ()
     {
@@ -46,54 +41,48 @@ public sealed class Badge
         RolledBack?.Invoke ();
     }
 
-
-    public static Badge ? GetBadge ( Person person, string backgroundImagePath, Layout layout )
+    public static Badge? GetBadge ( Person person, string backgroundImagePath, Layout layout )
     {
-        bool isArgumentNull = ( person == null ) 
-                              ||
-                              backgroundImagePath == null
-                              ||
-                              layout == null;
-
-        if ( isArgumentNull )
+        if ( person == null
+             || backgroundImagePath == null
+             || layout == null
+        )
         {
             return null;
         }
 
-        Badge result = new Badge ( person, backgroundImagePath, layout );
-        result.Id = _lastId;
+        Badge result = new ( person, backgroundImagePath, layout )
+        {
+            Id = _lastId
+        };
+
         _lastId++;
 
         return result;
     }
-
 
     public void ZeroProcessable ()
     {
         Layout?.ZeroProcessable ();
     }
 
-
     public static void ClearSharedData ()
     {
-        _backup = new ();
+        _backup = [];
         _lastId = 0;
     }
 
-
     public void Split ( TextLine splitable )
     {
-        Layout.Split ( splitable );
+        Layout?.Split ( splitable );
         IsChanged = true;
     }
-
 
     public void SetProcessable ( LayoutComponentBase processableComponent )
     {
         SetBackup ();
-        Layout.SetProcessable ( processableComponent );
+        Layout?.SetProcessable ( processableComponent );
     }
-
 
     private void SetBackup ()
     {
@@ -102,18 +91,13 @@ public sealed class Badge
             return;
         }
 
-        Badge backup = new Badge ();
-        backup.Layout = Layout.Clone ( false );
-        backup.IsCorrect = IsCorrect;
-        _backup.Add ( Id, backup );
+        _backup.Add ( Id, Layout.Clone ( false ) );
     }
-
 
     public void CancelChanges ()
     {
-        Layout.RollBackTo ( _backup [Id].Layout.Clone(false) );
+        Layout?.RollBackTo ( _backup [Id].Clone ( false ) );
     }
-
 
     public void ShiftProcessable ( string direction )
     {
@@ -122,7 +106,6 @@ public sealed class Badge
         RefreshCorrectness ();
     }
 
-
     public void MoveProcessable ( double verticalDelta, double horizontalDelta )
     {
         IsChanged = true;
@@ -130,37 +113,33 @@ public sealed class Badge
         RefreshCorrectness ();
     }
 
-
-    public void IncreaseFontSize ( )
+    public void IncreaseFontSize ()
     {
         IsChanged = true;
-        Layout.IncreaseFontSize ( );
+        Layout.IncreaseFontSize ();
         RefreshCorrectness ();
     }
 
-
-    public void ReduceFontSize ( )
+    public void ReduceFontSize ()
     {
         IsChanged = true;
-        Layout.ReduceFontSize ( );
+        Layout.ReduceFontSize ();
         RefreshCorrectness ();
     }
-
 
     public void ResetProcessableContent ( string newContent )
     {
         IsChanged = true;
         Layout.ResetProcessableLineContent ( newContent );
-        RefreshCorrectness();
+        RefreshCorrectness ();
     }
 
-
-    private void RefreshCorrectness ( )
+    private void RefreshCorrectness ()
     {
         bool isCorrect = IsCorrect;
-        IsCorrect = ! Layout.HasIncorrectLines;
+        IsCorrect = !Layout.HasIncorrectLines;
 
-        if ( isCorrect != IsCorrect ) 
+        if ( isCorrect != IsCorrect )
         {
             CorrectnessChanged?.Invoke ();
         }

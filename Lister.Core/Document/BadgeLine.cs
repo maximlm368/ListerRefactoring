@@ -1,6 +1,6 @@
 ﻿using Lister.Core.Models.Badge;
 
-namespace Lister.Core.DocumentProcessor;
+namespace Lister.Core.Document;
 
 /// <summary>
 /// Represents badges placed on one line.
@@ -8,8 +8,9 @@ namespace Lister.Core.DocumentProcessor;
 /// </summary>
 public sealed class BadgeLine
 {
+    private readonly double _heightConstraint;
+
     internal double _restWidth;
-    private double _heightConstraint;
 
     public Thickness Margin { get; private set; }
 
@@ -32,10 +33,9 @@ public sealed class BadgeLine
 
     public List <Badge> Badges { get; private set; }
 
-
     internal BadgeLine ( double width, double heightConstraint, bool isFirst )
     {
-        Badges = new ();
+        Badges = [];
 
         if ( isFirst )
         {
@@ -49,7 +49,6 @@ public sealed class BadgeLine
         _restWidth = width;
         _heightConstraint = heightConstraint;
     }
-
 
     internal AdditionSuccess AddBadge ( Badge badge )
     {
@@ -82,7 +81,6 @@ public sealed class BadgeLine
             return AdditionSuccess.Success;
         }
     }
-
 
     internal void Clear ()
     {

@@ -1,9 +1,10 @@
-﻿namespace Lister.Core.DocumentProcessor;
+﻿namespace Lister.Core.Document;
 
 /// <summary>
 /// Represents result of attempt to add badge on page.
 /// 0 means unsuccessfull attempt to add badge in processable line through widht lack.
 /// 1 means unsuccessfull attempt to add badge in processable line through height lack.
+/// 2 means successfull attempt to add badge in processable line.
 /// </summary>
 
 internal enum AdditionSuccess

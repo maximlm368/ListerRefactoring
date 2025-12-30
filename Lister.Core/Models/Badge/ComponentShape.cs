@@ -5,13 +5,13 @@
 /// </summary>
 public sealed class ComponentShape : BindableToAnother
 {
-    private string _typeName;
+    private readonly string _typeName;
     public string FillHexStr { get; private set; }
     public ShapeType Type { get; private set; }
 
     public ComponentShape ( double width, double height
                           , double topOffset, double leftOffset
-                          , string fillHexStr, string typeName, string ? bindingName, bool isAboveOfBinding )
+                          , string fillHexStr, string typeName, string? bindingName, bool isAboveOfBinding )
     {
         Width = width;
         Height = height;
@@ -26,13 +26,11 @@ public sealed class ComponentShape : BindableToAnother
         if ( Type == ShapeType.nothing ) Trash ();
     }
 
-
     internal ComponentShape Clone ()
     {
-        return new ComponentShape( Width, Height, TopOffset, LeftOffset, FillHexStr, _typeName
+        return new ComponentShape ( Width, Height, TopOffset, LeftOffset, FillHexStr, _typeName
                                                                        , Binding, IsAboveOfBinding );
     }
-
 
     private void Trash ()
     {
@@ -40,19 +38,18 @@ public sealed class ComponentShape : BindableToAnother
         Height = 0;
     }
 
-
-    private ShapeType TranslateStrToShapeType ( string kind )
+    private static ShapeType TranslateStrToShapeType ( string shapeType )
     {
-        if ( string.IsNullOrWhiteSpace ( kind ) )
+        if ( string.IsNullOrWhiteSpace ( shapeType ) )
         {
             return ShapeType.nothing;
         }
 
-        if ( (kind == "rectangle") || (kind == "Rectangle") )
+        if ( ( shapeType == "rectangle" ) || ( shapeType == "Rectangle" ) )
         {
             return ShapeType.rectangle;
         }
-        else if ( (kind == "ellipse") || (kind == "Ellipse") )
+        else if ( ( shapeType == "ellipse" ) || ( shapeType == "Ellipse" ) )
         {
             return ShapeType.ellipse;
         }

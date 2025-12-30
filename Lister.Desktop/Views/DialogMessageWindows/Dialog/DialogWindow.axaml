@@ -16,39 +16,37 @@
 		
 		ExtendClientAreaToDecorationsHint = "true"
 		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0" >
+		ExtendClientAreaTitleBarHeightHint = "0">
 
-	
 		<StackPanel
 			Width="360"
 			Height="136">
 
 			<Label
 				Classes="modalLabel"
-				Content ="Сохранение изменений"/>
+				Content ="Сохранение изменений"
+			/>
 
-			<Grid Height="70">
-
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition  Width="36"></ColumnDefinition>
-					<ColumnDefinition  Width="314"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
+			<Grid 
+				Height="70"
+				ColumnDefinitions="36 314">
 
 				<Image
 					Grid.Column="0"
 					Width="35"
 					Margin ="16,0,0,0"
-					Source = "/Assets/Icons/warning-alert.ico"/>
-
+					Source = "/Assets/Icons/warning-alert.ico"
+				/>
 				<TextBlock
 					Name="message"
 					Grid.Column="1"
 					Width="314"
 					FontSize="12"
 					Margin ="18,37,0,0"
-					Text="{Binding Path=Question, Mode=OneWay}"
+					Text="{Binding Question, Mode=OneWay}"
 					TextWrapping="WrapWithOverflow"
-					MaxLines="3"/>
+					MaxLines="3"
+				/>
 			</Grid>
 
 			<Canvas
@@ -56,8 +54,8 @@
 				Width="358"
 				Height="1"
 				Margin ="0,-5,0,0"
-				Background ="#ececec"/>
-
+				Background ="#ececec"
+			/>
 			<Canvas
 				Width="358"
 				Height="47"
@@ -71,8 +69,8 @@
 					Canvas.Top="8"
 					Canvas.Left="166"
 					Content="Да"
-					Command="{Binding  Path = ChooseYes}"/>
-
+					Command="{Binding ChooseYes}"
+				/>
 				<Button
 					Name="No"
 					Classes="Primary"
@@ -80,11 +78,10 @@
 					Canvas.Top="8"
 					Canvas.Left="260"
 					Content="Нет"
-					Command="{Binding  Path = ChooseNo}"/>
-
+					Command="{Binding ChooseNo}"
+				/>
 			</Canvas>
 		</StackPanel>
-	
 </Window>
 
 

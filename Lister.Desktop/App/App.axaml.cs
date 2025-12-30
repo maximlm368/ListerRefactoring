@@ -11,14 +11,14 @@ namespace Lister.Desktop.App;
 
 public partial class ListerApp : Avalonia.Application
 {
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
     public static ServiceProvider Services { get; private set; }
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
 
-
-    public override void Initialize()
+    public override void Initialize ()
     {
-        AvaloniaXamlLoader.Load(this);
+        AvaloniaXamlLoader.Load ( this );
     }
-
 
     public override async void OnFrameworkInitializationCompleted ()
     {

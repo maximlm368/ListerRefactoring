@@ -7,7 +7,7 @@ namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 /// </summary>
 internal sealed class PrinterPresentation : ReactiveObject
 {
-    private string _stringPresentation;
+    private string _stringPresentation = string.Empty;
     internal string StringPresentation
     {
         get { return _stringPresentation; }
@@ -16,7 +16,6 @@ internal sealed class PrinterPresentation : ReactiveObject
             this.RaiseAndSetIfChanged ( ref _stringPresentation, value, nameof ( StringPresentation ) );
         }
     }
-
 
     internal PrinterPresentation ( string printerName )
     {

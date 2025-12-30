@@ -9,66 +9,61 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 /// </summary>
 public sealed class PeopleCsvSource : IPeopleSource
 {
-    private static PeopleCsvSource _instance;
+    private static PeopleCsvSource? _instance;
 
-
-    private PeopleCsvSource() { }
-
-
-    public static PeopleCsvSource GetInstance()
+    private PeopleCsvSource ()
     {
-        if (_instance == null)
-        {
-            _instance = new PeopleCsvSource();
-        }
+
+    }
+
+    public static PeopleCsvSource GetInstance ()
+    {
+        _instance ??= new PeopleCsvSource ();
 
         return _instance;
     }
 
-
-    public List<Person>? Get(string? filePath, int gettingLimit)
+    public List<Person>? Get ( string? filePath, int gettingLimit )
     {
-        List<Person> result = [];
+        if ( filePath == null )
+        {
+            return null;
+        }
+
         Encoding encoding;
 
         try
         {
             encoding = Encoding.GetEncoding ( 1251 );
         }
-        catch ( NotSupportedException ex ) 
+        catch ( NotSupportedException )
         {
             return null;
         }
 
-        if (filePath == null)
-        {
-            return null;
-        }
+        List<Person> result = [];
+        FileInfo fileInfo = new ( filePath );
 
-        FileInfo fileInfo = new FileInfo( filePath );
-
-        if (fileInfo.Exists)
+        if ( fileInfo.Exists )
         {
-            using StreamReader reader = new StreamReader( filePath, encoding, true );
-            string line = string.Empty;
+            using StreamReader reader = new ( filePath, encoding, true );
+            string? line = string.Empty;
             char separator = ';';
-
             int counter = 0;
 
-            while ((line = reader.ReadLine()) != null)
+            while ( ( line = reader.ReadLine () ) != null )
             {
-                string[] parts = line.Split( separator, StringSplitOptions.TrimEntries );
+                string [] parts = line.Split ( separator, StringSplitOptions.TrimEntries );
+                Person? person = Person.Create ( parts );
 
-                Person person = Person.Create( parts );
-
-                if (person != null)
+                if ( person != null )
                 {
-                    result.Add( person );
+                    result.Add ( person );
                 }
 
                 counter++;
 
-                if (counter > gettingLimit)
+                if ( counter > gettingLimit )
                 {
                     return null;
                 }

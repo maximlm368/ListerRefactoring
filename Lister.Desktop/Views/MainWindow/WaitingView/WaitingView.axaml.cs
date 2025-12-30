@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Lister.Desktop.App;
 using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
@@ -12,8 +11,7 @@ namespace Lister.Desktop.Views.MainWindow.WaitingView;
 /// </summary>
 public sealed partial class WaitingView : UserControl
 {
-    private WaitingViewModel _viewModel;
-
+    private readonly WaitingViewModel _viewModel;
 
     public WaitingView()
     {
@@ -23,12 +21,8 @@ public sealed partial class WaitingView : UserControl
         _viewModel = (WaitingViewModel) DataContext;
     }
 
-
     public void ChangeSize ( double heightDiff, double widthDiff )
     {
         _viewModel.ChangeSize ( heightDiff, widthDiff );
     }
 }
-
-
-

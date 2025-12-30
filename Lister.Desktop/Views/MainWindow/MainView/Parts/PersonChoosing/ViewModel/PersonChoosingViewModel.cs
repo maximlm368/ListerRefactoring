@@ -1,43 +1,34 @@
 ﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using DynamicData;
 using Lister.Core.BadgesCreator;
 using Lister.Core.Models;
 using Lister.Core.Models.Badge;
-using DynamicData;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using Lister.Desktop.Extentions;
 using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
+using Lister.Desktop.Extentions;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
+using System.Collections.ObjectModel;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
-public partial class PersonChoosingViewModel : ReactiveObject
+internal partial class PersonChoosingViewModel : ObservableObject
 {
-    private static PersonChoosingViewModel Instance;
-
     private readonly int _inputLimit = 50;
+    private readonly BadgeCreator? _badgeCreator;
 
-    private BadgeCreator _badgeCreator;
-    private bool _entireSelectionIsSet;
-
+    [ObservableProperty]
     private bool _fileNotFound;
-    public bool FileNotFound
+
+    public PersonChoosingViewModel ()
     {
-        get { return _fileNotFound; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _fileNotFound, value, nameof (FileNotFound));
-        }
+
     }
 
-
-    public PersonChoosingViewModel () { }
-
-
-    public PersonChoosingViewModel ( string placeHolder, int inputLimit, SolidColorBrush incorrectTemplateColor
-                                   , List <SolidColorBrush> defaultColors, List <SolidColorBrush> focusedColors
-                                   , List <SolidColorBrush> selectedColors, BadgeCreator badgesCreator )
+    public PersonChoosingViewModel ( string placeHolder, int inputLimit, SolidColorBrush incorrectTemplateColor,
+        List<SolidColorBrush> defaultColors, List<SolidColorBrush> focusedColors, List<SolidColorBrush> selectedColors,
+        BadgeCreator badgesCreator
+    )
     {
         _inputLimit = inputLimit;
         _placeHolder = placeHolder;
@@ -50,55 +41,48 @@ public partial class PersonChoosingViewModel : ReactiveObject
         _selectedForegroundColor = selectedColors [2];
         _focusedBackgroundColor = focusedColors [0];
         _focusedBorderColor = focusedColors [1];
-        VisiblePeople = new ObservableCollection <VisiblePerson> ();
+        VisiblePeople = [];
         ScrollerCanvasLeft = _withScroll;
         PersonsScrollValue = _oneHeight;
-        TextboxIsReadOnly = true;
-        TextboxIsFocusable = false;
+        ChoiceIsDisabled = true;
         _focusedEdge = _edge;
-        ChosenTemplatePadding = new Avalonia.Thickness (4, 0);
         _badgeCreator = badgesCreator;
     }
 
-
-    internal void RefreshTemplateChoosingAppearence ()
-    {
-        if ( ChosenTemplate != null )
-        {
-            ChosenTemplateColor = ChosenTemplate.Color;
-        }
-    }
-
-
-    internal void SetPersonsFromFile ( string ? path )
+    internal void ResetPersons ()
     {
         try
         {
-            List <Person> people = _badgeCreator.GetPersons ( path );
+            List<Person>? people = _badgeCreator?.People;
             UsePeople ( people, true );
         }
-        catch ( Exception ex )
+        catch ( Exception )
         {
             FileNotFound = true;
             UsePeople ( null, false );
         }
     }
 
-
-    private void UsePeople ( List<Person> ? people, bool peopleExist )
+    private void UsePeople ( List<Person>? people, bool peopleExist )
     {
-        SetPersonsFromNewSource ( people );
-        SwitchPersonChoosingEnabling ( peopleExist );
+        if ( people == null )
+        {
+            ChoiceIsDisabled = true;
+
+            return;
+        }
+
+        List<VisiblePerson>? visiblePeople = people?.Clone ()
+             ?.Where ( person => !person.IsEmpty () )
+             .Select ( person => new VisiblePerson ( person ) )
+             .OrderBy ( person => person.Model.FullName )
+             .ToList ();
+
+        PeopleStorage = visiblePeople;
+        InvolvedPeople = visiblePeople;
+        ChosenPerson = null;
+        ChoiceIsDisabled = !peopleExist;
     }
-
-
-    private void SwitchPersonChoosingEnabling ( bool shouldEnable )
-    {
-        TextboxIsReadOnly = ! shouldEnable;
-        TextboxIsFocusable = shouldEnable;
-    }
-
-
     #region DropDown
 
     internal void HideDropListWithChange ()
@@ -134,7 +118,14 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
     internal void HideDropListWithoutChange ()
     {
-        if ( (( InvolvedPeople. Count == 0 )   &&   ( PeopleStorage. Count > 0 ))   ||   _choiceIsAbsent )
+        if ( InvolvedPeople == null || PeopleStorage == null )
+        {
+            return;
+        }
+
+        if ( ( InvolvedPeople.Count == 0 ) && ( PeopleStorage.Count > 0 )
+             || _choiceIsAbsent
+        )
         {
             RecoverVisiblePeople ();
             ShowDropDown ();
@@ -174,50 +165,37 @@ public partial class PersonChoosingViewModel : ReactiveObject
     }
     #endregion
 
-
-    private void SetPersonsFromNewSource ( List<Person> ? people )
+    internal void SetChosenPerson ( string? personName )
     {
-        if ( people == null )
+        _choiceIsAbsent = false;
+        Person? person = FindPersonByName ( personName );
+
+        if ( person == null )
         {
             return;
         }
 
-        List<VisiblePerson> visiblePeople = people.Clone ()
-             .Where (person => ! person.IsEmpty ())
-             .Select (person => new VisiblePerson (person))
-             .OrderBy (person => person.Model.FullName)
-             .ToList ();
+        int seekingStart = _focusedNumber - _maxVisibleCount;
 
-        PeopleStorage = visiblePeople;
-        InvolvedPeople = visiblePeople;
-        ChosenPerson = null;
-    }
-
-
-    internal void SetChosenPerson ( string personName )
-    {
-        _choiceIsAbsent = false;
-        Person person = FindPersonByStringPresentation (personName);
-        int seekingScratch = _focusedNumber - _maxVisibleCount;
-
-        if ( seekingScratch < 0 )
+        if ( seekingStart < 0 )
         {
-            seekingScratch = 0;
+            seekingStart = 0;
         }
 
         int seekingEnd = _focusedNumber + _maxVisibleCount;
 
-        if ( seekingScratch > InvolvedPeople.Count )
+#pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
+        if ( seekingStart > InvolvedPeople.Count )
         {
-            seekingScratch = InvolvedPeople.Count;
+            seekingStart = InvolvedPeople.Count;
         }
+#pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
 
-        for ( int index = seekingScratch;   index <= seekingEnd;   index++ )
+        for ( int index = seekingStart; index <= seekingEnd; index++ )
         {
             VisiblePerson foundPerson = InvolvedPeople [index];
-            bool isCoincidence = person.Equals (foundPerson.Model);
 
-            if ( isCoincidence )
+            if ( person.Equals ( foundPerson.Model ) )
             {
                 if ( _focused != null )
                 {
@@ -240,7 +218,6 @@ public partial class PersonChoosingViewModel : ReactiveObject
         }
     }
 
-
     internal void SetEntireList ()
     {
         _choiceIsAbsent = false;
@@ -262,20 +239,15 @@ public partial class PersonChoosingViewModel : ReactiveObject
         _focusedNumber = _focusedEdge - _maxVisibleCount;
     }
 
-
-    private void SetPersonChosenState ()
+    private void SetSinglePersonChosenState ()
     {
         EntireIsSelected = false;
-        SinglePersonIsSelected = true;
     }
-
 
     private void SetEntireListChosenState ()
     {
         EntireIsSelected = true;
-        SinglePersonIsSelected = false;
     }
-
 
     internal void ShiftScroller ( double shift )
     {
@@ -286,30 +258,29 @@ public partial class PersonChoosingViewModel : ReactiveObject
         _withScroll -= shift;
     }
 
-
-    internal Person ? FindPersonByStringPresentation ( string presentation )
+    private Person? FindPersonByName ( string? presentation )
     {
-        if ( string.IsNullOrWhiteSpace (presentation) )
+        if ( string.IsNullOrWhiteSpace ( presentation ) || InvolvedPeople == null )
         {
             return null;
         }
 
-        Person result = null;
+        Person? result = null;
 
-        foreach ( VisiblePerson person   in   InvolvedPeople )
+        foreach ( VisiblePerson person in InvolvedPeople )
         {
-            bool isIntresting = person.Model.IsMatchingTo (presentation);
+            bool isIntresting = person.Model.IsMatchingTo ( presentation );
 
             if ( isIntresting )
             {
                 result = person.Model;
+
                 break;
             }
         }
 
         return result;
     }
-
 
     private void SetPersonList ()
     {
@@ -322,14 +293,13 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
             if ( listIsWhole )
             {
-                SetWholeList (count);
+                SetWholeList ( count );
             }
             else
             {
-                SetCutDownList (count);
+                SetCutDownList ( count );
             }
 
-            _topLimit = _focusedNumber;
             SetScrollerIfShould ();
         }
         else
@@ -347,16 +317,15 @@ public partial class PersonChoosingViewModel : ReactiveObject
         SetReadiness ();
     }
 
-
     private void SetWholeList ( int personCount )
     {
-        _visibleHeightStorage = _oneHeight * ( Math.Min (_maxVisibleCount, personCount) + 1 );
+        _visibleHeightStorage = _oneHeight * ( Math.Min ( _maxVisibleCount, personCount ) + 1 );
         FirstIsVisible = true;
         _allListMustBe = true;
         FirstItemHeight = _scrollingScratch;
         PersonsScrollValue = _scrollingScratch;
 
-        if ( _focused != null ) 
+        if ( _focused != null )
         {
             _focused.IsFocused = false;
             _focused.IsSelected = false;
@@ -365,43 +334,37 @@ public partial class PersonChoosingViewModel : ReactiveObject
 
         _focusedEdge = _edge;
         _focusedNumber = -1;
-        TextboxIsReadOnly = false;
-        TextboxIsFocusable = true;
+        ChoiceIsDisabled = false;
         EntireIsSelected = true;
-        SetVisiblePeopleStartingFrom (0);
+        SetVisiblePeopleStartingFrom ( 0 );
     }
-
 
     private void SetCutDownList ( int personCount )
     {
         FirstItemHeight = 0;
         FirstIsVisible = false;
         _allListMustBe = false;
-        _visibleHeightStorage = _oneHeight * Math.Min (_maxVisibleCount, personCount);
+        _visibleHeightStorage = _oneHeight * Math.Min ( _maxVisibleCount, personCount );
         EntireIsSelected = false;
         PersonsScrollValue = 0;
         _focusedNumber = 0;
         _focused = InvolvedPeople [_focusedNumber];
         _focused.IsFocused = true;
         _focusedEdge = _edge;
-        SetVisiblePeopleStartingFrom (0);
+        SetVisiblePeopleStartingFrom ( 0 );
     }
-
 
     private void SetVisiblePeopleStartingFrom ( int scratch )
     {
-        VisiblePeople.Clear ();
-        int limit = Math.Min (InvolvedPeople.Count, _maxVisibleCount);
+        VisiblePeople?.Clear ();
 
-        for ( int index = 0;   index < limit;   index++ )
+        for ( int index = 0; index < Math.Min ( InvolvedPeople.Count, _maxVisibleCount ); index++ )
         {
-            int personIndex = scratch + index;
-            VisiblePeople.Add (InvolvedPeople [personIndex]);
+            VisiblePeople?.Add ( InvolvedPeople [scratch + index] );
         }
     }
 
-
-    internal void SetInvolvedPeople ( List <VisiblePerson> involvedPeople )
+    private void SetInvolvedPeople ( List<VisiblePerson> involvedPeople )
     {
         SetSelectedToNull ();
         InvolvedPeople = involvedPeople;
@@ -409,12 +372,9 @@ public partial class PersonChoosingViewModel : ReactiveObject
         ShowDropDown ();
     }
 
-
     private void SetScrollerIfShould ()
     {
-        int personCount = InvolvedPeople.Count;
-
-        if ( personCount > _maxVisibleCount )
+        if ( InvolvedPeople.Count > _maxVisibleCount )
         {
             PersonListWidth = _withScroll - _widthDelta;
             ScrollerWidth = _upperHeight;
@@ -443,68 +403,46 @@ public partial class PersonChoosingViewModel : ReactiveObject
         }
     }
 
-
     private void SetReadiness ()
     {
-        if ( ( InvolvedPeople != null ) && ( InvolvedPeople.Count > 0 ) )
-        {
-            bool areReady = ( SinglePersonIsSelected || EntireIsSelected )   
-                            && 
-                            ( ChosenTemplate != null );
-            if ( areReady )
-            {
-                AllAreReady = true;
-            }
-            else
-            {
-                AllAreReady = false;
-            }
-        }
+        SettingsIsComplated = InvolvedPeople != null
+            && InvolvedPeople.Count > 0
+            && ChosenTemplate != null;
     }
 
-
-    private void ToZeroPersonSelection ()
+    internal void RefreshPersonList ( string input )
     {
-        SinglePersonIsSelected = false;
-        EntireIsSelected = false;
-        AllAreReady = false;
-    }
-
-
-    internal void ReductPersonList ( string input )
-    {
-        ToZeroPersonSelection ();
-        RestrictInput (input);
+        RestrictInput ( input );
 
         if ( input == string.Empty )
         {
             RecoverVisiblePeople ();
             ShowDropDown ();
+
             return;
         }
 
-        List <VisiblePerson> foundVisiblePeople = new List <VisiblePerson> ();
+        List<VisiblePerson> foundVisiblePeople = [];
 
-        foreach ( VisiblePerson person   in   PeopleStorage )
+        foreach ( VisiblePerson person in PeopleStorage )
         {
             person.IsFocused = false;
             string entireName = person.Model.FullName;
 
-            if ( entireName.Contains (input, StringComparison.CurrentCultureIgnoreCase) )
+            if ( entireName.Contains ( input, StringComparison.CurrentCultureIgnoreCase ) )
             {
-                foundVisiblePeople.Add (person);
+                foundVisiblePeople.Add ( person );
             }
         }
 
-        SetInvolvedPeople (foundVisiblePeople);
+        SetInvolvedPeople ( foundVisiblePeople );
     }
-
 
     private void RestrictInput ( string input )
     {
         if ( input.Length > _inputLimit )
         {
-            string ph = PlaceHolder;
+            string? ph = PlaceHolder;
             PlaceHolder = "";
             PlaceHolder = ph;
         }
@@ -514,25 +452,15 @@ public partial class PersonChoosingViewModel : ReactiveObject
         }
     }
 
-
     internal void RecoverVisiblePeople ()
     {
         SetSelectedToNull ();
         _choiceIsAbsent = true;
-        SinglePersonIsSelected = false;
         _scrollValue = _scrollingScratch;
-        List <VisiblePerson> recovered = new List <VisiblePerson> ();
 
-        foreach ( VisiblePerson person   in   PeopleStorage )
-        {
-            person.IsFocused = false;
-            recovered.Add (person);
-        }
-
-        InvolvedPeople = recovered;
+        InvolvedPeople = PeopleStorage.Clone ();
         EntireIsSelected = false;
     }
-
 
     private void SetSelectedToNull ()
     {
@@ -543,39 +471,25 @@ public partial class PersonChoosingViewModel : ReactiveObject
         }
     }
 
-
-    internal void SetUp ( string theme )
+    internal void SetUp ()
     {
-        SolidColorBrush correctColor = _defaultForegroundColor;
-        SolidColorBrush incorrectColor = _incorrectTemplateForeground;
-
-        if ( theme == "Dark" )
-        {
-            correctColor = _defaultBackgroundColor;
-            incorrectColor = new SolidColorBrush (new Avalonia.Media.Color (100, 255, 255, 255));
-        }
-
-        ObservableCollection <TemplateViewModel> templates = new ();
-
-        if ( _badgeLayouts == null )
-        {
-            _badgeLayouts = BadgeLayoutProvider.GetInstance ().GetBadgeLayouts ();
-        }
+        ObservableCollection<TemplateViewModel> templates = [];
+        _badgeLayouts ??= BadgeLayoutProvider.GetInstance ().GetBadgeLayouts ();
 
         foreach ( KeyValuePair<Layout, KeyValuePair<string, List<string>>> layout in _badgeLayouts )
         {
-            KeyValuePair<string, List<string>> sourceAndErrors = layout.Value;
-            bool correctLayoutHasEmptyMessage = ( sourceAndErrors.Value.Count < 1 );
             List<string> errors = layout.Value.Value;
             string source = layout.Value.Key;
-            templates.Add ( new TemplateViewModel ( new TemplateName ( layout.Key.TemplateName, correctLayoutHasEmptyMessage )
-                                                  , correctColor, incorrectColor, errors, source ) );
+            templates.Add (
+                new TemplateViewModel ( new TemplateName ( layout.Key.TemplateName ),
+                    _defaultForegroundColor,
+                    _incorrectTemplateForeground,
+                    errors,
+                    source
+                )
+            );
         }
 
         Templates = templates;
     }
 }
-
-
-
-

@@ -21,19 +21,19 @@ public abstract class LayoutComponentBase
 
         if ( direction == "Left" )
         {
-            isShifted = Shift ( 0, 1, restrictions );
+            isShifted = TryShift ( 0, 1, restrictions );
         }
         else if ( direction == "Right" )
         {
-            isShifted = Shift ( 0, -1, restrictions );
+            isShifted = TryShift ( 0, -1, restrictions );
         }
         else if ( direction == "Up" )
         {
-            isShifted = Shift ( 1, 0, restrictions );
+            isShifted = TryShift ( 1, 0, restrictions );
         }
         else if ( direction == "Down" )
         {
-            isShifted = Shift ( -1, 0, restrictions );
+            isShifted = TryShift ( -1, 0, restrictions );
         }
 
         if ( isShifted ) Changed?.Invoke ( this );
@@ -42,22 +42,21 @@ public abstract class LayoutComponentBase
 
     public void Move ( double verticalDelta, double horizontalDelta, Thickness restrictions )
     {
-        bool isShifted = false;
-        isShifted = Shift ( verticalDelta, horizontalDelta, restrictions );
+        bool isShifted = TryShift ( verticalDelta, horizontalDelta, restrictions );
         
         if ( isShifted ) Changed?.Invoke ( this );
     }
 
 
-    private bool Shift ( double verticalDelta, double horizontalDelta, Thickness restrictions )
+    private bool TryShift ( double verticalDelta, double horizontalDelta, Thickness restrictions )
     {
         double currentLeftOffset = LeftOffset - horizontalDelta;
         double currentTopOffset = TopOffset - verticalDelta;
 
         bool shiftIsUnpossible = ( currentLeftOffset < restrictions.Left )
-                               || ( currentLeftOffset > restrictions.Right )
-                               || ( currentTopOffset > restrictions.Bottom )
-                               || ( currentTopOffset < restrictions.Top );
+                                 || ( currentLeftOffset > restrictions.Right )
+                                 || ( currentTopOffset > restrictions.Bottom )
+                                 || ( currentTopOffset < restrictions.Top );
 
         if ( shiftIsUnpossible ) 
         {

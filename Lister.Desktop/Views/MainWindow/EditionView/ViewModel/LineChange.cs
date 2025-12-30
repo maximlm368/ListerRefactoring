@@ -1,158 +1,141 @@
 ﻿using Avalonia;
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Models.Badge;
 using Lister.Desktop.ModelMappings.BadgeVM;
-using ReactiveUI;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-public partial class BadgeEditorViewModel : ReactiveObject
+internal partial class BadgeEditorViewModel : ObservableObject
 {
-    private readonly SolidColorBrush _focusedFontSizeColor;
-    private readonly SolidColorBrush _releasedFontSizeColor;
-    private readonly SolidColorBrush _focusedFontSizeBorderColor;
-    private readonly SolidColorBrush _releasedFontSizeBorderColor;
+    private readonly SolidColorBrush _focusedFontsizeColor;
+    private readonly SolidColorBrush _releasedFontsizeColor;
+    private readonly SolidColorBrush _focusedFontsizeBorderColor;
+    private readonly SolidColorBrush _releasedFontsizeBorderColor;
 
-    private SolidColorBrush _focusedFontsizeColor;
-    internal SolidColorBrush FocusedFontSizeColor
-    {
-        get { return _focusedFontsizeColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _focusedFontsizeColor, value, nameof (FocusedFontSizeColor));
-        }
-    }
+    [ObservableProperty]
+    private SolidColorBrush _focusedFontSizeColor;
 
-    private SolidColorBrush _focusedFontsizeBorderColor;
-    internal SolidColorBrush FocusedFontSizeBorderColor
-    {
-        get { return _focusedFontsizeBorderColor; }
-        private set
-        {
-            this.RaiseAndSetIfChanged (ref _focusedFontsizeBorderColor, value, nameof (FocusedFontSizeBorderColor));
-        }
-    }
-
+    [ObservableProperty]
+    private SolidColorBrush _focusedFontSizeBorderColor;
 
     #region Processing
-
     internal void MoveCaptured ( Point delta )
     {
-        BeingProcessedBadge.MoveCaptured (delta);
+        ProcessableBadge?.MoveCaptured ( delta );
         ResetActiveIcon ();
     }
-
 
     internal void FocusedToSide ( string direction )
     {
-        if ( BeingProcessedBadge == null ) return;
+        if ( ProcessableBadge == null ) return;
 
-        BeingProcessedBadge.FocusedToSide (direction);
+        ProcessableBadge.FocusedToSide ( direction );
         ResetActiveIcon ();
     }
 
-
     internal void ResetFocusedText ( string newText )
     {
-        BeingProcessedBadge.ResetFocusedText ( newText );
+        ProcessableBadge?.ResetFocusedText ( newText );
         EnableSplitting ( newText );
         ResetActiveIcon ();
     }
 
-
     internal void Split ()
     {
-        BeingProcessedBadge.Split ( _scale );
+        ProcessableBadge?.Split ();
         DisableTextLineEdition ();
         ResetActiveIcon ();
     }
-
     #endregion
 
     #region Focusing
-
-    internal void FocusTextLine ( string focusedContent, int elementNumber )
+    internal void FocusTextLine ( string? focusedContent, int elementNumber )
     {
-        BeingProcessedBadge.SetFocusedLine (focusedContent, elementNumber);
+        if ( ProcessableBadge == null || focusedContent == null )
+        {
+            return;
+        }
 
-        if ( BeingProcessedBadge. FocusedLine != null )
+        ProcessableBadge.SetFocusedLine ( focusedContent, elementNumber );
+
+        if ( ProcessableBadge.FocusedLine != null )
         {
             MoversAreEnable = true;
             ZoommerIsEnable = true;
-            EnableSplitting (focusedContent, elementNumber);
+            EnableSplitting ( focusedContent, elementNumber );
         }
     }
-
 
     internal void FocusShape ( ShapeType kindName, int shapeId )
     {
         if ( kindName == ShapeType.rectangle )
         {
-            BeingProcessedBadge.SetFocusedRectangle (shapeId);
+            ProcessableBadge?.SetFocusedRectangle ( shapeId );
         }
-        else if ( kindName == ShapeType.ellipse ) 
+        else if ( kindName == ShapeType.ellipse )
         {
-            BeingProcessedBadge.SetFocusedEllipse (shapeId);
+            ProcessableBadge?.SetFocusedEllipse ( shapeId );
         }
     }
-
 
     internal void FocusImage ( int id )
     {
-        BeingProcessedBadge.SetFocusedImage (id);
+        ProcessableBadge?.SetFocusedImage ( id );
     }
-
 
     internal void ReleaseCaptured ()
     {
-        if ( BeingProcessedBadge == null ) 
+        if ( ProcessableBadge == null )
         {
             return;
         }
 
-        FocusedFontSizeBorderColor = null;
+        FocusedFontSizeBorderColor = _releasedFontsizeBorderColor;
         DisableTextLineEdition ();
         ResetActiveIcon ();
-        BeingProcessedBadge.ReleaseFocused ();
+        ProcessableBadge.ReleaseFocused ();
     }
     #endregion
 
     #region FontSizeChange
-
     internal void IncreaseFontSize ()
     {
-        BeingProcessedBadge.IncreaseFontSize ();
+        ProcessableBadge?.IncreaseFontSize ();
         ResetActiveIcon ();
     }
 
-
     internal void ReduceFontSize ()
     {
-        BeingProcessedBadge.ReduceFontSize ();
+        ProcessableBadge?.ReduceFontSize ();
         ResetActiveIcon ();
     }
     #endregion
 
     #region ActionsConsequences
-
     private void ResetActiveIcon ()
     {
-        if ( BeingProcessedBadge.IsCorrect )
+        if ( ProcessableBadge == null || ActiveIcon == null )
         {
-            if ( ! ActiveIcon.Correctness )
+            return;
+        }
+
+        if ( ProcessableBadge.IsCorrect )
+        {
+            if ( !ActiveIcon.Correctness )
             {
                 ActiveIcon.SwitchCorrectness ();
 
                 if ( _filterState == FilterChoosing.All )
                 {
-                    CorrectNumbered.Add ( BeingProcessedBadge );
-                    IncorrectNumbered.Remove ( BeingProcessedBadge );
+                    CorrectNumbered.Add ( ProcessableBadge );
+                    IncorrectNumbered.Remove ( ProcessableBadge );
                 }
 
                 IncorrectBadgesCount--;
             }
         }
-        else if ( ! BeingProcessedBadge.IsCorrect )
+        else if ( !ProcessableBadge.IsCorrect )
         {
             if ( ActiveIcon.Correctness )
             {
@@ -160,15 +143,14 @@ public partial class BadgeEditorViewModel : ReactiveObject
 
                 if ( _filterState == FilterChoosing.All )
                 {
-                    IncorrectNumbered.Add ( BeingProcessedBadge );
-                    CorrectNumbered.Remove ( BeingProcessedBadge );
+                    IncorrectNumbered.Add ( ProcessableBadge );
+                    CorrectNumbered.Remove ( ProcessableBadge );
                 }
 
                 IncorrectBadgesCount++;
             }
         }
     }
-
 
     private void DisableTextLineEdition ()
     {
@@ -177,10 +159,9 @@ public partial class BadgeEditorViewModel : ReactiveObject
         ZoommerIsEnable = false;
     }
 
-
     internal void EnableSplitting ( string content, int elementNumber )
     {
-        TextLineViewModel line = BeingProcessedBadge.GetCoincidence ( content, elementNumber );
+        TextLineViewModel? line = ProcessableBadge?.GetCoincidence ( content, elementNumber );
 
         if ( line == null )
         {
@@ -190,11 +171,10 @@ public partial class BadgeEditorViewModel : ReactiveObject
         EnableSplitting ( content );
     }
 
-
     private void EnableSplitting ( string content )
     {
-        string [] strings = content.Split ( new char [] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries );
-        bool lineIsSplitable = ( strings.Length > 1 );
+        string [] strings = content.Split ( [' ', '-'], StringSplitOptions.RemoveEmptyEntries );
+        bool lineIsSplitable = strings.Length > 1;
 
         if ( lineIsSplitable )
         {

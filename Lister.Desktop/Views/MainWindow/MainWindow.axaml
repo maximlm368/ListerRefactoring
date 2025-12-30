@@ -20,6 +20,5 @@
 
 	<views:MainView
 		Name="view"/>
-  
 </Window>
 

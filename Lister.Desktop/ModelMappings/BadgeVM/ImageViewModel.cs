@@ -1,69 +1,41 @@
 ﻿using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Models.Badge;
 using Lister.Desktop.Extentions;
-using ReactiveUI;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
 /// <summary>
 /// Maps ComponentImage model into visible entity.
 /// </summary>
-internal sealed class ImageViewModel : BoundToTextLineBase
+public sealed partial class ImageViewModel : BoundToTextLineBase
 {
-    private static Dictionary<string, Bitmap> _nameToImage = new();
+    private static readonly Dictionary<string, Bitmap?> _nameToImage = [];
 
     internal ComponentImage Model { get; private set; }
     internal string Path { get; private set; }
 
-    private Bitmap _bitMap;
-    internal Bitmap BitMap
-    {
-        get { return _bitMap; }
-        private set
-        {
-            this.RaiseAndSetIfChanged( ref _bitMap, value, nameof( BitMap ) );
-        }
-    }
+    [ObservableProperty]
+    private Bitmap? _bitMap;
 
-
-    internal ImageViewModel(int id, ComponentImage model)
+    internal ImageViewModel ( int id, ComponentImage model )
     {
         Path = model.Path;
         Model = model;
 
-        if (!_nameToImage.ContainsKey( model.Path ) || _nameToImage[model.Path] == null)
+        if ( !_nameToImage.TryGetValue ( model.Path, out Bitmap? value ) || value == null )
         {
-            _nameToImage[model.Path] = ImageHelper.LoadFromResource( model.Path );
+            value =  ImageHelper.LoadFromResource ( model.Path );
+            _nameToImage [model.Path] = value;
         }
 
         Id = id;
-        BitMap = _nameToImage[model.Path];
+        BitMap = value;
         Binding = model.Binding;
         IsAboveOfBinding = model.IsAboveOfBinding;
 
-        SetUp( model.Width, model.Height, model.TopOffset, model.LeftOffset );
+        SetUp ( model.Width, model.Height, model.TopOffset, model.LeftOffset );
 
         Model.Changed += HandleModelChanged;
-    }
-
-
-    internal ImageViewModel(ImageViewModel prototype)
-    {
-        Path = prototype.Path;
-        Id = prototype.Id;
-        BitMap = _nameToImage[Path];
-        Binding = prototype.Binding;
-        IsAboveOfBinding = prototype.IsAboveOfBinding;
-
-        SetUp( prototype.Width, prototype.Height, prototype.TopOffset, prototype.LeftOffset );
-
-        Model.Changed += HandleModelChanged;
-    }
-
-
-    internal ImageViewModel Clone()
-    {
-        return new ImageViewModel( this );
     }
 }
-

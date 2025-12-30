@@ -4,26 +4,23 @@ namespace Lister.Desktop.Extentions;
 
 public static class TerminalCommandExecuter
 {
-    public static string ExecuteCommand(string command)
+    public static string ExecuteCommand ( string command )
     {
-        using (Process process = new Process())
+        using Process process = new ();
+
+        process.StartInfo = new ProcessStartInfo
         {
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{command}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+            FileName = "/bin/bash",
+            Arguments = $"-c \"{command}\"",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
 
-            process.Start();
+        process.Start ();
+        string result = process.StandardOutput.ReadToEnd ();
+        process.WaitForExit ();
 
-            string result = process.StandardOutput.ReadToEnd();
-
-            process.WaitForExit();
-
-            return result;
-        }
+        return result;
     }
 }

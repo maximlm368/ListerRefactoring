@@ -7,45 +7,31 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 /// </summary>
 public sealed class PeopleSourceFactory : IPeopleSourceFactory
 {
-    private static PeopleSourceFactory _instance;
+    private static PeopleSourceFactory? _instance;
 
-
-    private PeopleSourceFactory() { }
-
-
-    public static PeopleSourceFactory GetInstance()
+    private PeopleSourceFactory ()
     {
-        if (_instance == null)
-        {
-            _instance = new PeopleSourceFactory();
-        }
+
+    }
+
+    public static PeopleSourceFactory GetInstance ()
+    {
+        _instance ??= new PeopleSourceFactory ();
 
         return _instance;
     }
 
-
-    public IPeopleSource GetPeopleSource(string? filePath)
+    public IPeopleSource GetPeopleSource ( string? filePath )
     {
-        IPeopleSource result = PeopleCsvSource.GetInstance();
+        IPeopleSource result = PeopleCsvSource.GetInstance ();
 
-        if (string.IsNullOrWhiteSpace( filePath ))
+        if ( string.IsNullOrWhiteSpace ( filePath ) )
         {
             return result;
         }
 
-        bool fileIsCSV = filePath.Last() == 'v'
-                         ||
-                         filePath.Last() == 'V';
+        bool fileIsCSV = filePath.Last () == 'v' || filePath.Last () == 'V';
 
-        if (fileIsCSV)
-        {
-            result = PeopleCsvSource.GetInstance();
-        }
-        else
-        {
-            result = PeopleXlsxSource.GetInstance();
-        }
-
-        return result;
+        return fileIsCSV ? PeopleCsvSource.GetInstance () : PeopleXlsxSource.GetInstance ();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Lister.Core.DocumentProcessor.Abstractions;
+﻿using Lister.Core.Document.AbstractServices;
 using Lister.Core.Extentions;
 
 namespace Lister.Core.Models.Badge;
@@ -10,17 +10,16 @@ namespace Lister.Core.Models.Badge;
 /// </summary>
 public sealed class Layout
 {
-    internal static ITextWidthMeasurer Measurer { get; set; }
+    internal static ITextWidthMeasurer? Measurer { get; set; }
 
     private readonly double _interLineAddition = 1;
+    private List<double>? _bounds;
+    private List<TextLine> _boundsViolatingLines;
+    private List<TextLine> _overlayingLines;
+    private TextLine? _processableLine;
 
-    private List<double> _paddinigs;
-    private List<TextLine> _paddingViolentLines;
-    private List<TextLine> _overlayViolentLines;
-    private TextLine _processableLine;
-
-    private LayoutComponentBase _processableComponent;
-    internal LayoutComponentBase ProcessableComponent
+    private LayoutComponentBase? _processableComponent;
+    internal LayoutComponentBase? ProcessableComponent
     {
         get { return _processableComponent; }
         set
@@ -47,38 +46,48 @@ public sealed class Layout
     public List<ComponentShape> Shapes { get; private set; }
     public bool HasIncorrectLines { get; private set; }
 
-
-    public Layout ( double width, double height, string templateName, List<double>? paddings
-                       , List<TextLine>? textualFields, List<ComponentImage>? insideImages
-                       , List<ComponentShape>? insideShapes )
+    private Layout ( double width, double height, string templateName, List<double>? bounds,
+        List<TextLine>? textualFields, List<ComponentImage>? insideImages, List<ComponentShape>? insideShapes
+    )
     {
         Width = width;
         Height = height;
         BorderWidth = Width + 2;
         BorderHeight = Height + 2;
         TemplateName = templateName;
-        SetPaddings ( paddings );
-        TextLines = textualFields ?? new List<TextLine> ();
-        Images = insideImages ?? new List<ComponentImage> ();
-        Shapes = insideShapes ?? new List<ComponentShape> ();
-        _paddingViolentLines = new ();
-        _overlayViolentLines = new ();
+        SetBounds ( bounds );
+        TextLines = textualFields ?? [];
+        Images = insideImages ?? [];
+        Shapes = insideShapes ?? [];
+        _boundsViolatingLines = [];
+        _overlayingLines = [];
 
         foreach ( TextLine line in TextLines )
         {
-            if ( line.IsPaddingViolent )
+            if ( line.IsBoundViolating )
             {
-                _paddingViolentLines.Add ( line );
+                _boundsViolatingLines.Add ( line );
             }
-            else if ( line.IsOverLayViolent )
+            else if ( line.IsOverLaying )
             {
-                _overlayViolentLines.Add ( line );
+                _overlayingLines.Add ( line );
             }
         }
 
         OrderTextlinesVerticaly ();
     }
 
+    public static Layout? GetInstance ( double width, double height, string templateName, List<double>? bounds,
+        List<TextLine>? textualFields, List<ComponentImage>? insideImages, List<ComponentShape>? insideShapes
+    )
+    {
+        if ( Measurer == null ) 
+        {
+            return null;
+        }
+
+        return new Layout ( width, height, templateName, bounds, textualFields, insideImages, insideShapes );
+    }
 
     internal void SetUpComponents ( Dictionary<string, string> textualComponents )
     {
@@ -89,7 +98,6 @@ public sealed class Layout
         GatherIncorrectLines ();
     }
 
-
     private void SetUpImages ()
     {
         for ( int index = 0; index < Images.Count; index++ )
@@ -97,7 +105,6 @@ public sealed class Layout
             ShiftDownBelowMembersIfShould ( Images [index] );
         }
     }
-
 
     private void SetUpShapes ()
     {
@@ -107,13 +114,11 @@ public sealed class Layout
         }
     }
 
-
     private void ShiftDownBelowMembersIfShould ( BindableToAnother bindable )
     {
         if ( !string.IsNullOrWhiteSpace ( bindable.Binding ) )
         {
             double startMemberTopOffset = bindable.TopOffset;
-            int scratch = 0;
             int boundPartsCount = 0;
             bool boundIsFound = false;
             double delta = 0;
@@ -152,14 +157,12 @@ public sealed class Layout
 
             if ( boundIsFound )
             {
-                scratch = index;
                 delta -= _interLineAddition;
                 bindable.TopOffset += delta;
                 ShiftBelowComponents ( bindable, index, startMemberTopOffset );
             }
         }
     }
-
 
     private void ShiftBelowComponents ( BindableToAnother bindable, int startIndex, double memberRelativeTopOffset )
     {
@@ -169,13 +172,12 @@ public sealed class Layout
             line.TopOffset += ( bindable.Height + memberRelativeTopOffset );
         }
 
-        ShiftBelowBounds ( Images, bindable, startIndex, memberRelativeTopOffset );
-        ShiftBelowBounds ( Shapes, bindable, startIndex, memberRelativeTopOffset );
+        ShiftBelowBounds ( Images, bindable, memberRelativeTopOffset );
+        ShiftBelowBounds ( Shapes, bindable, memberRelativeTopOffset );
     }
 
-
-    private void ShiftBelowBounds<T> ( List<T> bounds, BindableToAnother bindable, int startIndex
-                                      , double componentRelativeTopOffset ) where T : BindableToAnother
+    private static void ShiftBelowBounds<T> ( List<T> bounds, BindableToAnother bindable, double componentRelativeTopOffset ) 
+        where T : BindableToAnother
     {
         for ( int index = 0; index < bounds.Count; index++ )
         {
@@ -188,16 +190,15 @@ public sealed class Layout
         }
     }
 
-
-    private void SetPaddings ( List<double> paddings )
+    private void SetBounds ( List<double>? bounds )
     {
-        if ( (paddings != null) && (paddings.Count == 4) )
+        if ( ( bounds != null ) && ( bounds.Count == 4 ) )
         {
-            PaddingLeft = paddings [0];
-            PaddingTop = paddings [1];
-            PaddignRight = paddings [2];
-            PaddingBottom = paddings [3];
-            _paddinigs = paddings;
+            PaddingLeft = bounds [0];
+            PaddingTop = bounds [1];
+            PaddignRight = bounds [2];
+            PaddingBottom = bounds [3];
+            _bounds = bounds;
         }
         else
         {
@@ -205,26 +206,24 @@ public sealed class Layout
             PaddingTop = 0;
             PaddignRight = 0;
             PaddingBottom = 0;
-            _paddinigs = new List<double> () { 0, 0, 0, 0 };
+            _bounds = [0, 0, 0, 0];
         }
     }
-
 
     internal Layout Clone ( bool resultIsPersonDataFree )
     {
         List<TextLine> lines = CloneTextLines ( resultIsPersonDataFree );
         List<ComponentImage> images = CloneImages ();
         List<ComponentShape> shapes = CloneShapes ();
-        Layout clone = new Layout ( Width, Height, TemplateName, _paddinigs, lines, images, shapes );
+        Layout clone = new( Width, Height, TemplateName, _bounds, lines, images, shapes );
 
         return clone;
     }
 
-
     private List<TextLine> CloneTextLines ( bool resultIsPersonDataFree )
     {
-        List<TextLine> lines = new ();
-        
+        List<TextLine> lines = [];
+
         foreach ( TextLine line in TextLines )
         {
             TextLine lineClone;
@@ -244,10 +243,9 @@ public sealed class Layout
         return lines;
     }
 
-
     private List<ComponentImage> CloneImages ()
     {
-        List<ComponentImage> images = new ();
+        List<ComponentImage> images = [];
 
         foreach ( ComponentImage image in Images )
         {
@@ -257,10 +255,9 @@ public sealed class Layout
         return images;
     }
 
-
     private List<ComponentShape> CloneShapes ()
     {
-        List<ComponentShape> shapes = new ();
+        List<ComponentShape> shapes = [];
 
         foreach ( ComponentShape shape in Shapes )
         {
@@ -270,31 +267,30 @@ public sealed class Layout
         return shapes;
     }
 
-
     internal void RollBackTo ( Layout destination )
     {
-        TextLines = new ();
-        _paddingViolentLines = new ();
-        _overlayViolentLines = new ();
+        TextLines = [];
+        _boundsViolatingLines = [];
+        _overlayingLines = [];
 
         for ( int index = 0; index < destination.TextLines.Count; index++ )
         {
             TextLine line = destination.TextLines [index].Clone ();
             TextLines.Add ( line );
 
-            if ( line.IsPaddingViolent )
+            if ( line.IsBoundViolating )
             {
-                _paddingViolentLines.Add ( line );
+                _boundsViolatingLines.Add ( line );
             }
 
-            if ( line.IsOverLayViolent )
+            if ( line.IsOverLaying )
             {
-                _overlayViolentLines.Add ( line );
+                _overlayingLines.Add ( line );
             }
         }
 
-        Images = new ();
-        Shapes = new ();
+        Images = [];
+        Shapes = [];
 
         for ( int index = 0; index < destination.Images.Count; index++ )
         {
@@ -308,10 +304,9 @@ public sealed class Layout
             Shapes.Add ( shape );
         }
 
-        HasIncorrectLines = ( _overlayViolentLines.Count > 0 ) || ( _paddingViolentLines.Count > 0 );
+        HasIncorrectLines = ( _overlayingLines.Count > 0 ) || ( _boundsViolatingLines.Count > 0 );
         RolledBack?.Invoke ();
     }
-
 
     private void OrderTextlinesVerticaly ()
     {
@@ -332,18 +327,21 @@ public sealed class Layout
         }
     }
 
-
     private void SetUpTextFields ()
     {
         double summaryVerticalOffset = 0;
-
-        List<TextLine> result = new ();
+        List<TextLine> result = [];
 
         for ( int index = 0; index < TextLines.Count; index++ )
         {
             bool isSplitingOccured = false;
             bool shouldShiftDownNextLine = false;
-            TextLine processable = TextLines [index];
+            TextLine? processable = TextLines [index];
+
+            if ( processable == null )
+            {
+                continue;
+            }
 
             string fontWeightName = processable.FontWeight;
             double fontSize = processable.FontSize;
@@ -356,9 +354,9 @@ public sealed class Layout
 
             while ( true )
             {
-                double usefulTextBlockWidth =
-                                         Measurer.Measure ( processableContent, fontWeightName, fontSize, fontName );
-
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                double usefulTextBlockWidth = Measurer.Measure ( processableContent, fontWeightName, fontSize, fontName );
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 bool lineIsOverflow = ( usefulTextBlockWidth >= processable.Width );
 
                 if ( !lineIsOverflow )
@@ -374,8 +372,11 @@ public sealed class Layout
                         shouldShiftDownNextLine = true;
                     }
 
-                    TextLine line = new TextLine ( processable, processableContent, false );
-                    line.TopOffset = topOffset;
+                    TextLine line = new( processable, processableContent, false )
+                    {
+                        TopOffset = topOffset
+                    };
+
                     result.Add ( line );
 
                     if ( tail != string.Empty )
@@ -390,7 +391,7 @@ public sealed class Layout
                     }
                 }
 
-                List<string> splited = processableContent.SeparateTailOnce ( new char [] { ' ', '-' } );
+                List<string> splited = processableContent.SeparateTailOnce ( [' ', '-'] );
 
                 if ( ( splited.Count > 0 ) && processable.IsSplitable )
                 {
@@ -400,10 +401,13 @@ public sealed class Layout
                 }
                 else
                 {
-                    TextLine line = new TextLine ( processable, processableContent, false );
-                    line.TopOffset = topOffset;
+                    TextLine line = new ( processable, processableContent, false )
+                    {
+                        TopOffset = topOffset
+                    };
+
                     result.Add ( line );
-                    line.IsPaddingViolent = true;
+                    line.IsBoundViolating = true;
                     HasIncorrectLines = true;
 
                     break;
@@ -414,16 +418,14 @@ public sealed class Layout
         TextLines = result;
     }
 
-
     private void SetTextualValues ( Dictionary<string, string> personProperties )
     {
-        List<TextLine> includibles = new ();
-        List<TextLine> includings = new ();
+        List<TextLine> includibles = [];
+        List<TextLine> includings = [];
+        List<TextLine> removables = [];
 
         AllocateValues ( personProperties, includibles );
         SetComplexValuesToIncludingAtoms ( includings, includibles );
-
-        List<TextLine> removables = new ();
 
         foreach ( TextLine includedAtom in includibles )
         {
@@ -443,7 +445,6 @@ public sealed class Layout
         TrimTrashEdges ();
     }
 
-
     private void AllocateValues ( Dictionary<string, string> personProperties, List<TextLine> includibles )
     {
         foreach ( KeyValuePair<string, string> property in personProperties )
@@ -459,7 +460,6 @@ public sealed class Layout
             }
         }
     }
-
 
     private void SetComplexValuesToIncludingAtoms ( List<TextLine> includings, List<TextLine> includibles )
     {
@@ -492,17 +492,15 @@ public sealed class Layout
         }
     }
 
-
     private void TrimTrashEdges ()
     {
-        List<char> unNeeded = new List<char> () { ' ', '"' };
+        List<char> unNeeded = [ ' ', '"' ];
 
         foreach ( TextLine atom in TextLines )
         {
             atom.TrimUnneededEdgeChar ( unNeeded );
         }
     }
-
 
     private void GatherIncorrectLines ()
     {
@@ -512,15 +510,14 @@ public sealed class Layout
 
             if ( isViolent )
             {
-                _paddingViolentLines.Add ( line );
-                line.IsPaddingViolent = true;
+                _boundsViolatingLines.Add ( line );
+                line.IsBoundViolating = true;
                 HasIncorrectLines = true;
             }
         }
 
         DefineOverlayViolations ();
     }
-
 
     private bool CheckPaddingViolation ( TextLine line )
     {
@@ -534,11 +531,11 @@ public sealed class Layout
         bool isViolent = !( notExceedToRight
                             && notExceedToLeft
                             && notExceedToTop
-                            && notExceedToBottom );
+                            && notExceedToBottom
+                          );
 
         return isViolent;
     }
-
 
     private void DefineOverlayViolations ()
     {
@@ -548,7 +545,6 @@ public sealed class Layout
             CheckSingleOverlayViolation ( index, overlaying );
         }
     }
-
 
     private bool CheckSingleOverlayViolation ( int scratchInLines, TextLine overlaying )
     {
@@ -584,10 +580,10 @@ public sealed class Layout
 
             if ( isViolent )
             {
-                if ( !overlaying.IsOverLayViolent )
+                if ( !overlaying.IsOverLaying )
                 {
-                    _overlayViolentLines.Add ( overlaying );
-                    overlaying.IsOverLayViolent = true;
+                    _overlayingLines.Add ( overlaying );
+                    overlaying.IsOverLaying = true;
                 }
 
                 break;
@@ -597,24 +593,22 @@ public sealed class Layout
         return isViolent;
     }
 
-
     public void Split ( TextLine splitable )
     {
         List<TextLine> splitted = splitable.SplitYourself ( Width );
         ReplaceTextLine ( splitable, splitted );
     }
 
-
     private void ReplaceTextLine ( TextLine replaceble, List<TextLine> replacings )
     {
-        if ( replaceble.IsPaddingViolent )
+        if ( replaceble.IsBoundViolating )
         {
-            _paddingViolentLines.Remove ( replaceble );
+            _boundsViolatingLines.Remove ( replaceble );
         }
 
-        if ( replaceble.IsOverLayViolent )
+        if ( replaceble.IsOverLaying )
         {
-            _overlayViolentLines.Remove ( replaceble );
+            _overlayingLines.Remove ( replaceble );
         }
 
         TextLines.Remove ( replaceble );
@@ -626,7 +620,6 @@ public sealed class Layout
         }
     }
 
-
     private void DefineCorrectnessOf ( TextLine? checkable )
     {
         if ( checkable == null )
@@ -636,56 +629,47 @@ public sealed class Layout
 
         bool isPaddingViolent = CheckPaddingViolation ( checkable );
 
-        if ( !isPaddingViolent && checkable.IsPaddingViolent )
+        if ( !isPaddingViolent && checkable.IsBoundViolating )
         {
-            checkable.IsPaddingViolent = false;
-            _paddingViolentLines.Remove ( checkable );
+            checkable.IsBoundViolating = false;
+            _boundsViolatingLines.Remove ( checkable );
         }
-        else if ( isPaddingViolent && !checkable.IsPaddingViolent )
+        else if ( isPaddingViolent && !checkable.IsBoundViolating )
         {
-            checkable.IsPaddingViolent = true;
-            _paddingViolentLines.Add ( checkable );
+            checkable.IsBoundViolating = true;
+            _boundsViolatingLines.Add ( checkable );
         }
 
         bool isOverlayViolent = CheckSingleOverlayViolation ( 0, checkable );
 
-        if ( !isOverlayViolent && checkable.IsOverLayViolent )
+        if ( !isOverlayViolent && checkable.IsOverLaying )
         {
-            _overlayViolentLines.Remove ( checkable );
-            checkable.IsOverLayViolent = false;
+            _overlayingLines.Remove ( checkable );
+            checkable.IsOverLaying = false;
         }
-        else if ( isOverlayViolent && !checkable.IsOverLayViolent )
+        else if ( isOverlayViolent && !checkable.IsOverLaying )
         {
-            _overlayViolentLines.Add ( checkable );
-            checkable.IsOverLayViolent = true;
+            _overlayingLines.Add ( checkable );
+            checkable.IsOverLaying = true;
         }
 
-        HasIncorrectLines = ( _overlayViolentLines.Count > 0 ) || ( _paddingViolentLines.Count > 0 );
+        HasIncorrectLines = ( _overlayingLines.Count > 0 ) || ( _boundsViolatingLines.Count > 0 );
     }
-
 
     internal void CheckProcessableLineCorrectness ()
     {
-        TextLine processable = ProcessableComponent as TextLine;
-
-        if ( processable == null )
+        if ( ProcessableComponent is not TextLine processable )
         {
             return;
         }
 
         DefineCorrectnessOf ( processable );
 
-        bool borderViolentsExist = ( _paddingViolentLines.Count > 0 );
-        bool overlayingExist = ( _overlayViolentLines.Count > 0 );
-
-        if ( _overlayViolentLines.Count > 0 )
-        {
-            TextLine line = _overlayViolentLines [0];
-        }
+        bool borderViolentsExist = ( _boundsViolatingLines.Count > 0 );
+        bool overlayingExist = ( _overlayingLines.Count > 0 );
 
         HasIncorrectLines = !( borderViolentsExist || overlayingExist );
     }
-
 
     internal void ShiftProcessable ( string direction )
     {
@@ -693,13 +677,11 @@ public sealed class Layout
         DefineCorrectnessOf ( _processableLine );
     }
 
-
     internal void MoveProcessable ( double verticalDelta, double horizontalDelta )
     {
         ProcessableComponent?.Move ( verticalDelta, horizontalDelta, GetRestrictions () );
         DefineCorrectnessOf ( _processableLine );
     }
-
 
     internal void ResetProcessableLineContent ( string newContent )
     {
@@ -707,13 +689,11 @@ public sealed class Layout
         DefineCorrectnessOf ( _processableLine );
     }
 
-
     internal void IncreaseFontSize ()
     {
         _processableLine?.IncreaseFontSize ();
         DefineCorrectnessOf ( _processableLine );
     }
-
 
     internal void ReduceFontSize ()
     {
@@ -721,13 +701,11 @@ public sealed class Layout
         DefineCorrectnessOf ( _processableLine );
     }
 
-
     internal void SetProcessable ( LayoutComponentBase processableComponent )
     {
         ProcessableComponent = processableComponent;
         _processableLine = processableComponent as TextLine;
     }
-
 
     internal void ZeroProcessable ()
     {
@@ -735,12 +713,12 @@ public sealed class Layout
         ProcessableComponent = null;
     }
 
-
     private Thickness GetRestrictions ()
     {
-        return new Thickness ( ( ProcessableComponent.Width - PaddingLeft ) * ( -1 )
-                             , ( ProcessableComponent.Height / 4 ) * ( -1 )
-                             , ( Width - PaddignRight )
-                             , ( Height - PaddingBottom ) );
+        return new Thickness ( ( ProcessableComponent.Width - PaddingLeft ) * ( -1 ),
+                                 ProcessableComponent.Height / 4 * ( -1 ),
+                                 Width - PaddignRight,
+                                 Height - PaddingBottom
+                             );
     }
 }
