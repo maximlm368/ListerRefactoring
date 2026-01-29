@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.Models.Badge;
+﻿namespace Lister.Core.Entities.Badge;
 
 /// <summary>
 /// Represents image placed on badge.

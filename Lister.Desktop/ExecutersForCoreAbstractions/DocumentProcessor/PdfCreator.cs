@@ -1,6 +1,6 @@
 ﻿using Lister.Core.Document;
 using Lister.Core.Document.AbstractServices;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -56,7 +56,6 @@ public sealed class PdfCreator : IPdfCreator
         }
     }
 
-
     public IEnumerable<byte []> Create ( List<Page> pages )
     {
         Settings.License = LicenseType.Community;
@@ -71,7 +70,6 @@ public sealed class PdfCreator : IPdfCreator
 
         return result;
     }
-
 
     private Document CreateDocument ( List<Page> pages )
     {
@@ -114,7 +112,6 @@ public sealed class PdfCreator : IPdfCreator
         return doc;
     }
 
-
     private void RenderLine ( ColumnDescriptor column, BadgeLine line )
     {
         column.Item ()
@@ -132,7 +129,6 @@ public sealed class PdfCreator : IPdfCreator
                       }
               );
     }
-
 
     private void RenderBadge ( TableDescriptor tableForLine, Badge beingRendered, int badgeIndex )
     {
@@ -166,7 +162,6 @@ public sealed class PdfCreator : IPdfCreator
             );
     }
 
-
     private static void RenderTextLines ( LayersDescriptor layers, IEnumerable<TextLine> textLines )
     {
         foreach ( TextLine textLine in textLines )
@@ -194,7 +189,6 @@ public sealed class PdfCreator : IPdfCreator
         }
     }
 
-
     private void RenderInsideImages ( LayersDescriptor layers, IEnumerable<ComponentImage> insideImages )
     {
         foreach ( ComponentImage image in insideImages )
@@ -216,7 +210,6 @@ public sealed class PdfCreator : IPdfCreator
                 .FitArea ();
         }
     }
-
 
     private static void RenderInsideShapes ( LayersDescriptor layers, IEnumerable<ComponentShape> insideShapes )
     {
@@ -262,7 +255,6 @@ public sealed class PdfCreator : IPdfCreator
         }
     }
 
-
     private Image? GetImageByPath ( string? path )
     {
         if ( string.IsNullOrWhiteSpace ( path ) )
@@ -290,8 +282,3 @@ public sealed class PdfCreator : IPdfCreator
         return pathToInsideImage [path];
     }
 }
-
-
-
-
-

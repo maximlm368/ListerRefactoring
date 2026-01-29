@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-internal sealed partial class BadgeEditorViewModel : ObservableObject
+internal sealed partial class EditorViewModel : ObservableObject
 {
     private readonly string _extentionToolTip;
     private readonly string _shrinkingToolTip;
@@ -47,10 +47,7 @@ internal sealed partial class BadgeEditorViewModel : ObservableObject
     private List<BadgeViewModel> _currentVisibleCollection;
     private List<BadgeViewModel> CurrentVisibleCollection
     {
-        get 
-        { 
-            return _currentVisibleCollection; 
-        }
+        get => _currentVisibleCollection;
 
         set
         {
@@ -110,7 +107,7 @@ internal sealed partial class BadgeEditorViewModel : ObservableObject
         Incorrects = 2
     }
 
-    public BadgeEditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
+    public EditorViewModel ( int incorrectBadgesAmmount, EditorViewModelArgs settingArgs )
     {
         _comparer = new BadgeComparer ();
         _extentionToolTip = settingArgs.ExtentionToolTip;
@@ -248,8 +245,13 @@ internal sealed partial class BadgeEditorViewModel : ObservableObject
         }
     }
 
-    private void FadeIcon ( BadgeCorrectnessViewModel icon )
+    private void FadeIcon ( BadgeCorrectnessViewModel? icon )
     {
+        if ( icon == null ) 
+        {
+            return;
+        }
+
         icon.BoundFontWeight = FontWeight.Normal;
         icon.CalcStringPresentation ( _correctnessWidthLimit );
     }
@@ -268,7 +270,7 @@ internal sealed partial class BadgeEditorViewModel : ObservableObject
     }
 
     [RelayCommand]
-    internal void GoBackCommand ()
+    internal void Back ()
     {
         if ( ChangesExist () )
         {

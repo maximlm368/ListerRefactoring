@@ -20,6 +20,9 @@
 	
 	<PackRelease>true</PackRelease>
   </PropertyGroup>
+	
+	
+	
   <ItemGroup>
     <None Remove="Assets\Icons\badge.ico" />
     <None Remove="Assets\Icons\Loading.gif" />
@@ -170,6 +173,9 @@
     </Compile>
     <Compile Update="Views\MainWindow\MainWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\SharedComponents\FilterableCombobox\FilterableCombobox.axaml.cs">
+      <DependentUpon>FilterableCombobox.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SplashWindow\SplashWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>

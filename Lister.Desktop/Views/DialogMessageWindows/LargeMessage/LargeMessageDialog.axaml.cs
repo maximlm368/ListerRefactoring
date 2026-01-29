@@ -17,15 +17,12 @@ public sealed partial class LargeMessageDialog : Window
     public LargeMessageDialog ( List<string> errors, string errorsSource ) : this ()
     {
         LargeMessageViewModel viewModel = new ();
-        viewModel.Closed += () => Close ();
-
         DataContext = viewModel;
 
-        Activated += ( s, a ) => ok.Focus ( NavigationMethod.Tab, KeyModifiers.None );
-
-        MainWindow.MainWindow.Window.ModalWindow = this;
-
+        viewModel.Closing += Close;
         viewModel.Set ( errors, errorsSource );
+
+        Loaded += ( s, a ) => ok.Focus ( NavigationMethod.Tab, KeyModifiers.None );
     }
 
     internal void TappedForWholeSelection ( object sender, TappedEventArgs args )

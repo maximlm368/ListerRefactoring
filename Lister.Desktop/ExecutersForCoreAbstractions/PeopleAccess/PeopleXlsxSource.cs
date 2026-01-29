@@ -1,4 +1,4 @@
-﻿using Lister.Core.Models;
+﻿using Lister.Core.Entities;
 using Lister.Core.PeopleAccess.Abstractions;
 using System.Data;
 using ExcelDataReader;

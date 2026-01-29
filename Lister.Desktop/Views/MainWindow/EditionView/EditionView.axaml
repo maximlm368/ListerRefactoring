@@ -5,23 +5,22 @@
 			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="482"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView.ViewModel"
 			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView"
-			 x:Class="Lister.Desktop.Views.MainWindow.EditionView.BadgeEditorView"
-			 x:DataType="vm:BadgeEditorViewModel"
+			 x:Class="Lister.Desktop.Views.MainWindow.EditionView.EditorView"
+			 x:DataType="vm:EditorViewModel"
 			 xmlns:WaitingUc="clr-namespace:Lister.Desktop.Views.MainWindow.WaitingView"
-			 xmlns:CenterShadowUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents.CenterShadow"
-			 xmlns:TextLines="clr-namespace:Lister.Desktop.ModelMappings.BadgeVM"
+			 xmlns:CenterShadowUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents"
+			 xmlns:Badge="clr-namespace:Lister.Desktop.ModelMappings.BadgeVM"
 			 KeyDown="ToSide"
 			 Height="{Binding  Path=ViewHeight,  Mode=OneWay}"
 			 Width="{Binding  Path=ViewWidth,  Mode=OneWay}">
 
 	<StackPanel
-		Name="EditionPanel"
-		ZIndex="1">
+		Name="EditionPanel">
 
 		<Grid
 			ColumnDefinitions="* 216 *"
-			RowDefinitions="22 2 24"
-			Height="47"
+			RowDefinitions="22 2 22"
+			ShowGridLines="False"
 			Background="#EEEEEE">
 
 			<Button
@@ -37,7 +36,7 @@
 				Margin="8,0"
 				Padding="4,3"
 				ZIndex="2"
-				Command="{Binding  Path = GoBackCommand}"
+				Command="{Binding Back}"
 				PointerPressed="SomeButtonPressed">
 
 				<Grid
@@ -499,7 +498,7 @@
 
 		<CenterShadowUc:CenterShadowUserControl
 			Name="CenterShadow"
-			Margin="200,-4"
+			Margin="200,-5"
 			ZIndex="2"
 		/>
 
@@ -943,7 +942,7 @@
 
 									<ItemsControl.Styles>
 										<Style Selector="ItemsControl ContentPresenter" 
-											   x:DataType="TextLines:TextLineViewModel">
+											   x:DataType="Badge:TextLineViewModel">
 											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
 											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
@@ -953,7 +952,7 @@
 										<DataTemplate>
 
 											<Border
-												x:DataType="TextLines:TextLineViewModel"
+												x:DataType="Badge:TextLineViewModel"
 												Background="{Binding Background, Mode=OneWay }"
 												BorderThickness="{Binding BorderThickness, Mode=OneWay}"
 												BorderBrush="{Binding BorderColor, Mode=OneWay}"
@@ -996,7 +995,7 @@
 
 									<ItemsControl.Styles>
 										<Style Selector="ItemsControl ContentPresenter" 
-											   x:DataType="TextLines:TextLineViewModel">
+											   x:DataType="Badge:TextLineViewModel">
 											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
 											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
@@ -1039,7 +1038,7 @@
 
 									<ItemsControl.Styles>
 										<Style Selector="ItemsControl ContentPresenter" 
-											   x:DataType="TextLines:TextLineViewModel">
+											   x:DataType="Badge:TextLineViewModel">
 											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
 											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
@@ -1054,8 +1053,8 @@
 												BorderBrush="{Binding BorderColor, Mode=OneWay}">
 
 												<Rectangle
-													Stroke="{Binding OutlineRGB, Mode=OneWay}"
-													StrokeThickness="{Binding OutlineThickness, Mode=OneWay}"
+													Height="{Binding Height, Mode=OneWay}"
+													Width="{Binding Width, Mode=OneWay}"
 													Fill="{Binding FillColor, Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
@@ -1083,7 +1082,7 @@
 
 									<ItemsControl.Styles>
 										<Style Selector="ItemsControl ContentPresenter" 
-											   x:DataType="TextLines:TextLineViewModel">
+											   x:DataType="Badge:TextLineViewModel">
 											<Setter Property="Canvas.Left" Value="{Binding LeftOffsetWithBorder, Mode=OneWay}"/>
 											<Setter Property="Canvas.Top" Value="{Binding TopOffsetWithBorder, Mode=OneWay}"/>
 										</Style>
@@ -1100,8 +1099,6 @@
 												<Ellipse
 													Height="{Binding Height, Mode=OneWay}"
 													Width="{Binding Width, Mode=OneWay}"
-													Stroke="{Binding OutlineRGB, Mode=OneWay}"
-													StrokeThickness="{Binding OutlineThickness, Mode=OneWay}"
 													Fill="{Binding FillColor, Mode=OneWay}"
 													DoubleTapped="Focus"
 													PointerPressed="Capture"
@@ -1189,9 +1186,7 @@
 								Padding="4,1"
 								MaxDropDownHeight="200"
 								Focusable="{Binding FilterIsExtended, Mode=OneWay}"
-								IsEnabled="{Binding IsComboboxEnabled, Mode=OneWay}"
 								SelectedIndex="{Binding FilterSelectedIndex, Mode=OneWay}"
-								IsDropDownOpen="{Binding IsDropDownOpen, Mode=OneWayToSource}"
 								SelectionChanged="SelectionChanged"
 								ItemsSource="{Binding FilterNames, Mode=OneWay}">
 

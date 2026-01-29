@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Desktop.ModelMappings.BadgeVM;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-internal partial class BadgeEditorViewModel : ObservableObject
+internal partial class EditorViewModel : ObservableObject
 {
     public readonly double _scalabilityCoefficient = 1.25;
     private readonly short _maxDepth = 5;
@@ -15,10 +16,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
     private bool _zoomerIsEnable;
     internal bool ZoommerIsEnable
     {
-        get 
-        { 
-            return _zoomerIsEnable; 
-        }
+        get => _zoomerIsEnable;
 
         private set
         {
@@ -57,6 +55,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
     }
 
     #region Zoom
+    [RelayCommand]
     internal void ZoomOn ()
     {
         if ( ProcessableBadge == null )
@@ -85,6 +84,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
     internal void ZoomOut ()
     {
         if ( ProcessableBadge == null )

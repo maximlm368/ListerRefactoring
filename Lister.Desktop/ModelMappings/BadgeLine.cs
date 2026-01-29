@@ -39,7 +39,7 @@ public sealed partial class BadgeLine : ObservableObject
 
     internal BadgeLine ( Core.Document.BadgeLine model, double scale )
     {
-        foreach ( Core.Models.Badge.Badge badge in model.Badges )
+        foreach ( Core.Entities.Badge.Badge badge in model.Badges )
         {
             BadgeViewModel addable = new ( badge );
             addable.SetCorrectScale ( scale );

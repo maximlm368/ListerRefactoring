@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 using QuestPDF.Infrastructure;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;

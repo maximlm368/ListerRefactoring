@@ -7,14 +7,14 @@ using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-internal partial class BadgeEditorViewModel : ObservableObject
+internal partial class EditorViewModel : ObservableObject
 {
     private readonly double _switcherWidthh = 32;
     private readonly double _filterLabelWidthh = 70;
 
-    private readonly SolidColorBrush _switcherAllForeground = new ( new Avalonia.Media.Color ( 255, 250, 250, 250 ) );
-    private readonly SolidColorBrush _switcherCorrectForeground = new ( new Avalonia.Media.Color ( 255, 97, 184, 97 ) );
-    private readonly SolidColorBrush _switcherIncorrectForeground = new ( new Avalonia.Media.Color ( 255, 210, 54, 80 ) );
+    private readonly SolidColorBrush _white = new ( new Avalonia.Media.Color ( 255, 250, 250, 250 ) );
+    private readonly SolidColorBrush _green = new ( new Avalonia.Media.Color ( 255, 97, 184, 97 ) );
+    private readonly SolidColorBrush _red = new ( new Avalonia.Media.Color ( 255, 210, 54, 80 ) );
 
     private readonly string _allFilter;
     private readonly string _incorrectFilter;
@@ -32,11 +32,8 @@ internal partial class BadgeEditorViewModel : ObservableObject
     private FilterChoosing _filterState = FilterChoosing.All;
     private double _correctnessWidthLimit;
 
-    [ObservableProperty]
-    private bool _isDropDownOpen;
-
-    [ObservableProperty]
-    private bool _isComboboxEnabled;
+    private bool IsDropDownOpen {  get; set; }
+    private bool IsComboboxEnabled { get; set; }
 
     [ObservableProperty]
     private double _switcherWidth;
@@ -87,7 +84,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         if ( _filterState == FilterChoosing.All )
         {
             _filterState = FilterChoosing.Corrects;
-            SwitcherForeground = _switcherCorrectForeground;
+            SwitcherForeground = _green;
             SwitcherTip = _correctTip;
             FilterSelectedIndex = 1;
             SetProcessableInMatchFilter ();
@@ -99,7 +96,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         else if ( _filterState == FilterChoosing.Corrects )
         {
             _filterState = FilterChoosing.Incorrects;
-            SwitcherForeground = _switcherIncorrectForeground;
+            SwitcherForeground = _red;
             SwitcherTip = _incorrectTip;
             FilterSelectedIndex = 2;
             SetProcessableInMatchFilter ();
@@ -111,7 +108,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         {
             _filterState = FilterChoosing.All;
             CurrentVisibleCollection = AllNumbered;
-            SwitcherForeground = _switcherAllForeground;
+            SwitcherForeground = _white;
             SwitcherTip = _allTip;
             FilterSelectedIndex = 0;
             SetProcessableInMatchFilter ();
@@ -144,7 +141,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         {
             _filterState = FilterChoosing.All;
             CurrentVisibleCollection = AllNumbered;
-            SwitcherForeground = _switcherAllForeground;
+            SwitcherForeground = _white;
             SwitcherTip = _allTip;
             SetProcessableInMatchFilter ();
             IncorrectBadgesCount = IncorrectNumbered.Count;
@@ -153,7 +150,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         {
             _filterState = FilterChoosing.Corrects;
 
-            SwitcherForeground = _switcherCorrectForeground;
+            SwitcherForeground = _green;
             SwitcherTip = _correctTip;
             SetProcessableInMatchFilter ();
             CorrectNumbered.Sort ( _comparer );
@@ -164,7 +161,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
         {
             _filterState = FilterChoosing.Incorrects;
 
-            SwitcherForeground = _switcherIncorrectForeground;
+            SwitcherForeground = _red;
             SwitcherTip = _incorrectTip;
             SetProcessableInMatchFilter ();
             IncorrectNumbered.Sort ( _comparer );

@@ -1,8 +1,9 @@
 ﻿using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
-using Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
-using Lister.Desktop.Views.DialogMessageWindows.Message;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
@@ -19,16 +20,9 @@ using System.Diagnostics;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.ViewModel;
 
-public sealed class MainViewModel : ReactiveObject
+public sealed partial class MainViewModel : ObservableObject
 {
-    private static bool _inWaitingState;
-    internal static bool InWaitingState
-    {
-        get { return _inWaitingState; }
-        private set { _inWaitingState = value; }
-    }
-
-    internal static bool MainViewIsWaiting { get; private set; }
+    internal static bool HasWaitingState { get; private set; }
 
     private static bool _printingShouldStart;
     private static bool _pdfGenerationShouldStart;
@@ -36,29 +30,37 @@ public sealed class MainViewModel : ReactiveObject
     private readonly string _suggestedFileNames;
     private readonly string _saveTitle;
     private readonly string _incorrectXSLX;
-    private readonly string _fileIsTooBigMessage;
     private readonly string _buildingLimitIsExhaustedMessage;
     private readonly string _fileIsOpenMessage;
-    //private FilePickerSaveOptions _filePickerOptions;
-    //private FilePickerSaveOptions FilePickerOptions => _filePickerOptions ??= new ()
-    //{
-    //    Title = _saveTitle,
-    //    FileTypeChoices =
-    //    [
-    //        new FilePickerFileType ("Источники данных")
-    //        {
-    //            Patterns = ["*.pdf"]
-    //        }
-    //    ],
-    //    SuggestedFileName = _suggestedFileNames + GenerateNowDateString ()
-    //};
     private readonly string _osName;
     private readonly Printer _pdfPrinter;
-    private PrintDialog? _printDialog;
     private readonly PrintDialogViewModel _printDialogViewModel;
     private readonly PersonSourceViewModel _personSourceViewModel;
     private readonly PersonChoosingViewModel _personChoosingViewModel;
-    private readonly BadgesBuildingViewModel _badgesBuildingViewModel;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor ( nameof ( BuildBadgesCommand ) )]
+    private bool _buildingIsPossible = false;
+
+    //private bool _buildButtonIsTapped = false;
+    //internal bool BuildButtonIsTapped
+    //{
+    //    get
+    //    {
+    //        return _buildButtonIsTapped;
+    //    }
+
+    //    private set
+    //    {
+    //        _buildButtonIsTapped = value;
+
+    //        if ( _buildButtonIsTapped )
+    //        {
+    //            OnPropertyChanged ();
+    //        }
+    //    }
+    //}
+
     private readonly NavigationZoomViewModel _zoomNavigationViewModel;
     private readonly SceneViewModel _sceneViewModel;
     private readonly WaitingViewModel _waitingViewModel;
@@ -67,8 +69,10 @@ public sealed class MainViewModel : ReactiveObject
 
     internal string? PdfName { get; private set; } = string.Empty;
 
-    public delegate void EditionIsChosenHandler ( List<BadgeViewModel> processableBadges );
-    public event EditionIsChosenHandler? EditionIsChosen;
+    public event Action<List<BadgeViewModel>>? EditionIsChosen;
+    public event Action<string>? HasToShowMessage;
+    public event Action<List<string>, string>? HasToShowTemplateErrors;
+    public event Action<int, PrintAdjustingData>? HasToPreparePrinting;
 
     internal MainViewModel ( MainViewModelArgs args )
     {
@@ -78,22 +82,19 @@ public sealed class MainViewModel : ReactiveObject
         _incorrectXSLX = args.IncorrectXSLX;
         _buildingLimitIsExhaustedMessage = args.BuildingLimitExhaustedMessage;
         _fileIsOpenMessage = args.FileIsOpenMessage;
-        _fileIsTooBigMessage = args.FileIsTooBigMessage;
 
         _pdfPrinter = args.Printer;
-        _printDialogViewModel = args.PrintDialogViewModel;
-        _personChoosingViewModel = args.PersonChoosingViewModel;
-        _personSourceViewModel = args.PersonSourceViewModel;
-        _badgesBuildingViewModel = args.BadgesBuildingViewModel;
-        _zoomNavigationViewModel = args.NavigationZoomViewModel;
-        _sceneViewModel = args.SceneViewModel;
-        _waitingViewModel = args.WaitingViewModel;
+        _printDialogViewModel = args.PrintDialog;
+        _personChoosingViewModel = args.PersonChoosing;
+        _personSourceViewModel = args.PersonSource;
+        _zoomNavigationViewModel = args.NavigationZoom;
+        _sceneViewModel = args.Scene;
+        _waitingViewModel = args.Waiting;
 
         _pdfPrinter.PropertyChanged += PrinterChanged;
         _printDialogViewModel.PropertyChanged += PrintDialogChanged;
         _personSourceViewModel.PropertyChanged += PersonSourceChanged;
         _personChoosingViewModel.PropertyChanged += PersonChoosingChanged;
-        _badgesBuildingViewModel.PropertyChanged += BuildButtonTapped;
         _sceneViewModel.PropertyChanged += SceneChanged;
         _zoomNavigationViewModel.PropertyChanged += ZoomNavigationChanged;
     }
@@ -102,20 +103,20 @@ public sealed class MainViewModel : ReactiveObject
     {
         if ( args.PropertyName == "SourceFilePath" )
         {
-            _personChoosingViewModel.ResetPersons ();
+            _personChoosingViewModel?.ResetPersons ();
         }
         else if ( args.PropertyName == "FileIsDeclined" )
         {
-            ShowMessageWindow ( _personSourceViewModel.FilePath + _incorrectXSLX );
+            RequireMessageWindow ( _personSourceViewModel?.FilePath + _incorrectXSLX );
         }
         else if ( args.PropertyName == "FileIsTooBig" )
         {
-            string limit = _sceneViewModel.GetLimit ().ToString () + ".";
-            ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
+            string limit = _sceneViewModel?.GetLimit ().ToString () + ".";
+            RequireMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
         }
         else if ( args.PropertyName == "FileIsOpen" )
         {
-            ShowMessageWindow ( _fileIsOpenMessage );
+            RequireMessageWindow ( _fileIsOpenMessage );
         }
     }
 
@@ -123,7 +124,7 @@ public sealed class MainViewModel : ReactiveObject
     {
         if ( args.PropertyName == "SettingsIsComplated" )
         {
-            _badgesBuildingViewModel.BuildingIsPossible = sender is PersonChoosingViewModel personChoosingViewModel
+            BuildingIsPossible = sender is PersonChoosingViewModel personChoosingViewModel
                 && personChoosingViewModel.SettingsIsComplated;
         }
         else if ( args.PropertyName == "SickTemplateIsSet" )
@@ -140,31 +141,33 @@ public sealed class MainViewModel : ReactiveObject
         }
     }
 
-    private void BuildButtonTapped ( object? sender, PropertyChangedEventArgs args )
+    private void Build ( )
     {
-        if ( args.PropertyName == "BuildButtonIsTapped" )
+        //if ( args.PropertyName == "BuildButtonIsTapped" )
+
+        if ( true )
         {
-            if ( _personChoosingViewModel.ChosenTemplate == null
-                 || string.IsNullOrWhiteSpace ( _personChoosingViewModel.ChosenTemplate.Name )
-            )
-            {
-                return;
-            }
+        if ( _personChoosingViewModel.ChosenTemplate == null
+                || string.IsNullOrWhiteSpace ( _personChoosingViewModel.ChosenTemplate.Name )
+        )
+        {
+            return;
+        }
 
-            bool shouldShowMessage = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage != null
-                && _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
+        bool shouldShowMessage = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage != null
+            && _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
 
-            if ( shouldShowMessage )
-            {
-                List<string>? message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
-                string templatePath = _personChoosingViewModel.ChosenTemplate.SourcePath;
-                ShowTemplateErrors ( message, templatePath );
-                _buildButtonIsTapped = true;
-            }
-            else
-            {
-                InduceBadgeBuilding ();
-            }
+        if ( shouldShowMessage )
+        {
+            List<string>? message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
+            string templatePath = _personChoosingViewModel.ChosenTemplate.SourcePath;
+            ShowTemplateErrors ( message, templatePath );
+            _buildButtonIsTapped = true;
+        }
+        else
+        {
+            InduceBadgeBuilding ();
+        }
         }
     }
 
@@ -186,7 +189,7 @@ public sealed class MainViewModel : ReactiveObject
             {
                 EndWaiting ();
                 string limit = _sceneViewModel.GetLimit ().ToString () + ".";
-                ShowMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
+                RequireMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
             }
         }
         else if ( args.PropertyName == "EditIsSelected" )
@@ -218,9 +221,8 @@ public sealed class MainViewModel : ReactiveObject
 
     private void PrintDialogChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if ( args.PropertyName == "NeedClose" )
+        if ( args.PropertyName == "IsClosing" )
         {
-            _printDialog?.Close ();
             HandleDialogClosing ();
 
             if ( _printAdjusting == null || _printAdjusting.IsCancelled )
@@ -244,9 +246,9 @@ public sealed class MainViewModel : ReactiveObject
         }
     }
 
-    private void HandleDialogClosing ()
+    internal void HandleDialogClosing ()
     {
-        _waitingViewModel.HandleDialogClosing ();
+        _waitingViewModel.Hide ();
 
         if ( _buildButtonIsTapped )
         {
@@ -266,33 +268,35 @@ public sealed class MainViewModel : ReactiveObject
 
         if ( _personChoosingViewModel.ChosenPerson == null )
         {
-            WaitingWhileBuilding ();
+            WaitWhileBuilding ();
         }
     }
 
-    internal void RefreshAppearences ()
+    internal void Show ()
     {
-        _sceneViewModel.ResetIncorrects ();
+        _sceneViewModel.Refresh ();
     }
 
-    internal void WaitingWhileBuilding ()
+    internal void WaitWhileBuilding ()
     {
         _waitingViewModel.Show ();
-        MainViewIsWaiting = true;
-        InWaitingState = true;
+        HasWaitingState = true;
     }
 
     internal void EndWaiting ()
     {
-        _badgesBuildingViewModel.BuildingIsPossible = true;
+        BuildingIsPossible = true;
         _waitingViewModel.Hide ();
-        MainViewIsWaiting = false;
-
-        InWaitingState = false;
+        HasWaitingState = false;
     }
 
     private async void PreparePdfGeneration ()
     {
+        if ( MainWindow.CommonStorageProvider == null )
+        {
+            return;
+        }
+
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add ( FilePickerFileTypes.Pdf );
 
@@ -332,14 +336,14 @@ public sealed class MainViewModel : ReactiveObject
             }
             catch ( IOException )
             {
-                ShowMessageWindow ( _fileIsOpenMessage );
+                RequireMessageWindow ( _fileIsOpenMessage );
 
                 return;
             }
         }
 
         _pdfGenerationShouldStart = true;
-        WaitingWhileBuilding ();
+        WaitWhileBuilding ();
     }
 
     private static string GenerateNowDateString ()
@@ -405,17 +409,14 @@ public sealed class MainViewModel : ReactiveObject
         }
         else
         {
-            ShowMessageWindow ( _fileIsOpenMessage );
+            RequireMessageWindow ( _fileIsOpenMessage );
         }
     }
 
-    private void ShowMessageWindow ( string message )
+    private void RequireMessageWindow ( string message )
     {
-        MessageWindow messegeWindow = new ( message );
-        MainWindow.Window.ModalWindow = messegeWindow;
-        messegeWindow.Closed += ( s, a ) => { HandleDialogClosing (); };
         _waitingViewModel.Darken ();
-        messegeWindow.ShowDialog ( MainWindow.Window );
+        HasToShowMessage?.Invoke ( message );
     }
 
     private void ShowTemplateErrors ( List<string>? message, string? errorSource )
@@ -428,31 +429,26 @@ public sealed class MainViewModel : ReactiveObject
             return;
         }
 
-        LargeMessageDialog messegeDialog = new ( message, errorSource );
-        messegeDialog.Closed += ( s, a ) => { HandleDialogClosing (); };
         _waitingViewModel.Darken ();
-        messegeDialog.ShowDialog ( MainWindow.Window );
-        messegeDialog.Focusable = true;
-        messegeDialog.Focus ();
+        HasToShowTemplateErrors?.Invoke ( message, errorSource );
     }
 
     private void PreparePrinting ()
     {
         _printAdjusting = new ();
-        _printDialog = new ( _sceneViewModel.AllPages.Count, _printAdjusting );
         _waitingViewModel.Darken ();
-        _printDialog.ShowDialog ( MainWindow.Window );
+        HasToPreparePrinting?.Invoke ( _sceneViewModel.AllPages.Count, _printAdjusting );
     }
 
     private void WaitForPrinting ()
     {
         _printingShouldStart = true;
-        WaitingWhileBuilding ();
+        WaitWhileBuilding ();
     }
 
     internal void ProcessDocument ()
     {
-        if ( SceneViewModel.EntireListBuildingIsChosen && MainViewIsWaiting )
+        if ( SceneViewModel.EntireListBuildingIsChosen && HasWaitingState )
         {
             _sceneViewModel.BuildDuringWaiting ();
 
@@ -477,7 +473,7 @@ public sealed class MainViewModel : ReactiveObject
         {
             _printingShouldStart = false;
 
-            if ( _printAdjusting == null ) 
+            if ( _printAdjusting == null )
             {
                 EndWaiting ();
 
@@ -515,5 +511,19 @@ public sealed class MainViewModel : ReactiveObject
         }
 
         return result;
+    }
+
+    [RelayCommand ( CanExecute = nameof ( CanBuild ) )]
+    private void BuildBadges ()
+    {
+        _buildButtonIsTapped = true;
+        _buildButtonIsTapped = false;
+
+        Build ();
+    }
+
+    private bool CanBuild ()
+    {
+        return BuildingIsPossible;
     }
 }

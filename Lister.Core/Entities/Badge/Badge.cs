@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.Models.Badge;
+﻿namespace Lister.Core.Entities.Badge;
 
 /// <summary>
 /// Represents data of badge containing background image, person and layout as set of movable components.
@@ -66,7 +66,7 @@ public sealed class Badge
         Layout?.ZeroProcessable ();
     }
 
-    public static void ClearSharedData ()
+    public static void ToZeroState ()
     {
         _backup = [];
         _lastId = 0;

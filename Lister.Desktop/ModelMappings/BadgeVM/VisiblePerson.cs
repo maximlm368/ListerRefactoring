@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lister.Core.Models;
+using Lister.Core.Entities;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 
@@ -113,6 +113,11 @@ internal sealed partial class VisiblePerson : ObservableObject
         Model = person;
         IsFocused = false;
         IsSelected = false;
+    }
+
+    public override string ToString ()
+    {
+        return Model.FullName;
     }
 
     private void CancelFocused ()

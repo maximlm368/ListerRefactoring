@@ -5,8 +5,13 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Lister.Desktop.ModelMappings.BadgeVM;
+using Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
+using Lister.Desktop.Views.DialogMessageWindows.Message;
+using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 using Lister.Desktop.Views.MainWindow.EditionView;
+using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
+using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
 
 namespace Lister.Desktop.Views.MainWindow.MainView;
 
@@ -16,8 +21,6 @@ namespace Lister.Desktop.Views.MainWindow.MainView;
 public sealed partial class MainView : UserControl
 {
     private static bool _widthIsChanged;
-
-    internal static bool SomeControlPressed;
     internal static bool IsPathSet;
     internal static int TappedGoToEditorButton { get; private set; }
     internal static double ProperWidth { get; private set; }
@@ -25,8 +28,10 @@ public sealed partial class MainView : UserControl
 
     private readonly MainViewModel? _viewModel;
     private List<BadgeViewModel>? _processableBadges;
+    private PrintDialog? _printDialog;
+    private bool _someControlPressed;
 
-    internal BadgeEditorView? EditorView { get; private set; }
+    internal EditorView? EditorView { get; private set; }
 
     public MainView ()
     {
@@ -35,12 +40,15 @@ public sealed partial class MainView : UserControl
 
     public MainView ( MainViewModel viewModel ) : this ()
     {
-        Waiting.Margin = new Avalonia.Thickness ( 0, 12 );
+        //Waiting.Margin = new Avalonia.Thickness ( 0, 12 );
         ProperWidth = Width;
         ProperHeight = Height;
         DataContext = viewModel;
         _viewModel = viewModel;
         _viewModel.EditionIsChosen += EditIncorrectBadges;
+        _viewModel.HasToShowMessage += ShowMessageWindow;
+        _viewModel.HasToShowTemplateErrors += ShowTemplateErrors;
+        _viewModel.HasToPreparePrinting += ShowPrintDialog;
         FocusAdorner = null;
 
         Loaded += OnLoaded;
@@ -48,6 +56,11 @@ public sealed partial class MainView : UserControl
         PointerPressed += PointerIsPressed;
 
         this.AddHandler ( UserControl.TappedEvent, PreventPasting, RoutingStrategies.Tunnel );
+
+        PersonChoosing.SomePartPressed += () => 
+        {
+            _someControlPressed = true;
+        };
     }
 
     internal void LayoutUpdatedHandler ( object? sender, EventArgs args )
@@ -111,13 +124,13 @@ public sealed partial class MainView : UserControl
 
         if ( point.Properties.IsRightButtonPressed || point.Properties.IsLeftButtonPressed )
         {
-            if ( !SomeControlPressed )
+            if ( !_someControlPressed )
             {
                 Focusable = true;
                 this.Focus ();
             }
 
-            SomeControlPressed = false;
+            _someControlPressed = false;
         }
 
         Focusable = false;
@@ -126,11 +139,12 @@ public sealed partial class MainView : UserControl
     internal void OnLoaded ( object? sender, RoutedEventArgs args )
     {
         _viewModel?.OnLoaded ();
+
+        ToolTip.SetTip ( SuperButton, "ѕостроить макет на основе выбранных данных" );
     }
 
     internal void ReleaseCaptured ()
     {
-        PersonChoosing.ReleaseScrollingLeverage ();
         Scene.ReleasePage ();
     }
 
@@ -148,12 +162,9 @@ public sealed partial class MainView : UserControl
         Scene.WorkArea.Width -= widthDifference;
         Scene.WorkArea.Height -= heightDifference;
 
-        Waiting.ChangeSize ( heightDifference, widthDifference );
+        //Waiting.ChangeSize ( heightDifference, widthDifference );
 
-        PersonChoosing.AdjustComboboxWidth ( widthDifference, true );
-        PersonChoosing.CloseCustomCombobox ();
-
-        BadgeBuilding.ChangeSize ( widthDifference );
+        //BadgeBuilding.ChangeSize ( widthDifference );
 
         ChangeSimpleShadow ( widthDifference );
     }
@@ -193,14 +204,12 @@ public sealed partial class MainView : UserControl
         Scene.WorkArea.Height -= heightDifference;
 
         ChangeSimpleShadow ( widthDifference );
-        BadgeBuilding.ChangeSize ( widthDifference );
-
-        PersonChoosing.AdjustComboboxWidth ( widthDifference, _widthIsChanged );
+        //BadgeBuilding.ChangeSize ( widthDifference );
     }
 
-    internal void RefreshTemplateAppearences ()
+    internal void Show ()
     {
-        _viewModel?.RefreshAppearences ();
+        _viewModel?.Show ();
     }
 
     private void EditIncorrectBadges ( List<BadgeViewModel> processableBadges )
@@ -210,12 +219,50 @@ public sealed partial class MainView : UserControl
 
         if ( ( window != null ) && ( processableBadges.Count > 0 ) )
         {
-            EditorView = new BadgeEditorView ( processableBadges.Count );
+            EditorView = new EditorView ( processableBadges.Count );
             EditorView.SetProperSize ( ProperWidth, ProperHeight );
             window.CancelSizeDifference ();
             TappedGoToEditorButton = 1;
-            _viewModel?.WaitingWhileBuilding ();
+            _viewModel?.WaitWhileBuilding ();
         }
+    }
+
+    private void ShowMessageWindow ( string message )
+    {
+        if ( MainWindow.Window == null )
+        {
+            return;
+        }
+
+        MessageWindow messegeWindow = new ( message );
+        MainWindow.Window.ModalWindow = messegeWindow;
+        messegeWindow.Closed += ( s, a ) => { _viewModel?.HandleDialogClosing (); };
+        messegeWindow.ShowDialog ( MainWindow.Window );
+    }
+
+    private void ShowTemplateErrors ( List<string> message, string errorSource )
+    {
+        if ( MainWindow.Window == null )
+        {
+            return;
+        }
+
+        LargeMessageDialog messegeDialog = new ( message, errorSource );
+        messegeDialog.Closed += ( s, a ) => { _viewModel?.HandleDialogClosing (); };
+        messegeDialog.ShowDialog ( MainWindow.Window );
+        messegeDialog.Focusable = true;
+        messegeDialog.Focus ();
+    }
+
+    private void ShowPrintDialog ( int pageCount, PrintAdjustingData printAdjusting )
+    {
+        if ( MainWindow.Window == null )
+        {
+            return;
+        }
+
+        _printDialog = new ( pageCount, printAdjusting );
+        _printDialog.ShowDialog ( MainWindow.Window );
     }
 
     internal void MovePage ( PointerEventArgs args )

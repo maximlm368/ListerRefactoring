@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-internal partial class BadgeEditorViewModel : ObservableObject
+internal partial class EditorViewModel : ObservableObject
 {
     private readonly double _minRunnerHeight = 10;
     private readonly double _upDownButtonHeightWigth = 15;
@@ -152,7 +152,7 @@ internal partial class BadgeEditorViewModel : ObservableObject
 
     private void SetUpScrollBlock ( int incorrectBadgesAmmount )
     {
-        SwitcherForeground = _switcherAllForeground;
+        SwitcherForeground = _white;
         SwitcherTip = _allTip;
         FilterNames = [_allFilter, _correctFilter, _incorrectFilter];
         CollectionFilterWidth = _sliderWidth;

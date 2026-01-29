@@ -6,15 +6,19 @@
         x:Class="Lister.Desktop.Views.DialogMessageWindows.LargeMessage.LargeMessageDialog"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.LargeMessage; assembly=View"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel"
+		x:DataType="vm:LargeMessageViewModel"
 		Width="688"
 		MinWidth="688"
 		MinHeight="188"
 		MaxHeight="375"
 		SizeToContent="Height"
 		WindowStartupLocation="CenterOwner"
-		x:DataType="vm:LargeMessageViewModel"
 		SystemDecorations="None"
-		CanResize="False">
+		CanResize="False"
+		Focusable="False"
+		ExtendClientAreaToDecorationsHint = "true"
+		ExtendClientAreaChromeHints = "NoChrome"
+		ExtendClientAreaTitleBarHeightHint = "0">
 
 		<Grid RowDefinitions="16 8 35 35 8 * 1 47"  ColumnDefinitions="67 *">
 
@@ -142,7 +146,7 @@
 					Canvas.Top="8"
 					Canvas.Left="580"
 					Content="Ok"
-					Command="{Binding  Path=Close}"
+					Command="{Binding CloseCommand}"
 				/>
 			</Canvas>
 		</Grid>	

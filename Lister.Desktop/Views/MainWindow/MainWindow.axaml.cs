@@ -30,9 +30,9 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         CommonStorageProvider = StorageProvider;
+        Window = this;
         _currentWidth = Width;
         _currentHeight = Height;
-        Window = this;
         Cursor = new Cursor (StandardCursorType.Arrow);
         CanResize = true;
         _pointerPosition = Position;
@@ -65,7 +65,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        if ( Content is BadgeEditorView editionView )
+        if ( Content is EditorView editionView )
         {
             double newWidth = args.NewSize.Width;
             double newHeight = args.NewSize.Height;
@@ -92,7 +92,7 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            if ( Content is BadgeEditorView editorView )
+            if ( Content is EditorView editorView )
             {
                 editorView.ReleaseCaptured ();
             }
@@ -107,7 +107,7 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            if ( Content is BadgeEditorView editorView )
+            if ( Content is EditorView editorView )
             {
                 editorView.MoveBadge ( args );
             }

@@ -19,13 +19,13 @@ public sealed partial class DialogViewModel : ObservableObject
     }
 
     [RelayCommand]
-    internal void ChooseYes()
+    internal void Yes ()
     {
         YesChosen?.Invoke();
     }
 
     [RelayCommand]
-    internal void ChooseNo()
+    internal void No ()
     {
         NoChosen?.Invoke();
     }

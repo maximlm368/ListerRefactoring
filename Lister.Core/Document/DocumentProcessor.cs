@@ -1,8 +1,8 @@
 ﻿using Lister.Core.BadgesCreator.Abstractions;
 using Lister.Core.PeopleAccess.Abstractions;
 using Lister.Core.Document.AbstractServices;
-using Lister.Core.Models;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities;
+using Lister.Core.Entities.Badge;
 
 namespace Lister.Core.Document;
 
@@ -77,7 +77,7 @@ public sealed class DocumentProcessor
 
         for ( int index = 0; index < people.Count; index++ )
         {
-            Badge? builtIn = _badgeCreator.CreateSingleBadgeByTemplate ( templateName, people [index] );
+            Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, people [index] );
 
             if ( builtIn == null )
             {
@@ -114,7 +114,7 @@ public sealed class DocumentProcessor
 
     public List<Page> BuildBadge ( string? templateName, Person? person )
     {
-        Badge? builtIn = _badgeCreator.CreateSingleBadgeByTemplate ( templateName, person );
+        Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, person );
 
         if ( builtIn == null )
         {
@@ -147,7 +147,7 @@ public sealed class DocumentProcessor
         _allPages.Add ( LastPage );
         _badgeCount = 0;
         IncorrectBadgeCount = 0;
-        Badge.ClearSharedData ();
+        Badge.ToZeroState ();
     }
 
     public bool CreateAndSavePdf ( string filePathToSave )

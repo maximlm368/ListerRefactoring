@@ -1,4 +1,4 @@
-﻿using Lister.Core.Models;
+﻿using Lister.Core.Entities;
 
 namespace Lister.Core.PeopleAccess.Abstractions;
 

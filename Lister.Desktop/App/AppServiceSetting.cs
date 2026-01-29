@@ -41,22 +41,25 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton ( typeof ( NavigationZoomViewModel ), NavigationZoomerViewModelFactory );
         collection.AddSingleton ( typeof ( PrintDialogViewModel ), PrintDialogViewModelFactory );
         collection.AddSingleton ( typeof ( EditorViewModelArgs ), EditorViewModelArgsFactory );
-        collection.AddSingleton<BadgesBuildingViewModel> ();
         collection.AddSingleton ( typeof ( WaitingViewModel ), WaitingViewModelFactory );
         collection.AddSingleton<LargeMessageViewModel> ();
     }
 
     private static DocumentProcessor DocumentProcessorFactory ( IServiceProvider serviceProvider )
     {
-        return DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, PdfCreator.GetInstance ( _osName )
-            , PdfPrinterImplementation.GetInstance ( _osName )
-            , BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
+        return DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, PdfCreator.GetInstance ( _osName ),
+            PdfPrinter.GetInstance ( _osName ),
+            BadgeLayoutProvider.GetInstance (), 
+            PeopleSourceFactory.GetInstance () 
+        );
     }
 
     private static Printer PdfPrinterFactory ( IServiceProvider serviceProvider )
     {
         DocumentProcessor model = DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, PdfCreator.GetInstance ( _osName ),
-            PdfPrinterImplementation.GetInstance ( _osName ), BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance ()
+            PdfPrinter.GetInstance ( _osName ), 
+            BadgeLayoutProvider.GetInstance (),
+            PeopleSourceFactory.GetInstance ()
         );
 
         return new Printer ( model );
@@ -64,7 +67,15 @@ public static class ServiceCollectionExtensions
 
     private static MainViewModel MainViewModelFactory ( IServiceProvider serviceProvider )
     {
-        MainViewModelArgs args = new ()
+        MainViewModelArgs args = new (
+            serviceProvider.GetRequiredService<Printer> (),
+            serviceProvider.GetRequiredService<PrintDialogViewModel> (),
+            serviceProvider.GetRequiredService<PersonChoosingViewModel> (),
+            serviceProvider.GetRequiredService<PersonSourceViewModel> (),
+            serviceProvider.GetRequiredService<NavigationZoomViewModel> (),
+            serviceProvider.GetRequiredService<SceneViewModel> (),
+            serviceProvider.GetRequiredService<WaitingViewModel> ()
+        )
         {
             OsName = _osName,
             SuggestedFileNames = MainViewConfigs.PdfFileName,
@@ -72,15 +83,6 @@ public static class ServiceCollectionExtensions
             IncorrectXSLX = MainViewConfigs.IncorrectXSLX,
             BuildingLimitExhaustedMessage = MainViewConfigs.LimitIsExhaustedMessage,
             FileIsOpenMessage = MainViewConfigs.FileIsOpenMessage,
-            FileIsTooBigMessage = MainViewConfigs.FileIsTooBig,
-            Printer = serviceProvider.GetRequiredService<Printer> (),
-            PrintDialogViewModel = serviceProvider.GetRequiredService<PrintDialogViewModel> (),
-            PersonChoosingViewModel = serviceProvider.GetRequiredService<PersonChoosingViewModel> (),
-            PersonSourceViewModel = serviceProvider.GetRequiredService<PersonSourceViewModel> (),
-            BadgesBuildingViewModel = serviceProvider.GetRequiredService<BadgesBuildingViewModel> (),
-            NavigationZoomViewModel = serviceProvider.GetRequiredService<NavigationZoomViewModel> (),
-            SceneViewModel = serviceProvider.GetRequiredService<SceneViewModel> (),
-            WaitingViewModel = serviceProvider.GetRequiredService<WaitingViewModel> ()
         };
 
         return new ( args );
@@ -103,37 +105,11 @@ public static class ServiceCollectionExtensions
 
     private static PersonChoosingViewModel PersonChoosingViewModelFactory ( IServiceProvider serviceProvider )
     {
-        string placeHolder = PersonChoosingConfigs.PlaceHolder;
-        int inputLimit = PersonChoosingConfigs.InputLimit;
-
-        SolidColorBrush incorrectTemplateColor = GetColor ( PersonChoosingConfigs.IncorrectTemplateColor );
-
-        SolidColorBrush defaultBackgroundColor = GetColor ( PersonChoosingConfigs.DefaultBackgroundColor );
-        SolidColorBrush defaultBorderColor = GetColor ( PersonChoosingConfigs.DefaultBorderColor );
-        SolidColorBrush defaultForegroundColor = GetColor ( PersonChoosingConfigs.DefaultForegroundColor );
-
-        List<SolidColorBrush> defaultColors = [defaultBackgroundColor, defaultBorderColor, defaultForegroundColor];
-
-        SolidColorBrush focusedBackgroundColor = GetColor ( PersonChoosingConfigs.FocusedBackgroundColor );
-        SolidColorBrush focusedBorderColor = GetColor ( PersonChoosingConfigs.FocusedBorderColor );
-
-        List<SolidColorBrush> focusedColors = [focusedBackgroundColor, focusedBorderColor];
-
-        SolidColorBrush hoveredBackgroundColor = GetColor ( PersonChoosingConfigs.HoveredBackgroundColor );
-        SolidColorBrush hoveredBorderColor = GetColor ( PersonChoosingConfigs.HoveredBorderColor );
-
-        SolidColorBrush selectedBackgroundColor = GetColor ( PersonChoosingConfigs.SelectedBackgroundColor );
-        SolidColorBrush selectedBorderColor = GetColor ( PersonChoosingConfigs.SelectedBorderColor );
-        SolidColorBrush selectedForegroundColor = GetColor ( PersonChoosingConfigs.SelectedForegroundColor );
-
-        List<SolidColorBrush> selectedColors = [selectedBackgroundColor, selectedBorderColor, selectedForegroundColor];
-
-        PersonChoosingUserControl.SetComboboxHoveredItemColors ( hoveredBackgroundColor, hoveredBorderColor );
-        VisiblePerson.SetColors ( defaultColors, focusedColors, selectedColors );
-
+        SolidColorBrush incorrectTemplateForeground = GetColor ( PersonChoosingConfigs.IncorrectTemplateForeground );
+        SolidColorBrush correctTemplateForeground = GetColor ( PersonChoosingConfigs.CorrectTemplateForeground );
         BadgeCreator badgesCreator = BadgeCreator.GetInstance ( BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
 
-        return new ( placeHolder, inputLimit, incorrectTemplateColor, defaultColors, focusedColors, selectedColors, badgesCreator );
+        return new ( incorrectTemplateForeground, correctTemplateForeground, badgesCreator );
     }
 
     private static SolidColorBrush GetColor ( string hexColor )
@@ -155,7 +131,7 @@ public static class ServiceCollectionExtensions
             DocumentProcessor.GetInstance (
                 TextWidthMeasurer.Instance,
                 PdfCreator.GetInstance ( _osName ),
-                PdfPrinterImplementation.GetInstance ( _osName ),
+                PdfPrinter.GetInstance ( _osName ),
                 BadgeLayoutProvider.GetInstance (),
                 PeopleSourceFactory.GetInstance ()
             )
@@ -174,9 +150,9 @@ public static class ServiceCollectionExtensions
     private static PrintDialogViewModel PrintDialogViewModelFactory ( IServiceProvider serviceProvider )
     {
         return new PrintDialogViewModel (
-            PrintDialogConfigs.EmptyCopies,
-            PrintDialogConfigs.EmptyPages,
-            PrintDialogConfigs.EmptyPrinters,
+            PrintDialogConfigs.EmptyCopiesError,
+            PrintDialogConfigs.EmptyPagesError,
+            PrintDialogConfigs.EmptyPrintersError,
             _osName
         );
     }

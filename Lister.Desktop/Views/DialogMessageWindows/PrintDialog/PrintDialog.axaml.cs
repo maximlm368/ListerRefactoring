@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using Lister.Desktop.App;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 
@@ -19,50 +20,53 @@ public sealed partial class PrintDialog : Window
 
         DataContext = ListerApp.Services.GetRequiredService<PrintDialogViewModel> ();
         _viewModel = ( PrintDialogViewModel ) DataContext;
-        allPages.IsChecked = true;
-        amountText.Text = "1";
-        pagesText.AcceptsReturn = true;
-        printerSettings.FocusAdorner = null;
-        print.FocusAdorner = null;
-        cancel.FocusAdorner = null;
 
-        Activated += ( s, a ) => { cancel.Focus ( NavigationMethod.Tab, KeyModifiers.None ); };
+        Activated += ( s, a ) => Cancel.Focus ( NavigationMethod.Tab, KeyModifiers.None );
     }
 
     public PrintDialog ( int pageAmount, PrintAdjustingData printAdjusting ) : this()
     {
+        AllPages.IsChecked = true;
+        AmountText.Text = "1";
+        PagesText.AcceptsReturn = true;
+        PrinterSettings.FocusAdorner = null;
+        Print.FocusAdorner = null;
+        Cancel.FocusAdorner = null;
+
+        _viewModel.PropertyChanged += ViewModelChanged;
+
         _viewModel.AdjustPrinting ( pageAmount, printAdjusting );
-        printerChoosing.SelectedIndex = _viewModel.SelectedIndex;
+        PrinterChoosing.SelectedIndex = _viewModel.SelectedIndex;
 
         if ( _defaultSelectedIndex < 0 )
         {
-            _defaultSelectedIndex = printerChoosing.SelectedIndex;
+            _defaultSelectedIndex = PrinterChoosing.SelectedIndex;
         }
 
-        if ( printerChoosing.SelectedIndex < 0 )
+        if ( PrinterChoosing.SelectedIndex < 0 )
         {
-            printerChoosing.SelectedIndex = _defaultSelectedIndex;
+            PrinterChoosing.SelectedIndex = _defaultSelectedIndex;
         }
     }
 
     public void PagesLostFocus ( object sender, RoutedEventArgs args )
     {
-        pagesError.IsVisible = true;
+        PagesError.IsVisible = true;
     }
 
     public void PagesGotFocus ( object sender, GotFocusEventArgs args )
     {
-        pagesError.IsVisible = false;
+        PagesError.IsVisible = false;
     }
 
     public void CopiesLostFocus ( object sender, RoutedEventArgs args )
     {
-        copiesError.IsVisible = true;
+        CopiesError.IsVisible = true;
     }
 
     public void CopiesGotFocus ( object sender, GotFocusEventArgs args )
     {
-        copiesError.IsVisible = false;
+        CopiesError.IsVisible = false;
     }
 
     public void PagesSetChanged ( object sender, TextChangedEventArgs args )
@@ -80,6 +84,14 @@ public sealed partial class PrintDialog : Window
         {
             _viewModel.Copies = textBox.Text;
             textBox.Text = _viewModel.Copies;
+        }
+    }
+
+    private void ViewModelChanged ( object? sender, PropertyChangedEventArgs args )
+    {
+        if ( args.PropertyName == "IsClosing" )
+        {
+            Close ();
         }
     }
 }

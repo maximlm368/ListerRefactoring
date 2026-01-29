@@ -1,7 +1,7 @@
 ﻿using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.Extentions;
 using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
@@ -220,6 +220,8 @@ public sealed partial class BadgeViewModel : ObservableObject
 
         Model.RolledBack += HandleModelRolledBack;
         Model.CorrectnessChanged += HandleCorrectnessChanged;
+
+        var fdfdf = ImageBitmap;
     }
 
     #region Handlers
@@ -419,7 +421,7 @@ public sealed partial class BadgeViewModel : ObservableObject
     #region ShowAndZoom
     internal void Show ()
     {
-        if ( !string.IsNullOrWhiteSpace ( Model.BackgroundImagePath ) )
+        if ( ImageBitmap == null && !string.IsNullOrWhiteSpace ( Model.BackgroundImagePath ) )
         {
             if ( !_pathToImage.TryGetValue ( Model.BackgroundImagePath, out Imaging.Bitmap? _ ) )
             {
@@ -557,7 +559,7 @@ public sealed partial class BadgeViewModel : ObservableObject
                 return new ( new Color ( 0, 0, 0, 0 ) );
             }
 
-            if ( MainViewModel.MainViewIsWaiting )
+            if ( MainViewModel.HasWaitingState )
             {
                 SolidColorBrush result = Dispatcher.UIThread.Invoke (
                     () =>
@@ -588,7 +590,7 @@ public sealed partial class BadgeViewModel : ObservableObject
 
         if ( thickness.Count == 4 )
         {
-            if ( MainViewModel.MainViewIsWaiting )
+            if ( MainViewModel.HasWaitingState )
             {
                 Avalonia.Thickness result = Dispatcher.UIThread.Invoke (
                     () =>

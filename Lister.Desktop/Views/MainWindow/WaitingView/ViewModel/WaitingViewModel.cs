@@ -104,7 +104,7 @@ public partial class WaitingViewModel : ObservableObject
         _canvasLeftStorage -= widthDiff / 2;
         _canvasShownVerticalMargin += heightDiff;
 
-        if ( MainViewModel.MainViewIsWaiting )
+        if ( MainViewModel.HasWaitingState )
         {
             Margin = new Thickness ( 0, _canvasShownVerticalMargin );
         }

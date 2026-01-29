@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Lister.Desktop": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

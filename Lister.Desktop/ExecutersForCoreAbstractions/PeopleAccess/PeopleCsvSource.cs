@@ -1,5 +1,5 @@
 ﻿using Lister.Core.PeopleAccess.Abstractions;
-using Lister.Core.Models;
+using Lister.Core.Entities;
 using System.Text;
 
 namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;

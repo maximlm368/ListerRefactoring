@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.Models.Badge;
+﻿namespace Lister.Core.Entities.Badge;
 
 /// <summary>
 /// Defines badge layout component that can be bound to textline geometrically with name set in "Binding".

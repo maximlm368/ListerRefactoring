@@ -18,7 +18,7 @@ public sealed partial class DialogWindow : Window
         viewModel.NoChosen += ChooseNo;
         DataContext = viewModel;
 
-        Activated += ( s, a ) => { Yes.Focus ( NavigationMethod.Tab, KeyModifiers.None ); };
+        Activated += ( s, a ) => Yes.Focus ( NavigationMethod.Tab, KeyModifiers.None );
 
         if ( MainWindow.MainWindow.Window != null ) 
         {

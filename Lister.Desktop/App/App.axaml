@@ -22,7 +22,8 @@
 							BorderBrush="{DynamicResource SystemControlFocusVisualPrimaryBrush}"
 							Margin="{DynamicResource SystemControlFocusVisualMargin}">
 						<Border BorderThickness="0"
-								BorderBrush="{DynamicResource SystemControlFocusVisualSecondaryBrush}" />
+								BorderBrush="{DynamicResource SystemControlFocusVisualSecondaryBrush}" 
+						/>
 					</Border>
 				</FocusAdornerTemplate>
 			</Setter>

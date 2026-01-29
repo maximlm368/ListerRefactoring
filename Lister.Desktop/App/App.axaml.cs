@@ -22,8 +22,14 @@ public partial class ListerApp : Avalonia.Application
 
     public override async void OnFrameworkInitializationCompleted ()
     {
+        string resourceDirectory = Environment.CurrentDirectory;
+
+#if DEBUG
+        resourceDirectory = resourceDirectory[..^17];
+#endif
+        
         string jsonSchemePath = "avares://Lister.Desktop/Assets/JsonSchema/Schema.json";
-        string resourcePath = Path.Combine ( Environment.CurrentDirectory, "Resources" );
+        string resourcePath = Path.Combine ( resourceDirectory, "Resources" );
         string configPath = Path.Combine ( resourcePath, "Config.json" );
         string osName = OperatingSystem.IsWindows () ? "Windows" : "Linux";
 
@@ -31,7 +37,10 @@ public partial class ListerApp : Avalonia.Application
         collection.AddNeededServices ( configPath, osName );
         Services = collection.BuildServiceProvider ();
 
-        if ( ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ) return;
+        if ( ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ) 
+        {
+            return;
+        }
 
         SplashWindow splashWindow = new ();
         desktop.MainWindow = splashWindow;
@@ -51,7 +60,7 @@ public partial class ListerApp : Avalonia.Application
         desktop.MainWindow = mainWindow;
         desktop.MainWindow.Show ();
         splashWindow.Close ();
-        mainWindow.Closing += ( s, e ) => e.Cancel = MainViewModel.InWaitingState;
+        mainWindow.Closing += ( s, e ) => e.Cancel = MainViewModel.HasWaitingState;
 
         base.OnFrameworkInitializationCompleted ();
     }

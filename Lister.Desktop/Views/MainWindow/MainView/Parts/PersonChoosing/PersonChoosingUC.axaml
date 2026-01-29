@@ -2,8 +2,9 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="50"
 			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing"
+			 xmlns:controls="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents"
 			 x:Class="Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.PersonChoosingUserControl"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;assembly=Lister.Desktop"
 			 xmlns:modelMappings="clr-namespace:Lister.Desktop.ModelMappings;assembly=Lister.Desktop"
@@ -11,7 +12,6 @@
 			 x:DataType="vm:PersonChoosingViewModel">
 
 	<Grid
-		Name="personChoosingBlock"
 		ColumnDefinitions="70 * 33 90 195"
 		Background="#EEEEEE"
 		Height="36"
@@ -22,186 +22,126 @@
 			Padding="10,5"
 			Content="ФИО:"
 		/>
-		<Canvas
-			Grid.Column="1">
 
-			<TextBox
-				Name="personTextBox"
-				Width="446"
-				Padding="10,4"
-				Margin="0,2"
-				BorderThickness="1,1,0,1"
-				BorderBrush="Gray"
-				CornerRadius="3,0,0,3"
-				ScrollViewer.VerticalScrollBarVisibility="Disabled"
-				ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-				IsReadOnly="{Binding ChoiceIsDisabled, Mode=OneWay}"
-				Focusable="{Binding ChoiceIsEnabled, Mode=OneWay}"
-				Text="{Binding PlaceHolder, Mode=OneWay}"
-				CaretIndex="{Binding CaretIndex, Mode=OneWay}"
-				GotFocus="CustomComboboxGotFocus"
-				LostFocus="CustomComboboxLostFocus"
-				PointerEntered="CustomComboboxPointerOver"
-				PointerExited="CustomComboboxPointerExited"
-				KeyUp="HandlePersonListReduction"
-				KeyDown="DropOrPickUpPersonsOrScroll"
-			/>
-			<Border
-				Canvas.Top="36"
-				ZIndex="2"
-				Margin="0,-2"
-				CornerRadius="0"
-				BorderThickness="1"
-				Opacity="{Binding DropDownOpacity, Mode=OneWay}"
-				Background="Gray">
+		<controls:FilterableCombobox
+			Name="PART_FilterableCombobox"
+			Grid.Column="1"
+			VisibleCount="9"
+			DefaultPlaceholder="Весь список"
+			ItemsSource="{Binding People, Mode=OneWay}"
+			SelectedItem="{Binding Selected, Mode=OneWayToSource}">
 
-				<uc:CustomViewbox
-					Name="visiblePersons"
-					Width="472"
-					Height="{Binding VisibleHeight, Mode=OneWay}"
-					PointerWheelChanged="ScrollByWheel"
-					IsScrollable="{Binding IsPersonsScrollable, Mode=OneWay}">
+			<controls:FilterableCombobox.Styles>
+				<Style Selector="Label#item:pointerover">
+					<Setter Property="BorderBrush" Value="#4aacfe"/>
+					<Setter Property="Background" Value="#ffffff"/>
+				</Style>
+				<Style Selector="Label#item">
+					<Setter Property="BorderBrush" Value="#d5e8f6"/>
+					<Setter Property="Padding" Value="8,4"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="HorizontalAlignment" Value="Stretch"/>
+					<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+					<Setter Property="Height" Value="32"/>
+				</Style>
+				<Style Selector="Label#allSelection:pointerover">
+					<Setter Property="BorderBrush" Value="#4aacfe"/>
+					<Setter Property="Background" Value="#ffffff"/>
+				</Style>
+				<Style Selector="Label#allSelection">
+					<Setter Property="FontStyle" Value="Italic"/>
+					<Setter Property="Background" Value="#ffffff"/>
+					<Setter Property="BorderBrush" Value="#d5e8f6"/>
+					<Setter Property="Height" Value="32"/>
+					<Setter Property="Padding" Value="8,4"/>
+					<Setter Property="BorderThickness" Value="2"/>
+					<Setter Property="Content" Value="Весь список"/>
+				</Style>
+			</controls:FilterableCombobox.Styles>
 
-					<Canvas
-						Name="listFrame"
-						Width="472"
-						Height="{Binding VisibleHeight, Mode=OneWay}"
-						Background="AliceBlue">
-
+			<controls:FilterableCombobox.ItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
 						<Label
-							Name="allPersonsSign"
-							Padding="8,4"
-							FontStyle="Italic"
-							Background="{Binding EntireBackgroundColor, Mode=OneWay }"
-							Foreground="{Binding EntireForegroundColor, Mode=OneWay }"
-							BorderBrush="{Binding EntireBorderColor, Mode=OneWay }"
-							FontWeight="{Binding EntireFontWeight, Mode=OneWay }"
-							BorderThickness="2"
-							Width="{Binding PersonListWidth, Mode=OneWay}"
-							Height="{Binding FirstItemHeight, Mode=OneWay}"
-							IsVisible="{Binding FirstIsVisible, Mode=OneWay}"
-							PointerPressed="AcceptEntirePersonList"
-							PointerEntered="HoverComboboxItem"
-							PointerExited="ExitComboboxItem"
-							Content="Весь список"
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#ffffff"
+							Foreground="#000000"
+							Content="{Binding Model.FullName, Mode=OneWay}"
 						/>
-						<ItemsControl
-							Name="personList"
-							Canvas.Top="{Binding PersonsScrollValue, Mode=OneWay}"
-							Width="{Binding PersonListWidth, Mode=OneWay}"
-							ItemsSource="{Binding VisiblePeople, Mode=OneWay}">
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.ItemTemplate>
 
-							<ItemsControl.ItemTemplate>
-								<DataTemplate>
-									<Label
-										x:DataType="badgeVM:VisiblePerson"
-										Padding="8,4"
-										Height="32"
-										BorderThickness="1"
-										Background="{Binding BackgroundColor, Mode=OneWay }"
-										Foreground="{Binding ForegroundColor, Mode=OneWay }"
-										BorderBrush="{Binding BorderColor, Mode=OneWay }"
-										FontWeight="{Binding FontWeight, Mode=OneWay }"
-										PointerPressed="HandleChoosingByTapping"
-										PointerEntered="HoverComboboxItem"
-										PointerExited="ExitComboboxItem"
-										Content="{Binding Model.FullName, Mode=OneWay}"
-									/>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
-						</ItemsControl>
+			<controls:FilterableCombobox.CurrentItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#e3f1fc"
+							Foreground="#000000"
+							Content="{Binding Model.FullName, Mode=OneWay}"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.CurrentItemTemplate>
 
-						<Canvas
-							Name="scroller"
-							Canvas.Left="{Binding ScrollerCanvasLeft, Mode=OneWay}"
-							Width="{Binding ScrollerWidth, Mode=OneWay}"
-							Height="{Binding VisibleHeight, Mode=OneWay}"
-							ZIndex="5"
-							PointerPressed="ScrollerPressed"
-							Background="White">
+			<controls:FilterableCombobox.SelectedItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#e3f1fc"
+							FontWeight="Bold"
+							Foreground="#3a5a81"
+							Content="{Binding Model.FullName, Mode=OneWay}"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.SelectedItemTemplate>
 
-							<Canvas
-								Name="upper"
-								Canvas.Left="0"
-								Canvas.Top="0"
-								Width="{Binding ScrollerWidth, Mode=OneWay}"
-								Height="15"
-								Background="LightGray"
-								PointerPressed="ScrollByTapping"
-							/>
-							<Canvas
-								Name="topSpan"
-								Canvas.Left="0"
-								Canvas.Top="15"
-								Width="{Binding ScrollerWidth, Mode=OneWay}"
-								Height="{Binding TopSpanHeight, Mode=OneWay}"
-								Background="#EEEEEE"
-								PointerPressed="ShiftRunner"
-							/>
-							<Canvas
-								Name="runner"
-								Classes="Runner"
-								Canvas.Left="0"
-								Canvas.Top="{Binding RunnerYCoordinate, Mode=OneWay}"
-								Width="{Binding ScrollerWidth, Mode=OneWay}"
-								Height="{Binding RunnerHeight, Mode=OneWay}"
-								ZIndex="3"
-								Background="#817974"
-								PointerPressed="CaptureRunner"
-								PointerEntered="OverRunner"
-								PointerExited="ExitedRunner"
-								PointerMoved="MoveRunner"
-							/>
-							<Canvas
-								Name="bottomSpan"
-								Canvas.Left="0"
-								Canvas.Bottom="15"
-								Width="{Binding ScrollerWidth, Mode=OneWay}"
-								Height="{Binding BottomSpanHeight, Mode=OneWay}"
-								Background="#EEEEEE"
-								PointerPressed="ShiftRunner"
-							/>
-							<Canvas
-								Name="downer"
-								Canvas.Left="0"
-								Canvas.Bottom="0"
-								Width="{Binding ScrollerWidth, Mode=OneWay}"
-								Height="15"
-								Background="LightGray"
-								PointerPressed="ScrollByTapping"
-							/>
-						</Canvas>
-					</Canvas>
-				</uc:CustomViewbox>
-			</Border>
-		</Canvas>
+			<controls:FilterableCombobox.AllTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="allSelection"
+							Background="#ffffff"
+							Foreground="#000000"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.AllTemplate>
 
-		<Border
-			Name="builtInBorder"
-			Classes="builtIn"
-			Grid.Column="2"
-			Width="30"
-			Height="32"
-			BorderThickness="0,1,1,1"
-			Background="White"
-			CornerRadius="0,3,3,0">
+			<controls:FilterableCombobox.AllCurrentTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="allSelection"
+							Background="#e3f1fc"
+							Foreground="#000000"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.AllCurrentTemplate>
 
-			<Label
-				Name="builtInButton"
-				Classes="inBuiltIn"
-				VerticalAlignment="Top"
-				VerticalContentAlignment="Center"
-				Width="28"
-				Height="28"
-				CornerRadius="0,4,4,0"
-				Padding="6,7"
-				PointerPressed="ButtonPressed"
-				PointerReleased="ButtonReleased"
-				FontFamily="{StaticResource FA}"
-				Background="White"
-				Content="&#xf107;"
-			/>
-		</Border>
+			<controls:FilterableCombobox.AllSelectedTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="allSelection"
+							Background="#e3f1fc"
+							Foreground="#3a5a81"
+							FontWeight="Bold"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableCombobox.AllSelectedTemplate>
+		</controls:FilterableCombobox>
 
 		<Label
 			Classes="narrow"

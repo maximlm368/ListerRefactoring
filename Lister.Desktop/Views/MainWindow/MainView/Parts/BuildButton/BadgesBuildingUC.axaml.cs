@@ -8,12 +8,14 @@ namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton;
 
 public partial class BadgesBuildingUserControl : UserControl
 {
+    public event Action? SomePartPressed;
+
     public BadgesBuildingUserControl ()
     {
         InitializeComponent ();
 
-        DataContext = ListerApp.Services.GetRequiredService<BadgesBuildingViewModel> ();
-        BuildBadges.FocusAdorner = null;
+        //DataContext = ListerApp.Services.GetRequiredService<BadgesBuildingViewModel> ();
+        //BuildBadges.FocusAdorner = null;
     }
 
     private void RightPointerPressed ( object sender, PointerPressedEventArgs args )
@@ -22,7 +24,7 @@ public partial class BadgesBuildingUserControl : UserControl
 
         if ( point.Properties.IsRightButtonPressed )
         {
-            MainView.SomeControlPressed = true;
+            SomePartPressed?.Invoke ();
             Focus ();
         }
     }

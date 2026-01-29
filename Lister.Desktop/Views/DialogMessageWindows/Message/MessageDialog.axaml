@@ -82,7 +82,7 @@
 					Canvas.Top="8"
 					Canvas.Left="470"
 					Content="Ok"
-					Command="{Binding  Path=Close}"
+					Command="{Binding CloseCommand}"
 				/>
 			</Canvas>
 		</StackPanel>

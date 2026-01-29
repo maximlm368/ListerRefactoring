@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.Models.Badge;
+﻿namespace Lister.Core.Entities.Badge;
 
 /// <summary>
 /// Defines shared data and functionality for badge layout component such as image, shape or text.

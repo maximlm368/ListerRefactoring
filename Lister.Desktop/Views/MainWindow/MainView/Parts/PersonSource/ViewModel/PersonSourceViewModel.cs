@@ -1,14 +1,14 @@
 ﻿using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.BadgesCreator;
 using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
-using ReactiveUI;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 
 public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders,
     int limit, string sourceKeeper, BadgeCreator badgesCreator, string configPath
-) : ReactiveObject
+) : ObservableObject
 {
     private readonly string _pickerTitle = pickerTitle;
     private readonly string _filePickerTitle = filePickerTitle;
@@ -37,35 +37,37 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
     private string? _sourceFilePath;
     internal string? SourceFilePath
     {
-        get { return _sourceFilePath; }
+        get => _sourceFilePath;
+        
         private set
         {
             _sourcePathKeeper = value;
-            this.RaiseAndSetIfChanged ( ref _sourceFilePath, value, nameof ( SourceFilePath ) );
+            _sourceFilePath = value;
+            OnPropertyChanged ();
         }
     }
 
-    internal readonly int personsLimitForSource = limit;
-
-    private bool _personsFileIsOpen;
+    private bool _fileIsOpen;
     public bool FileIsOpen
     {
-        get { return _personsFileIsOpen; }
+        get => _fileIsOpen;
+        
         private set
         {
-            if ( _personsFileIsOpen == value )
+            if ( _fileIsOpen == value )
             {
-                _personsFileIsOpen = !_personsFileIsOpen;
+                _fileIsOpen = !_fileIsOpen;
             }
 
-            this.RaiseAndSetIfChanged ( ref _personsFileIsOpen, value, nameof ( FileIsOpen ) );
+            OnPropertyChanged ();
         }
     }
 
     private bool _fileIsDeclined;
     internal bool FileIsDeclined
     {
-        get { return _fileIsDeclined; }
+        get => _fileIsDeclined;
+        
         private set
         {
             if ( _fileIsDeclined == value )
@@ -73,14 +75,15 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
                 _fileIsDeclined = !_fileIsDeclined;
             }
 
-            this.RaiseAndSetIfChanged ( ref _fileIsDeclined, value, nameof ( FileIsDeclined ) );
+            OnPropertyChanged ();
         }
     }
 
     private bool _fileIsTooBig;
     internal bool FileIsTooBig
     {
-        get { return _fileIsTooBig; }
+        get => _fileIsTooBig;
+
         private set
         {
             if ( _fileIsTooBig == value )
@@ -88,9 +91,11 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
                 _fileIsTooBig = !_fileIsTooBig;
             }
 
-            this.RaiseAndSetIfChanged ( ref _fileIsTooBig, value, nameof ( FileIsTooBig ) );
+            OnPropertyChanged ();
         }
     }
+
+    private readonly int _personsLimitForSource = limit;
 
     internal string? FilePath { get; private set; }
 
@@ -184,7 +189,7 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
 
             return;
         }
-        else if ( !_badgeCreator.TrySetPeopleFrom ( path, personsLimitForSource ) )
+        else if ( !_badgeCreator.TrySetPeopleFrom ( path, _personsLimitForSource ) )
         {
             FilePath = path;
             FileIsTooBig = true;

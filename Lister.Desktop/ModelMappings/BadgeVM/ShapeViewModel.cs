@@ -1,6 +1,6 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 
 namespace Lister.Desktop.ModelMappings.BadgeVM;
 

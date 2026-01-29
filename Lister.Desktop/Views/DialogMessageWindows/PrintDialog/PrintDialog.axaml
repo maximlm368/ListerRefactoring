@@ -6,17 +6,12 @@
 		x:Class="Lister.Desktop.Views.DialogMessageWindows.PrintDialog.PrintDialog"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.PrintDialog; assembly=View"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel"
+		x:DataType="vm:PrintDialogViewModel"
 		Width="668"
 		Height="369"
 		WindowStartupLocation="CenterOwner"
-		x:DataType="vm:PrintDialogViewModel"
-		
 		SystemDecorations="None"
-		CanResize="False"
-		
-		ExtendClientAreaToDecorationsHint = "true"
-		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0">
+		CanResize="False">
 
 	<UserControl
 		Width="668"
@@ -36,14 +31,13 @@
 				RowDefinitions="36 38 38 38 38 38 38">
 				
 				<Label
-					Name="printerName"
 					Grid.Column="0"
 					Grid.Row="0"
 					Padding="10,5"
 					Content="Выбор принтера"
 				/>
 				<ComboBox
-					Name="printerChoosing"
+					Name="PrinterChoosing"
 					Grid.Column="1"
 					Grid.Row="0"
 					Foreground="Black"
@@ -69,7 +63,6 @@
 				</ComboBox>
 
 				<TextBlock
-					Name="printersEmptyError"
 					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="1"
@@ -79,7 +72,7 @@
 					Text="{Binding PrintersEmptyError, Mode=OneWay}"
 				/>
 				<RadioButton
-					Name="allPages"
+					Name="AllPages"
 					GroupName="PageSelection"
 					Grid.Column="0"
 					Grid.Row="2"
@@ -89,7 +82,6 @@
 					FontSize="16"
 				/>
 				<RadioButton
-					Name="somePages"
 					GroupName="PageSelection"
 					Grid.Column="0"
 					Grid.Row="3"
@@ -99,7 +91,7 @@
 					FontSize="16"
 				/>
 				<TextBox
-					Name="pagesText"
+					Name="PagesText"
 					Classes="pagesAmount"
 					Grid.Column="1"
 					Grid.Row="3"
@@ -112,7 +104,7 @@
 					TextChanged="PagesSetChanged"
 				/>
 				<TextBlock
-					Name="pagesError"
+					Name="PagesError"
 					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="4"
@@ -122,14 +114,13 @@
 					Text="{Binding PagesError, Mode=OneWay}"
 				/>
 				<Label
-					Name="amount"
 					Grid.Column="0"
 					Grid.Row="5"
 					Padding="10,8"
 					Content="Количество копий"
 				/>
 				<TextBox
-					Name="amountText"
+					Name="AmountText"
 					Classes="pagesAmount"
 					Grid.Column="1"
 					Grid.Row="5"
@@ -142,7 +133,7 @@
 					TextChanged="CopiesChanged"
 				/>
 				<TextBlock
-					Name="copiesError"			
+					Name="CopiesError"			
 					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="6"
@@ -154,46 +145,44 @@
 			</Grid>
 
 			<Canvas
-				Name ="Line"
 				Width="666"
 				Height="1"
 				Margin ="0,2"
 				Background ="#dcdcdc"
 			/>
 			<Canvas
-				Name="buttons"
 				Width="666"
 				Height="51"
 				Margin ="0,-2,0,0"
 				Background = "#f0f0f0">
 
 				<Button
-					Name="printerSettings"
+					Name="PrinterSettings"
 					Classes="Primary"
 					Padding="15,4"
 					Canvas.Top="8"
 					Canvas.Left="8"
 					Content="Настройки принтера"
-					Command="{Binding  Path = OpenPrinterSettings}"
+					Command="{Binding OpenPrinterSettingsCommand}"
 				/>
 				<Button
-					Name="print"
+					Name="Print"
 					Classes="Primary"
 					Padding="13,4"
 					Canvas.Top="8"
 					Canvas.Left="453"
 					Content="Печатать"
 					IsEnabled="{Binding  Path = PrintingIsAvailable,  Mode=OneWay}"
-					Command="{Binding  Path = Print}"
+					Command="{Binding PrintCommand}"
 				/>
 				<Button
-					Name="cancel"
+					Name="Cancel"
 					Classes="Primary"
 					Padding="15,4"
 					Canvas.Top="8"
 					Canvas.Left="563"
 					Content="Отмена"
-					Command="{Binding Cancel}"
+					Command="{Binding CancelCommand}"
 				/>
 			</Canvas>
 		</StackPanel>

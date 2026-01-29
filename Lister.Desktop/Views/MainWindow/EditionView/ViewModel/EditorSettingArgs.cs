@@ -4,16 +4,18 @@ namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
 public class EditorViewModelArgs
 {
-    public string ExtentionToolTip;
-    public string ShrinkingToolTip;
-    public string AllFilter;
-    public string IncorrectFilter;
-    public string CorrectFilter;
-    public string AllTip;
-    public string CorrectTip;
-    public string IncorrectTip;
-    public SolidColorBrush FocusedFontSizeColor;
-    public SolidColorBrush ReleasedFontSizeColor;
-    public SolidColorBrush FocusedFontSizeBorderColor;
-    public SolidColorBrush ReleasedFontSizeBorderColor;
+    private static readonly SolidColorBrush defaultBrash = new ( new Color ( 0, 0, 0, 0 ) );
+
+    public string ExtentionToolTip = string.Empty;
+    public string ShrinkingToolTip = string.Empty;
+    public string AllFilter = string.Empty;
+    public string IncorrectFilter = string.Empty;
+    public string CorrectFilter = string.Empty;
+    public string AllTip = string.Empty;
+    public string CorrectTip = string.Empty;
+    public string IncorrectTip = string.Empty;
+    public SolidColorBrush FocusedFontSizeColor = defaultBrash;
+    public SolidColorBrush ReleasedFontSizeColor = defaultBrash;
+    public SolidColorBrush FocusedFontSizeBorderColor = defaultBrash;
+    public SolidColorBrush ReleasedFontSizeBorderColor = defaultBrash;
 }

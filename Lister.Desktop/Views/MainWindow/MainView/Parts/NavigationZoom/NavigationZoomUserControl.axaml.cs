@@ -13,6 +13,8 @@ public partial class NavigationZoomUserControl : UserControl
     private readonly NavigationZoomViewModel _viewModel;
     private readonly char [] _pageNumberAcceptables = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
+    public event Action? SomePartPressed;
+
     public NavigationZoomUserControl ()
     {
         InitializeComponent ();
@@ -36,7 +38,7 @@ public partial class NavigationZoomUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        SomePartPressed?.Invoke ();
     }
 
     private void PageCounterLostFocus ( object sender, RoutedEventArgs args )

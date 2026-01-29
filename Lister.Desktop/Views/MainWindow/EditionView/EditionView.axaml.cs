@@ -21,7 +21,7 @@ namespace Lister.Desktop.Views.MainWindow.EditionView;
 /// <summary>
 /// Is view for edition of current badge collection.
 /// </summary>
-public sealed partial class BadgeEditorView : UserControl
+public sealed partial class EditorView : UserControl
 {
     private static readonly string _question = "Сохранить изменения и вернуться к макету ?";
     private static readonly int _focusedTextLineLengthLimit = 100;
@@ -41,19 +41,19 @@ public sealed partial class BadgeEditorView : UserControl
     private Point _pointerOnBadgeComponent;
     private Point _pointerOnBadge;
     private mainView.MainView? _back;
-    private readonly BadgeEditorViewModel? _viewModel;
+    private readonly EditorViewModel? _viewModel;
     private bool _isReleaseLocked;
     private bool _isTextEditorFocused;
     private bool _isZoomOnOutFocused;
     private Stopwatch? _focusTime;
     private double _dastinationPointer = 0;
 
-    public BadgeEditorView ()
+    public EditorView ()
     {
         InitializeComponent ();
     }
 
-    public BadgeEditorView ( int incorrectBadgesAmmount ) : this ()
+    public EditorView ( int incorrectBadgesAmmount ) : this ()
     {
         EditorViewModelArgs args = ListerApp.Services.GetRequiredService<EditorViewModelArgs> ();
         _viewModel = new ( incorrectBadgesAmmount, args );
@@ -138,7 +138,7 @@ public sealed partial class BadgeEditorView : UserControl
 
         _back?.SetProperSize ( _viewModel.ViewWidth, _viewModel.ViewHeight );
         mainWindow.CancelSizeDifference ();
-        _back?.RefreshTemplateAppearences ();
+        _back?.Show ();
         mainWindow.Content = _back;
     }
 
@@ -232,7 +232,7 @@ public sealed partial class BadgeEditorView : UserControl
 
         _viewModel?.HandleDialogOpenig ();
         DialogWindow dialog = new ( _question );
-        dialog.Closed += ( s, a ) => { _viewModel?.HandleDialogClosing (); };
+        dialog.Closed += ( s, a ) => _viewModel?.HandleDialogClosing ();
 
         bool result = await dialog.ShowDialog<bool> ( MainWindow.Window );
 

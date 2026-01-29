@@ -15,11 +15,8 @@ public sealed partial class Printer : ObservableObject
     private bool _pdfGenerationSucceeded;
     internal bool PdfGenerationSuccesseeded
     {
-        get 
-        { 
-            return _pdfGenerationSucceeded; 
-        }
-
+        get => _pdfGenerationSucceeded;
+        
         private set
         {
             _pdfGenerationSucceeded = value;
@@ -30,10 +27,7 @@ public sealed partial class Printer : ObservableObject
     private bool _printingIsFinished;
     internal bool PrintingIsFinished
     {
-        get 
-        { 
-            return _printingIsFinished; 
-        }
+        get => _printingIsFinished;
 
         private set
         {
@@ -50,42 +44,25 @@ public sealed partial class Printer : ObservableObject
 
     internal void GeneratePdfDuringWaiting ( string fileToSave )
     {
-        Task<bool> generationTask = new (
-            () =>
-            {
-                return _model.CreateAndSavePdf ( fileToSave );
-            }
-        );
-
-        generationTask.ContinueWith ( 
-            ( tsk ) =>
-            {
-                PdfGenerationSuccesseeded = tsk.Result;
-            } 
-        );
-
+        Task<bool> generationTask = new ( () => _model.CreateAndSavePdf ( fileToSave ) );
+        generationTask.ContinueWith ( ( tsk ) => PdfGenerationSuccesseeded = tsk.Result );
         generationTask.Start ();
     }
 
     internal void PrintDuringWaiting ( PrintAdjustingData printAdjusting )
     {
-        Task printing = new (   
-            () =>
-            {
-                _model.Print ( printAdjusting.PrinterName, printAdjusting.PageNumbers, printAdjusting.CopiesAmount );
-            } 
-        );
+        Task printing = new ( () => _model.Print ( printAdjusting.PrinterName, printAdjusting.PageNumbers, printAdjusting.CopiesAmount ) );
 
-        printing.ContinueWith ( 
+        printing.ContinueWith (
             ( printingTask ) =>
             {
-                Dispatcher.UIThread.Invoke ( 
+                Dispatcher.UIThread.Invoke (
                     () =>
                     {
                         PrintingIsFinished = true;
-                    } 
+                    }
                 );
-            } 
+            }
         );
 
         printing.Start ();

@@ -69,7 +69,7 @@
 					Canvas.Top="8"
 					Canvas.Left="166"
 					Content="Да"
-					Command="{Binding ChooseYes}"
+					Command="{Binding YesCommand}"
 				/>
 				<Button
 					Name="No"
@@ -78,7 +78,7 @@
 					Canvas.Top="8"
 					Canvas.Left="260"
 					Content="Нет"
-					Command="{Binding ChooseNo}"
+					Command="{Binding NoCommand}"
 				/>
 			</Canvas>
 		</StackPanel>

@@ -1,7 +1,7 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Document;
-using Lister.Core.Models;
+using Lister.Core.Entities;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
 
@@ -40,7 +40,7 @@ public partial class SceneViewModel : ObservableObject
     [ObservableProperty]
     private int _incorrectBadgeCount;
 
-    internal List <BadgeViewModel> ProcessableBadges { get; private set; }
+    internal List<BadgeViewModel> ProcessableBadges { get; private set; }
 
     [ObservableProperty]
     private string _zoomDegreeInView = "100";
@@ -66,26 +66,20 @@ public partial class SceneViewModel : ObservableObject
     private bool _editIsSelected;
     internal bool EditIsSelected
     {
-        get
-        {
-            return _editIsSelected;
-        }
+        get => _editIsSelected;
 
         private set
         {
             _editIsSelected = value;
             OnPropertyChanged ();
-            
+
         }
     }
 
     private bool _buildingIsOccured;
     internal bool BuildingIsOccured
     {
-        get
-        {
-            return _buildingIsOccured;
-        }
+        get => _buildingIsOccured;
 
         private set
         {
@@ -97,10 +91,7 @@ public partial class SceneViewModel : ObservableObject
     private bool _badgesAreCleared;
     internal bool BadgesAreCleared
     {
-        get
-        {
-            return _badgesAreCleared;
-        }
+        get => _badgesAreCleared;
 
         private set
         {
@@ -110,7 +101,7 @@ public partial class SceneViewModel : ObservableObject
     }
     #endregion
 
-    public SceneViewModel ( int badgeCountLimit, string extentionToolTip, string shrinkingToolTip, DocumentProcessor docBuilder ) 
+    public SceneViewModel ( int badgeCountLimit, string extentionToolTip, string shrinkingToolTip, DocumentProcessor docBuilder )
     {
         _badgeCountLimit = badgeCountLimit;
         _extentionToolTip = extentionToolTip;
@@ -125,7 +116,7 @@ public partial class SceneViewModel : ObservableObject
         AllPages = [];
         VisiblePage = new PageViewModel ( new Page (), _documentScale );
         _lastPage = VisiblePage;
-        AllPages.Add (VisiblePage);
+        AllPages.Add ( VisiblePage );
 
         VisiblePageNumber = 1;
         ProcessableBadges = [];
@@ -135,7 +126,7 @@ public partial class SceneViewModel : ObservableObject
 
     internal void HandlePageCompleting ( Page complated, bool lastIsReplacable )
     {
-        if ( !_isEntireBuilding ) 
+        if ( !_isEntireBuilding )
         {
             return;
         }
@@ -149,7 +140,7 @@ public partial class SceneViewModel : ObservableObject
             _isEntireBuildingStarted = false;
         }
 
-        Dispatcher.UIThread.Invoke ( 
+        Dispatcher.UIThread.Invoke (
             () =>
             {
                 PageViewModel newPage = new ( complated, _documentScale );
@@ -157,18 +148,18 @@ public partial class SceneViewModel : ObservableObject
                 ProcessableBadges.AddRange ( newPage.GetBadges () );
                 BadgeCount += complated.BadgeCount;
                 IncorrectBadgeCount = _model.IncorrectBadgeCount;
-            } 
+            }
         );
     }
 
-    internal int GetLimit ( )
+    internal int GetLimit ()
     {
         return _badgeCountLimit;
     }
 
-    internal void Build ( string templateName, Person ? person )
+    internal void Build ( string templateName, Person? person )
     {
-        if ( string.IsNullOrWhiteSpace(templateName) ) 
+        if ( string.IsNullOrWhiteSpace ( templateName ) )
         {
             return;
         }
@@ -201,7 +192,7 @@ public partial class SceneViewModel : ObservableObject
         Task task = new (
             () =>
             {
-                bool buildingIsCompleted = BuildAllBadges (_badgeTemplate);
+                bool buildingIsCompleted = BuildAllBadges ( _badgeTemplate );
 
                 _buildingIsLocked = false;
                 EntireListBuildingIsChosen = false;
@@ -217,12 +208,12 @@ public partial class SceneViewModel : ObservableObject
                 }
                 else
                 {
-                    Dispatcher.UIThread.Invoke ( 
+                    Dispatcher.UIThread.Invoke (
                         () =>
                         {
                             EntireListBuildingIsChosen = false;
                             BuildingIsOccured = false;
-                        } 
+                        }
                     );
                 }
             }
@@ -250,16 +241,16 @@ public partial class SceneViewModel : ObservableObject
             futureVisiblePageNumber = 1;
         }
 
-        List <Page> builtPages = _model.BuildAllPages (templateName, _badgeCountLimit);
+        List<Page> builtPages = _model.BuildAllPages ( templateName, _badgeCountLimit );
 
-        if ( builtPages.Count < 1 ) 
+        if ( builtPages.Count < 1 )
         {
             return false;
         }
 
         _lastPage = AllPages.Last ();
 
-        Dispatcher.UIThread.Invoke ( 
+        Dispatcher.UIThread.Invoke (
             () =>
             {
                 VisiblePageNumber = futureVisiblePageNumber;
@@ -268,7 +259,7 @@ public partial class SceneViewModel : ObservableObject
                 PageCount = AllPages.Count;
                 EnableButtons ();
                 VisiblePage.Show ();
-            } 
+            }
         );
 
         return true;
@@ -283,20 +274,20 @@ public partial class SceneViewModel : ObservableObject
             return false;
         }
 
-        List<Page> resultPages =_model.BuildBadge (templateName, _chosenPerson);
+        List<Page> resultPages = _model.BuildBadge ( templateName, _chosenPerson );
 
         if ( resultPages.Count > AllPages.Count )
         {
             AllPages.Add ( new PageViewModel ( resultPages.Last (), _documentScale ) );
         }
-        else 
+        else
         {
-            AllPages [^1 ] = new PageViewModel ( resultPages.Last (), _documentScale );
+            AllPages [^1] = new PageViewModel ( resultPages.Last (), _documentScale );
         }
 
-        BadgeViewModel added = AllPages [^1 ].GetBadges ().Last ();
+        BadgeViewModel added = AllPages [^1].GetBadges ().Last ();
         ProcessableBadges.Add ( added );
-        _lastPage = AllPages [^1 ];
+        _lastPage = AllPages [^1];
 
         VisiblePage?.Hide ();
         VisiblePage = _lastPage;
@@ -322,9 +313,9 @@ public partial class SceneViewModel : ObservableObject
         _model.Clear ();
 
         AllPages = [];
-        VisiblePage = new PageViewModel ( new Page(), _documentScale );
+        VisiblePage = new PageViewModel ( new Page (), _documentScale );
         _lastPage = VisiblePage;
-        AllPages.Add (_lastPage);
+        AllPages.Add ( _lastPage );
 
         VisiblePageNumber = 1;
         PageCount = 0;
@@ -341,7 +332,7 @@ public partial class SceneViewModel : ObservableObject
                 ZoomOut ();
             }
         }
-        else if ( _documentScale < 1 ) 
+        else if ( _documentScale < 1 )
         {
             while ( _documentScale != 1 )
             {
@@ -358,43 +349,43 @@ public partial class SceneViewModel : ObservableObject
         {
             ZoomOn ();
         }
-        else if ( newZoomDegree < degree ) 
+        else if ( newZoomDegree < degree )
         {
             ZoomOut ();
         }
     }
 
-    private void ZoomOn ( )
+    private void ZoomOn ()
     {
         _documentScale *= _scalabilityCoefficient;
 
         if ( VisiblePage != null )
         {
-            for ( int pageCounter = 0;   pageCounter < AllPages.Count;   pageCounter++ )
+            for ( int pageCounter = 0; pageCounter < AllPages.Count; pageCounter++ )
             {
-                AllPages [pageCounter].ZoomOn (_scalabilityCoefficient);
+                AllPages [pageCounter].ZoomOn ( _scalabilityCoefficient );
             }
 
             CanvasTop *= _scalabilityCoefficient;
-            double marginLeft = _scalabilityCoefficient * BorderMargin. Left;
-            BorderMargin = new Avalonia.Thickness (marginLeft, 0, 0, 0);
+            double marginLeft = _scalabilityCoefficient * BorderMargin.Left;
+            BorderMargin = new Avalonia.Thickness ( marginLeft, 0, 0, 0 );
         }
     }
 
-    private void ZoomOut ( )
+    private void ZoomOut ()
     {
         _documentScale /= _scalabilityCoefficient;
 
         if ( VisiblePage != null )
         {
-            for ( int pageCounter = 0;   pageCounter < AllPages.Count;   pageCounter++ )
+            for ( int pageCounter = 0; pageCounter < AllPages.Count; pageCounter++ )
             {
-                AllPages [pageCounter].ZoomOut (_scalabilityCoefficient);
+                AllPages [pageCounter].ZoomOut ( _scalabilityCoefficient );
             }
 
             CanvasTop /= _scalabilityCoefficient;
-            double marginLeft = BorderMargin. Left / _scalabilityCoefficient;
-            BorderMargin = new Avalonia.Thickness (marginLeft, 0, 0, 0);
+            double marginLeft = BorderMargin.Left / _scalabilityCoefficient;
+            BorderMargin = new Avalonia.Thickness ( marginLeft, 0, 0, 0 );
         }
     }
 
@@ -404,7 +395,7 @@ public partial class SceneViewModel : ObservableObject
         bool notTheSamePage = ( VisiblePageNumber != pageNumber );
         bool inRange = pageNumber <= AllPages.Count;
 
-        if ( visiblePageExists   &&   notTheSamePage   &&   inRange )
+        if ( visiblePageExists && notTheSamePage && inRange )
         {
             VisiblePage?.Hide ();
             VisiblePageNumber = pageNumber;
@@ -415,7 +406,7 @@ public partial class SceneViewModel : ObservableObject
         return VisiblePageNumber;
     }
 
-    internal List <PageViewModel> GetPrintablePages ()
+    internal List<PageViewModel> GetPrintablePages ()
     {
         return AllPages;
     }
@@ -436,16 +427,18 @@ public partial class SceneViewModel : ObservableObject
         PrintIsEnable = true;
     }
 
-    internal void ResetIncorrects ()
+    internal void Refresh ()
     {
         IncorrectBadgeCount = 0;
 
-        foreach ( BadgeViewModel badge   in   ProcessableBadges )
+        foreach ( BadgeViewModel badge in ProcessableBadges )
         {
-            if ( ! badge.IsCorrect )
+            if ( !badge.IsCorrect )
             {
                 IncorrectBadgeCount++;
             }
         }
+
+        VisiblePage?.Show ();
     }
 }

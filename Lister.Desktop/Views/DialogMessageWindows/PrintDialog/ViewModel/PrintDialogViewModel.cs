@@ -1,14 +1,15 @@
 ﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Lister.Core.Extentions;
 using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 using Lister.Desktop.Extentions;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
-using Lister.Core.Extentions;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-internal sealed partial class PrintDialogViewModel : ReactiveObject
+internal sealed partial class PrintDialogViewModel : ObservableObject
 {
     private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
     private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
@@ -28,20 +29,29 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
     private PrintAdjustingData? _adjusting;
     private bool _isPageInputPossable = false;
 
+    [ObservableProperty]
     private ObservableCollection<PrinterPresentation>? _printers;
-    internal ObservableCollection<PrinterPresentation>? Printers
-    {
-        get { return _printers; }
-        private set
-        {
-            this.RaiseAndSetIfChanged ( ref _printers, value, nameof ( Printers ) );
-        }
-    }
 
-    private bool _isSomePages;
+    [ObservableProperty]
+    private SolidColorBrush? _pagesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
+
+    [ObservableProperty]
+    private SolidColorBrush? _copiesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
+
+    [ObservableProperty]
+    private string? _printersEmptyError;
+
+    [ObservableProperty]
+    private bool _printingIsAvailable;
+
+    [ObservableProperty]
+    private int _selectedIndex;
+
+    private readonly bool _isSomePages;
     internal bool IsSomePages
     {
-        get { return _isSomePages; }
+        get => _isSomePages;
+
         private set
         {
             if ( !value )
@@ -49,14 +59,15 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                 PagesInString = string.Empty;
             }
 
-            this.RaiseAndSetIfChanged ( ref _isSomePages, value, nameof ( IsSomePages ) );
+            OnPropertyChanged ();
         }
     }
 
     private string? _pagesInString;
     internal string? PagesInString
     {
-        get { return _pagesInString; }
+        get => _pagesInString;
+
         set
         {
             value = value.RemoveUnacceptableGlyphs ( _pageNumsAcceptables );
@@ -87,20 +98,11 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         }
     }
 
-    private SolidColorBrush? _pagesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
-    internal SolidColorBrush? PagesBorderColor
-    {
-        get { return _pagesBorderColor; }
-        set
-        {
-            this.RaiseAndSetIfChanged ( ref _pagesBorderColor, value, nameof ( PagesBorderColor ) );
-        }
-    }
-
-    private string _pagesError = string.Empty;
+    private readonly string _pagesError = string.Empty;
     internal string PagesError
     {
-        get { return _pagesError; }
+        get => _pagesError;
+
         set
         {
             if ( string.IsNullOrEmpty ( value ) )
@@ -112,14 +114,15 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                 PagesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
             }
 
-            this.RaiseAndSetIfChanged ( ref _pagesError, value, nameof ( PagesError ) );
+            OnPropertyChanged ();
         }
     }
 
     private string? _copies;
     internal string? Copies
     {
-        get { return _copies; }
+        get => _copies;
+
         set
         {
             value = value.RemoveUnacceptableGlyphs ( _copiesCountAcceptables );
@@ -141,24 +144,15 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                 CopiesError = _emptyCopies;
             }
 
-            this.RaiseAndSetIfChanged ( ref _copies, value, nameof ( Copies ) );
+            OnPropertyChanged ();
         }
     }
 
-    private SolidColorBrush? _copiesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
-    internal SolidColorBrush? CopiesBorderColor
-    {
-        get { return _copiesBorderColor; }
-        set
-        {
-            this.RaiseAndSetIfChanged ( ref _copiesBorderColor, value, nameof ( CopiesBorderColor ) );
-        }
-    }
-
-    private string? _copiesError;
+    private readonly string? _copiesError;
     internal string? CopiesError
     {
-        get { return _copiesError; }
+        get => _copiesError;
+
         set
         {
             if ( string.IsNullOrEmpty ( value ) )
@@ -170,52 +164,23 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                 CopiesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
             }
 
-            this.RaiseAndSetIfChanged ( ref _copiesError, value, nameof ( CopiesError ) );
+            OnPropertyChanged ();
         }
     }
 
-    private string? _printersEmptyError;
-    internal string? PrintersEmptyError
+    private bool _isClosing;
+    internal bool IsClosing
     {
-        get { return _printersEmptyError; }
-        set
-        {
-            this.RaiseAndSetIfChanged ( ref _printersEmptyError, value, nameof ( PrintersEmptyError ) );
-        }
-    }
+        get => _isClosing;
 
-    private bool _printingIsAvailable;
-    internal bool PrintingIsAvailable
-    {
-        get { return _printingIsAvailable; }
         private set
         {
-            this.RaiseAndSetIfChanged ( ref _printingIsAvailable, value, nameof ( PrintingIsAvailable ) );
-        }
-    }
-
-    private int _selectedIndex;
-    internal int SelectedIndex
-    {
-        get { return _selectedIndex; }
-        private set
-        {
-            this.RaiseAndSetIfChanged ( ref _selectedIndex, value, nameof ( SelectedIndex ) );
-        }
-    }
-
-    private bool _needClose;
-    internal bool NeedClose
-    {
-        get { return _needClose; }
-        private set
-        {
-            if ( _needClose == value )
+            if ( _isClosing == value )
             {
-                _needClose = !_needClose;
+                _isClosing = !_isClosing;
             }
 
-            this.RaiseAndSetIfChanged ( ref _needClose, value, nameof ( NeedClose ) );
+            OnPropertyChanged ();
         }
     }
 
@@ -227,6 +192,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         _osName = osName;
     }
 
+    [RelayCommand]
     internal void OpenPrinterSettings ()
     {
         if ( _osName == "Windows"
@@ -247,10 +213,11 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         else if ( _osName == "Linux" )
         {
             string command = "gnome-control-center -s Printers";
-            PdfPrinterImplementation.ExecuteBashCommand ( command );
+            PdfPrinter.ExecuteBashCommand ( command );
         }
     }
 
+    [RelayCommand]
     internal void Print ()
     {
         if ( HasError ()
@@ -291,7 +258,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         _adjusting.PageNumbers = _pageNumbers;
         _adjusting.CopiesAmount = int.TryParse ( Copies, out int amount ) ? amount : 1;
         _adjusting.IsCancelled = false;
-        NeedClose = true;
+        IsClosing = true;
     }
 
     private bool HasError ()
@@ -318,6 +285,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
         return false;
     }
 
+    [RelayCommand]
     internal void Cancel ()
     {
         CopiesError = string.Empty;
@@ -328,7 +296,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
             _adjusting.IsCancelled = true;
         }
 
-        NeedClose = true;
+        IsClosing = true;
     }
 
     internal void AdjustPrinting ( int pageAmmount, PrintAdjustingData adjusting )
@@ -560,7 +528,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     {
                         bool outIsInt = int.TryParse ( _intAsCharList.ToArray (), out int integer );
 
-                        if ( outIsInt ) 
+                        if ( outIsInt )
                         {
                             _pageNumbers.Add ( integer );
                         }
@@ -577,7 +545,7 @@ internal sealed partial class PrintDialogViewModel : ReactiveObject
                     }
                     else if ( _state == ParserStates.InRangeEnd )
                     {
-                        bool endIsInt = int.TryParse (_intAsCharList.ToArray (), out int rangeEnd);
+                        bool endIsInt = int.TryParse ( _intAsCharList.ToArray (), out int rangeEnd );
 
                         if ( endIsInt && _rangeStart > rangeEnd )
                         {

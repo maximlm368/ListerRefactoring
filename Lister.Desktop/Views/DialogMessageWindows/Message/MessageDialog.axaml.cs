@@ -14,7 +14,7 @@ public sealed partial class MessageWindow : Window
     public MessageWindow ( string message ) : this ()
     {
         MessageViewModel viewModel = new ( message );
-        viewModel.Closed += () => Close ();
+        viewModel.Closed += Close;
         DataContext = viewModel;
 
         Activated += (s,a) => ok.Focus ( NavigationMethod.Tab, KeyModifiers.None );

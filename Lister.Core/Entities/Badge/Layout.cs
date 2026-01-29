@@ -1,7 +1,7 @@
 ﻿using Lister.Core.Document.AbstractServices;
 using Lister.Core.Extentions;
 
-namespace Lister.Core.Models.Badge;
+namespace Lister.Core.Entities.Badge;
 
 /// <summary>
 /// Definds components of badge and its description.

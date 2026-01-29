@@ -1,4 +1,4 @@
-﻿namespace Lister.Core.Models;
+﻿namespace Lister.Core.Entities;
 
 public sealed class Person
 {

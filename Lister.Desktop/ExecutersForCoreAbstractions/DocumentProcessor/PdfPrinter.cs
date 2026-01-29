@@ -8,20 +8,20 @@ namespace Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 /// <summary>
 /// Carries out printing
 /// </summary>
-public sealed class PdfPrinterImplementation : IPdfPrinter
+public sealed class PdfPrinter : IPdfPrinter
 {
-    private static readonly PdfPrinterImplementation? _instance = null;
+    private static readonly PdfPrinter? _instance = null;
 
     private readonly string _osName;
 
-    private PdfPrinterImplementation ( string osName )
+    private PdfPrinter ( string osName )
     {
         _osName = osName;
     }
 
-    internal static PdfPrinterImplementation GetInstance ( string osName )
+    internal static PdfPrinter GetInstance ( string osName )
     {
-        return _instance ?? new PdfPrinterImplementation ( osName );
+        return _instance ?? new PdfPrinter ( osName );
     }
 
     public void Print ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )

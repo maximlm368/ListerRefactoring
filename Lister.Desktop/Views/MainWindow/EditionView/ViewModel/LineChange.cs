@@ -1,12 +1,12 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 using Lister.Desktop.ModelMappings.BadgeVM;
 
 namespace Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
 
-internal partial class BadgeEditorViewModel : ObservableObject
+internal partial class EditorViewModel : ObservableObject
 {
     private readonly SolidColorBrush _focusedFontsizeColor;
     private readonly SolidColorBrush _releasedFontsizeColor;

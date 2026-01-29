@@ -1,5 +1,5 @@
 ﻿using Lister.Core.BadgesCreator.Abstractions;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities.Badge;
 using Microsoft.Extensions.Configuration;
 using NJsonSchema;
 using NJsonSchema.Validation;

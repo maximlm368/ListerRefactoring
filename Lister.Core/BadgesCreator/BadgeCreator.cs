@@ -1,7 +1,7 @@
 ﻿using Lister.Core.BadgesCreator.Abstractions;
 using Lister.Core.PeopleAccess.Abstractions;
-using Lister.Core.Models;
-using Lister.Core.Models.Badge;
+using Lister.Core.Entities;
+using Lister.Core.Entities.Badge;
 
 namespace Lister.Core.BadgesCreator;
 
@@ -18,7 +18,7 @@ public sealed class BadgeCreator
     private string? _backgroundPath;
     private string? _template;
 
-    public List<Person> People { get; private set; } = [];
+    public List<Person>? People { get; private set; }
 
     private BadgeCreator ( IBadgeLayoutProvider badgeApprearenceProvider, IPeopleSourceFactory peopleSourceFactory )
     {
@@ -33,7 +33,7 @@ public sealed class BadgeCreator
         return _instance;
     }
 
-    public Badge? CreateSingleBadgeByTemplate ( string? templateName, Person? person )
+    public Badge? CreateBadgeByTemplate ( string? templateName, Person? person )
     {
         if ( string.IsNullOrWhiteSpace ( templateName ) || person == null )
         {

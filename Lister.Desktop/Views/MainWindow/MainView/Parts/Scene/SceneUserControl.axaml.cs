@@ -12,6 +12,8 @@ public partial class SceneUserControl : UserControl
     private bool _pageIsCaptured;
     private Point _pointerPosition;
 
+    public event Action? SomePartPressed;
+
     public SceneUserControl ()
     {
         InitializeComponent ();
@@ -27,7 +29,7 @@ public partial class SceneUserControl : UserControl
 
     internal void SomeButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        MainView.SomeControlPressed = true;
+        SomePartPressed?.Invoke ();
     }
 
     internal void PagePressed ( object sender, PointerPressedEventArgs args )

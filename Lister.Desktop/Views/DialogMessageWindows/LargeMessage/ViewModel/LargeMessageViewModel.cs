@@ -1,35 +1,22 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel;
 
-public sealed class LargeMessageViewModel : ReactiveObject
+public sealed partial class LargeMessageViewModel : ObservableObject
 {
+    [ObservableProperty]
     private string? _message;
-    internal string? Message
-    {
-        get { return _message; }
-        set
-        {
-            this.RaiseAndSetIfChanged ( ref _message, value, nameof ( Message ) );
-        }
-    }
 
+    [ObservableProperty]
     private string? _errorsSource;
-    internal string? ErrorsSource
-    {
-        get { return _errorsSource; }
-        private set
-        {
-            this.RaiseAndSetIfChanged ( ref _errorsSource, value, nameof ( ErrorsSource ) );
-        }
-    }
 
-    public delegate void ClosedHandler ();
-    public event ClosedHandler? Closed;
+    public event Action? Closing;
 
+    [RelayCommand]
     internal void Close ()
     {
-        Closed?.Invoke ();
+        Closing?.Invoke ();
     }
 
     internal void Set ( List<string> message, string errorsSource )

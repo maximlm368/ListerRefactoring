@@ -10,6 +10,7 @@
 	<Grid
 		ColumnDefinitions="* 216 *"
 		RowDefinitions="22 2 22"
+		ShowGridLines="False"
 		Height="48"
 		ZIndex="1"
 	    Margin="0,0"
