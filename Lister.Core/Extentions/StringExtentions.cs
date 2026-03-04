@@ -52,6 +52,7 @@ public static class StringExtentions
             return result;
         }
 
+        processable += separators [0];
         string [] separatorStrs = new string [separators.Length];
 
         for ( int index = 0; index < separators.Length; index++ )
@@ -59,63 +60,57 @@ public static class StringExtentions
             separatorStrs [index] = separators [index].ToString ();
         }
 
-        string rest = string.Empty;
         int splitingStart = 0;
         int splitingLength = 1;
-        bool isWaitingUnremovable = false;
-        bool unremovableIsEncountered = false;
+        bool isUnremovableEncountered = false;
+        bool isWordFound;
 
-        for ( int index = 0; index < processable.Length - 1; index++ )
+        for ( int index = 0; index < processable.Length; index++ )
         {
+            isWordFound = false;
+
             if ( separators.Contains ( processable [index] ) )
             {
                 string splited = processable.Substring ( splitingStart, splitingLength );
-                rest = processable.Substring ( index + 1, processable.Length - index - 1 );
                 splitingStart = index + 1;
                 splitingLength = 1;
 
                 if ( ( splited != string.Empty ) && !separatorStrs.Contains ( splited ) )
                 {
                     result.Add ( splited );
+                    isWordFound = true;
+                    isUnremovableEncountered = false;
                 }
 
-                if ( unremovableSeparators.Contains ( processable [index] ) )
+                if ( unremovableSeparators.Contains ( processable [index] ) && !isUnremovableEncountered && result.Count > 0 )
                 {
-                    if ( result.Count > 0 )
+                    isUnremovableEncountered = true;
+
+                    if ( !isWordFound )
                     {
                         string last = result.Last ();
-
-                        if ( isWaitingUnremovable && ( last != null ) )
-                        {
-                            char lastGlyph = last.Last ();
-
-                            if ( separators.Contains ( lastGlyph ) )
-                            {
-                                last = last.TrimEnd ( lastGlyph );
-                            }
-
-                            last += processable [index];
-                            result [^1] = last;
-                        }
+                        last += processable [index];
+                        result [^1] = last;
                     }
-
-                    isWaitingUnremovable = false;
-                    unremovableIsEncountered = true;
                 }
-                else if ( !unremovableSeparators.Contains ( processable [index] ) && !unremovableIsEncountered )
+
+                if ( !unremovableSeparators.Contains ( processable [index] ) && isWordFound )
                 {
-                    isWaitingUnremovable = true;
+                    string last = result.Last ();
+                    result [^1] = last.TrimEnd ( last.Last () );
                 }
             }
             else
             {
                 splitingLength++;
-                isWaitingUnremovable = false;
-                unremovableIsEncountered = false;
+                isUnremovableEncountered = false;
             }
         }
 
-        result.Add ( rest );
+        if ( result.Count > 0 && separators.Contains ( result.Last ().Last () ) )
+        {
+            result [^1] = result.Last ().TrimEnd ( result.Last ().Last () );
+        }
 
         return result;
     }

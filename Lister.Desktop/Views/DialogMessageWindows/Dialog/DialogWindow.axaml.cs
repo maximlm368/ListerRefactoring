@@ -19,11 +19,6 @@ public sealed partial class DialogWindow : Window
         DataContext = viewModel;
 
         Activated += ( s, a ) => Yes.Focus ( NavigationMethod.Tab, KeyModifiers.None );
-
-        if ( MainWindow.MainWindow.Window != null ) 
-        {
-            MainWindow.MainWindow.Window.ModalWindow = this;
-        }
     }
 
     internal void ChooseYes ()

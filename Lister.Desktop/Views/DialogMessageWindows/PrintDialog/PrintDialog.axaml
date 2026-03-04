@@ -3,7 +3,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		mc:Ignorable="d" d:DesignWidth="668" d:DesignHeight="369"
-		x:Class="Lister.Desktop.Views.DialogMessageWindows.PrintDialog.PrintDialog"
+		x:Class="Lister.Desktop.Views.DialogMessageWindows.PrintDialog.PrintDialogWindow"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.PrintDialog; assembly=View"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel"
 		x:DataType="vm:PrintDialogViewModel"
@@ -48,6 +48,7 @@
 					Margin="0,2"
 					MaxDropDownHeight="120"
 					SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+					SelectedItem="{Binding SelectedPrinter, Mode=OneWayToSource}"
 					ItemsSource="{Binding Printers, Mode=OneWay}">
 
 					<ComboBox.ItemTemplate >
@@ -69,7 +70,8 @@
 					Padding="0,0"
 					Foreground="Red"
 					TextWrapping="Wrap"
-					Text="{Binding PrintersEmptyError, Mode=OneWay}"
+					IsVisible="{Binding IsPrintersEmpty, Mode=OneWay}"
+					Text="Список принтеров не может быть пустым"
 				/>
 				<RadioButton
 					Name="AllPages"
@@ -86,29 +88,47 @@
 					Grid.Column="0"
 					Grid.Row="3"
 					Margin="10,0"
-					IsChecked="{Binding IsSomePages, Mode=OneWayToSource}"
+					IsChecked="{Binding HasPageSelection, Mode=OneWayToSource}"
 					Content="Выбор страниц"
 					FontSize="16"
 				/>
+
 				<TextBox
-					Name="PagesText"
+					Name="Pages"
 					Classes="pagesAmount"
 					Grid.Column="1"
 					Grid.Row="3"
 					Width="461"
 					Margin="0,-2"
-					BorderBrush="{Binding PagesBorderColor, Mode=OneWay}"
-					IsEnabled="{Binding IsSomePages, Mode=OneWay}"
+					IsEnabled="{Binding HasPageSelection, Mode=OneWay}"
+					Text="{Binding Pages, Mode=OneWay}"
 					LostFocus="PagesLostFocus"
 					GotFocus="PagesGotFocus"
-					TextChanged="PagesSetChanged"
+					TextChanged="PagesChanged"
 				/>
+
+				<TextBox
+					Name="IncorrectPages"
+					Classes="pagesAmount"
+					Grid.Column="1"
+					Grid.Row="3"
+					Width="461"
+					Margin="0,-2"
+					BorderBrush="Red"
+					IsVisible="False"
+					Text="{Binding #Pages.Text, Mode=OneWay}"
+					LostFocus="PagesLostFocus"
+					GotFocus="PagesGotFocus"
+					TextChanged="PagesChanged"
+				/>
+
 				<TextBlock
 					Name="PagesError"
 					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="4"
 					Padding="0,0"
+					IsVisible="False"
 					Foreground="Red"
 					TextWrapping="Wrap"
 					Text="{Binding PagesError, Mode=OneWay}"
@@ -120,27 +140,41 @@
 					Content="Количество копий"
 				/>
 				<TextBox
-					Name="AmountText"
+					Name="Copies"
 					Classes="pagesAmount"
 					Grid.Column="1"
 					Grid.Row="5"
 					Width="30"
 					Margin="0,4"
-					BorderBrush="{Binding CopiesBorderColor, Mode=OneWay}"
 					Text="{Binding Copies, Mode=OneTime}"
 					LostFocus="CopiesLostFocus"
 					GotFocus="CopiesGotFocus"
 					TextChanged="CopiesChanged"
 				/>
+
+				<TextBox
+					Name="IncorrectCopies"
+					Classes="pagesAmount"
+					Grid.Column="1"
+					Grid.Row="5"
+					Width="30"
+					Margin="0,4"
+					BorderBrush="Red"
+					IsVisible="False"
+					Text="{Binding #Copies.Text, Mode=OneWay}"
+					GotFocus="CopiesGotFocus"
+				/>
+
 				<TextBlock
 					Name="CopiesError"			
 					Classes="printErrorMessage"
 					Grid.Column="1"
 					Grid.Row="6"
 					Padding="0,0"
+					IsVisible="False"
 					Foreground="Red"
 					TextWrapping="Wrap"
-					Text="{Binding CopiesError, Mode=OneWay}"
+					Text="Количество копий не может быть пустым"
 				/>
 			</Grid>
 

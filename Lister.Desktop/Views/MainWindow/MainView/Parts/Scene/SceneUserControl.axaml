@@ -2,207 +2,23 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="350"
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="333"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;assembly=Lister.Desktop"
 			 xmlns:imageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
 			 xmlns:BadgeComponent="clr-namespace:Lister.Desktop.ModelMappings.BadgeVM"
 			 x:DataType="vm:SceneViewModel"
 			 x:Class="Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.SceneUserControl">
 
-	<StackPanel
-		ZIndex="1"
-		Orientation="Horizontal">
-
-		<Border
-			Name="ButtonBlock"
-			Background="#EEEEEE"
-			BoxShadow="3 3 10 0 #817974"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top"
-			Width="{Binding ButtonBlockWidth, Mode=OneWay}"
-			Height="264"
-			ZIndex="2"
-			CornerRadius="0,5,5,0">
-
-			<StackPanel>
-
-				<Border
-					Margin="{Binding ExtenderMargin, Mode=OneWay}"
-					Width="26"
-					Height="26">
-
-					<Button
-						Name="Extender"
-						Classes="extender"
-						CornerRadius="3,5,3,3"
-						Padding="4,3"
-						Command="{Binding ExtendButtons}"
-						PointerPressed="SomeButtonPressed"
-						ToolTip.Tip="{Binding ExtentionTip, Mode=OneWay}"
-						Content="{Binding ExtenderContent, Mode=OneWay}"
-					/>
-				</Border>
-
-				<Grid
-					Name="Counter"
-					ColumnDefinitions="64 168"
-					RowDefinitions="30 30">
-
-					<Label
-						Grid.Column="0"
-						Grid.Row="0"
-						Padding="12,5"
-						Width="64"
-						ToolTip.Tip="Всего бейджей"
-						Content="{Binding BadgeCount, Mode=OneWay}"
-					/>
-					<Label
-						Grid.Column="1"
-						Grid.Row="0"
-						Padding="0,5"
-						Width="{Binding HintWidth, Mode=OneWay}"
-						Content="Всего бейджей"
-					/>
-					<Label
-						Grid.Column="0"
-						Grid.Row="1"
-						Padding="12,0"
-						Margin="0,0,0,5"
-						Width="64"
-						Foreground="Red"
-						ToolTip.Tip="Из них с ошибками"
-						Content="{Binding IncorrectBadgeCount, Mode=OneWay}"
-					/>
-					<Label
-						Grid.Column="1"
-						Grid.Row="1"
-						Padding="0,0"
-						Margin="0,0,0,5"
-						Width="{Binding HintWidth, Mode=OneWay}"
-						Content="Из них с ошибками"
-					/>
-				</Grid>
-
-				<Button
-					Name="Edit"
-					Classes="Primary"
-					Margin="12,3"
-					Padding="0,0"
-					Width="{Binding ButtonWidth, Mode=OneWay}"
-					IsEnabled="{Binding EditionIsEnable, Mode=OneWay}"
-					Command="{Binding Edit}"
-					PointerPressed="SomeButtonPressed"
-					ToolTip.Tip="Редактировать макет"
-					ToolTip.HorizontalOffset="30">
-
-					<StackPanel Orientation="Horizontal">
-						<Label
-							Classes="picture"
-							Content="&#xf303;"
-							Width="30"
-							Padding="6,7"
-						/>
-						<Label
-							Content="Редактировать"
-							Width="170"
-							Padding="13,6"
-						/>
-					</StackPanel>
-				</Button>
-
-				<Button
-					Name="ClearBadges"
-					Classes="Primary"
-					Margin="12,3"
-					Padding="0,0"
-					Width="{Binding ButtonWidth, Mode=OneWay}"
-					IsEnabled="{Binding ClearIsEnable, Mode=OneWay}"
-					Command="{Binding ClearBadges}"
-					PointerPressed="SomeButtonPressed"
-					ToolTip.Tip="Очистить макет"
-					ToolTip.HorizontalOffset="30">
-
-					<StackPanel Orientation="Horizontal">
-						<Label
-							Classes="picture"
-							Content="&#xf51a;"
-							Width="30"
-							Padding="6,7"
-						/>
-						<Label
-							Content="Очистить"
-							Width="170"
-							Padding="33,6"
-						/>
-					</StackPanel>
-				</Button>
-
-				<Button
-					Name="Save"
-					Classes="Primary"
-					Margin="12,3"
-					Padding="0,0"
-					Width="{Binding ButtonWidth, Mode=OneWay}"
-					IsEnabled="{Binding SaveIsEnable, Mode=OneWay}"
-					Command="{Binding GeneratePdf}"
-					PointerPressed="SomeButtonPressed"
-					ToolTip.Tip="Сохранить макет в pdf-файл"
-					ToolTip.HorizontalOffset="30">
-
-					<StackPanel Orientation="Horizontal">
-						<Label
-							Classes="picture"
-							Content="&#xf1c1;"
-							Width="30"
-							Padding="6,7"
-						/>
-						<Label
-							Content="Сохранить"
-							Width="170"
-							Padding="30,6"
-						/>
-					</StackPanel>
-				</Button>
-
-				<Button
-					Name="Print"
-					Classes="Primary"
-					Margin="12,3"
-					Padding="0,0"
-					Width="{Binding ButtonWidth,  Mode=OneWay}"
-					IsEnabled="{Binding PrintIsEnable, Mode=OneWay}"
-					Command="{Binding Print}"
-					PointerPressed="SomeButtonPressed"
-					ToolTip.Tip="Печатать макет"
-					ToolTip.HorizontalOffset="30">
-
-					<StackPanel Orientation="Horizontal">
-						<Label
-							Classes="picture"
-							Content="&#xf02f;"
-							Width="30"
-							Padding="6,7"
-						/>
-						<Label
-							Content="Печатать"
-							Width="170"
-							Padding="35,6"
-						/>
-					</StackPanel>
-				</Button>
-			</StackPanel>
-		</Border>
+	<Grid
+		Name="MainGrid">
 
 		<Border
 			Name="WorkArea"
 			HorizontalAlignment="Left"
-			Margin="{Binding WorkAreaMargin, Mode=OneWay}"
-			Height="331"
-			Width="850">
+			Width="830">
 
 			<ScrollViewer
 				Name="Scroller"
-				Margin="10,0"
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"
 				AllowAutoHide="False"
@@ -414,7 +230,5 @@
 				</Border>
 			</ScrollViewer>
 		</Border>
-	</StackPanel>
+	</Grid>
 </UserControl>
-
-

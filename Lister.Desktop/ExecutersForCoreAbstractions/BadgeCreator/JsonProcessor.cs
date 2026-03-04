@@ -41,7 +41,6 @@ public static class JsonProcessor
 
         try
         {
-            string [] lines = File.ReadAllLines ( jsonPath );
             JsonDocument doc = JsonDocument.Parse ( File.ReadAllText ( jsonPath ) );
             error = string.Empty;
 
@@ -117,7 +116,6 @@ public static class JsonProcessor
     public static int GetSectionIntValue ( List<string> keyPathOfSection, string jsonPath, bool isJsonFromDll )
     {
         string strResult = GetSectionStrValue ( keyPathOfSection, jsonPath, isJsonFromDll );
-
         bool sectionIsNotAvailable = string.IsNullOrWhiteSpace ( strResult );
 
         if ( sectionIsNotAvailable )
@@ -131,9 +129,7 @@ public static class JsonProcessor
     public static bool GetSectionBoolValue ( List<string> keyPathOfSection, string jsonPath )
     {
         string strResult = GetSectionStrValue ( keyPathOfSection, jsonPath, false );
-
         bool sectionIsNotAvailable = string.IsNullOrWhiteSpace ( strResult );
-
         bool result = false;
 
         if ( sectionIsNotAvailable )
@@ -206,7 +202,6 @@ public static class JsonProcessor
         {
             int limit = GetSectionIntValue ( ["maketLimit"], fileName, false );
             Config config = new () { maketLimit = limit, personSource = keepablePath ?? string.Empty };
-
             string jsonStr = JsonSerializer.Serialize ( config );
             File.WriteAllText ( fileName, jsonStr );
         }

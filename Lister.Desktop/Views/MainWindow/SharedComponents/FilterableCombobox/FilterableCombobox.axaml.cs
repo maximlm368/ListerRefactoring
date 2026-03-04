@@ -8,9 +8,9 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using System.Collections;
 
-namespace Lister.Desktop.Views.MainWindow.MainView.SharedComponents;
+namespace Lister.Desktop.Views.MainWindow.MainView.SharedComponents.FilterableCombobox;
 
-public partial class FilterableCombobox : UserControl
+public partial class FilterableComboboxUserControl : UserControl
 {
     private static readonly Key [] _writableKeys = { Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P, Key.A, Key.S, Key.D,
         Key.F, Key.G, Key.H, Key.J, Key.K, Key.L, Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M, Key.Oem1, Key.Oem102, Key.Oem2, Key.Oem3,
@@ -19,6 +19,8 @@ public partial class FilterableCombobox : UserControl
         Key.OemPipe, Key.OemPlus, Key.OemQuestion, Key.OemQuotes, Key.OemSemicolon, Key.OemTilde, Key.D0, Key.D1, Key.D2, Key.D3, Key.D4,
         Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.Back, Key.Space };
 
+    private bool _isOnceLoaded = false;
+    private double _stepCount;
     private readonly double _minRunnerHeight = 10;
     private readonly double _upperWidth = 16;
     private double _scrollValue;
@@ -41,21 +43,24 @@ public partial class FilterableCombobox : UserControl
     private bool _runnerShiftCaused = false;
     private double _capturingY;
 
-    public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty = ItemsControl.ItemsSourceProperty.AddOwner<FilterableCombobox> ();
+    public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty = 
+        ItemsControl.ItemsSourceProperty.AddOwner<FilterableComboboxUserControl> ();
     public IEnumerable? ItemsSource
     {
         get => GetValue ( ItemsSourceProperty );
         set => SetValue ( ItemsSourceProperty, value );
     }
 
-    public static readonly StyledProperty<int> VisibleCountProperty = AvaloniaProperty.Register<FilterableCombobox, int> ( "VisibleCount" );
+    public static readonly StyledProperty<int> VisibleCountProperty = 
+        AvaloniaProperty.Register<FilterableComboboxUserControl, int> ( "VisibleCount" );
     public int VisibleCount
     {
         get => GetValue ( VisibleCountProperty );
         set => SetValue ( VisibleCountProperty, value );
     }
 
-    public static new readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<FilterableCombobox, double> ( "FontSize" );
+    public static new readonly StyledProperty<double> FontSizeProperty = 
+        AvaloniaProperty.Register<FilterableComboboxUserControl, double> ( "FontSize" );
     public new double FontSize
     {
         get => GetValue ( FontSizeProperty );
@@ -63,7 +68,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> ItemTemplateProperty =
-        AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "ItemTemplate" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "ItemTemplate" );
     public DataTemplate ItemTemplate
     {
         get => GetValue ( ItemTemplateProperty );
@@ -71,7 +76,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> CurrenItemTemplateProperty =
-        AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "CurrentItemTemplate" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "CurrentItemTemplate" );
     public DataTemplate CurrentItemTemplate
     {
         get => GetValue ( CurrenItemTemplateProperty );
@@ -79,7 +84,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> SelectedItemTemplateProperty =
-        AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "SelectedItemTemplate" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "SelectedItemTemplate" );
     public DataTemplate SelectedItemTemplate
     {
         get => GetValue ( SelectedItemTemplateProperty );
@@ -87,7 +92,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> AllTemplateProperty =
-        AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "AllTemplate" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "AllTemplate" );
     public DataTemplate AllTemplate
     {
         get => GetValue ( AllTemplateProperty );
@@ -95,7 +100,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> AllCurrentTemplateProperty =
-    AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "AllCurrentTemplate" );
+    AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "AllCurrentTemplate" );
     public DataTemplate AllCurrentTemplate
     {
         get => GetValue ( AllCurrentTemplateProperty );
@@ -103,7 +108,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<DataTemplate> AllSelectedTemplateProperty =
-        AvaloniaProperty.Register<FilterableCombobox, DataTemplate> ( "AllSelectedTemplate" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, DataTemplate> ( "AllSelectedTemplate" );
     public DataTemplate AllSelectedTemplate
     {
         get => GetValue ( AllSelectedTemplateProperty );
@@ -111,7 +116,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<string> DefaultPlaceholderProperty =
-        AvaloniaProperty.Register<FilterableCombobox, string> ( "DefaulPlaceholder" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, string> ( "DefaulPlaceholder" );
     public string DefaultPlaceholder
     {
         get => GetValue ( DefaultPlaceholderProperty );
@@ -119,7 +124,7 @@ public partial class FilterableCombobox : UserControl
     }
 
     public static readonly StyledProperty<object?> SelectedItemProperty =
-        AvaloniaProperty.Register<FilterableCombobox, object?> ( "SelectedItem" );
+        AvaloniaProperty.Register<FilterableComboboxUserControl, object?> ( "SelectedItem" );
     public object? SelectedItem
     {
         get => GetValue ( SelectedItemProperty );
@@ -135,9 +140,9 @@ public partial class FilterableCombobox : UserControl
         }
     }
 
-    public event Action? SomePartPressed;
+    public event Action? AreaIsPressed;
 
-    public FilterableCombobox ()
+    public FilterableComboboxUserControl ()
     {
         InitializeComponent ();
 
@@ -159,6 +164,11 @@ public partial class FilterableCombobox : UserControl
 
     private void OnLoaded ( object sender, RoutedEventArgs args )
     {
+        if ( _isOnceLoaded ) 
+        {
+            return;
+        }
+
         _currentEdge = VisibleCount - 1;
 
         if ( ItemsSource == null )
@@ -188,6 +198,8 @@ public partial class FilterableCombobox : UserControl
             UseTemplates ();
             PART_AllSign.ContentTemplate = SelectedItem == null && _currentNumber > -2 ? AllSelectedTemplate : AllTemplate;
         };
+
+        _isOnceLoaded = true;
     }
 
     private void AdjustItems ()
@@ -228,6 +240,9 @@ public partial class FilterableCombobox : UserControl
         _currentItem = null;
         _scrollValue = 0;
         _currentEdge = Math.Min ( VisibleCount, _items.Count ) - 1;
+
+        _runnerWalk = 0;
+        _runnerLocation = 16;
     }
 
     private void CalculateScrollBar ()
@@ -300,12 +315,18 @@ public partial class FilterableCombobox : UserControl
 
     internal void TappedOnPopup ( object sender, PointerPressedEventArgs args )
     {
-        SomePartPressed?.Invoke ();
+        AreaIsPressed?.Invoke ();
     }
 
     private void OnLostFocus ( object sender, RoutedEventArgs args )
     {
         PART_Popup.IsOpen = false;
+
+        if ( PART_ItemsControl.ItemCount == 0 ) 
+        {
+            PART_EditableTextBox.Text = DefaultPlaceholder;
+            AdjustItems ();
+        }
     }
 
     private void ManageByKey ( object? sender, KeyEventArgs args )
@@ -350,14 +371,13 @@ public partial class FilterableCombobox : UserControl
         else
         {
             PART_Popup.IsOpen = true;
-
             SetVisibleItems ();
         }
     }
 
     private void OpenCloseButtonPressed ( object sender, PointerPressedEventArgs args )
     {
-        SomePartPressed?.Invoke ();
+        AreaIsPressed?.Invoke ();
     }
 
     private void RunnerReleased ( object sender, PointerReleasedEventArgs args )
@@ -404,11 +424,11 @@ public partial class FilterableCombobox : UserControl
         if ( sender is Canvas trigger )
         {
             bool isDirectionUp = trigger.Name == "upper";
-            _timer = new Timer ( new TimerCallback ( ShiftCaller ), isDirectionUp, 0, 100 );
+            _timer = new Timer ( new TimerCallback ( ShiftRunner ), isDirectionUp, 0, 100 );
         }
     }
 
-    private void ShiftCaller ( object? isDirectionUp )
+    private void ShiftRunner ( object? isDirectionUp )
     {
         if ( isDirectionUp == null )
         {
@@ -499,19 +519,33 @@ public partial class FilterableCombobox : UserControl
     {
         double wholeScroll = _itemHeight * ( _items.Count - VisibleCount );
         double proportion = wholeScroll / _runnerWalk;
-        int stepCount = ( int ) Math.Abs ( runnerStep * proportion / _itemHeight );
+        double stepCount = Math.Abs ( runnerStep * proportion / _itemHeight );
 
-        for ( int index = 0; index < stepCount; index++ )
+        if ( stepCount < 1 )
         {
-            CompleteScrolling ( runnerStep > 0 );
+            _stepCount += stepCount;
         }
+        else 
+        {
+            _stepCount = (int) stepCount;
+        }
+
+        if ( _stepCount > 1 ) 
+        {
+            for ( int index = 0; index < ( int ) _stepCount; index++ )
+            {
+                CompleteScrolling ( runnerStep > 0 );
+            }
+
+            _stepCount = 0;
+        }  
     }
 
     private void Dischoice ( object sender, PointerPressedEventArgs args )
     {
         _currentItem = null;
         CloseOpen ();
-        SomePartPressed?.Invoke ();
+        AreaIsPressed?.Invoke ();
     }
 
     internal void Filter ( object sender, KeyEventArgs args )
@@ -577,8 +611,7 @@ public partial class FilterableCombobox : UserControl
                     if ( _currentNumber < ( _currentEdge - Math.Min ( VisibleCount, _items.Count ) + 1 ) )
                     {
                         _isTopAchieved = true;
-
-                        PART_AllSign.ContentTemplate = AllCurrentTemplate;
+                        PART_AllSign.ContentTemplate = SelectedItem == null ? AllSelectedTemplate : AllCurrentTemplate;
                         _currentItem = null;
 
                         if ( _currentNumber < ( _currentEdge - Math.Min ( VisibleCount, _items.Count ) + 0 ) )

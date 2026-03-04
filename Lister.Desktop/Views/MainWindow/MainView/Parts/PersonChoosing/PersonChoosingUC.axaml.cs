@@ -1,14 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Lister.Desktop.App;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing;
 
 public partial class PersonChoosingUserControl : UserControl
 {
-    private readonly PersonChoosingViewModel _viewModel;
+    private PersonChoosingViewModel? _viewModel;
     public event Action? SomePartPressed;
 
     public PersonChoosingUserControl ()
@@ -19,22 +17,21 @@ public partial class PersonChoosingUserControl : UserControl
         }
 
         InitializeComponent ();
-
-        DataContext = ListerApp.Services.GetRequiredService<PersonChoosingViewModel> ();
-        _viewModel = ( PersonChoosingViewModel ) DataContext;
-
+        
         Loaded += OnLoaded;
         ActualThemeVariantChanged += ThemeChanged;
     }
 
     private void OnLoaded ( object? sender, RoutedEventArgs args )
     {
-        PART_FilterableCombobox.SomePartPressed += () => 
+        _viewModel = DataContext as PersonChoosingViewModel;
+
+        PART_FilterableCombobox.AreaIsPressed += () => 
         {
             SomePartPressed?.Invoke ();
         };
 
-        _viewModel.SetUp ();
+        _viewModel?.SetUp ();
     }
 
     private void ThemeChanged ( object? sender, EventArgs args )
@@ -44,6 +41,6 @@ public partial class PersonChoosingUserControl : UserControl
             return;
         }
 
-        _viewModel.SetUp ();
+        _viewModel?.SetUp ();
     }
 }

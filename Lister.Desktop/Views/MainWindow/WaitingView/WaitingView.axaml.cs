@@ -9,20 +9,15 @@ namespace Lister.Desktop.Views.MainWindow.WaitingView;
 /// <summary>
 /// Is view that is visible only while some asynchronous long time action like badge building or pdf creation is occurring.
 /// </summary>
-public sealed partial class WaitingView : UserControl
+public sealed partial class WaitingViewUserControl : UserControl
 {
     private readonly WaitingViewModel _viewModel;
 
-    public WaitingView()
+    public WaitingViewUserControl()
     {
         InitializeComponent ();
 
-        DataContext = ListerApp.Services.GetRequiredService <WaitingViewModel> ();
-        _viewModel = (WaitingViewModel) DataContext;
-    }
-
-    public void ChangeSize ( double heightDiff, double widthDiff )
-    {
-        _viewModel.ChangeSize ( heightDiff, widthDiff );
+        //DataContext = ListerApp.Services.GetRequiredService<WaitingViewModel> ();
+        _viewModel = ( WaitingViewModel ) DataContext;
     }
 }

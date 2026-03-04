@@ -2,18 +2,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="52"
-             x:Class="Lister.Desktop.Views.MainWindow.MainView.SharedComponents.BigButtonBlock"
-             xmlns:CenterShadowUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents"
+             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="50"
+             x:Class="Lister.Desktop.Views.MainWindow.SharedComponents.BigButtonBlock.BigButtonBlockUserControl"
+             xmlns:CenterShadowUc="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents"
+			 Name="root"
 			 Loaded="OnLoaded"
-			 SizeChanged="OnSizeChanged"
-			 >
+			 SizeChanged="OnSizeChanged">
+
+	<UserControl.Styles>
+		<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Height" Value="32"/>
+		</Style>
+	</UserControl.Styles>
 
     <StackPanel ZIndex="1">
 		
         <Grid
             ColumnDefinitions="* 216 *"
-		    RowDefinitions="22 2 22 "
+		    RowDefinitions="4 17 2 21"
 		    Background="#EEEEEE">
 
             <Button
@@ -21,43 +28,45 @@
 				Classes="superButton"
 				ToolTip.HorizontalOffset="10"
 				Grid.Column="1"
-				Grid.Row="0"
+				Grid.Row="1"
 				Grid.RowSpan="3"
 				Width="200"
 				Height="32"
-				Margin="8,0"
-				Padding="4,3"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Top"
+				Padding="0,3"
 				ZIndex="2"
-				Command="{Binding root.Command}">
+				Command="{Binding #root.Command}"
+				ToolTip.Tip="{Binding #root.ToolTip}">
 
 				<Grid
 					ColumnDefinitions="30 170">
 
 					<Label
-						Name="Picture"
-						Classes="picture"
 						Grid.Column="0"
-						Width="25"
-						Padding="3,8"
-						Content=""
+						VerticalAlignment="Center"
+						VerticalContentAlignment="Center"
+						HorizontalAlignment="Center"
+						HorizontalContentAlignment="Center"
+						FontFamily="{StaticResource FA}"
+						Content="{Binding #root.ButtonPicture}"
 					/>
 
-					<Label
-						Name="Inscription"
+					<TextBlock
 						Grid.Column="1"
-						Width="175"
-						Padding="1,6"
-						Content=""
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center"
+						Text="{Binding #root.ButtonInscription}"
 					/>
 				</Grid>
 			</Button>
 
 			<Border
 				Grid.Column="0"
-				Grid.Row="2"
+				Grid.Row="3"
 				Height="22"
 				CornerRadius="0,5,0,0"
-				Background="#fafafa">
+				Background="#FAFAFA">
 
 				<Canvas
 					Name="LeftShadow">
@@ -266,7 +275,7 @@
 
 			<Border
 				Grid.Column="2"
-				Grid.Row="2"
+				Grid.Row="3"
 				Height="22"
 				CornerRadius="5,0,0,0"
 				Background="#fafafa">
@@ -478,7 +487,7 @@
 
 			<Border
 				Grid.Column="1"
-				Grid.Row="2"
+				Grid.Row="3"
 				Height="20"
 				CornerRadius="0,0,5,5"
 				Background="#EEEEEE"
@@ -490,29 +499,5 @@
 			Margin="200,-5"
 			ZIndex="2"
 		/>
-
     </StackPanel>
-
 </UserControl>
-
-
-
-<!--
-
-PointerPressed="SomeButtonPressed"
-
-
-
-			<Border
-				Grid.Column="1"
-				Grid.Row="2"
-				Height="20"
-				CornerRadius="0,0,0,0"
-				Background="Black"
-			/>
-
-ToolTip.Tip="Сохранить изменения и вернуться к макету"
-
-Content="&#xf52b;"
-
--->

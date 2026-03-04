@@ -6,7 +6,7 @@ namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
 public partial class BadgesBuildingViewModel : ObservableObject
 {
     [ObservableProperty]
-    private bool _buildingIsPossible;
+    private bool _isEnabled;
 
     private bool _buildButtonIsTapped;
     internal bool BuildButtonIsTapped

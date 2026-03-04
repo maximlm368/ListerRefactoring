@@ -1,0 +1,57 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="134" d:DesignHeight="32"
+             x:Class="Lister.Desktop.Views.MainWindow.SharedComponents.Zoomer.ZoomerUserControl"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.Zoomer.ViewModel;assembly=Lister.Desktop"
+			 x:DataType="vm:ZoomerViewModel">
+
+    <Grid
+		Name="Zoomer"
+		Grid.Column="1"
+		ColumnDefinitions="32 68 32">
+
+		<Button
+			Name="ZoomOut"
+			Grid.Column="0"
+			Classes="transparent"
+			HorizontalAlignment="Center"
+			Width="32"
+			Padding="8,6"
+			IsEnabled="{Binding IsZoomOutEnable, Mode=OneWay}"
+			Command="{Binding ZoomOutCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="Уменьшить масштаб"
+			ToolTip.VerticalOffset="-40"
+			Content="&#xf068;"
+		/>
+		<Label
+			Name="ScalabilityGrade"
+			Grid.Column="1"
+			Width="60"
+			Padding="5,5"
+			HorizontalContentAlignment="Center"
+			BorderBrush="black"
+			Background="White"
+			CornerRadius = "3"
+			BorderThickness="1"
+			Content="{Binding ZoomDegreeInView, Mode=OneWay}"
+		/>
+		<Button
+			Name="ZoomOn"
+			Grid.Column="2"
+			Margin="0,3"
+			Classes="transparent"
+			HorizontalAlignment="Center"
+			Width="32"
+			Padding="7,6"
+			IsEnabled="{Binding IsZoomOnEnable, Mode=OneWay}"
+			Command="{Binding ZoomOnCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="Увеличить масштаб"
+			ToolTip.VerticalOffset="-40"
+			Content="&#x2b;"
+		/>
+	</Grid>
+</UserControl>

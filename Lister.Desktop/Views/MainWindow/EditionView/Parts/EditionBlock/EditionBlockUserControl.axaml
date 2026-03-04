@@ -1,0 +1,184 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="357"
+             x:Class="Lister.Desktop.Views.MainWindow.EditionView.Parts.Edition.EditionBlockUserControl">
+
+	<Grid
+		Width="232"
+		Height="357"
+		RowDefinitions="16 48 8 20 32 16 10 80 16 1 4 32">
+
+		<Grid
+			Name="Counter"
+			ColumnDefinitions="62 158"
+			RowDefinitions="24 24"
+			Grid.Row="1">
+
+			<Label
+				Grid.Column="0"
+				Grid.Row="0"
+				Padding="16,0,4,0"
+				ToolTip.Tip="Всего бейджей"
+				Content="{Binding ProcessableCount, Mode=OneWay}"
+			/>
+			<Label
+				Grid.Column="1"
+				Grid.Row="0"
+				Padding="4,0"
+				Content="Всего бейджей"
+			/>
+			<Label
+				Grid.Column="0"
+				Grid.Row="1"
+				Padding="16,0,4,0"
+				Foreground="Red"
+				ToolTip.Tip="Из них с ошибками"
+				Content="{Binding IncorrectCount, Mode=OneWay}"
+			/>
+			<Label
+				Grid.Column="1"
+				Grid.Row="1"
+				Padding="4,0"
+				Content="Из них с ошибками"
+			/>
+		</Grid>
+
+		<Label
+			Grid.Row="3"
+			Height="24"
+			Margin="16,0"
+			Padding="0,0"
+			Content="Размер шрифта"
+		/>
+		<Grid
+			Grid.Row="4"
+			HorizontalAlignment="Center"
+			ColumnDefinitions="32 140 32">
+
+			<Button
+				Name="ZoomOut"
+				Classes="transparent"
+				Grid.Column="0"
+				Padding="8,7"
+				Width="32"
+				Content="&#xf068;"
+				ToolTip.Tip="Уменьшить шрифт"
+				KeyDown="ChangeFocusedFontSize"
+				GotFocus="ZoomGotFocus"
+				LostFocus="ZoomOnOutLostFocus"
+				Command="{Binding ReduceFontSize}"
+				PointerPressed="SomeButtonPressed"
+				IsEnabled="{Binding IsZoommerEnabled, Mode=OneWay}"
+			/>
+			<TextBox
+				Name="ScalabilityGrade"
+				Width="128"
+				Grid.Column="1"
+				Margin="-12,0"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				CornerRadius = "3"
+				BorderThickness="1"
+				IsTabStop="False"
+				Focusable="False"
+				IsReadOnly="True"
+				IsEnabled="{Binding IsZoommerEnabled, Mode=OneWay}"
+				Text="{Binding Processable.FocusedFontSize, Mode=OneWay}"
+			/>
+			<Button
+				Name="ZoomOn"
+				Classes="transparent"
+				Grid.Column="2"
+				Padding="7,7"
+				Width="32"
+				Content="&#x2b;"
+				ToolTip.Tip="Увеличить шрифт"
+				KeyDown="ChangeFocusedFontSize"
+				GotFocus="ZoomGotFocus"
+				LostFocus="ZoomOnOutLostFocus"
+				Command="{Binding IncreaseFontSize}"
+				PointerPressed="SomeButtonPressed"
+				IsEnabled="{Binding IsZoommerEnabled, Mode=OneWay}"
+			/>
+		</Grid>
+
+		<Label
+			Grid.Row="6"
+			Height="24"
+			Margin="16,5"
+			Padding="0,2"
+			Content="Текст"
+		/>
+		<TextBox
+			Name="EditorTextBox"
+			Grid.Row="7"
+			Width="200"
+			Height="80"
+			HorizontalAlignment="Center"
+			TextWrapping="Wrap"
+			MaxLength="50"
+			IsEnabled="{Binding IsZoommerEnabled, Mode=OneWay}"
+			Text="{Binding Processable.FocusedText, Mode=TwoWay}"
+			GotFocus="HandleGettingFocus"
+			LostFocus="TextEditorLostFocus"
+		/>
+		<Button
+			Name="Spliter"
+			Classes="Primary"
+			Grid.Row="9"
+			ToolTip.Tip="Разделить текст на слова"
+			HorizontalAlignment="Center"
+			Width="200"
+			Height="32"
+			Margin="0,17"
+			Command="{Binding Split}"
+			PointerPressed="SomeButtonPressed"
+			IsEnabled="{Binding IsSplitterEnabled, Mode=OneWay}">
+
+			<StackPanel Orientation="Horizontal">
+				<Label
+					Classes="picture"
+					Content="&#xf529;"
+					Width="20"
+					Padding="0,8"
+				/>
+				<Label
+					Content="Разделить"
+					Width="190"
+					Padding="40,6"
+				/>
+			</StackPanel>
+		</Button>
+
+		<Button
+			Name="Cancel"
+			Classes="Primary"
+			Grid.Row="11"
+			ToolTip.Tip="Отменить все изменения"
+			Width="200"
+			Height="32"
+			HorizontalAlignment="Center"
+			Margin="0,-11"
+			Command="{Binding CancelCommand}"
+			IsEnabled="{Binding IsCancelEnabled}"
+			PointerPressed="SomeButtonPressed">
+
+			<StackPanel Orientation="Horizontal">
+				<Label
+					FontFamily="{StaticResource FA}"
+					Content="&#xf2ea;"
+					Width="20"
+					Padding="0,8"
+				/>
+				<Label
+					Content="Отмена"
+					Width="190"
+					Padding="50,6"
+				/>
+			</StackPanel>
+		</Button>
+	</Grid>
+</UserControl>
+

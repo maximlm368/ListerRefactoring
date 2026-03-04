@@ -147,7 +147,7 @@ abstract public partial class BadgeComponentBase : ObservableObject
         BorderThickness = borderThickness;
     }
 
-    public void UnFocus ()
+    public void DisFocus ()
     {
         BorderColor = null;
         BorderThickness = new Avalonia.Thickness ( 0, 0, 0, 0 );

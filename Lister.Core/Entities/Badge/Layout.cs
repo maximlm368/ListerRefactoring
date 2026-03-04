@@ -441,7 +441,6 @@ public sealed class Layout
         }
 
         TextLines.Sort ( new TextLineComparer<TextLine> () );
-
         TrimTrashEdges ();
     }
 
@@ -683,7 +682,7 @@ public sealed class Layout
         DefineCorrectnessOf ( _processableLine );
     }
 
-    internal void ResetProcessableLineContent ( string newContent )
+    internal void ResetProcessableLineContent ( string? newContent )
     {
         _processableLine?.ResetContent ( newContent );
         DefineCorrectnessOf ( _processableLine );

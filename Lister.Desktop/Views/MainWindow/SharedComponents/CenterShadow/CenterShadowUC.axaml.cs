@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Lister.Desktop.Views.MainWindow.MainView.SharedComponents;
+namespace Lister.Desktop.Views.MainWindow.SharedComponents;
 
 public partial class CenterShadowUserControl : UserControl
 {

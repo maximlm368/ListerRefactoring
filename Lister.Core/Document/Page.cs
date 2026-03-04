@@ -27,10 +27,10 @@ public sealed class Page
 
     static Page ()
     {
-        _width = 825;
-        _height = 1168;
-        _topPadding = 40;
-        _leftPadding = 60;
+        _width = 794;
+        _height = 1123;
+        _topPadding = 20;
+        _leftPadding = 45;
     }
 
     public Page ()

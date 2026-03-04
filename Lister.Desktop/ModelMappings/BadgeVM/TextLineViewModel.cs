@@ -140,6 +140,7 @@ public sealed partial class TextLineViewModel : BadgeComponentBase
     internal TextLineViewModel Clone ()
     {
         TextLineViewModel clone = new ( this );
+
         return clone;
     }
 

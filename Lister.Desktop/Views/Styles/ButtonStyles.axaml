@@ -40,7 +40,6 @@
 		<Setter Property="Foreground" Value="#DBCAAE"/>
 		<Setter Property="Background" Value="#EEEEEE"/>
 	</Style>
-
 	
 	<Style Selector="Button.extender /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Width" Value="26"/>
@@ -68,7 +67,6 @@
 		<Setter Property="Background" Value="#EEEEEE"/>
 	</Style>
 
-
 	<Style Selector="Button.littlePicture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 		<Setter Property="Foreground" Value="#1C547D"/>
@@ -94,7 +92,6 @@
 		<Setter Property="Foreground" Value="#DBCAAE"/>
 		<Setter Property="Background" Value="#EEEEEE"/>
 	</Style>
-
 
 	<Style Selector="Button.upDownArrows /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
@@ -123,7 +120,6 @@
 		<Setter Property="Background" Value="#EEEEEE"/>
 	</Style>
 
-
 	<Style Selector="Button.Primary /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Foreground" Value="#FAFAFA"/>
 		<Setter Property="Background" Value="#1C547D"/>
@@ -147,8 +143,6 @@
 		<Setter Property="Background" Value="#FCF2E3"/>
 	</Style>
 
-
-
 	<Style Selector="Button.Switcher /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#1C547D"/>
 		<Setter Property="BorderThickness" Value="2"/>
@@ -164,7 +158,6 @@
 		<Setter Property="Background" Value="#94BEE6"/>
 	</Style>
 	
-	
 	<Style Selector="Button.scrollButton /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontSize" Value="9"/>
 	</Style>
@@ -175,13 +168,10 @@
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 	</Style>
 
-	
 	<Style Selector="Button.picture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
 	</Style>
 
-	
-	
 	<Style Selector="Button.superButton /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#4AACFE"/>
 		<Setter Property="BorderThickness" Value="2"/>
@@ -191,12 +181,10 @@
 		<Setter Property="Background" Value="#4AACFE"/>
 		<Setter Property="Foreground" Value="#FAFAFA"/>
 		<Setter Property="BorderBrush" Value="#2570A7"/>
-		<Setter Property="Padding" Value="6,3"/>
 	</Style>
 	<Style Selector="Button.superButton:focus /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#94BEE6"/>
 		<Setter Property="Foreground" Value="#FAFAFA"/>
-		<Setter Property="Padding" Value="7,3"/>
 	</Style>
 	<Style Selector="Button.superButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#D5E8F6"/>
@@ -207,7 +195,6 @@
 		<Setter Property="Foreground" Value="#DBCAAE"/>
 	</Style>
 
-
 	<Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Width" Value="80"/>
 		<Setter Property="Height" Value="24"/>
@@ -215,8 +202,7 @@
 		<Setter Property="BorderThickness" Value="2"/>
 		<Setter Property="BorderBrush" Value="Gray"/>
 		<Setter Property="CornerRadius" Value="0"/>
-	</Style>
-	
+	</Style>	
 </Styles>
 
 

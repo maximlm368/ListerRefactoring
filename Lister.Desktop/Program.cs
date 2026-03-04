@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.ReactiveUI;
 using Lister.Desktop.App;
 
 
@@ -18,10 +17,10 @@ class Program
             BuildAvaloniaApp ()
             .StartWithClassicDesktopLifetime (args);
         }
-        catch ( StackOverflowException ex )
+        catch ( StackOverflowException )
         {
         }
-        catch ( System.Threading.Tasks.TaskCanceledException ex ) 
+        catch ( System.Threading.Tasks.TaskCanceledException ) 
         {
         }
     }
@@ -32,6 +31,5 @@ class Program
         => AppBuilder.Configure<ListerApp> ()
             .UsePlatformDetect ()
             .WithInterFont ()
-            .LogToTrace ()
-            .UseReactiveUI ();
+            .LogToTrace ();
 }

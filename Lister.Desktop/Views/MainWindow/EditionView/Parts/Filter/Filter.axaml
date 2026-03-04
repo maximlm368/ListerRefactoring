@@ -1,0 +1,369 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:measurablelable="using:Lister.Desktop.Views.MainWindow.SharedComponents.MeasurableLable"
+             mc:Ignorable="d" d:DesignWidth="260" d:DesignHeight="396"
+             x:Class="Lister.Desktop.Views.MainWindow.EditionView.Parts.Filter.FilterUserControl"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.EditionView.Parts.Filter.ViewModel"
+			 x:DataType="vm:FilterViewModel">
+
+	<Grid
+		Name="MainGrid"
+		ColumnDefinitions="0 48"
+		RowDefinitions="396">
+		
+		<Grid
+			Name="LargeView"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Grid.Row="1"
+			IsVisible="False"
+			PointerWheelChanged="ScrollByWheel"
+			RowDefinitions="42 40 44 224 46">
+			
+			<Button
+				Classes="extender"
+				Grid.Row="0"
+				CornerRadius="5,0,0,0"
+				HorizontalAlignment="Left"
+				Margin="8,8"
+				Padding="4,4"
+				Click="Shrink"
+				PointerPressed="SomeButtonPressed"
+				ToolTip.Tip="Свернуть панель"
+				Content="&#xF061;"
+			/>
+
+			<Grid
+				Grid.Row="1"
+				ColumnDefinitions="95 155">
+				
+				<Label
+					Grid.Column="0"
+					Margin="8,4"
+					Padding="0, 5"
+					Content="Фильтры"
+				/>
+
+				<ComboBox
+					Name="FilterChoosing"
+					Grid.Column="1"
+					Background="White"
+					Height="32"
+					Width="143"
+					VerticalAlignment="Center"
+					Padding="4,1"
+					MaxDropDownHeight="200"
+					SelectedIndex="{Binding SelectedFilterIndex, Mode=OneWay}"
+					SelectionChanged="SelectionChanged"
+					ItemsSource="{Binding FilterNames, Mode=OneWay}">
+
+					<ComboBox.ItemTemplate >
+						<DataTemplate >
+							<Label
+								Classes="narrow"
+								Padding="-5,2"
+								Content="{Binding,  Mode=OneWay}"
+							/>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+			</Grid>
+			
+			<Grid
+				Grid.Row="3"
+				ColumnDefinitions="8 235 8 9">
+
+				<ItemsControl
+					Name="ScrollableItems"
+					Grid.Column="1"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Background="#EEEEEE"
+					ItemsSource="{Binding Icons, Mode=OneWay}">
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+
+							<Border
+								Grid.Column="0"
+								HorizontalAlignment="Left"
+								Height="24"
+								Margin="0,2"
+								BorderThickness="1"
+								Tapped="ToParticularBadge"
+								PointerEntered="ItemPointerEntered"
+								PointerExited="ItemPointerExited">
+
+								<Grid
+									ColumnDefinitions="22 211">
+
+									<Label
+										Grid.Column="0"
+										Width="22"
+										Height="22"
+										HorizontalContentAlignment="Center"
+										VerticalContentAlignment="Center"
+										FontFamily="{StaticResource FA}"
+										HorizontalAlignment="Left"
+										Background="{Binding Background, Mode=OneWay}"
+										Foreground="{Binding CorrectnessColor, Mode=OneWay}"
+										Content="{Binding CorrectnessIcon, Mode=OneWay}"
+									/>
+									<measurablelable:MeasurableLabel
+										Grid.Column="1"
+										Height="22"
+										AccessableWidth="{Binding WidthLimit, Mode=TwoWay}"
+										Padding="16,0,0,0"
+										Background="{Binding Background, Mode=OneWay}"
+										FontWeight="{Binding BoundFontWeight, Mode=OneWay}"
+										FontFamily="{Binding BoundFontFamily, Mode=OneWay}"
+										FontSize="16"
+										Content="{Binding BoundPersonName, Mode=OneWay}"
+									/>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<ItemsControl
+					Name="LargeItems"
+					Grid.Column="1"
+					Grid.ColumnSpan="2"
+					IsVisible="False"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Background="#EEEEEE"
+					ItemsSource="{Binding Icons, Mode=OneWay}">
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+
+							<Border
+								Grid.Column="0"
+								HorizontalAlignment="Left"
+								Height="24"
+								Margin="0,2"
+								BorderThickness="1"
+								Tapped="ToParticularBadge"
+								PointerEntered="ItemPointerEntered"
+								PointerExited="ItemPointerExited">
+
+								<Grid
+									ColumnDefinitions="22 218">
+
+									<Label
+										Grid.Column="0"
+										Width="22"
+										Height="22"
+										HorizontalContentAlignment="Center"
+										VerticalContentAlignment="Center"
+										FontFamily="{StaticResource FA}"
+										HorizontalAlignment="Left"
+										Background="{Binding Background, Mode=OneWay}"
+										Foreground="{Binding CorrectnessColor, Mode=OneWay}"
+										Content="{Binding CorrectnessIcon, Mode=OneWay}"
+									/>
+									<measurablelable:MeasurableLabel
+										Grid.Column="1"
+										Height="22"
+										AccessableWidth="{Binding WidthLimit, Mode=TwoWay}"
+										Padding="16,0,0,0"
+										Background="{Binding Background, Mode=OneWay}"
+										FontWeight="{Binding BoundFontWeight, Mode=OneWay}"
+										FontFamily="{Binding BoundFontFamily, Mode=OneWay}"
+										FontSize="16"
+										Content="{Binding BoundPersonName, Mode=OneWay}"
+									/>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<Grid
+					Name="ScrollBar"
+					ColumnDefinitions="15"
+					Grid.Column="2"
+					Grid.ColumnSpan="2"
+					VerticalAlignment="Top"
+					HorizontalAlignment="Center"
+					Margin="1,0"
+					Background="White">
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="15"></RowDefinition>
+						<RowDefinition Height="{Binding RunnerBruttoWalkSpace, Mode=OneWay}"></RowDefinition>
+						<RowDefinition Height="15"></RowDefinition>
+					</Grid.RowDefinitions>
+
+					<Button
+						Name="Upper"
+						Classes="scrollButton"
+						Grid.Row="0"
+						Width="15"
+						Padding="2,2"
+						Content="&#xF077;"
+						Focusable="{Binding FilterIsExtended, Mode=OneWay}"
+						Command="{Binding ScrollUp}"
+						PointerPressed="SomeButtonPressed"
+					/>
+					<Canvas
+						Grid.Row="1"
+						Background="#EEEEEE"
+						Width="15"
+						Height="{Binding RunnerBruttoWalkSpace, Mode=OneWay}"
+						VerticalAlignment="Center"
+						Tapped="ShiftRunner">
+
+						<Canvas
+							Classes="Runner"
+							Width="15"
+							Height="{Binding RunnerHeight, Mode=OneWay}"
+							Canvas.Left="0"
+							Canvas.Top="{Binding ScrollOffset, Mode=OneWay}"
+							Background="#817974"
+							PointerPressed="CaptureRunner"
+							PointerMoved="MoveRunner"
+							PointerEntered="OverRunner"
+							PointerExited="ExitedRunner"
+							PointerReleased="ReleaseRunner"
+						/>
+					</Canvas>
+
+					<Button
+						Name="Downer"
+						Classes="scrollButton"
+						Grid.Row="2"
+						Width="15"
+						Padding="2,2"
+						Focusable="{Binding FilterIsExtended, Mode=OneWay}"
+						Content="&#xF078;"
+						Command="{Binding ScrollDown}"
+						PointerPressed="SomeButtonPressed"
+					/>
+				</Grid>
+			</Grid>
+
+		</Grid>
+
+		<Grid
+			Name="NarrowView"
+			Grid.Column="1"
+			Grid.Row="1"
+			RowDefinitions="42 40 44 224 46">
+			
+			<Button
+				Classes="extender"
+				Grid.Row="0"
+				CornerRadius="5,0,0,0"
+				HorizontalAlignment="Left"
+				Margin="8,8"
+				Padding="4,4"
+				Click="Extend"
+				PointerPressed="SomeButtonPressed"
+				ToolTip.Tip="Развернуть панель"
+				Content="&#xF060;"
+			/>
+
+			<Button
+				Name="Switcher"
+				Classes="Switcher"
+				Grid.Row="1"
+				Width="32"
+				Height="32"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Padding="3,3"
+				Focusable="{Binding FilterIsShrinked, Mode=OneWay}"
+				ToolTip.Tip="{Binding SwitcherTip, Mode=OneWay}"
+				Command="{Binding  Path = Filter}"
+				PointerPressed="SomeButtonPressed">
+
+				<Label
+					FontFamily="{StaticResource FA}"
+					FontSize="16"
+					VerticalContentAlignment="Center"
+					Content="&#xf0b0;"
+					Foreground="{Binding SwitcherForeground, Mode=OneWay}"
+				/>
+			</Button>
+
+			<Button
+				Name="Up"
+				Classes="upDownArrows"
+				Grid.Row="2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Width="32"
+				Height="32"
+				Focusable="{Binding UpDownIsFocusable, Mode=OneWay}"
+				ToolTip.Tip="К предыдущему бейджу"
+				IsEnabled="{Binding IsPreviousEnable, Mode=OneWay}"
+				IsVisible="{Binding NarrowNavigationIsVisible}"
+				Command="{Binding ToPrevious}"
+				PointerPressed="SomeButtonPressed"
+				Content="&#xf0d8;"
+			/>
+
+			<ItemsControl
+				Grid.Row="3"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Top"
+				ItemsSource="{Binding Icons, Mode=OneWay}">
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+
+						<Border
+							Grid.Column="0"
+							HorizontalAlignment="Left"
+							Height="24"
+							Margin="0,2"
+							BorderThickness="1"
+							Tapped="ToParticularBadge"
+							PointerEntered="ItemPointerEntered"
+							PointerExited="ItemPointerExited">
+
+							<Grid
+								ColumnDefinitions="22 *">
+
+								<Label
+									Grid.Column="0"
+									Width="22"
+									Height="22"
+									HorizontalContentAlignment="Center"
+									VerticalContentAlignment="Center"
+									FontFamily="{StaticResource FA}"
+									HorizontalAlignment="Left"
+									Background="{Binding Background, Mode=OneWay }"
+									Foreground="{Binding CorrectnessColor, Mode=OneWay }"
+									Content="{Binding CorrectnessIcon, Mode=OneWay }"
+								/>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			<Button
+				Name="Down"
+				Classes="upDownArrows"
+				Grid.Row="4"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Width="32"
+				Height="32"
+				Focusable="{Binding UpDownIsFocusable, Mode=OneWay}"
+				ToolTip.Tip="К следующему бейджу"
+				IsEnabled="{Binding IsNextEnable, Mode=OneWay}"
+				IsVisible="{Binding NarrowNavigationIsVisible}"
+				Command="{Binding ToNext}"
+				PointerPressed="SomeButtonPressed"
+				Content="&#xf0d7;"
+			/>
+		</Grid>
+	</Grid>
+</UserControl>

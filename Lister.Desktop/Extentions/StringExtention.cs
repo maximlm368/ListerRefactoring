@@ -2,19 +2,19 @@
 
 internal static class StringExtention
 {
-    public static string TrimLastNewLineChar ( this string beingProcessed )
+    public static string TrimLastNewLineChar ( this string processable )
     {
-        if ( !string.IsNullOrEmpty ( beingProcessed ) )
+        if ( !string.IsNullOrEmpty ( processable ) )
         {
-            char lastChar = beingProcessed [^1];
+            char lastChar = processable [^1];
             bool isGoal = lastChar == '\n';
 
             if ( isGoal )
             {
-                beingProcessed = beingProcessed [..^1];
+                processable = processable [..^1];
             }
         }
 
-        return beingProcessed;
+        return processable;
     }
 }

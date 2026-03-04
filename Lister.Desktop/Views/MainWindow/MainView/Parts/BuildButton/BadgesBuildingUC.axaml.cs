@@ -1,8 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Lister.Desktop.App;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton;
 

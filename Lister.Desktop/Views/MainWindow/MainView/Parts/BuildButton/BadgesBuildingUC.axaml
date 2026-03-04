@@ -24,35 +24,29 @@
 			Grid.RowSpan="3"
 			Width="200"
 			Height="32"
-			Margin="8,0"
-			Padding="7,3"
+			HorizontalAlignment="Center"
 			ZIndex="2"
-			IsEnabled="{Binding BuildingIsPossible, Mode=OneWay}"
-			ToolTip.Tip="Построить макет на основе выбранных данных"
+			IsEnabled="{Binding IsEnabled, Mode=OneWay}"
 			ToolTip.HorizontalOffset="10"
-			PointerPressed="RightPointerPressed"
-			Command="{Binding  BuildBadges}">
+			PointerPressed="RightPointerPressed">
 
 			<Grid
-				ColumnDefinitions="30 170">
+				ShowGridLines="True"
+				ColumnDefinitions="30 150 20">
 				
 				<Label
-					Name="pic"
-					Classes="picture"
 					Grid.Column="0"
-					Content="&#xE2CA;"
-					Width="30"
-					Height="32"
-					Padding="3,8"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					VerticalAlignment="Center"
+					VerticalContentAlignment="Center"
 				/>
 				<Label
-					Name="lable"
 					Grid.Column="1"
-					Content="Построить макет"
-					Height="32"
-					Width="170"
-					FontSize="16"
-					Padding="8,6"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					VerticalAlignment="Center"
+					VerticalContentAlignment="Center"
 				/>
 			</Grid>
 		</Button>

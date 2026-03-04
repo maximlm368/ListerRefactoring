@@ -17,7 +17,7 @@ public sealed class TextWidthMeasurer : ITextWidthMeasurer
 
     public double Measure ( string text, string fontWeightName, double fontSize, string fontName )
     {
-        FormattedText formatted = new ( text,
+        FormattedText formatted = new FormattedText ( text,
             System.Globalization.CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight, Typeface.Default,
             fontSize,
@@ -28,7 +28,7 @@ public sealed class TextWidthMeasurer : ITextWidthMeasurer
         formatted.SetFontSize ( fontSize );
         formatted.SetFontFamily ( new FontFamily ( fontName ) );
 
-        return formatted.Width;
+        return formatted.WidthIncludingTrailingWhitespace;
     }
 
     private static FontWeight GetFontWeight ( string weightName )

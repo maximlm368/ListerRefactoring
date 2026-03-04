@@ -1,23 +1,25 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
 /// <summary>
 /// Represents visible data of printer.
 /// </summary>
-internal sealed class PrinterPresentation : ReactiveObject
+public sealed class PrinterPresentation : ObservableObject
 {
     private string _stringPresentation = string.Empty;
-    internal string StringPresentation
+    public string StringPresentation
     {
-        get { return _stringPresentation; }
+        get =>_stringPresentation;
+        
         private set
         {
-            this.RaiseAndSetIfChanged ( ref _stringPresentation, value, nameof ( StringPresentation ) );
+            _stringPresentation = value;
+            OnPropertyChanged ();
         }
     }
 
-    internal PrinterPresentation ( string printerName )
+    public PrinterPresentation ( string printerName )
     {
         StringPresentation = printerName;
     }

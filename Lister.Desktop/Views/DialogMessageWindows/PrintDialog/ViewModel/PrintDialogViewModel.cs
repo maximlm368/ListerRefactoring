@@ -1,5 +1,4 @@
-﻿using Avalonia.Media;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lister.Core.Extentions;
 using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
@@ -9,13 +8,11 @@ using System.Drawing.Printing;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-internal sealed partial class PrintDialogViewModel : ObservableObject
+public sealed partial class PrintDialogViewModel : ObservableObject
 {
     private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
     private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
-    private readonly string _emptyCopies;
-    private readonly string _emptyPages;
-    private readonly string _emptyPrinters;
+    private readonly string _incorrectIntervalError = "Некорректный интервал. Начальный номер должен быть не больше конечного.";
     private readonly int _copiesMaxCount = 10;
     private readonly int _pagesStrMaxGlyphCount = 30;
     private readonly List<char> _pageNumsAcceptables = [' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -27,46 +24,53 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
     private int _rangeStart;
     private int _pagesAmount;
     private PrintAdjustingData? _adjusting;
-    private bool _isPageInputPossable = false;
+    private bool _isLastGlyphUsable = false;
 
     [ObservableProperty]
     private ObservableCollection<PrinterPresentation>? _printers;
 
     [ObservableProperty]
-    private SolidColorBrush? _pagesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
-
-    [ObservableProperty]
-    private SolidColorBrush? _copiesBorderColor = new ( new Color ( 255, 0, 0, 0 ) );
-
-    [ObservableProperty]
-    private string? _printersEmptyError;
-
-    [ObservableProperty]
     private bool _printingIsAvailable;
+
+    [ObservableProperty]
+    private bool _isPrintersEmpty;
+
+    internal bool HasCopiesError = false;
+
+    internal bool HasPagesError = false;
 
     [ObservableProperty]
     private int _selectedIndex;
 
-    private readonly bool _isSomePages;
-    internal bool IsSomePages
+    [ObservableProperty]
+    private PrinterPresentation _selectedPrinter;
+
+    private bool _hasPageSelection;
+    internal bool HasPageSelection
     {
-        get => _isSomePages;
+        get => _hasPageSelection;
 
         private set
         {
-            if ( !value )
+            if ( value )
             {
-                PagesInString = string.Empty;
+
+            }
+            else
+            {
+                Pages = string.Empty;
+                PagesError = string.Empty;
             }
 
+            _hasPageSelection = value;
             OnPropertyChanged ();
         }
     }
 
-    private string? _pagesInString;
-    internal string? PagesInString
+    private string? _pages;
+    internal string? Pages
     {
-        get => _pagesInString;
+        get => _pages;
 
         set
         {
@@ -74,13 +78,28 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
             if ( !string.IsNullOrEmpty ( value ) && ( value.Length > _pagesStrMaxGlyphCount ) )
             {
-                value = PagesInString;
+                value = Pages;
+            }
+            else if ( string.IsNullOrEmpty ( _pages ) && value == string.Empty )
+            {
+                PagesError = "Список страниц не может быть пустым.";
+
+                return;
             }
 
+            string pagesError = PagesError;
             PagesError = SetPagesFrom ( value );
 
-            if ( !_isPageInputPossable && !string.IsNullOrWhiteSpace ( PagesError ) )
+            if ( !_isLastGlyphUsable )
             {
+                PagesError = pagesError;
+
+                if ( string.IsNullOrEmpty ( value ) )
+                {
+                    _pages = value;
+                    OnPropertyChanged ();
+                }
+
                 return;
             }
 
@@ -88,37 +107,37 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
             {
                 if ( _pageNumbers [index] > _pagesAmount )
                 {
-                    value = PagesInString;
+                    value = Pages;
 
                     break;
                 }
             }
 
-            _pagesInString = value;
-        }
-    }
+            _pages = value;
 
-    private readonly string _pagesError = string.Empty;
-    internal string PagesError
-    {
-        get => _pagesError;
-
-        set
-        {
-            if ( string.IsNullOrEmpty ( value ) )
+            if ( string.IsNullOrEmpty ( _pages ) && string.IsNullOrEmpty ( PagesError ) )
             {
-                PagesBorderColor = new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
-            }
-            else
-            {
-                PagesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
+                PagesError = "Список страниц не может быть пустым.";
             }
 
             OnPropertyChanged ();
         }
     }
 
-    private string? _copies;
+    private string _pagesError = string.Empty;
+    internal string PagesError
+    {
+        get => _pagesError;
+
+        private set
+        {
+            _pagesError = value;
+            HasPagesError = !string.IsNullOrEmpty ( _pagesError );
+            OnPropertyChanged ();
+        }
+    }
+
+    private string? _copies = "1";
     internal string? Copies
     {
         get => _copies;
@@ -126,44 +145,24 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
         set
         {
             value = value.RemoveUnacceptableGlyphs ( _copiesCountAcceptables );
-
-            if ( CopiesError == _emptyCopies )
-            {
-                CopiesError = string.Empty;
-            }
+            HasCopiesError = false;
 
             if ( !string.IsNullOrEmpty ( value ) )
             {
-                if ( IsFirstDigitZero ( value ) || int.Parse ( value ) > _copiesMaxCount )
+                if ( IsFirstGlyphZero ( value ) || 
+                    ( int.TryParse ( value, out int intResult ) && intResult > _copiesMaxCount ) 
+                )
                 {
-                    (_copies, value) = (value, _copies);
+                    value = _copies;
+                    HasCopiesError = true;
                 }
             }
             else
             {
-                CopiesError = _emptyCopies;
+                HasCopiesError = true;
             }
 
-            OnPropertyChanged ();
-        }
-    }
-
-    private readonly string? _copiesError;
-    internal string? CopiesError
-    {
-        get => _copiesError;
-
-        set
-        {
-            if ( string.IsNullOrEmpty ( value ) )
-            {
-                CopiesBorderColor = new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
-            }
-            else
-            {
-                CopiesBorderColor = new SolidColorBrush ( new Color ( 255, 255, 0, 0 ) );
-            }
-
+            _copies = value;
             OnPropertyChanged ();
         }
     }
@@ -184,11 +183,8 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
         }
     }
 
-    internal PrintDialogViewModel ( string emptyCopies, string emptyPages, string emptyPrinters, string osName )
+    public PrintDialogViewModel ( string osName )
     {
-        _emptyCopies = emptyCopies;
-        _emptyPages = emptyPages;
-        _emptyPrinters = emptyPrinters;
         _osName = osName;
     }
 
@@ -205,7 +201,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
             {
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
-                Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + Printers [SelectedIndex].StringPresentation + "\""
+                Arguments = "/c rundll32 printui.dll,PrintUIEntry /e /n \"" + SelectedPrinter.StringPresentation + "\""
             };
             process.StartInfo = startInfo;
             process.Start ();
@@ -213,7 +209,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
         else if ( _osName == "Linux" )
         {
             string command = "gnome-control-center -s Printers";
-            PdfPrinter.ExecuteBashCommand ( command );
+            Printer.ExecuteBashCommand ( command );
         }
     }
 
@@ -229,9 +225,9 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
             return;
         }
 
-        _adjusting.PrinterName = Printers [SelectedIndex].StringPresentation;
+        _adjusting.PrinterName = SelectedPrinter.StringPresentation;
 
-        if ( !IsSomePages )
+        if ( !HasPageSelection )
         {
             _pageNumbers.Clear ();
 
@@ -242,7 +238,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
         }
         else
         {
-            PagesError = SetPagesFrom ( PagesInString );
+            PagesError = SetPagesFrom ( Pages );
 
             if ( !string.IsNullOrWhiteSpace ( PagesError ) )
             {
@@ -263,21 +259,10 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
     private bool HasError ()
     {
-        if ( string.IsNullOrEmpty ( Copies ) )
-        {
-            CopiesError = _emptyCopies;
-
-            return true;
-        }
-
-        if ( string.IsNullOrEmpty ( PagesInString ) && IsSomePages )
-        {
-            PagesError = _emptyPages;
-
-            return true;
-        }
-
-        if ( !string.IsNullOrWhiteSpace ( _pagesInString ) && PagesError.Contains ( "Некорректный интервал" ) )
+        if ( string.IsNullOrEmpty ( Copies ) ||
+            string.IsNullOrEmpty ( Pages ) && HasPageSelection ||
+            !string.IsNullOrWhiteSpace ( _pages ) && PagesError.Contains ( _incorrectIntervalError )
+        )
         {
             return true;
         }
@@ -288,7 +273,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
     [RelayCommand]
     internal void Cancel ()
     {
-        CopiesError = string.Empty;
+        HasCopiesError = false;
         PagesError = string.Empty;
 
         if ( _adjusting != null )
@@ -348,7 +333,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
     private string HandleNextGlyph ( char glyph, bool isGlyphLast )
     {
-        _isPageInputPossable = false;
+        _isLastGlyphUsable = false;
         bool glyphIsInteger = _copiesCountAcceptables.Contains ( glyph );
 
         if ( glyphIsInteger )
@@ -386,12 +371,9 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
                 bool endIsInt = int.TryParse ( _intAsCharList.ToArray (), out int rangeEnd );
 
-                if ( startIsInt && endIsInt && _rangeStart > rangeEnd )
+                if ( startIsInt && endIsInt && _rangeStart > rangeEnd && ( rangeEnd * 10 ) > _pagesAmount )
                 {
-                    if ( ( rangeEnd * 10 ) > _pagesAmount )
-                    {
-                        return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
-                    }
+                    return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                 }
 
                 if ( isGlyphLast )
@@ -401,10 +383,10 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
                         _pageNumbers.Add ( index );
                     }
 
-                    if ( _rangeStart > rangeEnd )
-                    {
-                        _isPageInputPossable = true;
+                    _isLastGlyphUsable = _rangeStart > rangeEnd;
 
+                    if ( rangeEnd > _pagesAmount || _isLastGlyphUsable )
+                    {
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
@@ -429,10 +411,10 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
                         _pageNumbers.Add ( index );
                     }
 
-                    if ( _rangeStart > rangeEnd )
-                    {
-                        _isPageInputPossable = true;
+                    _isLastGlyphUsable = _rangeStart > rangeEnd;
 
+                    if ( rangeEnd > _pagesAmount || _isLastGlyphUsable )
+                    {
                         return "Некорректный интервал. Начальный номер должен быть не больше конечного.";
                     }
                 }
@@ -477,7 +459,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
                     {
                         if ( isGlyphLast )
                         {
-                            _isPageInputPossable = true;
+                            _isLastGlyphUsable = true;
 
                             return "Тире не может быть последним в строке";
                         }
@@ -492,7 +474,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
                         if ( isGlyphLast )
                         {
-                            _isPageInputPossable = true;
+                            _isLastGlyphUsable = true;
 
                             return "Тире не может быть последним в строке";
                         }
@@ -538,7 +520,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
                         if ( isGlyphLast )
                         {
-                            _isPageInputPossable = true;
+                            _isLastGlyphUsable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
@@ -562,7 +544,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
                         if ( isGlyphLast )
                         {
-                            _isPageInputPossable = true;
+                            _isLastGlyphUsable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
@@ -588,7 +570,7 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
                         if ( isGlyphLast )
                         {
-                            _isPageInputPossable = true;
+                            _isLastGlyphUsable = true;
 
                             return "Запятая не может быть последней в строке";
                         }
@@ -598,10 +580,12 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
             }
         }
 
+        _isLastGlyphUsable = true;
+
         return string.Empty;
     }
 
-    private static bool IsFirstDigitZero ( string value )
+    private static bool IsFirstGlyphZero ( string value )
     {
         bool firstDigitIsZero = false;
 
@@ -669,23 +653,8 @@ internal sealed partial class PrintDialogViewModel : ObservableObject
 
     private void HandleEmptyPrinters ( ObservableCollection<PrinterPresentation>? printersList )
     {
-        if ( printersList == null )
-        {
-            return;
-        }
-
-        bool printersIsEmpty = printersList.Count < 1;
-
-        if ( printersIsEmpty )
-        {
-            PrintersEmptyError = _emptyPrinters;
-        }
-        else
-        {
-            PrintersEmptyError = "";
-        }
-
-        PrintingIsAvailable = !printersIsEmpty;
+        IsPrintersEmpty = printersList == null || printersList.Count < 1;
+        PrintingIsAvailable = !IsPrintersEmpty;
     }
 
     private enum ParserStates

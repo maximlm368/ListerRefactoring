@@ -2,13 +2,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
-using Lister.Desktop.App;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 
 public partial class SceneUserControl : UserControl
 {
+    private SceneViewModel _viewModel;
     private bool _pageIsCaptured;
     private Point _pointerPosition;
 
@@ -17,12 +16,6 @@ public partial class SceneUserControl : UserControl
     public SceneUserControl ()
     {
         InitializeComponent ();
-        DataContext = ListerApp.Services.GetRequiredService<SceneViewModel> ();
-        Extender.FocusAdorner = null;
-        Edit.FocusAdorner = null;
-        ClearBadges.FocusAdorner = null;
-        Save.FocusAdorner = null;
-        Print.FocusAdorner = null;
 
         _pageIsCaptured = false;
     }

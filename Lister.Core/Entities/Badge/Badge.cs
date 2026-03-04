@@ -17,11 +17,22 @@ public sealed class Badge
     public string? BackgroundImagePath { get; private set; }
     public Layout Layout { get; private set; }
     public bool IsCorrect { get; private set; }
-    public bool IsChanged { get; private set; }
-    public delegate void RolledBackHandler ();
-    public event RolledBackHandler? RolledBack;
-    public delegate void CorrectnessChangedHandler ();
-    public event CorrectnessChangedHandler? CorrectnessChanged;
+    
+    private bool _isChanged = false;
+    public bool IsChanged 
+    { 
+        get => _isChanged;
+
+        private set 
+        {
+            _isChanged = value;
+            Changed?.Invoke (_isChanged);
+        }
+    }
+
+    public event Action? RolledBack;
+    public event Action? CorrectnessChanged;
+    public event Action<bool>? Changed;
 
     private Badge ( Person person, string backgroundImagePath, Layout layout )
     {
@@ -76,6 +87,7 @@ public sealed class Badge
     {
         Layout?.Split ( splitable );
         IsChanged = true;
+        RefreshCorrectness ();
     }
 
     public void SetProcessable ( LayoutComponentBase processableComponent )
@@ -97,6 +109,7 @@ public sealed class Badge
     public void CancelChanges ()
     {
         Layout?.RollBackTo ( _backup [Id].Clone ( false ) );
+        IsChanged = false;
     }
 
     public void ShiftProcessable ( string direction )
@@ -127,7 +140,7 @@ public sealed class Badge
         RefreshCorrectness ();
     }
 
-    public void ResetProcessableContent ( string newContent )
+    public void ResetProcessableContent ( string? newContent )
     {
         IsChanged = true;
         Layout.ResetProcessableLineContent ( newContent );

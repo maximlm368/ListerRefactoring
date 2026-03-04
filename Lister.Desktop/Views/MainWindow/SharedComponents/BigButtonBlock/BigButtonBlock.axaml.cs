@@ -3,13 +3,14 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System.Windows.Input;
 
-namespace Lister.Desktop.Views.MainWindow.MainView.SharedComponents;
+namespace Lister.Desktop.Views.MainWindow.SharedComponents.BigButtonBlock;
 
-public partial class BigButtonBlock : UserControl
+public partial class BigButtonBlockUserControl : UserControl
 {
     private double _width;
 
-    public static readonly StyledProperty<ICommand> CommandProperty = AvaloniaProperty.Register<BigButtonBlock, ICommand> ( "Command" );
+    public static readonly StyledProperty<ICommand> CommandProperty = 
+        AvaloniaProperty.Register<BigButtonBlockUserControl, ICommand> ( "Command" );
     public ICommand Command
     {
         get => GetValue ( CommandProperty );
@@ -17,7 +18,7 @@ public partial class BigButtonBlock : UserControl
     }
 
     public static readonly StyledProperty<string> ButtonInscriptionProperty = 
-        AvaloniaProperty.Register<BigButtonBlock, string> ( "ButtonInscription" );
+        AvaloniaProperty.Register<BigButtonBlockUserControl, string> ( "ButtonInscription" );
     public string ButtonInscription
     {
         get => GetValue ( ButtonInscriptionProperty );
@@ -25,14 +26,22 @@ public partial class BigButtonBlock : UserControl
     }
 
     public static readonly StyledProperty<string> ButtonPictureProperty =
-        AvaloniaProperty.Register<BigButtonBlock, string> ( "ButtonPicture" );
+        AvaloniaProperty.Register<BigButtonBlockUserControl, string> ( "ButtonPicture" );
     public string ButtonPicture
     {
         get => GetValue ( ButtonPictureProperty );
         set => SetValue ( ButtonPictureProperty, value );
     }
 
-    public BigButtonBlock()
+    public static readonly StyledProperty<string> ToolTipProperty =
+        AvaloniaProperty.Register<BigButtonBlockUserControl, string> ( "ToolTip" );
+    public string ToolTip
+    {
+        get => GetValue ( ToolTipProperty );
+        set => SetValue ( ToolTipProperty, value );
+    }
+
+    public BigButtonBlockUserControl()
     {
         InitializeComponent();
     }
@@ -40,9 +49,6 @@ public partial class BigButtonBlock : UserControl
     private void OnLoaded ( object sender, RoutedEventArgs args ) 
     {
         _width = Bounds.Width;
-        BackButton.Command = Command;
-        Inscription.Content = ButtonInscription;
-        Picture.Content = ButtonPicture;
     }
 
     private void OnSizeChanged ( object sender, SizeChangedEventArgs args )

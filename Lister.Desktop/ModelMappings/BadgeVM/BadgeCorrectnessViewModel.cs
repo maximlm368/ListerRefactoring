@@ -8,13 +8,10 @@ namespace Lister.Desktop.ModelMappings.BadgeVM;
 /// </summary>
 internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
 {
-    private static readonly string _correctIcon;
-    private static readonly string _incorrectIcon;
-    private static readonly SolidColorBrush _focusedBackground;
-    private static readonly SolidColorBrush _defaultBackground;
-
-    private readonly double _extendedScrollableMaxIconWidth;
-    private readonly double _shrinkedIconWidth;
+    private static readonly string _correctIcon = "\uf00c";
+    private static readonly string _incorrectIcon = "\uf00d";
+    private static readonly SolidColorBrush _focusedBackground = new ( new Color ( 0xff, 0xba, 0xdc, 0xf8 ) );
+    private static readonly SolidColorBrush _defaultBackground = new ( new Color ( 0xff, 0xee, 0xee, 0xee ) );
 
     [ObservableProperty]
     private bool _correctness;
@@ -28,8 +25,18 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
     [ObservableProperty]
     private double _personNameExpending;
 
-    [ObservableProperty]
-    private double _insideBorderWidth;
+    //default value exists for just load event can happen
+    private double _widthLimit = 20;
+    internal double WidthLimit 
+    {  
+        get => _widthLimit; 
+        
+        set 
+        { 
+            _widthLimit = value;
+            CalcStringPresentation ();
+        } 
+    }
 
     [ObservableProperty]
     private FontFamily _boundFontFamily;
@@ -40,47 +47,14 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
     private string _correctnessIcon = string.Empty;
     internal string CorrectnessIcon
     {
-        get
-        {
-            return _correctnessIcon;
-        }
+        get => _correctnessIcon;
 
         private set
         {
-            if ( value == _correctIcon )
-            {
-                byte red = 0x3a;
-                byte green = 0x81;
-                byte blue = 0x3A;
-
-                CorrectnessColor = new SolidColorBrush ( new Color ( 255, red, green, blue ) );
-            }
-            else
-            {
-                byte red = 0xd2;
-                byte green = 0x36;
-                byte blue = 0x50;
-
-                CorrectnessColor = new SolidColorBrush ( new Color ( 255, red, green, blue ) );
-            }
+            CorrectnessColor = value == _correctIcon ? new SolidColorBrush ( new Color ( 0xff, 0x3a, 0x81, 0x3A ) ) : 
+                new SolidColorBrush ( new Color ( 0xff, 0xd2, 0x36, 0x50 ) );
 
             _correctnessIcon = value;
-            OnPropertyChanged ();
-        }
-    }
-
-    private double _width;
-    internal double Width
-    {
-        get
-        {
-            return _width;
-        }
-
-        set
-        {
-            InsideBorderWidth = value - 2;
-            _width = value;
             OnPropertyChanged ();
         }
     }
@@ -88,10 +62,7 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
     private FontWeight _boundFontWeight = FontWeight.Normal;
     internal FontWeight BoundFontWeight
     {
-        get
-        {
-            return _boundFontWeight;
-        }
+        get => _boundFontWeight;
 
         set
         {
@@ -116,63 +87,29 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
 
     internal BadgeViewModel BoundBadge { get; private set; }
 
-    static BadgeCorrectnessViewModel ()
-    {
-        _correctIcon = "\uf00c";
-        _incorrectIcon = "\uf00d";
-        _focusedBackground = new SolidColorBrush ( new Color ( 255, 186, 220, 248 ) );
-        _defaultBackground = new SolidColorBrush ( new Color ( 255, 238, 238, 238 ) );
-    }
-
-    internal BadgeCorrectnessViewModel ( BadgeViewModel badge, double extendedScrollableWidth, double shortWidth, double widthLimit,
-        bool isExtended
-    )
+    internal BadgeCorrectnessViewModel ( BadgeViewModel badge, bool isExtended )
     {
         BoundBadge = badge;
         BoundFontWeight = FontWeight.Normal;
         BoundFontFamily = FontManager.Current.DefaultFontFamily.Name;
+        BoundBadge.CorrectnessChanged += SetCorrectness;
 
-        CalcStringPresentation ( widthLimit );
+        SetCorrectness ( badge.IsCorrect );
+    }
 
-        if ( badge.IsCorrect )
-        {
-            Correctness = true;
-            CorrectnessIcon = _correctIcon;
-        }
-        else
-        {
-            Correctness = false;
-            CorrectnessIcon = _incorrectIcon;
-        }
-
-        _extendedScrollableMaxIconWidth = extendedScrollableWidth;
-        _shrinkedIconWidth = shortWidth;
-
-        if ( isExtended )
-        {
-            Width = _extendedScrollableMaxIconWidth;
-        }
-        else
-        {
-            Width = _shrinkedIconWidth;
-        }
+    private void SetCorrectness ( bool isCorrect ) 
+    {
+        Correctness = isCorrect;
+        CorrectnessIcon = isCorrect ? _correctIcon : _incorrectIcon;
     }
 
     internal void SwitchCorrectness ()
     {
-        if ( Correctness )
-        {
-            Correctness = false;
-            CorrectnessIcon = _incorrectIcon;
-        }
-        else
-        {
-            Correctness = true;
-            CorrectnessIcon = _correctIcon;
-        }
+        Correctness = !Correctness;
+        CorrectnessIcon = Correctness ? _correctIcon : _incorrectIcon;
     }
 
-    internal void CalcStringPresentation ( double widthLimit )
+    internal void CalcStringPresentation ( )
     {
         string tail = "...";
         string personPresentation = BoundBadge.Model.Person.FullName;
@@ -183,7 +120,7 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
 
         formatted.SetFontWeight ( BoundFontWeight );
 
-        if ( formatted.Width <= widthLimit )
+        if ( formatted.Width <= WidthLimit )
         {
             BoundPersonName = personPresentation;
 
@@ -204,7 +141,7 @@ internal sealed partial class BadgeCorrectnessViewModel : ObservableObject
             formatted.SetFontSize ( 16 );
             formatted.SetFontFamily ( BoundFontFamily );
 
-            if ( formatted.Width <= widthLimit )
+            if ( formatted.Width <= WidthLimit )
             {
                 personPresentation = subStr;
 

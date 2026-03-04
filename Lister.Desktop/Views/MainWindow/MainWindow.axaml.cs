@@ -1,10 +1,21 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using Lister.Desktop.App.Configs;
+using Lister.Desktop.ModelMappings.BadgeVM;
+using Lister.Desktop.Views.DialogMessageWindows.LargeMessage;
+using Lister.Desktop.Views.DialogMessageWindows.Message;
+using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
+using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 using Lister.Desktop.Views.MainWindow.EditionView;
-using mainView = Lister.Desktop.Views.MainWindow.MainView;
+using Lister.Desktop.Views.MainWindow.EditionView.ViewModel;
+using Lister.Desktop.Views.MainWindow.MainView;
+using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
+using Lister.Desktop.Views.MainWindow.SharedComponents.ButtonsBlock.ViewModel;
 
 namespace Lister.Desktop.Views.MainWindow;
 
@@ -16,11 +27,18 @@ public sealed partial class MainWindow : Window
     internal static IStorageProvider? CommonStorageProvider { get; private set; }
     internal static MainWindow? Window { get; private set; }
     internal static double HeightfDifference { get; private set; }
+    internal static int TappedGoToEditorButton { get; private set; }
 
+    private List<BadgeViewModel>? _processableBadges;
     private double _currentWidth;
     private double _currentHeight;
+    private bool _isOnMainView = true;
+
+    internal MainViewUserControl? MainView {  get; set; }
+    internal EditorViewUserControl EditorView { get; set; }
 
     internal Window? ModalWindow { get; set; }
+    internal Func<PrintDialogViewModel> PrintDialogViewModelGenerator { get; set; }
     internal double WidthDifference { get; private set; }
     internal double HeightDifference { get; private set; }
 
@@ -40,17 +58,169 @@ public sealed partial class MainWindow : Window
         SizeChanged += OnSizeChanged;
         PointerReleased += ReleaseCaptured;
         PositionChanged += HandlePositionChange;
-        PointerMoved += Moved;
+        PointerMoved += OnPointerMoved;
+        LayoutUpdated += OnLayoutUpdated;
+        Loaded += OnLoaded;
+
+        EditorViewModel.BackingComplated += ComplateBacking;
+
+        ButtonsBlockViewModel.ToEditionRequired += ToEdition;
+
+        MainViewModel.HasToShowMessage += ShowMessageWindow;
+        MainViewModel.HasToShowTemplateErrors += ShowTemplateErrors;
+        MainViewModel.HasToPreparePrinting += ShowPrintDialog;
+        MainViewModel.FilePickerRequired += ShowFilePicker;
     }
 
-    internal static MainWindow ? GetMainWindow ( )
+    private void ShowMessageWindow ( string message )
     {
-        return Window;
+        MainViewUserControl mainView = Content as MainViewUserControl;
+
+        if ( mainView == null || mainView.ViewModel == null )
+        {
+            return;
+        }
+
+        MessageWindow messageWindow = new ( message );
+        ModalWindow = messageWindow;
+        messageWindow.Closed += ( s, a ) => { mainView.ViewModel?.HandleDialogClosing (); };
+        messageWindow.ShowDialog ( this );
+    }
+
+    private void ShowTemplateErrors ( List<string> message, string errorSource )
+    {
+        MainViewUserControl mainView = Content as MainViewUserControl;
+
+        if ( mainView == null || mainView.ViewModel == null )
+        {
+            return;
+        }
+
+        LargeMessageDialog messegeDialog = new ( message, errorSource );
+
+        messegeDialog.Closed += ( s, a ) => 
+        { 
+            mainView.ViewModel?.HandleDialogClosing (); 
+        };
+
+        messegeDialog.ShowDialog ( this );
+        messegeDialog.Focusable = true;
+        messegeDialog.Focus ();
+    }
+
+    private void ShowPrintDialog ( int pageCount, PrintAdjustingData printAdjusting )
+    {
+        PrintDialogWindow printDialog = new ( pageCount, printAdjusting, PrintDialogViewModelGenerator?.Invoke() );
+        printDialog.ShowDialog ( this );
+
+        printDialog.Closed += ( sender, args ) => 
+        {
+            MainViewUserControl mainView = Content as MainViewUserControl;
+
+            if ( mainView == null || mainView.ViewModel == null )
+            {
+                return;
+            }
+
+            mainView.ViewModel?.HandlePrintPreparatinComplated ();
+        };
+    }
+
+    private void ToEdition ( )
+    {
+        MainViewUserControl mainView = Content as MainViewUserControl;
+
+        if ( mainView == null || mainView.ViewModel == null ) 
+        {
+            return;
+        }
+
+        _processableBadges = mainView.ViewModel.Scene.ProcessableBadges;
+
+        if ( _processableBadges.Count > 0 )
+        {
+            EditorView = new EditorViewUserControl ();
+            EditorView.SetProperSize ( Width, Height );
+            CancelSizeDifference ();
+            TappedGoToEditorButton = 1;
+            ( MainView?.DataContext as MainViewModel )?.Wait ();
+        }
+    }
+
+    private async Task<IStorageFile?>? ShowFilePicker ( FilePickerSaveOptions options ) 
+    {
+        if ( CommonStorageProvider == null )
+        {
+            return null;
+        }
+
+        IStorageFile? chosenFile = await CommonStorageProvider.SaveFilePickerAsync ( options );
+
+        return chosenFile;
+    }
+
+    private void OnLoaded ( object? sender, RoutedEventArgs args )
+    {
+        MainView = Content as MainViewUserControl;
+    }
+
+    private void OnLayoutUpdated ( object? sender, EventArgs args )
+    {
+        if ( !_isOnMainView || !IsLoaded )
+        {
+            return;
+        }
+
+        if ( TappedGoToEditorButton == 1 )
+        {
+            SwitchToEditor ();
+        }
+    }
+
+    private void SwitchToEditor ()
+    {
+        if ( EditorView == null )
+        {
+            return;
+        }
+
+        TappedGoToEditorButton = 0;
+
+        Task task = new
+        (
+            () =>
+            {
+                if ( _processableBadges != null && _processableBadges.Count > 0 )
+                {
+                    EditorView.PrepareBy ( _processableBadges );
+                }
+
+                Dispatcher.UIThread.Invoke
+                (
+                    () =>
+                    {
+                        MainViewModel? mainViewModel = MainView?.DataContext as MainViewModel;
+                        mainViewModel?.EndWaiting ();
+                        Content = EditorView;
+                    }
+                );
+            }
+        );
+
+        task.Start ();
+    }
+
+    private void ComplateBacking ()
+    {
+        MainView?.SetProperSize ( Width, Height );
+        CancelSizeDifference ();
+        MainView?.Show ();
+        Content = MainView;
     }
 
     private void OnSizeChanged ( object? sender, SizeChangedEventArgs args )
     {
-        if ( Content is MainView.MainView mainView )
+        if ( Content is MainViewUserControl mainView )
         {
             double newWidth = args.NewSize.Width;
             double newHeight = args.NewSize.Height;
@@ -65,7 +235,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        if ( Content is EditorView editionView )
+        if ( Content is EditorViewUserControl editionView )
         {
             double newWidth = args.NewSize.Width;
             double newHeight = args.NewSize.Height;
@@ -86,28 +256,28 @@ public sealed partial class MainWindow : Window
 
     internal void ReleaseCaptured ( object? sender, PointerReleasedEventArgs args )
     {
-        if ( Content is MainView.MainView mainView )
+        if ( Content is MainViewUserControl mainView )
         {
             mainView.ReleaseCaptured ();
         }
         else
         {
-            if ( Content is EditorView editorView )
+            if ( Content is EditorViewUserControl editorView )
             {
                 editorView.ReleaseCaptured ();
             }
         }
     }
 
-    internal void Moved ( object? sender, PointerEventArgs args )
+    internal void OnPointerMoved ( object? sender, PointerEventArgs args )
     {
-        if ( Content is MainView.MainView mainView )
+        if ( Content is MainViewUserControl mainView )
         {
             mainView.MovePage ( args );
         }
         else
         {
-            if ( Content is EditorView editorView )
+            if ( Content is EditorViewUserControl editorView )
             {
                 editorView.MoveBadge ( args );
             }

@@ -24,7 +24,7 @@ public sealed class PeopleXlsxSource : IPeopleSource
         return _instance;
     }
 
-    public List<Person>? Get ( string? filePath, int gettingLimit )
+    public List<Person>? Get ( string? filePath, int limit )
     {
         List<Person> result = [];
 
@@ -41,7 +41,7 @@ public sealed class PeopleXlsxSource : IPeopleSource
             using IExcelDataReader reader = ExcelReaderFactory.CreateReader ( stream );
             int rowCount = reader.RowCount;
 
-            if ( rowCount > gettingLimit )
+            if ( rowCount > limit )
             {
                 return null;
             }

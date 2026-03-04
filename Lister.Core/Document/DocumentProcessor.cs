@@ -18,9 +18,9 @@ public sealed class DocumentProcessor
     private readonly IPdfCreator _pdfCreator;
     private readonly IPdfPrinter _pdfPrinter;
     private readonly BadgesCreator.BadgeCreator _badgeCreator;
-    private List<Page> _allPages = [];
     private int _badgeCount;
 
+    private List<Page> _allPages = [];
     public int IncorrectBadgeCount { get; private set; }
     public Page LastPage { get; private set; }
     public delegate void ComplatedPageHandler ( Page complated, bool mustBeReplacedByNext );
@@ -63,9 +63,9 @@ public sealed class DocumentProcessor
 
     public List<Page> BuildAllPages ( string templateName, int limit )
     {
-        List<Person> people = _badgeCreator.People;
+        List<Person>? people = _badgeCreator.People;
 
-        if ( ( _badgeCount + people.Count ) >= limit )
+        if ( people == null || ( _badgeCount + people.Count ) >= limit )
         {
             return [];
         }

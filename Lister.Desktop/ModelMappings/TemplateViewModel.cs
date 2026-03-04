@@ -18,11 +18,11 @@ public sealed partial class TemplateViewModel : ObservableObject
 
     public List<string> CorrectnessMessage { get; private set; }
 
-    public TemplateViewModel ( TemplateName templateName, SolidColorBrush colorIfCorrect, SolidColorBrush colorIfIncorrect,
+    public TemplateViewModel ( string templateName, SolidColorBrush colorIfCorrect, SolidColorBrush colorIfIncorrect,
         List<string> errors, string sourcePath
     )
     {
-        Name = templateName.Name;
+        Name = templateName;
         CorrectnessMessage = errors;
         SourcePath = sourcePath;
 

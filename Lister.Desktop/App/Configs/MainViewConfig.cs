@@ -2,9 +2,6 @@
 
 internal static class MainViewConfigs
 {
-    internal static readonly string ProcentSymbol = "%";
-    internal static readonly int MaxDepth = 5;
-    internal static readonly int MinDepth = -5;
     internal static readonly string PdfFileName = "Badge";
     internal static readonly string SaveTitle = "Сохранение документа";
     internal static readonly string IncorrectXSLX = " - некорректный файл.";

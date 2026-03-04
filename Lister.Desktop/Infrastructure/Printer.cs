@@ -3,25 +3,25 @@ using Lister.Core.Document.AbstractServices;
 using System.Diagnostics;
 using System.Drawing.Printing;
 
-namespace Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
+namespace Lister.Desktop.Infrastructure;
 
 /// <summary>
 /// Carries out printing
 /// </summary>
-public sealed class PdfPrinter : IPdfPrinter
+public sealed class Printer
 {
-    private static readonly PdfPrinter? _instance = null;
+    private static readonly Printer? _instance = null;
 
     private readonly string _osName;
 
-    private PdfPrinter ( string osName )
+    private Printer ( string osName )
     {
         _osName = osName;
     }
 
-    internal static PdfPrinter GetInstance ( string osName )
+    internal static Printer GetInstance ( string osName )
     {
-        return _instance ?? new PdfPrinter ( osName );
+        return _instance ?? new Printer ( osName );
     }
 
     public void Print ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )

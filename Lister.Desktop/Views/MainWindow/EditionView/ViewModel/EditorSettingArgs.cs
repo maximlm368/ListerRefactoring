@@ -14,8 +14,8 @@ public class EditorViewModelArgs
     public string AllTip = string.Empty;
     public string CorrectTip = string.Empty;
     public string IncorrectTip = string.Empty;
-    public SolidColorBrush FocusedFontSizeColor = defaultBrash;
-    public SolidColorBrush ReleasedFontSizeColor = defaultBrash;
-    public SolidColorBrush FocusedFontSizeBorderColor = defaultBrash;
-    public SolidColorBrush ReleasedFontSizeBorderColor = defaultBrash;
+    public SolidColorBrush FocusedForeground = defaultBrash;
+    public SolidColorBrush ReleasedForeground = defaultBrash;
+    public SolidColorBrush FocusedBorderColor = defaultBrash;
+    public SolidColorBrush ReleasedBorderColor = defaultBrash;
 }

@@ -20,15 +20,15 @@ public sealed class BadgeCreator
 
     public List<Person>? People { get; private set; }
 
-    private BadgeCreator ( IBadgeLayoutProvider badgeApprearenceProvider, IPeopleSourceFactory peopleSourceFactory )
+    private BadgeCreator ( IBadgeLayoutProvider badgeLayoutProvider, IPeopleSourceFactory peopleSourceFactory )
     {
-        _badgeLayoutProvider ??= badgeApprearenceProvider;
+        _badgeLayoutProvider ??= badgeLayoutProvider;
         _peopleSourceFactory ??= peopleSourceFactory;
     }
 
-    public static BadgeCreator GetInstance ( IBadgeLayoutProvider badgeApprearenceProvider, IPeopleSourceFactory peopleSourceFactory )
+    public static BadgeCreator GetInstance ( IBadgeLayoutProvider badgeLayoutProvider, IPeopleSourceFactory peopleSourceFactory )
     {
-        _instance ??= new BadgeCreator ( badgeApprearenceProvider, peopleSourceFactory );
+        _instance ??= new BadgeCreator ( badgeLayoutProvider, peopleSourceFactory );
 
         return _instance;
     }

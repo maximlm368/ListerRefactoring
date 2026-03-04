@@ -8,20 +8,14 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ImplicitUsings>enable</ImplicitUsings>
-	
 	<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
 	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 	<PublishSelfContained>true</PublishSelfContained>
 	<RollForward>LatestMinor</RollForward>
-	
 	<EmitEntryPoint>true</EmitEntryPoint>
-	
 	 <StartupObject>Lister.Desktop.Program</StartupObject>
-	
 	<PackRelease>true</PackRelease>
   </PropertyGroup>
-	
-	
 	
   <ItemGroup>
     <None Remove="Assets\Icons\badge.ico" />
@@ -30,8 +24,8 @@
 	<None Remove="Assets\JsonSchema\Schema.json" />
     <None Remove="Assets\Font Awesome 6 Free-Solid-900.otf" />
     <None Remove="Assets\fontawesome-webfont.ttf" />
-	
   </ItemGroup>
+	
   <ItemGroup>
     <AvaloniaResource Include="Assets\Icons\Loading.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -59,7 +53,6 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.5" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <PackageReference Include="Avalonia.Skia" Version="11.2.0" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
@@ -153,13 +146,16 @@
     <Compile Update="Views\MainWindow\EditionView\EditionView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
+    <Compile Update="Views\MainWindow\EditionView\Parts\EditionBlock\EditionBlockUserControl.axaml.cs">
+      <DependentUpon>EditionBlockUserControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindow\EditionView\Parts\Filter\Filter.axaml.cs">
+      <DependentUpon>Filter.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\MainWindow\MainView\MainView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="Views\MainWindow\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <Compile Update="Views\MainWindow\MainView\Parts\NavigationZoom\NavigationZoomUserControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="Views\MainWindow\MainView\Parts\PersonChoosing\PersonChoosingUC.axaml.cs">
@@ -183,9 +179,5 @@
     <Compile Update="Views\MainWindow\WaitingView\WaitingView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\MainWindow\EditionView\Parts\" />
   </ItemGroup>
 </Project>

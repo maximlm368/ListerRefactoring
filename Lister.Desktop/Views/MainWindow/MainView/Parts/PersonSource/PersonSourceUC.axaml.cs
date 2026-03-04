@@ -13,7 +13,7 @@ public partial class PersonSourceUserControl : UserControl
         InitializeComponent ();
 
         openPicker.FocusAdorner = null;
-        DataContext = ListerApp.Services.GetRequiredService<PersonSourceViewModel> ();
+        //DataContext = ListerApp.Services.GetRequiredService<PersonSourceViewModel> ();
     }
 
     private void OnLoaded ( object sender, RoutedEventArgs args ) 

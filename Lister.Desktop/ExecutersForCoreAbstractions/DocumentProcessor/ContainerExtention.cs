@@ -17,7 +17,7 @@ public static class IContainerExtentions
                 
                 drawOnCanvas ( canvas, size );
 
-            var svgData = stream.ToArray ();
+            byte[] svgData = stream.ToArray ();
 
             return Encoding.UTF8.GetString ( svgData );
         } );

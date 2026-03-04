@@ -10,6 +10,7 @@ public class TextLine : LayoutComponentBase
 {
     internal static ITextWidthMeasurer? Measurer { get; set; }
 
+    //_divider is crutch
     private static readonly double _divider = 8;
     private static readonly double _maxFontSizeLimit = 30;
     private static readonly double _minFontSizeLimit = 6;
@@ -33,6 +34,7 @@ public class TextLine : LayoutComponentBase
         {
             _content = value;
             ContentIsSet = true;
+            //TextChanged?.Invoke ( this );
         }
     }
     public double UsefullWidth { get; private set; }
@@ -42,33 +44,31 @@ public class TextLine : LayoutComponentBase
     public bool isNeeded;
 
     private bool _isBorderViolent = false;
-    public bool IsBoundViolating 
+    public bool IsBoundViolating
     {
         get { return _isBorderViolent; }
-        internal set 
+        internal set
         {
             _isBorderViolent = value;
             TextChanged?.Invoke ( this );
-        } 
+        }
     }
 
     private bool _isOverLayViolent = false;
-    public bool IsOverLaying 
+    public bool IsOverLaying
     {
         get { return _isOverLayViolent; }
-        internal set 
+        internal set
         {
             _isOverLayViolent = value;
             TextChanged?.Invoke ( this );
         }
     }
 
-    public delegate void TextChangedHandler (TextLine source);
-    public event TextChangedHandler ? TextChanged;
-
+    public event Action<TextLine>? TextChanged;
 
     public TextLine ( string name, double width, double height, double topOffset, double leftOffset, string alignment, double fontSize,
-        string fontName, string foregroundHexStr, string fontWeight, List<string>? includedLines, bool isSplitable, int numberToLocate 
+        string fontName, string foregroundHexStr, string fontWeight, List<string>? includedLines, bool isSplitable, int numberToLocate
     )
     {
         Content = "";
@@ -84,7 +84,7 @@ public class TextLine : LayoutComponentBase
         NumberToLocate = numberToLocate;
         Padding = new Thickness ();
 
-        if ( !string.IsNullOrWhiteSpace(alignment) ) 
+        if ( !string.IsNullOrWhiteSpace ( alignment ) )
         {
             Alignment = alignment;
         }
@@ -106,7 +106,6 @@ public class TextLine : LayoutComponentBase
 
         isNeeded = true;
     }
-
 
     internal TextLine ( TextLine source, string content, bool isJustCopying )
     {
@@ -133,7 +132,7 @@ public class TextLine : LayoutComponentBase
             UsefullWidth = source.UsefullWidth;
             Padding = source.Padding;
         }
-        else 
+        else
         {
             UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
             SetAlignment ();
@@ -142,16 +141,14 @@ public class TextLine : LayoutComponentBase
         }
     }
 
-
     internal TextLine CloneAsDescription ()
     {
         TextLine clone = new ( Name, Width, Height, TopOffset, LeftOffset, Alignment, FontSize,
-            FontName, ForegroundHexStr, FontWeight, IncludedLines, IsSplitable, NumberToLocate 
-            );
+            FontName, ForegroundHexStr, FontWeight, IncludedLines, IsSplitable, NumberToLocate
+        );
 
         return clone;
     }
-
 
     internal TextLine Clone ()
     {
@@ -160,28 +157,26 @@ public class TextLine : LayoutComponentBase
         return clone;
     }
 
-
     internal void TrimUnneededEdgeChar ( List<char>? unNeeded )
     {
-        if ( unNeeded == null || unNeeded.Count < 1 ) 
+        if ( unNeeded == null || unNeeded.Count < 1 )
         {
             return;
         }
 
-        foreach ( char symbol   in   unNeeded )
+        foreach ( char symbol in unNeeded )
         {
             Content = Content.TrimStart ( symbol );
             Content = Content.TrimEnd ( symbol );
         }
     }
 
-
-    internal void IncreaseFontSize ( )
+    internal void IncreaseFontSize ()
     {
         double oldFontSize = FontSize;
         double newFontSize = oldFontSize + 1;
 
-        if ( newFontSize > _maxFontSizeLimit ) 
+        if ( newFontSize > _maxFontSizeLimit )
         {
             return;
         }
@@ -191,15 +186,17 @@ public class TextLine : LayoutComponentBase
         double proportion = FontSize / oldFontSize;
         Height *= proportion;
         Padding = GetPadding ();
-        TextChanged?.Invoke (this);
+        TextChanged?.Invoke ( this );
     }
 
-
-    internal void ReduceFontSize ( )
+    internal void ReduceFontSize ()
     {
         double fontSize = FontSize;
 
-        if ( ( fontSize - 1 ) < _minFontSizeLimit ) return;
+        if ( ( fontSize - 1 ) < _minFontSizeLimit ) 
+        {
+            return;
+        }
 
         double insideLeftRest = UsefullWidth - Math.Abs ( LeftOffset );
         double insideTopRest = Height - Math.Abs ( TopOffset );
@@ -214,28 +211,27 @@ public class TextLine : LayoutComponentBase
 
         if ( ( LeftOffset < 0 ) && ( newInsideLeftRest < insideLeftRest ) )
         {
-            LeftOffset += ( insideLeftRest - newInsideLeftRest );
+            LeftOffset += insideLeftRest - newInsideLeftRest;
         }
 
         double newInsideTopRest = Height - Math.Abs ( TopOffset );
 
         if ( ( TopOffset < 0 ) && ( newInsideTopRest < insideTopRest ) )
         {
-            TopOffset += ( insideTopRest - newInsideTopRest );
+            TopOffset += insideTopRest - newInsideTopRest;
         }
 
-        TextChanged?.Invoke (this);
+        TextChanged?.Invoke ( this );
     }
 
-
-    public List <TextLine> SplitYourself ( double layoutWidth )
+    public List<TextLine> SplitYourselfqq ( double layoutWidth )
     {
-        List<string> pieces = Content.SplitBySeparators ( [' ', '-'], ['-'] );
         List<TextLine> result = [];
-        double splitableLineLeftOffset = LeftOffset;
+        List<string> parts = Content.SplitBySeparators ( [' ', '-'], ['-'] );
+        double leftOffset = LeftOffset;
         double offsetInQueue = LeftOffset;
 
-        foreach ( string content   in   pieces )
+        foreach ( string content in parts )
         {
             TextLine newLine = new ( this, content, false )
             {
@@ -244,7 +240,7 @@ public class TextLine : LayoutComponentBase
 
             if ( newLine.LeftOffset >= layoutWidth - 10 )
             {
-                newLine.LeftOffset = splitableLineLeftOffset;
+                newLine.LeftOffset = leftOffset;
             }
 
             newLine.TopOffset = TopOffset;
@@ -255,16 +251,41 @@ public class TextLine : LayoutComponentBase
         return result;
     }
 
-
-    public void ResetContent ( string newText )
+    public List<TextLine> SplitYourself ( double layoutWidth )
     {
-        Content = newText;
-        UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
-        TextChanged?.Invoke (this);
+        List<TextLine> result = [];
+        List<string> parts = Content.SplitBySeparators ( [' ', '-'], ['-'] );
+        double leftOffset = LeftOffset;
+        double offsetInQueue = LeftOffset;
+
+        foreach ( string content in parts )
+        {
+            TextLine newLine = new ( this, content, false )
+            {
+                LeftOffset = offsetInQueue
+            };
+
+            if ( newLine.LeftOffset >= layoutWidth - 10 )
+            {
+                newLine.LeftOffset = leftOffset;
+            }
+
+            newLine.TopOffset = TopOffset;
+            offsetInQueue += newLine.UsefullWidth + 1;
+            result.Add ( newLine );
+        }
+
+        return result;
     }
 
+    public void ResetContent ( string? newText )
+    {
+        Content = newText == null ? string.Empty : newText;
+        UsefullWidth = newText == null || Measurer == null ? 0 : Measurer.Measure ( Content, FontWeight, FontSize, FontName );
+        TextChanged?.Invoke ( this );
+    }
 
-    private void SetAlignment ( )
+    private void SetAlignment ()
     {
         if ( Width <= UsefullWidth )
         {
@@ -280,7 +301,6 @@ public class TextLine : LayoutComponentBase
             LeftOffset += ( Width - UsefullWidth ) / 2;
         }
     }
-
 
     private Thickness GetPadding ()
     {

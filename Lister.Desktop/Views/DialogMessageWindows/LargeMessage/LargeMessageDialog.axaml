@@ -1,9 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="688" d:DesignHeight="188"
-        x:Class="Lister.Desktop.Views.DialogMessageWindows.LargeMessage.LargeMessageDialog"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="688" d:DesignHeight="188"
+		x:Class="Lister.Desktop.Views.DialogMessageWindows.LargeMessage.LargeMessageDialog"
 		xmlns:views="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.LargeMessage; assembly=View"
 		xmlns:vm="clr-namespace:Lister.Desktop.Views.DialogMessageWindows.LargeMessage.ViewModel"
 		x:DataType="vm:LargeMessageViewModel"
@@ -15,139 +15,139 @@
 		WindowStartupLocation="CenterOwner"
 		SystemDecorations="None"
 		CanResize="False"
-		Focusable="False"
-		ExtendClientAreaToDecorationsHint = "true"
-		ExtendClientAreaChromeHints = "NoChrome"
-		ExtendClientAreaTitleBarHeightHint = "0">
+		Focusable="False">
 
-		<Grid RowDefinitions="16 8 35 35 8 * 1 47"  ColumnDefinitions="67 *">
+	<Grid RowDefinitions="16 8 35 35 8 * 1 47" 
+		  ColumnDefinitions="67 *">
 
-			<Label
-				Classes="modalLabel"
-				Grid.Row="0"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				FontSize="12"
-				Content ="Ошибка"
-			/>
-			<Image
-				Grid.Column="0"
-				Grid.Row="2"
-				Grid.RowSpan="4"
-				Width="35"
-				Margin ="16,24"
-				VerticalAlignment="Top"
-				Source = "/Assets/Icons/warning-alert.ico"
-			/>
-			<Grid
-				Grid.Row="2"
-				Grid.Column="1"
-				ColumnDefinitions="55 370 175"
-				Height="35">
+		<Label
+			Classes="modalLabel"
+			Grid.Row="0"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			FontSize="12"
+			Content ="Ошибка"
+		/>
+		<Image
+			Grid.Column="0"
+			Grid.Row="2"
+			Grid.RowSpan="4"
+			Width="35"
+			Margin="16,24"
+			VerticalAlignment="Top"
+			Source="/Assets/Icons/warning-alert.ico"
+		/>
+		<Grid
+			Grid.Row="2"
+			Grid.Column="1"
+			ColumnDefinitions="55 370 175"
+			Height="35">
 
-				<TextBlock
-					Grid.Column="0"
-					Height="35"
-					FontSize="16"
-					Padding="0,6"
-					Text="Файл:"
-				/>
-				<TextBox
-					Grid.Column="1"
-					FontSize="16"
-					BorderThickness="1"
-					ScrollViewer.VerticalScrollBarVisibility="Disabled"
-					IsReadOnly="True"
-					Tapped="TappedPathForWholeSelection"
-					Text="{Binding  Path = ErrorsSource,  Mode=OneWay }">
-
-					<TextBox.ContextMenu>
-						<ContextMenu>
-							<MenuItem 
-								Header="Копировать    (Ctrl+C)"
-								Command="{Binding $parent[TextBox].Copy}" 
-								IsEnabled="{Binding $parent[TextBox].CanCopy}"
-							/>
-						</ContextMenu>
-					</TextBox.ContextMenu>	
-				</TextBox>
-				<TextBlock
-					Grid.Column="2"
-					Height="35"
-					FontSize="16"
-					Padding="2,6"
-					Text=" - содержит ошибки,"
-				/>	
-			</Grid>
-				
 			<TextBlock
-				Grid.Row="3"
-				Grid.Column="1"
+				Grid.Column="0"
 				Height="35"
 				FontSize="16"
 				Padding="0,6"
-				Text="макет будет построен с дефолтными значениями !"
+				Text="Файл:"
 			/>
-			<ScrollViewer
-				Grid.Row="5"
+
+			<TextBox
 				Grid.Column="1"
-				Width="600"
-				HorizontalAlignment="Left"
-				HorizontalScrollBarVisibility="Auto"
-				VerticalScrollBarVisibility="Auto"
-				AllowAutoHide="False"
-				BorderBrush="Gray">
+				FontSize="16"
+				BorderThickness="1"
+				ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				IsReadOnly="True"
+				Tapped="TappedPathForWholeSelection"
+				Text="{Binding  Path = ErrorsSource,  Mode=OneWay }">
 
-				<SelectableTextBlock
-					Name="textArea"
-					LineHeight="16"
-					FontSize="12"
-					HorizontalAlignment="Left"
-					Focusable="True"
-					SelectionBrush="#4aacfe"
-					SelectionForegroundBrush="#fafafa"
-					Tapped="TappedForWholeSelection"
-					GotFocus="MessageGotFocus"
-					Text ="{Binding  Path = Message,  Mode=OneWay}">
-
-					<SelectableTextBlock.ContextMenu>
-						<ContextMenu>
-							<MenuItem 
-								Header="Копировать  (Ctrl+C)" 
-								Command="{Binding $parent[SelectableTextBlock].Copy}"
-								IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"
-							/>
-						</ContextMenu>
-					</SelectableTextBlock.ContextMenu>
-				</SelectableTextBlock>
-			</ScrollViewer>
-				
-			<Canvas
-				Name ="Line"
-			    Grid.Row="6"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				Width="688"
-				Height="1"
-				Background ="#ececec"
+				<TextBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem
+							Header="Копировать    (Ctrl+C)"
+							Command="{Binding $parent[TextBox].Copy}"
+							IsEnabled="{Binding $parent[TextBox].CanCopy}"
+						/>
+					</ContextMenu>
+				</TextBox.ContextMenu>
+		</TextBox>
+			<TextBlock
+				Grid.Column="2"
+				Height="35"
+				FontSize="16"
+				Padding="2,6"
+				Text=" - содержит ошибки,"
 			/>
+	</Grid>
+
+		<TextBlock
+			Grid.Row="3"
+			Grid.Column="1"
+			Height="35"
+			FontSize="16"
+			Padding="0,6"
+			Text="макет будет построен с дефолтными значениями !"
+		/>
+		<ScrollViewer
+			Grid.Row="5"
+			Grid.Column="1"
+			Width="600"
+			HorizontalAlignment="Left"
+			HorizontalScrollBarVisibility="Auto"
+			VerticalScrollBarVisibility="Auto"
+			AllowAutoHide="False"
+			BorderBrush="Gray">
+
+			<SelectableTextBlock
+				Name="textArea"
+				LineHeight="16"
+				FontSize="12"
+				HorizontalAlignment="Left"
+				Focusable="True"
+				SelectionBrush="#4aacfe"
+				SelectionForegroundBrush="#fafafa"
+				Tapped="TappedForWholeSelection"
+				GotFocus="MessageGotFocus"
+				Text ="{Binding  Path = Message,  Mode=OneWay}">
+
+				<SelectableTextBlock.ContextMenu>
+					<ContextMenu>
+						<MenuItem
+							Header="Копировать  (Ctrl+C)"
+							Command="{Binding $parent[SelectableTextBlock].Copy}"
+							IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"
+						/>
+					</ContextMenu>
+				</SelectableTextBlock.ContextMenu>
+			</SelectableTextBlock>
+		</ScrollViewer>
+
+		<Canvas
+			Name ="Line"
+			Grid.Row="6"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Width="688"
+			Height="1"
+			Background ="#ececec"
+		/>
+
 			<Canvas
 				Grid.Row="7"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Width="688"
 				Height="47"
-				Background ="#f6f6f6">	
+				Background ="#f6f6f6">
 
-				<Button
-					Name="ok"
-					Classes="Primary"
-					Padding="31,4"
-					Canvas.Top="8"
-					Canvas.Left="580"
-					Content="Ok"
-					Command="{Binding CloseCommand}"
-				/>
-			</Canvas>
-		</Grid>	
+			<Button
+				Name="ok"
+				Classes="Primary"
+				Padding="31,4"
+				Canvas.Top="8"
+				Canvas.Left="580"
+				Content="Ok"
+				Command="{Binding CloseCommand}"
+			/>
+		</Canvas>
+	</Grid>
 </Window>

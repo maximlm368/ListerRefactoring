@@ -9,7 +9,7 @@ namespace Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
 
 public partial class SceneViewModel : ObservableObject
 {
-    public static bool EntireListBuildingIsChosen { get; private set; }
+    internal static bool EntireListBuildingIsChosen { get; private set; }
 
     private readonly int _badgeCountLimit;
     private readonly double _scalabilityCoefficient = 1.25;
@@ -22,7 +22,6 @@ public partial class SceneViewModel : ObservableObject
     private bool _isEntireBuilding;
     private bool _isEntireBuildingStarted;
 
-    #region Properties
     internal List<PageViewModel> AllPages { get; private set; }
 
     [ObservableProperty]
@@ -40,91 +39,52 @@ public partial class SceneViewModel : ObservableObject
     [ObservableProperty]
     private int _incorrectBadgeCount;
 
-    internal List<BadgeViewModel> ProcessableBadges { get; private set; }
-
-    [ObservableProperty]
-    private string _zoomDegreeInView = "100";
-
-    [ObservableProperty]
-    private Avalonia.Thickness _borderMargin;
-
     [ObservableProperty]
     private double _canvasTop;
 
-    [ObservableProperty]
-    private bool _editionIsEnable;
-
-    [ObservableProperty]
-    private bool _clearIsEnable;
-
-    [ObservableProperty]
-    private bool _saveIsEnable;
-
-    [ObservableProperty]
-    private bool _printIsEnable;
-
-    private bool _editIsSelected;
-    internal bool EditIsSelected
+    private bool _isBuildSucceeded;
+    internal bool IsBuildSucceeded
     {
-        get => _editIsSelected;
+        get => _isBuildSucceeded;
 
         private set
         {
-            _editIsSelected = value;
-            OnPropertyChanged ();
-
-        }
-    }
-
-    private bool _buildingIsOccured;
-    internal bool BuildingIsOccured
-    {
-        get => _buildingIsOccured;
-
-        private set
-        {
-            _buildingIsOccured = value;
+            _isBuildSucceeded = value;
             OnPropertyChanged ();
         }
     }
 
-    private bool _badgesAreCleared;
-    internal bool BadgesAreCleared
+    private bool _isPagesNotEmpty;
+    internal bool IsPagesNotEmpty
     {
-        get => _badgesAreCleared;
+        get => _isPagesNotEmpty;
 
         private set
         {
-            _badgesAreCleared = value;
+            _isPagesNotEmpty = value;
             OnPropertyChanged ();
         }
     }
-    #endregion
 
-    public SceneViewModel ( int badgeCountLimit, string extentionToolTip, string shrinkingToolTip, DocumentProcessor docBuilder )
+    internal List<BadgeViewModel> ProcessableBadges { get; private set; }
+
+    public SceneViewModel ( int badgeCountLimit, DocumentProcessor docBuilder )
     {
         _badgeCountLimit = badgeCountLimit;
-        _extentionToolTip = extentionToolTip;
-        _shrinkingToolTip = shrinkingToolTip;
-
-        SetButtonBlock ();
-
         _model = docBuilder;
-        _model.ComplatedPage += HandlePageCompleting;
-
+        _model.ComplatedPage += HandlePageCompleted;
         _documentScale = 1;
+
         AllPages = [];
         VisiblePage = new PageViewModel ( new Page (), _documentScale );
         _lastPage = VisiblePage;
         AllPages.Add ( VisiblePage );
-
         VisiblePageNumber = 1;
         ProcessableBadges = [];
-        EditionIsEnable = false;
         PageCount = 0;
     }
 
-    internal void HandlePageCompleting ( Page complated, bool lastIsReplacable )
+    private void HandlePageCompleted ( Page complated, bool lastIsReplacable )
     {
         if ( !_isEntireBuilding )
         {
@@ -177,22 +137,19 @@ public partial class SceneViewModel : ObservableObject
         }
     }
 
-    internal void BuildDuringWaiting ()
+    internal void BuildAllBadges ()
     {
-        if ( !_buildingIsLocked )
+        if ( _buildingIsLocked )
         {
-            BuildAllBadges ();
+            return;
         }
-    }
 
-    private void BuildAllBadges ()
-    {
         _buildingIsLocked = true;
 
         Task task = new (
             () =>
             {
-                bool buildingIsCompleted = BuildAllBadges ( _badgeTemplate );
+                bool buildingIsCompleted = TryBuildAllBadges ( _badgeTemplate );
 
                 _buildingIsLocked = false;
                 EntireListBuildingIsChosen = false;
@@ -202,7 +159,8 @@ public partial class SceneViewModel : ObservableObject
                     Dispatcher.UIThread.Invoke (
                         () =>
                         {
-                            BuildingIsOccured = true;
+                            IsBuildSucceeded = true;
+                            IsPagesNotEmpty = true;
                         }
                     );
                 }
@@ -212,7 +170,7 @@ public partial class SceneViewModel : ObservableObject
                         () =>
                         {
                             EntireListBuildingIsChosen = false;
-                            BuildingIsOccured = false;
+                            IsBuildSucceeded = false;
                         }
                     );
                 }
@@ -225,15 +183,15 @@ public partial class SceneViewModel : ObservableObject
     private void BuildSingleBadge ()
     {
         _buildingIsLocked = true;
-        BuildingIsOccured = BuildSingleBadge ( _badgeTemplate );
+        IsBuildSucceeded = TryBuildSingleBadge ( _badgeTemplate );
+        IsPagesNotEmpty = IsBuildSucceeded;
         _buildingIsLocked = false;
     }
 
-    private bool BuildAllBadges ( string templateName )
+    private bool TryBuildAllBadges ( string templateName )
     {
         _isEntireBuilding = true;
         _isEntireBuildingStarted = true;
-
         int futureVisiblePageNumber = AllPages.Count;
 
         if ( futureVisiblePageNumber == 0 )
@@ -257,7 +215,6 @@ public partial class SceneViewModel : ObservableObject
                 BadgeCount = ProcessableBadges.Count;
                 VisiblePage = AllPages [VisiblePageNumber - 1];
                 PageCount = AllPages.Count;
-                EnableButtons ();
                 VisiblePage.Show ();
             }
         );
@@ -265,7 +222,7 @@ public partial class SceneViewModel : ObservableObject
         return true;
     }
 
-    private bool BuildSingleBadge ( string templateName )
+    private bool TryBuildSingleBadge ( string templateName )
     {
         _isEntireBuilding = false;
 
@@ -298,7 +255,6 @@ public partial class SceneViewModel : ObservableObject
         PageCount = AllPages.Count;
         IncorrectBadgeCount = _model.IncorrectBadgeCount;
         added.Show ();
-        EnableButtons ();
 
         return true;
     }
@@ -316,13 +272,11 @@ public partial class SceneViewModel : ObservableObject
         VisiblePage = new PageViewModel ( new Page (), _documentScale );
         _lastPage = VisiblePage;
         AllPages.Add ( _lastPage );
-
+        IsPagesNotEmpty = false;
         VisiblePageNumber = 1;
         PageCount = 0;
         BadgeCount = 0;
         IncorrectBadgeCount = 0;
-
-        EditionIsEnable = false;
         ProcessableBadges = [];
 
         if ( _documentScale > 1 )
@@ -341,21 +295,7 @@ public partial class SceneViewModel : ObservableObject
         }
     }
 
-    internal void Zoom ( double newZoomDegree )
-    {
-        double degree = _documentScale * 100;
-
-        if ( newZoomDegree > degree )
-        {
-            ZoomOn ();
-        }
-        else if ( newZoomDegree < degree )
-        {
-            ZoomOut ();
-        }
-    }
-
-    private void ZoomOn ()
+    internal void ZoomOn ()
     {
         _documentScale *= _scalabilityCoefficient;
 
@@ -367,12 +307,10 @@ public partial class SceneViewModel : ObservableObject
             }
 
             CanvasTop *= _scalabilityCoefficient;
-            double marginLeft = _scalabilityCoefficient * BorderMargin.Left;
-            BorderMargin = new Avalonia.Thickness ( marginLeft, 0, 0, 0 );
         }
     }
 
-    private void ZoomOut ()
+    internal void ZoomOut ()
     {
         _documentScale /= _scalabilityCoefficient;
 
@@ -384,47 +322,28 @@ public partial class SceneViewModel : ObservableObject
             }
 
             CanvasTop /= _scalabilityCoefficient;
-            double marginLeft = BorderMargin.Left / _scalabilityCoefficient;
-            BorderMargin = new Avalonia.Thickness ( marginLeft, 0, 0, 0 );
         }
     }
 
     internal int ShowPageWithNumber ( int pageNumber )
     {
-        bool visiblePageExists = ( VisiblePage != null );
-        bool notTheSamePage = ( VisiblePageNumber != pageNumber );
+        bool visiblePageExists = VisiblePage != null;
+        bool notTheSamePage = VisiblePageNumber != pageNumber;
         bool inRange = pageNumber <= AllPages.Count;
 
         if ( visiblePageExists && notTheSamePage && inRange )
         {
             VisiblePage?.Hide ();
             VisiblePageNumber = pageNumber;
-            VisiblePage = AllPages [VisiblePageNumber - 1];
-            VisiblePage.Show ();
+
+            if ( AllPages.Count > 0 )
+            {
+                VisiblePage = AllPages [VisiblePageNumber - 1];
+                VisiblePage.Show ();
+            }
         }
 
         return VisiblePageNumber;
-    }
-
-    internal List<PageViewModel> GetPrintablePages ()
-    {
-        return AllPages;
-    }
-
-    private void DisableButtons ()
-    {
-        EditionIsEnable = false;
-        ClearIsEnable = false;
-        SaveIsEnable = false;
-        PrintIsEnable = false;
-    }
-
-    internal void EnableButtons ()
-    {
-        EditionIsEnable = ProcessableBadges.Count > 0;
-        ClearIsEnable = true;
-        SaveIsEnable = true;
-        PrintIsEnable = true;
     }
 
     internal void Refresh ()

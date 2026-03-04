@@ -2,19 +2,20 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="50"
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="40"
 			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing"
-			 xmlns:controls="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents"
+			 xmlns:controls="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents.FilterableCombobox"
 			 x:Class="Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.PersonChoosingUserControl"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;assembly=Lister.Desktop"
 			 xmlns:modelMappings="clr-namespace:Lister.Desktop.ModelMappings;assembly=Lister.Desktop"
 			 xmlns:badgeVM="clr-namespace:Lister.Desktop.ModelMappings.BadgeVM;assembly=Lister.Desktop"
+			 xmlns:person="clr-namespace:Lister.Core.Entities;assembly=Lister.Core"
 			 x:DataType="vm:PersonChoosingViewModel">
 
 	<Grid
-		ColumnDefinitions="70 * 33 90 195"
+		ColumnDefinitions="70 * 10 90 195"
 		Background="#EEEEEE"
-		Height="36"
+		Height="40"
 		ZIndex="0">
 
 		<Label
@@ -23,7 +24,7 @@
 			Content="ФИО:"
 		/>
 
-		<controls:FilterableCombobox
+		<controls:FilterableComboboxUserControl
 			Name="PART_FilterableCombobox"
 			Grid.Column="1"
 			VisibleCount="9"
@@ -31,22 +32,19 @@
 			ItemsSource="{Binding People, Mode=OneWay}"
 			SelectedItem="{Binding Selected, Mode=OneWayToSource}">
 
-			<controls:FilterableCombobox.Styles>
-				<Style Selector="Label#item:pointerover">
+			<controls:FilterableComboboxUserControl.Styles>
+				<Style Selector="ContentPresenter:pointerover">
 					<Setter Property="BorderBrush" Value="#4aacfe"/>
 					<Setter Property="Background" Value="#ffffff"/>
 				</Style>
 				<Style Selector="Label#item">
 					<Setter Property="BorderBrush" Value="#d5e8f6"/>
+					<Setter Property="Background" Value="#111111"/>
 					<Setter Property="Padding" Value="8,4"/>
 					<Setter Property="BorderThickness" Value="1"/>
 					<Setter Property="HorizontalAlignment" Value="Stretch"/>
 					<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
 					<Setter Property="Height" Value="32"/>
-				</Style>
-				<Style Selector="Label#allSelection:pointerover">
-					<Setter Property="BorderBrush" Value="#4aacfe"/>
-					<Setter Property="Background" Value="#ffffff"/>
 				</Style>
 				<Style Selector="Label#allSelection">
 					<Setter Property="FontStyle" Value="Italic"/>
@@ -57,9 +55,9 @@
 					<Setter Property="BorderThickness" Value="2"/>
 					<Setter Property="Content" Value="Весь список"/>
 				</Style>
-			</controls:FilterableCombobox.Styles>
+			</controls:FilterableComboboxUserControl.Styles>
 
-			<controls:FilterableCombobox.ItemTemplate>
+			<controls:FilterableComboboxUserControl.ItemTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
@@ -71,9 +69,9 @@
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.ItemTemplate>
+			</controls:FilterableComboboxUserControl.ItemTemplate>
 
-			<controls:FilterableCombobox.CurrentItemTemplate>
+			<controls:FilterableComboboxUserControl.CurrentItemTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
@@ -85,9 +83,9 @@
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.CurrentItemTemplate>
+			</controls:FilterableComboboxUserControl.CurrentItemTemplate>
 
-			<controls:FilterableCombobox.SelectedItemTemplate>
+			<controls:FilterableComboboxUserControl.SelectedItemTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
@@ -100,39 +98,36 @@
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.SelectedItemTemplate>
+			</controls:FilterableComboboxUserControl.SelectedItemTemplate>
 
-			<controls:FilterableCombobox.AllTemplate>
+			<controls:FilterableComboboxUserControl.AllTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
-							x:DataType="badgeVM:VisiblePerson"
 							Name="allSelection"
 							Background="#ffffff"
 							Foreground="#000000"
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.AllTemplate>
+			</controls:FilterableComboboxUserControl.AllTemplate>
 
-			<controls:FilterableCombobox.AllCurrentTemplate>
+			<controls:FilterableComboboxUserControl.AllCurrentTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
-							x:DataType="badgeVM:VisiblePerson"
 							Name="allSelection"
 							Background="#e3f1fc"
 							Foreground="#000000"
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.AllCurrentTemplate>
+			</controls:FilterableComboboxUserControl.AllCurrentTemplate>
 
-			<controls:FilterableCombobox.AllSelectedTemplate>
+			<controls:FilterableComboboxUserControl.AllSelectedTemplate>
 				<DataTemplate>
 					<DataTemplate.Content>
 						<Label
-							x:DataType="badgeVM:VisiblePerson"
 							Name="allSelection"
 							Background="#e3f1fc"
 							Foreground="#3a5a81"
@@ -140,8 +135,8 @@
 						/>
 					</DataTemplate.Content>
 				</DataTemplate>
-			</controls:FilterableCombobox.AllSelectedTemplate>
-		</controls:FilterableCombobox>
+			</controls:FilterableComboboxUserControl.AllSelectedTemplate>
+		</controls:FilterableComboboxUserControl>
 
 		<Label
 			Classes="narrow"
@@ -151,7 +146,7 @@
 			Padding="10, 0"
 		/>
 		<ComboBox
-			Name="templateChoosing"
+			Name="TemplateChoosing"
 			Grid.Column="4"
 			PlaceholderForeground="{Binding ChosenTemplate.Color, Mode=OneWay}"
 			PlaceholderText="{Binding ChosenTemplate.Name, Mode=OneWay}"
@@ -159,7 +154,7 @@
 			Height="32"
 			Width="184"
 			Margin="0,2"
-			Padding="4,0"
+			VerticalAlignment="Center"
 			ScrollViewer.AllowAutoHide="False"
 			ScrollViewer.VerticalScrollBarVisibility="Auto"
 			MaxDropDownHeight="100"

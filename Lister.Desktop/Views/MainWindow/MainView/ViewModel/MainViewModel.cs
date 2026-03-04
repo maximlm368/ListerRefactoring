@@ -1,19 +1,17 @@
 ﻿using Avalonia.Platform.Storage;
-using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lister.Desktop.ModelMappings;
-using Lister.Desktop.ModelMappings.BadgeVM;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton.ViewModel;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
 using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
+using Lister.Desktop.Views.MainWindow.SharedComponents.ButtonsBlock.ViewModel;
+using Lister.Desktop.Views.MainWindow.SharedComponents.Navigator.ViewModel;
+using Lister.Desktop.Views.MainWindow.SharedComponents.Zoomer.ViewModel;
 using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -29,50 +27,33 @@ public sealed partial class MainViewModel : ObservableObject
 
     private readonly string _suggestedFileNames;
     private readonly string _saveTitle;
-    private readonly string _incorrectXSLX;
-    private readonly string _buildingLimitIsExhaustedMessage;
     private readonly string _fileIsOpenMessage;
+    private readonly string _incorrectXSLX;
+    private readonly string _buildLimitExhaustedMessage;
     private readonly string _osName;
-    private readonly Printer _pdfPrinter;
-    private readonly PrintDialogViewModel _printDialogViewModel;
-    private readonly PersonSourceViewModel _personSourceViewModel;
-    private readonly PersonChoosingViewModel _personChoosingViewModel;
+    private readonly DocumentOutsider _pdfPrinter;
+    private readonly PrintDialogViewModel _printDialog;
+    internal PersonSourceViewModel PersonSource { get; private set; }
+    internal PersonChoosingViewModel PersonChoosing { get; private set; }
+    internal NavigatorViewModel? Navigator { get; private set; }
+    internal ZoomerViewModel? Zoomer { get; private set; }
+    internal ButtonsBlockViewModel? ButtonsBlock { get; set; }
+    internal SceneViewModel Scene { get; private set; }
+    internal WaitingViewModel Waiting { get; private set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor ( nameof ( BuildBadgesCommand ) )]
     private bool _buildingIsPossible = false;
 
-    //private bool _buildButtonIsTapped = false;
-    //internal bool BuildButtonIsTapped
-    //{
-    //    get
-    //    {
-    //        return _buildButtonIsTapped;
-    //    }
-
-    //    private set
-    //    {
-    //        _buildButtonIsTapped = value;
-
-    //        if ( _buildButtonIsTapped )
-    //        {
-    //            OnPropertyChanged ();
-    //        }
-    //    }
-    //}
-
-    private readonly NavigationZoomViewModel _zoomNavigationViewModel;
-    private readonly SceneViewModel _sceneViewModel;
-    private readonly WaitingViewModel _waitingViewModel;
-    private bool _buildButtonIsTapped = false;
+    private bool _isBuildButtonTapped = false;
     private PrintAdjustingData? _printAdjusting;
 
     internal string? PdfName { get; private set; } = string.Empty;
 
-    public event Action<List<BadgeViewModel>>? EditionIsChosen;
-    public event Action<string>? HasToShowMessage;
-    public event Action<List<string>, string>? HasToShowTemplateErrors;
-    public event Action<int, PrintAdjustingData>? HasToPreparePrinting;
+    internal static event Action<string>? HasToShowMessage;
+    internal static event Action<List<string>, string>? HasToShowTemplateErrors;
+    internal static event Action<int, PrintAdjustingData>? HasToPreparePrinting;
+    internal static event Func<FilePickerSaveOptions, Task<IStorageFile?>?>? FilePickerRequired;
 
     internal MainViewModel ( MainViewModelArgs args )
     {
@@ -80,39 +61,78 @@ public sealed partial class MainViewModel : ObservableObject
         _suggestedFileNames = args.SuggestedFileNames;
         _saveTitle = args.SaveTitle;
         _incorrectXSLX = args.IncorrectXSLX;
-        _buildingLimitIsExhaustedMessage = args.BuildingLimitExhaustedMessage;
+        _buildLimitExhaustedMessage = args.BuildingLimitExhaustedMessage;
         _fileIsOpenMessage = args.FileIsOpenMessage;
 
         _pdfPrinter = args.Printer;
-        _printDialogViewModel = args.PrintDialog;
-        _personChoosingViewModel = args.PersonChoosing;
-        _personSourceViewModel = args.PersonSource;
-        _zoomNavigationViewModel = args.NavigationZoom;
-        _sceneViewModel = args.Scene;
-        _waitingViewModel = args.Waiting;
+        _printDialog = args.PrintDialog;
+        PersonChoosing = args.PersonChoosing;
+        PersonSource = args.PersonSource;
+        Scene = args.Scene;
+        Waiting = args.Waiting;
 
         _pdfPrinter.PropertyChanged += PrinterChanged;
-        _printDialogViewModel.PropertyChanged += PrintDialogChanged;
-        _personSourceViewModel.PropertyChanged += PersonSourceChanged;
-        _personChoosingViewModel.PropertyChanged += PersonChoosingChanged;
-        _sceneViewModel.PropertyChanged += SceneChanged;
-        _zoomNavigationViewModel.PropertyChanged += ZoomNavigationChanged;
+        PersonSource.PropertyChanged += PersonSourceChanged;
+        PersonChoosing.PropertyChanged += PersonChoosingChanged;
+        Scene.PropertyChanged += SceneChanged;
+    }
+
+    internal void SetZoomer ( ZoomerViewModel zoomer )
+    {
+        Zoomer = zoomer;
+
+        Zoomer.ZoomedOn += ( step ) => 
+        {
+            Scene.ZoomOn ();
+        };
+
+        Zoomer.ZoomedOut += ( step ) =>
+        {
+            Scene.ZoomOut ();
+        };
+    }
+
+    internal void SetNavigator ( NavigatorViewModel navigator )
+    {
+        Navigator = navigator;
+
+        Navigator.CurrentNumberChanged += ( number ) => 
+        {
+            Scene.ShowPageWithNumber ( number );
+        };
+    }
+
+    internal void SetButtonsBlock ( ButtonsBlockViewModel? block )
+    {
+        if ( block == null ) 
+        {
+            return;
+        }
+
+        ButtonsBlock = block;
+        ButtonsBlock.ClearTapped += () =>
+        {
+            Scene?.ClearAllPages ();
+        };
+
+        ButtonsBlock.GeneratePdfRequired += PreparePdfGeneration;
+        ButtonsBlock.PrintRequired += PreparePrinting;
     }
 
     private void PersonSourceChanged ( object? sender, PropertyChangedEventArgs args )
     {
         if ( args.PropertyName == "SourceFilePath" )
         {
-            _personChoosingViewModel?.ResetPersons ();
+            PersonChoosing?.ResetPersons ();
         }
         else if ( args.PropertyName == "FileIsDeclined" )
         {
-            RequireMessageWindow ( _personSourceViewModel?.FilePath + _incorrectXSLX );
+            RequireMessageWindow ( PersonSource?.FilePath + _incorrectXSLX );
         }
         else if ( args.PropertyName == "FileIsTooBig" )
         {
-            string limit = _sceneViewModel?.GetLimit ().ToString () + ".";
-            RequireMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
+            string limit = Scene?.GetLimit ().ToString () + ".";
+            RequireMessageWindow ( _buildLimitExhaustedMessage + limit );
         }
         else if ( args.PropertyName == "FileIsOpen" )
         {
@@ -129,80 +149,62 @@ public sealed partial class MainViewModel : ObservableObject
         }
         else if ( args.PropertyName == "SickTemplateIsSet" )
         {
-            if ( _personChoosingViewModel.SickTemplateIsSet )
+            if ( PersonChoosing.SickTemplateIsSet )
             {
-                TemplateViewModel? template = _personChoosingViewModel.ChosenTemplate;
+                TemplateViewModel? template = PersonChoosing.ChosenTemplate;
                 ShowTemplateErrors ( template?.CorrectnessMessage, template?.SourcePath );
             }
         }
         else if ( args.PropertyName == "FileNotFound" )
         {
-            _personSourceViewModel.EmptySourcePath ();
+            PersonSource.EmptySourcePath ();
         }
     }
 
-    private void Build ( )
+    private void Build ()
     {
-        //if ( args.PropertyName == "BuildButtonIsTapped" )
-
-        if ( true )
-        {
-        if ( _personChoosingViewModel.ChosenTemplate == null
-                || string.IsNullOrWhiteSpace ( _personChoosingViewModel.ChosenTemplate.Name )
-        )
+        if ( PersonChoosing.ChosenTemplate == null || string.IsNullOrWhiteSpace ( PersonChoosing.ChosenTemplate.Name ) )
         {
             return;
         }
 
-        bool shouldShowMessage = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage != null
-            && _personChoosingViewModel.ChosenTemplate.CorrectnessMessage.Count > 0;
+        bool shouldShowMessage = PersonChoosing.ChosenTemplate.CorrectnessMessage != null
+            && PersonChoosing.ChosenTemplate.CorrectnessMessage.Count > 0;
 
         if ( shouldShowMessage )
         {
-            List<string>? message = _personChoosingViewModel.ChosenTemplate.CorrectnessMessage;
-            string templatePath = _personChoosingViewModel.ChosenTemplate.SourcePath;
+            List<string>? message = PersonChoosing.ChosenTemplate.CorrectnessMessage;
+            string templatePath = PersonChoosing.ChosenTemplate.SourcePath;
             ShowTemplateErrors ( message, templatePath );
-            _buildButtonIsTapped = true;
+            _isBuildButtonTapped = true;
         }
         else
         {
             InduceBadgeBuilding ();
         }
-        }
     }
 
     private void SceneChanged ( object? sender, PropertyChangedEventArgs args )
     {
-        if ( args.PropertyName == "BadgesAreCleared" )
+        if ( args.PropertyName == "IsPagesNotEmpty" && !Scene.IsPagesNotEmpty )
         {
-            _zoomNavigationViewModel.ToZeroState ();
+            Navigator?.ToZeroState ();
+            Zoomer?.ToZeroState ();
         }
-        else if ( args.PropertyName == "BuildingIsOccured" )
+        else if ( args.PropertyName == "IsBuildSucceeded" )
         {
-            if ( _sceneViewModel.BuildingIsOccured )
+            if ( Scene.IsBuildSucceeded )
             {
                 EndWaiting ();
-                _zoomNavigationViewModel.EnableZoomIfPossible ( _sceneViewModel.BuildingIsOccured );
-                _zoomNavigationViewModel.SetEnablePageNavigation ( _sceneViewModel.PageCount, _sceneViewModel.VisiblePageNumber );
+                Zoomer?.EnableZoom ( );
+                Navigator?.EnableNavigation ( Scene.PageCount, Scene.VisiblePageNumber );
             }
             else
             {
                 EndWaiting ();
-                string limit = _sceneViewModel.GetLimit ().ToString () + ".";
-                RequireMessageWindow ( _buildingLimitIsExhaustedMessage + limit );
+                string limit = Scene.GetLimit ().ToString () + ".";
+                RequireMessageWindow ( _buildLimitExhaustedMessage + limit );
             }
-        }
-        else if ( args.PropertyName == "EditIsSelected" )
-        {
-            EditionIsChosen?.Invoke ( _sceneViewModel.ProcessableBadges );
-        }
-        else if ( args.PropertyName == "PdfIsWanted" )
-        {
-            PreparePdfGeneration ();
-        }
-        else if ( args.PropertyName == "PrintingIsWanted" )
-        {
-            PreparePrinting ();
         }
     }
 
@@ -219,84 +221,64 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
-    private void PrintDialogChanged ( object? sender, PropertyChangedEventArgs args )
+    internal void HandlePrintPreparatinComplated ( )
     {
-        if ( args.PropertyName == "IsClosing" )
-        {
-            HandleDialogClosing ();
+        HandleDialogClosing ();
 
-            if ( _printAdjusting == null || _printAdjusting.IsCancelled )
-            {
-                return;
-            }
-
-            WaitForPrinting ();
-        }
-    }
-
-    private void ZoomNavigationChanged ( object? sender, PropertyChangedEventArgs args )
-    {
-        if ( args.PropertyName == "ZoomDegree" )
-        {
-            _sceneViewModel.Zoom ( _zoomNavigationViewModel.ZoomDegree );
-        }
-        else if ( args.PropertyName == "VisiblePageNumber" )
-        {
-            _sceneViewModel.ShowPageWithNumber ( _zoomNavigationViewModel.VisiblePageNumber );
-        }
-    }
-
-    internal void HandleDialogClosing ()
-    {
-        _waitingViewModel.Hide ();
-
-        if ( _buildButtonIsTapped )
-        {
-            InduceBadgeBuilding ();
-            _buildButtonIsTapped = false;
-        }
-    }
-
-    internal void InduceBadgeBuilding ()
-    {
-        if ( _personChoosingViewModel.ChosenTemplate == null )
+        if ( _printAdjusting == null || _printAdjusting.IsCancelled )
         {
             return;
         }
 
-        _sceneViewModel.Build ( _personChoosingViewModel.ChosenTemplate.Name, _personChoosingViewModel.ChosenPerson );
+        WaitForPrinting ();
+    }
 
-        if ( _personChoosingViewModel.ChosenPerson == null )
+    internal void HandleDialogClosing ()
+    {
+        Waiting.Hide ();
+
+        if ( _isBuildButtonTapped )
         {
-            WaitWhileBuilding ();
+            InduceBadgeBuilding ();
+            _isBuildButtonTapped = false;
+        }
+    }
+
+    private void InduceBadgeBuilding ()
+    {
+        if ( PersonChoosing.ChosenTemplate == null )
+        {
+            return;
+        }
+
+        Scene.Build ( PersonChoosing.ChosenTemplate.Name, PersonChoosing.ChosenPerson );
+
+        if ( PersonChoosing.ChosenPerson == null )
+        {
+            Wait ();
         }
     }
 
     internal void Show ()
     {
-        _sceneViewModel.Refresh ();
+        Scene.Refresh ();
     }
 
-    internal void WaitWhileBuilding ()
+    internal void Wait ()
     {
-        _waitingViewModel.Show ();
+        Waiting.ShowWithGif ();
         HasWaitingState = true;
     }
 
     internal void EndWaiting ()
     {
+        Waiting.Hide ();
         BuildingIsPossible = true;
-        _waitingViewModel.Hide ();
         HasWaitingState = false;
     }
 
     private async void PreparePdfGeneration ()
     {
-        if ( MainWindow.CommonStorageProvider == null )
-        {
-            return;
-        }
-
         List<FilePickerFileType> fileExtentions = [];
         fileExtentions.Add ( FilePickerFileTypes.Pdf );
 
@@ -307,7 +289,7 @@ public sealed partial class MainViewModel : ObservableObject
             SuggestedFileName = _suggestedFileNames + GenerateNowDateString ()
         };
 
-        IStorageFile? chosenFile = await MainWindow.CommonStorageProvider.SaveFilePickerAsync ( options );
+        IStorageFile? chosenFile = await FilePickerRequired?.Invoke ( options );
         PdfName = chosenFile?.Path.AbsolutePath;
         bool savingCancelled = chosenFile == null;
 
@@ -343,7 +325,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         _pdfGenerationShouldStart = true;
-        WaitWhileBuilding ();
+        Wait ();
     }
 
     private static string GenerateNowDateString ()
@@ -415,7 +397,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void RequireMessageWindow ( string message )
     {
-        _waitingViewModel.Darken ();
+        Waiting.Show ();
         HasToShowMessage?.Invoke ( message );
     }
 
@@ -429,28 +411,28 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        _waitingViewModel.Darken ();
+        Waiting.Show ();
         HasToShowTemplateErrors?.Invoke ( message, errorSource );
     }
 
     private void PreparePrinting ()
     {
         _printAdjusting = new ();
-        _waitingViewModel.Darken ();
-        HasToPreparePrinting?.Invoke ( _sceneViewModel.AllPages.Count, _printAdjusting );
+        Waiting.Show ();
+        HasToPreparePrinting?.Invoke ( Scene.AllPages.Count, _printAdjusting );
     }
 
     private void WaitForPrinting ()
     {
         _printingShouldStart = true;
-        WaitWhileBuilding ();
+        Wait ();
     }
 
     internal void ProcessDocument ()
     {
         if ( SceneViewModel.EntireListBuildingIsChosen && HasWaitingState )
         {
-            _sceneViewModel.BuildDuringWaiting ();
+            Scene.BuildAllBadges ();
 
             return;
         }
@@ -484,9 +466,9 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
-    internal void OnLoaded ()
+    internal void CheckIfPersonSourceCorrect ()
     {
-        _personSourceViewModel.DeclineKeepedFileIfIncorrect ();
+        PersonSource.DeclineKeepedFileIfIncorrect ();
     }
 
     private static string ExtractPathWithoutFileName ( string? wholePath )
@@ -516,8 +498,8 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand ( CanExecute = nameof ( CanBuild ) )]
     private void BuildBadges ()
     {
-        _buildButtonIsTapped = true;
-        _buildButtonIsTapped = false;
+        _isBuildButtonTapped = true;
+        _isBuildButtonTapped = false;
 
         Build ();
     }

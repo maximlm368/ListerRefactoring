@@ -1,21 +1,19 @@
 
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:Lister.ViewModels.Main;assembly=Lister.Desktop"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
-		
+		xmlns:vm="clr-namespace:Lister.ViewModels.Main;assembly=Lister.Desktop"
         xmlns:views="clr-namespace:Lister.Desktop.Views.MainWindow.MainView;assembly=Lister.Desktop"
         x:Class="Lister.Desktop.Views.MainWindow.MainWindow"
-		
+		mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="520"
         Icon="/Assets/Icons/badge.ico"
         Title="Lister"
 		WindowStartupLocation="CenterScreen"
 		
-		MinHeight="500"
+		MinHeight="520"
         MinWidth="830"
-		Height="500"
+		Height="520"
 		Width="830">
 
 </Window>

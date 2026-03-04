@@ -1,6 +1,5 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DynamicData;
 using Lister.Core.BadgesCreator;
 using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
@@ -9,7 +8,6 @@ using Lister.Desktop.Extentions;
 using Lister.Desktop.ModelMappings;
 using Lister.Desktop.ModelMappings.BadgeVM;
 using System.Collections.ObjectModel;
-using static QuestPDF.Helpers.Colors;
 
 namespace Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
 
@@ -20,6 +18,7 @@ internal partial class PersonChoosingViewModel : ObservableObject
     private static SolidColorBrush _incorrectTemplateForeground = _black;
 
     private Dictionary<Layout, KeyValuePair<string, List<string>>>? _badgeLayouts;
+    private readonly BadgeCreator? _badgeCreator;
 
     private VisiblePerson? _selected;
     public VisiblePerson? Selected
@@ -32,9 +31,6 @@ internal partial class PersonChoosingViewModel : ObservableObject
             ChosenPerson = value?.Model;
         }
     }
-
-    [ObservableProperty]
-    private ObservableCollection<TemplateViewModel>? _templates;
 
     private TemplateViewModel? _chosenTemplate;
     internal TemplateViewModel? ChosenTemplate
@@ -60,25 +56,16 @@ internal partial class PersonChoosingViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    private ObservableCollection<TemplateViewModel>? _templates;
+
+    [ObservableProperty]
     private ObservableCollection<VisiblePerson>? _people;
 
     [ObservableProperty]
     private Person? _chosenPerson;
 
     [ObservableProperty]
-    
     private bool _settingsIsComplated;
-
-    //private bool _settingsIsComplated;
-    //public bool SettingsIsComplated 
-    //{
-    //    get => _settingsIsComplated;
-    //    set 
-    //    {
-    //        _settingsIsComplated = value;
-    //        OnPropertyChanged ();
-    //    }
-    //}
 
     private bool _sickTemplateIsSet;
     public bool SickTemplateIsSet
@@ -94,8 +81,6 @@ internal partial class PersonChoosingViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _choiceIsDisabled;
-
-    private readonly BadgeCreator? _badgeCreator;
 
     [ObservableProperty]
     private bool _fileNotFound;
@@ -156,7 +141,7 @@ internal partial class PersonChoosingViewModel : ObservableObject
             string source = layout.Value.Key;
 
             templates.Add (
-                new TemplateViewModel ( new TemplateName ( layout.Key.TemplateName ),
+                new TemplateViewModel ( layout.Key.TemplateName,
                     _correctTemplateForeground,
                     _incorrectTemplateForeground,
                     errors,

@@ -5,10 +5,8 @@ namespace Lister.Desktop.Views.DialogMessageWindows.Dialog.ViewModel;
 
 public sealed partial class DialogViewModel : ObservableObject
 {
-    public delegate void YesHandler ();
-    public event YesHandler? YesChosen;
-    public delegate void NoHandler ();
-    public event NoHandler? NoChosen;
+    public event Action? YesChosen;
+    public event Action? NoChosen;
 
     [ObservableProperty]
     private string? _question;

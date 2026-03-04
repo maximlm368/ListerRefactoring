@@ -21,18 +21,18 @@
 		<Setter Property="SelectionBrush" Value="#4aacfe"/>
 		<Setter Property="SelectionForegroundBrush" Value="#fafafa"/>
 	</Style>
-		<Style Selector="TextBox.pagesAmount">
+
+	<Style Selector="TextBox.pagesAmount">
 		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
 		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="ContextFlyout" Value="{x:Null}"/>
+		<Setter Property="SelectionBrush" Value="White"/>
+		<Setter Property="SelectionForegroundBrush" Value="Black"/>
 	</Style>
 
 	<Style Selector="TextBlock.picture /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
-	</Style>
-		<Style Selector="TextBlock.printErrorMessage /template/ ContentPresenter#PART_ContentPresenter">
-		<Setter Property="FontSize" Value="12"/>
-		<Setter Property="Height" Value="18"/>
 	</Style>
 
 	<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
@@ -52,7 +52,7 @@
 	<Style Selector="Label.modalLabel /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Height" Value="20"/>
 		<Setter Property="FontSize" Value="12"/>
-		<Setter Property="Margin" Value="5,0,0,0"/>
+		<Setter Property="Margin" Value="0,0,0,0"/>
 	</Style>
 	<Style Selector="Label.comboboxItem /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Background" Value="#FFFFFF"/>
@@ -71,10 +71,6 @@
 		<Setter Property="Background" Value="#E3F1FC"/>
 		<Setter Property="BorderBrush" Value="#D5E8F6"/>
 		<Setter Property="Foreground" Value="#000000"/>
-	</Style>
-
-	<Style
-		Selector="Border.rotatable">
 	</Style>
 	
 </Styles>

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Core.Entities.Badge;
 using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.Extentions;
@@ -19,10 +20,10 @@ public sealed partial class BadgeViewModel : ObservableObject
     private static readonly BadgeLayoutProvider _layoutProvider;
 
     private SolidColorBrush _incorrectLineBackground = new ( new Color ( 0, 0, 0, 0 ) );
-    private SolidColorBrush _incorrectMemberBorderColor = new ( new Color ( 0, 0, 0, 0 ) );
-    private SolidColorBrush _correctMemberBorderColor = new ( new Color ( 0, 0, 0, 0 ) );
-    private Avalonia.Thickness _incorrectMemberBorderThickness;
-    private Avalonia.Thickness _correctMemberBorderThickness;
+    private SolidColorBrush _incorrectBorderColor = new ( new Color ( 0, 0, 0, 0 ) );
+    private SolidColorBrush _correctBorderColor = new ( new Color ( 0, 0, 0, 0 ) );
+    private Avalonia.Thickness _incorrectBorderThickness;
+    private Avalonia.Thickness _correctBorderThickness;
 
     [ObservableProperty]
     private Imaging.Bitmap? _imageBitmap;
@@ -41,9 +42,6 @@ public sealed partial class BadgeViewModel : ObservableObject
 
     [ObservableProperty]
     private Avalonia.Thickness? _margin;
-
-    [ObservableProperty]
-    private string? _focusedText;
 
     [ObservableProperty]
     private ObservableCollection<TextLineViewModel> _textLines;
@@ -66,6 +64,33 @@ public sealed partial class BadgeViewModel : ObservableObject
     [ObservableProperty]
     private bool _isChanged;
 
+    private bool _isFocusedRightNow;
+    private string? _focusedText;
+    internal string? FocusedText
+    {
+        get => _focusedText;
+
+        private set
+        {
+            _focusedText = value;
+
+            if ( !_isFocusedRightNow ) 
+            {
+                ResetFocusedText ( _focusedText );
+            }
+
+            _isFocusedRightNow = false;
+
+            if ( _focusedLine != null )
+            {
+                _focusedLine.Content = _focusedText;
+            }
+
+            MarkTextLineCorrectness ();
+            OnPropertyChanged ( );
+        }
+    }
+
     private TextLineViewModel? _focusedLine;
     internal TextLineViewModel? FocusedLine
     {
@@ -74,35 +99,26 @@ public sealed partial class BadgeViewModel : ObservableObject
             return _focusedLine;
         }
 
-        private set
+        set
         {
-            if ( value == null && _focusedLine != null )
-            {
-                _focusedLine.UnFocus ();
-                _focusedLine = value;
-            }
-            else if ( value != null )
-            {
-                _focusedLine = value;
+            _focusedLine?.DisFocus ();
+            _focusedLine = value;
 
+            if ( _focusedLine != null )
+            {
                 if ( _focusedLine.IsBorderViolent || _focusedLine.IsOverLayViolent )
                 {
-                    _focusedLine.Focus ( _incorrectMemberBorderColor, _incorrectMemberBorderThickness );
+                    _focusedLine.Focus ( _incorrectBorderColor, _incorrectBorderThickness );
                 }
                 else
                 {
-                    _focusedLine.Focus ( _correctMemberBorderColor, _correctMemberBorderThickness );
+                    _focusedLine.Focus ( _correctBorderColor, _correctBorderThickness );
                 }
             }
 
-            if ( _focusedLine == null || string.IsNullOrWhiteSpace ( _focusedLine.Content ) )
-            {
-                FocusedText = string.Empty;
-            }
-            else
-            {
-                FocusedText = _focusedLine.Content;
-            }
+            _isFocusedRightNow = true;
+            FocusedText = _focusedLine == null || string.IsNullOrWhiteSpace ( _focusedLine.Content ) ? null : _focusedLine.Content;
+            OnPropertyChanged ();
         }
     }
 
@@ -118,13 +134,13 @@ public sealed partial class BadgeViewModel : ObservableObject
         {
             if ( _focusedImage != null && value == null )
             {
-                _focusedImage.UnFocus ();
+                _focusedImage.DisFocus ();
                 _focusedImage = null;
             }
             else if ( value != null )
             {
                 _focusedImage = value;
-                _focusedImage.Focus ( _correctMemberBorderColor, _correctMemberBorderThickness );
+                _focusedImage.Focus ( _correctBorderColor, _correctBorderThickness );
             }
         }
     }
@@ -141,13 +157,13 @@ public sealed partial class BadgeViewModel : ObservableObject
         {
             if ( _focusedRect != null && value == null )
             {
-                _focusedRect.UnFocus ();
+                _focusedRect.DisFocus ();
                 _focusedRect = null;
             }
             else if ( value != null )
             {
                 _focusedRect = value;
-                _focusedRect.Focus ( _correctMemberBorderColor, _correctMemberBorderThickness );
+                _focusedRect.Focus ( _correctBorderColor, _correctBorderThickness );
             }
         }
     }
@@ -164,21 +180,34 @@ public sealed partial class BadgeViewModel : ObservableObject
         {
             if ( _focusedEllipse != null && value == null )
             {
-                _focusedEllipse.UnFocus ();
+                _focusedEllipse.DisFocus ();
                 _focusedEllipse = null;
             }
             else if ( value != null )
             {
                 _focusedEllipse = value;
-                _focusedEllipse.Focus ( _correctMemberBorderColor, _correctMemberBorderThickness );
+                _focusedEllipse.Focus ( _correctBorderColor, _correctBorderThickness );
             }
         }
     }
 
-    internal bool IsCorrect { get; private set; }
+    private bool _isCorrect;
+    internal bool IsCorrect
+    {
+        get => _isCorrect;
+
+        private set
+        {
+            _isCorrect = value;
+            OnPropertyChanged ();
+        }
+    }
+
     internal int Id { get; private set; }
     internal double Scale { get; private set; }
     internal Badge Model { get; private set; }
+
+    internal event Action<bool>? CorrectnessChanged;
 
     static BadgeViewModel ()
     {
@@ -244,6 +273,7 @@ public sealed partial class BadgeViewModel : ObservableObject
     private void HandleCorrectnessChanged ()
     {
         IsCorrect = Model.IsCorrect;
+        CorrectnessChanged?.Invoke ( IsCorrect );
     }
     #endregion
 
@@ -397,7 +427,7 @@ public sealed partial class BadgeViewModel : ObservableObject
     {
         if ( FocusedLine != null )
         {
-            MarkTextLine ();
+            MarkTextLineCorrectness ();
             FocusedFontSize = string.Empty;
             FocusedLine = null;
         }
@@ -511,13 +541,13 @@ public sealed partial class BadgeViewModel : ObservableObject
         List<byte> correctMemberBorderThickness = _layoutProvider.GetCorrectMemberBorderThickness ( model.Layout.TemplateName );
 
         _incorrectLineBackground = GetColor ( incorrectLineBackgroundHexStr );
-        _incorrectMemberBorderColor = GetColor ( incorrectMemberBorderHexStr );
-        _correctMemberBorderColor = GetColor ( correctMemberBorderHexStr );
-        _incorrectMemberBorderThickness = GetThickness ( incorrectMemberBorderThickness );
-        _correctMemberBorderThickness = GetThickness ( correctMemberBorderThickness );
+        _incorrectBorderColor = GetColor ( incorrectMemberBorderHexStr );
+        _correctBorderColor = GetColor ( correctMemberBorderHexStr );
+        _incorrectBorderThickness = GetThickness ( incorrectMemberBorderThickness );
+        _correctBorderThickness = GetThickness ( correctMemberBorderThickness );
     }
 
-    private void MarkTextLine ()
+    private void MarkTextLineCorrectness ()
     {
         if ( FocusedLine == null ) return;
 
@@ -534,13 +564,13 @@ public sealed partial class BadgeViewModel : ObservableObject
     private void MarkIncorrect ( TextLineViewModel setable )
     {
         setable.Background = _incorrectLineBackground;
-        setable.Mark ( _incorrectMemberBorderColor, _incorrectMemberBorderThickness );
+        setable.Mark ( _incorrectBorderColor, _incorrectBorderThickness );
     }
 
     private void MarkCorrect ( TextLineViewModel setable )
     {
         setable.Background = null;
-        setable.Mark ( _correctMemberBorderColor, _correctMemberBorderThickness );
+        setable.Mark ( _correctBorderColor, _correctBorderThickness );
     }
 
     private static SolidColorBrush GetColor ( string? hexColor )
@@ -630,7 +660,7 @@ public sealed partial class BadgeViewModel : ObservableObject
     {
         Model.MoveProcessable ( delta.Y / Scale, delta.X / Scale );
         IsChanged = Model.IsChanged;
-        MarkTextLine ();
+        MarkTextLineCorrectness ();
     }
 
     internal void FocusedToSide ( string direction )
@@ -642,12 +672,12 @@ public sealed partial class BadgeViewModel : ObservableObject
 
         Model.ShiftProcessable ( direction );
         IsChanged = Model.IsChanged;
-        MarkTextLine ();
+        MarkTextLineCorrectness ();
     }
 
-    internal void ResetFocusedText ( string newText )
+    internal void ResetFocusedText ( string? newText )
     {
-        if ( FocusedLine == null || newText == FocusedLine.StartContent )
+        if ( FocusedLine == null )
         {
             return;
         }
@@ -685,13 +715,15 @@ public sealed partial class BadgeViewModel : ObservableObject
         IsChanged = true;
         int fontSize = ( int ) Math.Round ( FocusedLine.FontSize / Scale );
         FocusedFontSize = fontSize.ToString ();
-        MarkTextLine ();
+        MarkTextLineCorrectness ();
     }
 
     internal void CancelChanges ()
     {
         Model.CancelChanges ();
         SetTextLines ();
+        _focusedText = null;
+        IsChanged = false;
     }
     #endregion
 }

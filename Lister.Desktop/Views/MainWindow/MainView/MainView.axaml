@@ -1,82 +1,114 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+
 			 xmlns:BuildButtonUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.BuildButton"
 			 xmlns:PersonSourceUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource"
 			 xmlns:PersonChoosingUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing"
+			 xmlns:ButtonsBlockUc="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.ButtonsBlock"
 			 xmlns:SceneUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.Scene"
+			 xmlns:SceneVm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel"
 			 xmlns:NavigationZoomUc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.NavigationZoom"
 			 xmlns:WaitingUc="clr-namespace:Lister.Desktop.Views.MainWindow.WaitingView"
-			 xmlns:Shared="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.SharedComponents"
+			 xmlns:BuildButton="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.BigButtonBlock"
+			 xmlns:ZoomerNavigator="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.ZoomerNavigator"
+			 xmlns:Navigator="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.Navigator"
+			 xmlns:Zoomer="clr-namespace:Lister.Desktop.Views.MainWindow.SharedComponents.Zoomer"
 			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.ViewModel;assembly=Lister.Desktop"
-             mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="500"
-             x:Class="Lister.Desktop.Views.MainWindow.MainView.MainView"
+
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="520"
+			 x:Class="Lister.Desktop.Views.MainWindow.MainView.MainViewUserControl"
 			 x:DataType="vm:MainViewModel"
-			 Height="500"
+			 Height="520"
 			 Width="830">
-		
-	<StackPanel ZIndex="1">
+
+	<Grid 
+		RowDefinitions="4 44 40 44 8 * 48"
+		ZIndex="2"
+		Background="#EEEEEE">
 
 		<PersonSourceUc:PersonSourceUserControl
 			Name="PersonSource"
+			Grid.Row="1"
 		/>
 
 		<PersonChoosingUc:PersonChoosingUserControl
 			Name="PersonChoosing"
-			Margin="0,0"
-			Height="35"
+			Grid.Row="2"
 		/>
 
-		<Shared:BigButtonBlock
-			Name="SuperButton"
-			Margin="0,0"
-			ZIndex="2"
-			ButtonInscription="��������� �����"
+		<BuildButton:BigButtonBlockUserControl
+			Name="BuildButton"
+			Grid.Row="3"
+			Grid.RowSpan="2"
+			ZIndex="3"
+			ButtonInscription="Построить макет"
+			ToolTip="Построить макет на основе выбранных данных"
 			ButtonPicture="&#xE2CA;"
 			Command="{Binding BuildBadgesCommand}"
 		/>
 
-		<SceneUc:SceneUserControl
-			Name="Scene"
-			Margin="0,-6"
-		/>
+		<Grid
+			Grid.Row="4"
+			Grid.RowSpan="2"
+			ColumnDefinitions="245 *">
 
-		<StackPanel 
-			Name="SimpleShadow" 
-			Margin="0,-2" 
-			ZIndex="2">
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.02"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.05"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.1"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.15"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.2"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.25"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.3"/>
-			<Rectangle Width="830" Height="1" Fill="Black" Opacity="0.35"/>
-		</StackPanel>
+			<ButtonsBlockUc:ButtonsBlockUserControl
+				Name="ButtonsBlock"
+				Grid.Column="0"
+				ZIndex="2"
+				BadgeCount="{Binding #Scene.((SceneVm:SceneViewModel)DataContext).BadgeCount}"
+				IncorrectBadgeCount="{Binding #Scene.((SceneVm:SceneViewModel)DataContext).IncorrectBadgeCount}"
+				IsButtonsEnabled="{Binding #Scene.((SceneVm:SceneViewModel)DataContext).IsPagesNotEmpty}"
+			/>
+		
+			<SceneUc:SceneUserControl
+				Name="Scene"
+				x:DataType="SceneVm:SceneViewModel"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+			/>
+		</Grid>
 
-		<NavigationZoomUc:NavigationZoomUserControl
-			Name="NavigatorZoomer"
-			Background="#EEEEEE"
-			Margin="0,2"
-		/>
-
-		<WaitingUc:WaitingView
-			Name="Waiting"
+		<Border
+			Grid.Row="6"
 			ZIndex="3"
+			BoxShadow="3 0 9 3 #817974">
+
+			<Grid
+				ColumnDefinitions="* 140">
+
+				<Navigator:NavigatorUserControl
+					Name="Navigator"
+					Grid.Column="0"
+					HorizontalAlignment="Center"
+					IsVisibleNumberEditable="True"
+					ToFirstToolTip="На первую страницу"
+					ToPreviousToolTip="На предыдущую страницу"
+					ToNextToolTip="На следующую страницу"
+					ToLastToolTip="На последнюю страницу"
+				/>
+
+				<Zoomer:ZoomerUserControl
+					Name="Zoomer"
+					Grid.Column="1"
+					HorizontalAlignment="Left"
+					Suffix="%"
+					MaxZoom="5"
+					MinZoom="-5"
+					StartZoom="0"
+				/>
+			</Grid>
+		</Border>
+
+		<WaitingUc:WaitingViewUserControl
+			Name="Waiting"
+			Grid.Row="0"
+			Grid.RowSpan="7"
+			ZIndex="4"
+			IsVisible="False"
 		/>
-	</StackPanel>
+	</Grid>
 </UserControl>
 
-
-		<!--Shared:CenterShadowUserControl
-			Name="CenterShadow"
-			Margin="200,-1"
-			ZIndex="2"
-		/-->
-
-		<!--BuildButtonUc:BadgesBuildingUserControl
-			Name="BadgeBuilding"
-			Margin="0,-4"
-		/-->
