@@ -1,9 +1,9 @@
-﻿using Lister.Core.Entities;
+﻿using ExcelDataReader;
+using Lister.Core.Document.AbstractComponents;
+using Lister.Core.Entities;
 using System.Data;
-using ExcelDataReader;
-using Lister.Core.PeopleAccess;
 
-namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
+namespace Lister.Core.Infrastructure.PeopleAccess;
 
 /// <summary>
 /// Gets people from (xlsx.) file.

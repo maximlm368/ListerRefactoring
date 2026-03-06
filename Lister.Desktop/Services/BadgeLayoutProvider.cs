@@ -1,20 +1,18 @@
-﻿using Lister.Core.BadgesCreator.AbstractComponents;
+﻿using Avalonia.Platform;
 using Lister.Core.Entities.Badge;
+using Lister.Desktop.Extentions;
 using Microsoft.Extensions.Configuration;
 using NJsonSchema;
 using NJsonSchema.Validation;
 using System.Drawing.Text;
 using System.Text;
-using Lister.Desktop.Extentions;
-using Avalonia.Platform;
-using Lister.Desktop.Services;
 
-namespace Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
+namespace Lister.Desktop.Services;
 
 /// <summary>
 /// Produces and keeps layout for each badge template got from json files.
 /// </summary>
-public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
+public sealed class BadgeLayoutProvider
 {
     private static readonly string _defaultSplitability = "0";
     private static BadgeLayoutProvider? _instance;
@@ -224,7 +222,7 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
                                 }
                                 else
                                 {
-                                    if ( ( error.Path != null ) && ( error.Path.Length > 2 ) )
+                                    if (  error.Path != null  &&  error.Path.Length > 2  )
                                     {
                                         messageLine += error.Path.Substring ( 2, error.Path.Length - 2 );
                                     }

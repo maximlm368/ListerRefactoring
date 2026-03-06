@@ -1,6 +1,6 @@
 ﻿using Lister.Core.Entities;
 
-namespace Lister.Core.PeopleAccess;
+namespace Lister.Core.Document.AbstractComponents;
 
 public interface IPeopleSource
 {

@@ -34,7 +34,7 @@ public sealed class Badge
     public event Action? CorrectnessChanged;
     public event Action<bool>? Changed;
 
-    private Badge ( Person person, string backgroundImagePath, Layout layout )
+    private Badge ( Person person, string? backgroundImagePath, Layout layout )
     {
         Person = person;
         BackgroundImagePath = backgroundImagePath;
@@ -52,7 +52,7 @@ public sealed class Badge
         RolledBack?.Invoke ();
     }
 
-    public static Badge? GetBadge ( Person person, string backgroundImagePath, Layout layout )
+    public static Badge? GetBadge ( Person person, string? backgroundImagePath, Layout layout )
     {
         if ( person == null
              || backgroundImagePath == null

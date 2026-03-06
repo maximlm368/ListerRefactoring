@@ -47,7 +47,7 @@
 			Padding="0,8"
 			HorizontalContentAlignment="Center"
 			HorizontalAlignment="Center"
-			Command="{Binding ChooseFile}"
+			Command="{Binding ChooseFileCommand}"
 			ToolTip.Tip="Выберите файл с сотрудниками"
 			FontFamily="{StaticResource FA}"
 			Content="&#xF141;"

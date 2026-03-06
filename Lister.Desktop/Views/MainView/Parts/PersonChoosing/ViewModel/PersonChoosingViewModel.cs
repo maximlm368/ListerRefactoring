@@ -5,8 +5,8 @@ using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
 using Lister.Desktop.Entities;
 using Lister.Desktop.Entities.BadgeVM;
-using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.Extentions;
+using Lister.Desktop.Services;
 using System.Collections.ObjectModel;
 
 namespace Lister.Desktop.Views.MainView.Parts.PersonChoosing.ViewModel;

@@ -1,13 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;
 
 namespace Lister.Desktop.Views.MainView.Parts.Scene;
 
-public partial class SceneUserControl : UserControl
+public sealed partial class SceneUserControl : UserControl
 {
-    private SceneViewModel _viewModel;
     private bool _pageIsCaptured;
     private Point _pointerPosition;
 

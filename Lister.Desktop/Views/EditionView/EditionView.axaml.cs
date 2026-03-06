@@ -16,7 +16,6 @@ namespace Lister.Desktop.Views.EditionView;
 /// </summary>
 public sealed partial class EditorViewUserControl : UserControl
 {
-    private static readonly string _promptQuestion = "Сохранить изменения и вернуться к макету?";
     private static bool _someControlPressed;
 
     private readonly EditorViewModel? _viewModel;
@@ -41,11 +40,6 @@ public sealed partial class EditorViewUserControl : UserControl
 
         _viewModel = new ( editionBlockViewModel, workAreaViewModel, filterViewModel, navigator, zoomer, waiting );
         DataContext = _viewModel;
-    }
-
-    private void PreventPasting ( object? sender, PointerReleasedEventArgs args )
-    {
-        args.Handled = true;
     }
 
     private void PointerIsPressed ( object? sender, PointerPressedEventArgs args )

@@ -1,11 +1,11 @@
 ﻿using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lister.Core.Document;
 using Lister.Desktop.Components.ButtonsBlock.ViewModel;
 using Lister.Desktop.Components.Navigator.ViewModel;
 using Lister.Desktop.Components.Zoomer.ViewModel;
 using Lister.Desktop.Entities;
-using Lister.Desktop.Infrastructure;
 using Lister.Desktop.Views.MainView.Parts.PersonChoosing.ViewModel;
 using Lister.Desktop.Views.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;
@@ -30,7 +30,8 @@ public sealed partial class MainViewModel : ObservableObject
     private readonly string _incorrectXSLX;
     private readonly string _buildLimitExhaustedMessage;
     private readonly string _osName;
-    private readonly PrintingManager _leadingOutside;
+    private readonly DocumentProcessor _documentProcessor;
+    private readonly PrintingActivator _printingManager;
     internal PersonSourceViewModel PersonSource { get; private set; }
     internal PersonChoosingViewModel PersonChoosing { get; private set; }
     internal NavigatorViewModel? Navigator { get; private set; }
@@ -62,13 +63,14 @@ public sealed partial class MainViewModel : ObservableObject
         _buildLimitExhaustedMessage = args.BuildingLimitExhaustedMessage;
         _fileIsOpenMessage = args.FileIsOpenMessage;
 
-        _leadingOutside = args.LeadingOutside;
+        _documentProcessor = args.DocumentProcessor;
+        _printingManager = args.PrintingManager;
         PersonChoosing = args.PersonChoosing;
         PersonSource = args.PersonSource;
         Scene = args.Scene;
         Waiting = args.Waiting;
 
-        _leadingOutside.PropertyChanged += OutsiderChanged;
+        _printingManager.PropertyChanged += PrintingChanged;
         PersonSource.PropertyChanged += PersonSourceChanged;
         PersonChoosing.PropertyChanged += PersonChoosingChanged;
         Scene.PropertyChanged += SceneChanged;
@@ -205,7 +207,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
-    private void OutsiderChanged ( object? sender, PropertyChangedEventArgs args )
+    private void PrintingChanged ( object? sender, PropertyChangedEventArgs args )
     {
         if ( args.PropertyName == "PdfGenerationSuccesseeded" )
         {
@@ -364,7 +366,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void ShowInFileExplorer ()
     {
-        if ( _leadingOutside.PdfGenerationSuccesseeded )
+        if ( _printingManager.PdfGenerationSuccesseeded )
         {
             string procName = string.Empty;
 
@@ -444,7 +446,7 @@ public sealed partial class MainViewModel : ObservableObject
                 return;
             }
 
-            _leadingOutside.ActivatePdfCreation ( PdfName, Scene.Model.AllPages );
+            _printingManager.ActivatePdfCreation ( PdfName, Scene.Model.AllPages );
 
             return;
         }
@@ -459,7 +461,7 @@ public sealed partial class MainViewModel : ObservableObject
                 return;
             }
 
-            _leadingOutside.ActivatePrinting ( _printAdjusting, Scene.Model.AllPages );
+            _printingManager.ActivatePrinting ( _printAdjusting, Scene.Model.AllPages );
         }
     }
 

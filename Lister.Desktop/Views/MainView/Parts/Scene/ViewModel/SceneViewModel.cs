@@ -4,13 +4,15 @@ using Lister.Core.Document;
 using Lister.Core.Entities;
 using Lister.Desktop.Entities;
 using Lister.Desktop.Entities.BadgeVM;
+using Lister.Desktop.Services;
 
 namespace Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;
 
-public partial class SceneViewModel : ObservableObject
+public sealed partial class SceneViewModel : ObservableObject
 {
     internal static bool EntireListBuildingIsChosen { get; private set; }
 
+    private readonly BadgeLayoutProvider _layoutProvider;
     private readonly int _badgeCountLimit;
     private readonly double _scalabilityCoefficient = 1.25;
     private double _documentScale;
@@ -70,6 +72,7 @@ public partial class SceneViewModel : ObservableObject
 
     public SceneViewModel ( int badgeCountLimit, DocumentProcessor docBuilder )
     {
+        _layoutProvider = BadgeLayoutProvider.GetInstance ();
         _badgeCountLimit = badgeCountLimit;
         Model = docBuilder;
         Model.ComplatedPage += HandlePageCompleted;
@@ -199,7 +202,8 @@ public partial class SceneViewModel : ObservableObject
             futureVisiblePageNumber = 1;
         }
 
-        List<Page> builtPages = Model.BuildAllPages ( templateName, _badgeCountLimit );
+        List<Page> builtPages = Model.BuildAllPages ( _badgeCountLimit, _layoutProvider.GetBadgeLayout ( templateName ),
+            _layoutProvider.GetBadgeImageUri ( templateName ) );
 
         if ( builtPages.Count < 1 )
         {
@@ -231,7 +235,8 @@ public partial class SceneViewModel : ObservableObject
             return false;
         }
 
-        List<Page> resultPages = Model.BuildBadge ( templateName, _chosenPerson );
+        List<Page> resultPages = Model.BuildBadge ( _chosenPerson, _layoutProvider.GetBadgeLayout ( templateName ),
+            _layoutProvider.GetBadgeImageUri ( templateName ) );
 
         if ( resultPages.Count > AllPages.Count )
         {

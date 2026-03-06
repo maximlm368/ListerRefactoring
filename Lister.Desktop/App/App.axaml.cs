@@ -3,11 +3,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Lister.Core.Document;
 using Lister.Desktop.App.Configs;
-using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
-using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
-using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
-using Lister.Desktop.Infrastructure;
 using Lister.Desktop.Services;
+using Lister.Desktop.Entities;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 using Lister.Desktop.Views.MainView;
 using Lister.Desktop.Views.MainView.Parts.PersonChoosing.ViewModel;
@@ -15,8 +12,8 @@ using Lister.Desktop.Views.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;
 using Lister.Desktop.Views.MainView.ViewModel;
 using Lister.Desktop.Views.MainWindow;
-using Lister.Desktop.Views.WaitingView.ViewModel;
 using Lister.Desktop.Views.SplashWindow;
+using Lister.Desktop.Views.WaitingView.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lister.Desktop.App;
@@ -24,15 +21,8 @@ namespace Lister.Desktop.App;
 public partial class ListerApp : Avalonia.Application
 {
     private static string _configPath = string.Empty;
-    private static string _osName = string.Empty;
-    private static DocumentProcessor _documentProcessor = DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, 
-        BadgeLayoutProvider.GetInstance (),
-        PeopleSourceFactory.GetInstance ()
-    );
-
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
-    public static ServiceProvider Services { get; private set; }
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
+    private static readonly string _osName = OperatingSystem.IsWindows () ? "Windows" : "Linux";
+    private static readonly DocumentProcessor _documentProcessor = DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, _osName );
 
     public override void Initialize ()
     {
@@ -53,7 +43,6 @@ public partial class ListerApp : Avalonia.Application
 
         ServiceCollection collection = new ();
         _configPath = configPath;
-        _osName = OperatingSystem.IsWindows () ? "Windows" : "Linux";
 
         if ( ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop )
         {
@@ -86,11 +75,12 @@ public partial class ListerApp : Avalonia.Application
 
     private static MainViewModel GetMainViewModel ()
     {
-        MainViewModelArgs args = new ( new PrintingManager ( PdfCreator.GetInstance ( _osName ), Printer.GetInstance ( _osName ) ),
+        MainViewModelArgs args = new ( new PrintingActivator ( _documentProcessor ),
             GetPersonChoosing (),
             GetPersonSource (),
             new SceneViewModel ( PersonSourceConfigs.BadgeCountLimit, _documentProcessor ),
-            new WaitingViewModel ( WaitingElementConfigs.GifPath )
+            new WaitingViewModel ( WaitingElementConfigs.GifPath ),
+            _documentProcessor
         )
         {
             OsName = _osName,

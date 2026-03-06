@@ -2,8 +2,8 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Lister.Core.Entities.Badge;
-using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.Extentions;
+using Lister.Desktop.Services;
 using Lister.Desktop.Views.MainView.ViewModel;
 using System.Collections.ObjectModel;
 using Imaging = Avalonia.Media.Imaging;

@@ -3,8 +3,7 @@ using QuestPDF.Infrastructure;
 using SkiaSharp;
 using System.Text;
 
-
-namespace Lister.Core.Extentions;
+namespace Lister.Core.Infrastructure.ResultWithdrawing;
 
 public static class QuestPdfContainerExtentions
 {

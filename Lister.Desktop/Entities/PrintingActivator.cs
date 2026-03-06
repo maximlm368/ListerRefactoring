@@ -1,17 +1,17 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Lister.Core.Document;
 using Lister.Core.Entities;
 using Lister.Desktop.Windows.DialogMessageWindows.PrintDialog;
 
-namespace Lister.Desktop.Infrastructure;
+namespace Lister.Desktop.Entities;
 
 /// <summary>
 /// Starts creation and printing asynchcronously while some waiting view is visible in graphic thread.
 /// </summary>
-public sealed partial class PrintingManager : ObservableObject
+public sealed partial class PrintingActivator : ObservableObject
 {
-    private readonly PdfCreator _pdfCreator;
-    private readonly Printer _printer;
+    private readonly DocumentProcessor _documentProcessor;
 
     private bool _pdfGenerationSucceeded;
     internal bool PdfGenerationSuccesseeded
@@ -37,16 +37,15 @@ public sealed partial class PrintingManager : ObservableObject
         }
     }
 
-    internal PrintingManager ( PdfCreator pdfCreator, Printer printer )
+    internal PrintingActivator ( DocumentProcessor documentProcessor )
     {
-        _pdfCreator = pdfCreator;
-        _printer = printer;
+        _documentProcessor = documentProcessor;
     }
 
     internal void ActivatePdfCreation ( string fileToSave, List<Page> creatables )
     {
         Task<bool> pdfGeneration = new (
-            () => _pdfCreator.CreateAndSave ( creatables, fileToSave )
+            () => _documentProcessor.CreateAndSave ( creatables, fileToSave )
         );
 
         pdfGeneration.ContinueWith ( ( tsk ) =>
@@ -64,7 +63,7 @@ public sealed partial class PrintingManager : ObservableObject
         }
 
         Task printing = new (
-            () => _printer.Print ( printables, _pdfCreator, printAdjusting.PrinterName, printAdjusting.CopiesAmount )
+            () => _documentProcessor.Print ( printables, printAdjusting.PrinterName, printAdjusting.CopiesAmount )
         );
 
         printing.ContinueWith (

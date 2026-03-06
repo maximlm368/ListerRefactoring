@@ -1,15 +1,18 @@
 ﻿using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Lister.Core.Document;
-using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
+using Lister.Core.Infrastructure.PeopleAccess;
 using Lister.Desktop.Services;
 
 namespace Lister.Desktop.Views.MainView.Parts.PersonSource.ViewModel;
 
-public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders,
+public sealed partial class PersonSourceViewModel ( string pickerTitle, string filePickerTitle, List<string> patterns, List<string> xslxHeaders,
     int limit, string sourceKeeper, DocumentProcessor documentProcessor, string configPath
 ) : ObservableObject
 {
+    internal static event Func<FilePickerOpenOptions, Task<IReadOnlyList<IStorageFile>?>>? FilePickerRequired;
+
     private readonly string _pickerTitle = pickerTitle;
     private readonly string _filePickerTitle = filePickerTitle;
     private readonly string _configPath = configPath;
@@ -95,9 +98,9 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
         }
     }
 
-    private readonly int _personsLimitForSource = limit;
+    private readonly int _personsLimit = limit;
 
-    internal string? FilePath { get; private set; }
+    internal string? FilePath { get; private set; } 
 
     internal void OnLoaded ()
     {
@@ -118,11 +121,17 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
         _isFirstTimeLoading = false;
     }
 
-    internal async void ChooseFile ()
+    [RelayCommand]
+    internal async Task ChooseFile ()
     {
-        IReadOnlyList<IStorageFile> files = await MainWindow.MainWindow.CommonStorageProvider.OpenFilePickerAsync ( FilePickerOptions );
+        if ( FilePickerRequired == null )
+        {
+            return;
+        }
 
-        if ( files.Count == 1 && files [0] is not null )
+        IReadOnlyList<IStorageFile>? files = await FilePickerRequired.Invoke ( FilePickerOptions );
+
+        if ( files != null && files.Count == 1 && files [0] is not null )
         {
             string path = files [0].Path.LocalPath;
             TryUse ( path, true );
@@ -189,7 +198,7 @@ public class PersonSourceViewModel ( string pickerTitle, string filePickerTitle,
 
             return;
         }
-        else if ( !_documentProcessor.TrySetPeopleFrom ( path, _personsLimitForSource ) )
+        else if ( !_documentProcessor.TrySetPeopleFrom ( path, _personsLimit ) )
         {
             FilePath = path;
             FileIsTooBig = true;

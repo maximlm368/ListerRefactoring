@@ -1,19 +1,17 @@
 ﻿using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
-using Lister.Desktop.Extentions;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
-namespace Lister.Desktop.Infrastructure;
+namespace Lister.Core.Infrastructure.ResultWithdrawing;
 
 /// <summary>
 /// Creats and saves pdf file for passed on pages.
 /// </summary>
 public sealed class PdfCreator
 {
-    //private static readonly double _coefficient = 0.721;
     private static readonly double _coefficient = 1;
     private static PdfCreator? _instance = null;
     private static string? _osName;
@@ -41,7 +39,7 @@ public sealed class PdfCreator
 
         Settings.License = LicenseType.Community;
 
-        Document doc = CreateDocument ( pages );
+        QuestPDF.Fluent.Document doc = CreateDocument ( pages );
 
         try
         {
@@ -58,7 +56,7 @@ public sealed class PdfCreator
     public IEnumerable<byte []> Create ( List<Page> pages )
     {
         Settings.License = LicenseType.Community;
-        Document doc = CreateDocument ( pages );
+        QuestPDF.Fluent.Document doc = CreateDocument ( pages );
 
         ImageGenerationSettings settings = new ()
         {
@@ -70,9 +68,9 @@ public sealed class PdfCreator
         return result;
     }
 
-    private Document CreateDocument ( List<Page> pages )
+    private QuestPDF.Fluent.Document CreateDocument ( List<Page> pages )
     {
-        Document doc = Document.Create
+        QuestPDF.Fluent.Document doc = QuestPDF.Fluent.Document.Create
         ( container =>
         {
             for ( int pageNumber = 0; pageNumber < pages.Count; pageNumber++ )

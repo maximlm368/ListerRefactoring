@@ -15,6 +15,7 @@ using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 using Lister.Desktop.Views.EditionView;
 using Lister.Desktop.Views.EditionView.ViewModel;
 using Lister.Desktop.Views.MainView;
+using Lister.Desktop.Views.MainView.Parts.PersonSource.ViewModel;
 using Lister.Desktop.Views.MainView.ViewModel;
 using Lister.Desktop.Windows.DialogMessageWindows.PrintDialog;
 
@@ -26,9 +27,6 @@ public sealed partial class MainWindow : Window
     private static PixelPoint _pointerPosition;
     private static readonly string _backingQuestion = "Сохранить изменения и вернуться к макету?";
 
-    internal static IStorageProvider? CommonStorageProvider { get; private set; }
-    internal static MainWindow? Window { get; private set; }
-    internal static double HeightfDifference { get; private set; }
     internal static int TappedGoToEditorButton { get; private set; }
 
     private List<BadgeViewModel>? _processableBadges;
@@ -37,19 +35,13 @@ public sealed partial class MainWindow : Window
 
     internal MainViewUserControl? MainView {  get; set; }
     internal EditorViewUserControl? EditorView { get; set; }
-
     internal Window? ModalWindow { get; set; }
     internal Func<PrintDialogViewModel>? PrintDialogViewModelGenerator { get; set; }
-    internal double WidthDifference { get; private set; }
-    internal double HeightDifference { get; private set; }
-
 
     public MainWindow ( )
     {
         InitializeComponent();
 
-        CommonStorageProvider = StorageProvider;
-        Window = this;
         _currentWidth = Width;
         _currentHeight = Height;
         Cursor = new Cursor (StandardCursorType.Arrow);
@@ -72,6 +64,20 @@ public sealed partial class MainWindow : Window
         MainViewModel.HasToShowTemplateErrors += ShowTemplateErrors;
         MainViewModel.HasToPreparePrinting += ShowPrintDialog;
         MainViewModel.FilePickerRequired += ShowFilePicker;
+
+        PersonSourceViewModel.FilePickerRequired += OpenFilePicker;
+    }
+
+    private async Task<IReadOnlyList<IStorageFile>?> OpenFilePicker ( FilePickerOpenOptions options ) 
+    {
+        if ( StorageProvider == null ) 
+        {
+            return null;
+        }
+
+        IReadOnlyList<IStorageFile>? files = await StorageProvider.OpenFilePickerAsync ( options );
+
+        return files;
     }
 
     private void ShowMessageWindow ( string message )
@@ -142,7 +148,6 @@ public sealed partial class MainWindow : Window
         {
             EditorView = new EditorViewUserControl ();
             EditorView.SetProperSize ( Width, Height );
-            CancelSizeDifference ();
             TappedGoToEditorButton = 1;
             ( MainView?.DataContext as MainViewModel )?.Wait ();
         }
@@ -150,12 +155,12 @@ public sealed partial class MainWindow : Window
 
     private async Task<IStorageFile?>? ShowFilePicker ( FilePickerSaveOptions options ) 
     {
-        if ( CommonStorageProvider == null )
+        if ( StorageProvider == null )
         {
             return null;
         }
 
-        IStorageFile? chosenFile = await CommonStorageProvider.SaveFilePickerAsync ( options );
+        IStorageFile? chosenFile = await StorageProvider.SaveFilePickerAsync ( options );
 
         return chosenFile;
     }
@@ -214,7 +219,6 @@ public sealed partial class MainWindow : Window
     private void ComplateBacking ()
     {
         MainView?.SetProperSize ( Width, Height );
-        CancelSizeDifference ();
         MainView?.Show ();
         Content = MainView;
     }
@@ -240,8 +244,6 @@ public sealed partial class MainWindow : Window
             double newHeight = args.NewSize.Height;
             double newWidthDifference = _currentWidth - newWidth;
             double newHeightDifference = _currentHeight - newHeight;
-            WidthDifference += newWidthDifference;
-            HeightDifference = newHeightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             mainView.ChangeSize ( newWidthDifference, newHeightDifference );
@@ -255,17 +257,10 @@ public sealed partial class MainWindow : Window
             double newHeight = args.NewSize.Height;
             double widthDifference = _currentWidth - newWidth;
             double heightDifference = _currentHeight - newHeight;
-            WidthDifference += widthDifference;
-            HeightDifference = heightDifference;
             _currentWidth = newWidth;
             _currentHeight = newHeight;
             editionView.ChangeSize ( widthDifference, heightDifference );
         }
-    }
-
-    internal void CancelSizeDifference ( )
-    {
-        WidthDifference = 0;
     }
 
     internal void ReleaseCaptured ( object? sender, PointerReleasedEventArgs args )

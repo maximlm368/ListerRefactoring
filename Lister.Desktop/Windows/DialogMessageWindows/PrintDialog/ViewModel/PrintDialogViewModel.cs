@@ -2,15 +2,15 @@
 using CommunityToolkit.Mvvm.Input;
 using Lister.Core.Extentions;
 using Lister.Desktop.Extentions;
-using Lister.Desktop.Infrastructure;
 using Lister.Desktop.Windows.DialogMessageWindows.PrintDialog;
 using Lister.Desktop.Windows.DialogMessageWindows.PrintDialog.ViewModel;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
+using Lister.Core.Infrastructure.ResultWithdrawing;
 
 namespace Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
 
-public sealed partial class PrintDialogViewModel : ObservableObject
+public sealed partial class PrintDialogViewModel ( string osName ) : ObservableObject
 {
     private readonly string _linuxGetPrintersBash = "lpstat -p | awk '{print $2}'";
     private readonly string _linuxGetDefaultPrinterBash = "lpstat -d";
@@ -19,7 +19,7 @@ public sealed partial class PrintDialogViewModel : ObservableObject
     private readonly int _pagesStrMaxGlyphCount = 30;
     private readonly List<char> _pageNumsAcceptables = [' ', '-', ',', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     private readonly List<char> _copiesCountAcceptables = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    private readonly string _osName;
+    private readonly string _osName = osName;
     private readonly List<char> _intAsCharList = [];
     private readonly List<int> _pageNumbers = [];
     private ParserStates _state;
@@ -45,7 +45,7 @@ public sealed partial class PrintDialogViewModel : ObservableObject
     private int _selectedIndex;
 
     [ObservableProperty]
-    private PrinterPresentation _selectedPrinter;
+    private PrinterPresentation? _selectedPrinter;
 
     private bool _hasPageSelection;
     internal bool HasPageSelection
@@ -183,11 +183,6 @@ public sealed partial class PrintDialogViewModel : ObservableObject
 
             OnPropertyChanged ();
         }
-    }
-
-    public PrintDialogViewModel ( string osName )
-    {
-        _osName = osName;
     }
 
     [RelayCommand]

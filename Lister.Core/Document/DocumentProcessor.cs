@@ -1,8 +1,8 @@
-﻿using Lister.Core.BadgesCreator.AbstractComponents;
-using Lister.Core.Document.AbstractComponents;
+﻿using Lister.Core.Document.AbstractComponents;
 using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
-using Lister.Core.PeopleAccess;
+using Lister.Core.Infrastructure.PeopleAccess;
+using Lister.Core.Infrastructure.ResultWithdrawing;
 
 namespace Lister.Core.Document;
 
@@ -13,9 +13,11 @@ namespace Lister.Core.Document;
 public sealed class DocumentProcessor
 {
     private static DocumentProcessor? _instance = null;
-    private static IPeopleSourceFactory? _peopleSourceFactory;
+    private static PeopleSourceFactory? _peopleSourceFactory;
 
-    private readonly BadgesCreator.BadgeCreator _badgeCreator;
+    private readonly string _osName;
+    private readonly PdfCreator _pdfCreator;
+    private readonly Printer _printer;
     private int _badgeCount;
 
     public List<Person>? People { get; private set; }
@@ -25,12 +27,12 @@ public sealed class DocumentProcessor
     public delegate void ComplatedPageHandler ( Page complated, bool mustBeReplacedByNext );
     public event ComplatedPageHandler? ComplatedPage;
 
-    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer, IBadgeLayoutProvider badgeLayoutProvider,
-        IPeopleSourceFactory peopleSourceFactory
-    )
+    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer, string osName )
     {
-        _badgeCreator = BadgesCreator.BadgeCreator.GetInstance ( badgeLayoutProvider );
-        _peopleSourceFactory = peopleSourceFactory;
+        _osName = osName;
+        _pdfCreator = PdfCreator.GetInstance ( _osName );
+        _printer = Printer.GetInstance ( _osName );
+        _peopleSourceFactory = PeopleSourceFactory.GetInstance ();
 
         Page.Complated += page =>
         {
@@ -44,17 +46,14 @@ public sealed class DocumentProcessor
         TextLine.Measurer = widthMeasurer;
     }
 
-    public static DocumentProcessor GetInstance ( ITextWidthMeasurer widthMeasurer,
-        IBadgeLayoutProvider badgeAppearenceProvider,
-        IPeopleSourceFactory peopleSourceFactory
-    )
+    public static DocumentProcessor GetInstance ( ITextWidthMeasurer widthMeasurer, string osName )
     {
-        _instance ??= new DocumentProcessor ( widthMeasurer, badgeAppearenceProvider, peopleSourceFactory );
+        _instance ??= new DocumentProcessor ( widthMeasurer, osName );
 
         return _instance;
     }
 
-    public List<Page> BuildAllPages ( string templateName, int limit )
+    public List<Page> BuildAllPages ( int limit, Layout? layout, string? background )
     {
         if ( People == null || ( _badgeCount + People.Count ) >= limit )
         {
@@ -68,20 +67,21 @@ public sealed class DocumentProcessor
 
         for ( int index = 0; index < People.Count; index++ )
         {
-            Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, People [index] );
+            Badge? built = 
+                ( layout != null && People[index] != null ) ? Badge.GetBadge ( People [index], background, layout.Clone ( true ) ) : null;
 
-            if ( builtIn == null )
+            if ( built == null )
             {
                 continue;
             }
 
-            if ( !builtIn.IsCorrect )
+            if ( !built.IsCorrect )
             {
                 IncorrectBadgeCount++;
-                incorrects.Add ( builtIn );
+                incorrects.Add ( built );
             }
 
-            Page possibleNewPage = fillablePage.Add ( builtIn );
+            Page possibleNewPage = fillablePage.Add ( built );
             bool timeToAddNewPage = !possibleNewPage.Equals ( fillablePage );
 
             if ( timeToAddNewPage )
@@ -103,21 +103,21 @@ public sealed class DocumentProcessor
         return AllPages;
     }
 
-    public List<Page> BuildBadge ( string? templateName, Person? person )
+    public List<Page> BuildBadge ( Person? person, Layout? layout, string? background )
     {
-        Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, person );
+        Badge? built = ( layout != null && person != null ) ? Badge.GetBadge ( person, background, layout.Clone ( true ) ) : null;
 
-        if ( builtIn == null )
+        if ( built == null )
         {
             return AllPages;
         }
 
-        if ( !builtIn.IsCorrect )
+        if ( !built.IsCorrect )
         {
             IncorrectBadgeCount++;
         }
 
-        Page possibleNewLastPage = LastPage.Add ( builtIn );
+        Page possibleNewLastPage = LastPage.Add ( built );
         bool timeToIncrementVisiblePageNumber = !possibleNewLastPage.Equals ( LastPage );
 
         if ( timeToIncrementVisiblePageNumber )
@@ -154,5 +154,15 @@ public sealed class DocumentProcessor
         }
 
         return false;
+    }
+
+    public void Print ( List<Page> printables, string printerName, int copiesAmount )
+    {
+        _printer.Print ( printables, _pdfCreator, printerName, copiesAmount );
+    }
+
+    public bool CreateAndSave ( List<Page> pages, string filePathToSave )
+    {
+        return _pdfCreator.CreateAndSave ( pages, filePathToSave );
     }
 }

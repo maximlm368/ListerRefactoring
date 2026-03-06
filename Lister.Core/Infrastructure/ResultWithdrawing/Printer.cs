@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Drawing.Printing;
 
-namespace Lister.Desktop.Infrastructure;
+namespace Lister.Core.Infrastructure.ResultWithdrawing;
 
 /// <summary>
 /// Carries out printing
@@ -35,7 +35,7 @@ public sealed class Printer
         }
     }
 
-    internal static string ExecuteBashCommand ( string command )
+    public static string ExecuteBashCommand ( string command )
     {
         using Process process = new ();
 

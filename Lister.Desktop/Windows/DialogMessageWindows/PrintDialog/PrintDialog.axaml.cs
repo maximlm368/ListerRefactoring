@@ -56,7 +56,7 @@ public sealed partial class PrintDialogWindow : Window
 
     private void PagesGotFocus ( object sender, GotFocusEventArgs args )
     {
-        if ( sender is TextBox textBox && string.IsNullOrEmpty ( textBox.Text ) )
+        if ( sender is TextBox textBox && string.IsNullOrEmpty ( textBox.Text ) && _viewModel != null )
         {
             _viewModel.Pages = string.Empty;
         }
@@ -68,6 +68,11 @@ public sealed partial class PrintDialogWindow : Window
 
     private void PagesLostFocus ( object sender, RoutedEventArgs args )
     {
+        if ( _viewModel == null ) 
+        {
+            return;
+        }
+
         PagesError.IsVisible = IncorrectPages.IsVisible = _viewModel.HasPagesError;
     }
 
@@ -80,12 +85,17 @@ public sealed partial class PrintDialogWindow : Window
 
     private void CopiesLostFocus ( object sender, RoutedEventArgs args )
     {
+        if ( _viewModel == null )
+        {
+            return;
+        }
+
         CopiesError.IsVisible = IncorrectCopies.IsVisible = _viewModel.HasCopiesError;
     }
 
     private void PagesChanged ( object sender, TextChangedEventArgs args )
     {
-        if ( sender is TextBox textBox && _viewModel.Pages != textBox.Text )
+        if ( sender is TextBox textBox && _viewModel != null && _viewModel.Pages != textBox.Text )
         {
             _viewModel.Pages = textBox.Text;
             textBox.Text = _viewModel.Pages;
@@ -94,7 +104,7 @@ public sealed partial class PrintDialogWindow : Window
 
     private void CopiesChanged ( object sender, TextChangedEventArgs args )
     {
-        if ( sender is TextBox textBox && _viewModel.Copies != textBox.Text )
+        if ( sender is TextBox textBox && _viewModel != null && _viewModel.Copies != textBox.Text  )
         {
             _viewModel.Copies = textBox.Text;
             textBox.Text = _viewModel.Copies;

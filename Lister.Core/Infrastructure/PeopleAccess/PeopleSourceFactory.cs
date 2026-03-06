@@ -1,11 +1,11 @@
-﻿using Lister.Core.PeopleAccess;
+﻿using Lister.Core.Document.AbstractComponents;
 
-namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
+namespace Lister.Core.Infrastructure.PeopleAccess;
 
 /// <summary>
 /// Gets people source.
 /// </summary>
-public sealed class PeopleSourceFactory : IPeopleSourceFactory
+public sealed class PeopleSourceFactory
 {
     private static PeopleSourceFactory? _instance;
 

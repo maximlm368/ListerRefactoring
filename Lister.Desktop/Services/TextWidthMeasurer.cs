@@ -1,7 +1,7 @@
 ﻿using Avalonia.Media;
 using Lister.Core.Document.AbstractComponents;
 
-namespace Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
+namespace Lister.Desktop.Services;
 
 /// <summary>
 /// Carries out measurement of passed on text line.
