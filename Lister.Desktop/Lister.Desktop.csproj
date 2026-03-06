@@ -131,52 +131,55 @@
     <Compile Update="App\App.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogMessageWindows\Dialog\DialogWindow.axaml.cs">
+    <Compile Update="Components\SuperButtonBlock\SuperButtonBlock.axaml.cs">
+      <DependentUpon>SuperButtonBlock.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogMessageWindows\Dialog\DialogWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogMessageWindows\LargeMessage\LargeMessageDialog.axaml.cs">
+    <Compile Update="Windows\DialogMessageWindows\LargeMessage\LargeMessageDialog.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogMessageWindows\Message\MessageDialog.axaml.cs">
+    <Compile Update="Windows\DialogMessageWindows\Message\MessageDialog.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogMessageWindows\PrintDialog\PrintDialog.axaml.cs">
+    <Compile Update="Windows\DialogMessageWindows\PrintDialog\PrintDialog.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\EditionView\EditionView.axaml.cs">
+    <Compile Update="Views\EditionView\EditionView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\EditionView\Parts\EditionBlock\EditionBlockUserControl.axaml.cs">
+    <Compile Update="Views\EditionView\Parts\EditionBlock\EditionBlockUserControl.axaml.cs">
       <DependentUpon>EditionBlockUserControl.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\EditionView\Parts\Filter\Filter.axaml.cs">
+    <Compile Update="Views\EditionView\Parts\Filter\Filter.axaml.cs">
       <DependentUpon>Filter.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainView\MainView.axaml.cs">
+    <Compile Update="Views\MainView\MainView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">
+    <Compile Update="Views\MainView\Parts\BuildButton\BadgesBuildingUC.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainView\Parts\PersonChoosing\PersonChoosingUC.axaml.cs">
+    <Compile Update="Views\MainView\Parts\PersonChoosing\PersonChoosingUC.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainView\Parts\PersonSource\PersonSourceUC.axaml.cs">
+    <Compile Update="Views\MainView\Parts\PersonSource\PersonSourceUC.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainView\Parts\Scene\SceneUserControl.axaml.cs">
+    <Compile Update="Views\MainView\Parts\Scene\SceneUserControl.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\MainWindow.axaml.cs">
+    <Compile Update="Windows\MainWindow\MainWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\SharedComponents\FilterableCombobox\FilterableCombobox.axaml.cs">
+    <Compile Update="Components\FilterableCombobox\FilterableCombobox.axaml.cs">
       <DependentUpon>FilterableCombobox.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SplashWindow\SplashWindow.axaml.cs">
+    <Compile Update="Windows\SplashWindow\SplashWindow.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Views\MainWindow\WaitingView\WaitingView.axaml.cs">
+    <Compile Update="Views\WaitingView\WaitingView.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>

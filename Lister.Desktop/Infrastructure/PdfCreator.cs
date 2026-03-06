@@ -1,11 +1,10 @@
-﻿using Lister.Core.Document;
+﻿using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
-using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
+using Lister.Desktop.Extentions;
 using QuestPDF;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
-
 
 namespace Lister.Desktop.Infrastructure;
 
@@ -14,7 +13,8 @@ namespace Lister.Desktop.Infrastructure;
 /// </summary>
 public sealed class PdfCreator
 {
-    private static readonly double _coefficient = 0.721;
+    //private static readonly double _coefficient = 0.721;
+    private static readonly double _coefficient = 1;
     private static PdfCreator? _instance = null;
     private static string? _osName;
     private readonly Dictionary<string, Image> pathToInsideImage = [];
@@ -91,10 +91,10 @@ public sealed class PdfCreator
 
                     List<BadgeLine> lines = currentPage.Lines;
 
-                    page.Content ()
-                    .PaddingTop ( ( float ) ( currentPage.ContentTopOffset * _coefficient ) )
-                    .PaddingLeft ( ( float ) ( currentPage.ContentLeftOffset * _coefficient ) )
-                    .Column ( column =>
+                    page.Content ().
+                    PaddingTop ( ( float ) ( currentPage.ContentTopOffset * _coefficient ) ).
+                    PaddingLeft ( ( float ) ( currentPage.ContentLeftOffset * _coefficient ) ).
+                    Column ( column =>
                         {
                             foreach ( BadgeLine currentLine in lines )
                             {
@@ -113,20 +113,21 @@ public sealed class PdfCreator
 
     private void RenderLine ( ColumnDescriptor column, BadgeLine line )
     {
-        column.Item ()
-              .Table ( table => {
-                        table.ColumnsDefinition ( columns => {
-                              for ( int badgeNumber = 0; badgeNumber < line.Badges.Count; badgeNumber++ )
-                              {
-                                  Badge beingRendered = line.Badges [badgeNumber];
-                                  float badgeWidth = ( float ) ( beingRendered.Layout.Width * _coefficient );
-                                  columns.ConstantColumn ( badgeWidth, Unit.Point );
-                                  RenderBadge ( table, beingRendered, badgeNumber );
-                              }
-                          }
-                        );
-                      }
-              );
+        column.
+            Item ().
+            Table ( table => {
+                table.ColumnsDefinition ( columns => {
+                        for ( int badgeNumber = 0; badgeNumber < line.Badges.Count; badgeNumber++ )
+                        {
+                            Badge beingRendered = line.Badges [badgeNumber];
+                            float badgeWidth = ( float ) ( beingRendered.Layout.Width * _coefficient );
+                            columns.ConstantColumn ( badgeWidth, Unit.Point );
+                            RenderBadge ( table, beingRendered, badgeNumber );
+                        }
+                    }
+                );
+                }
+            );
     }
 
     private void RenderBadge ( TableDescriptor tableForLine, Badge beingRendered, int badgeIndex )
@@ -142,22 +143,24 @@ public sealed class PdfCreator
 
         Image? image = GetImageByPath ( imagePath );
 
-        tableForLine.Cell ().Row ( 1 ).Column ( ( uint ) badgeIndex + 1 )
-            .Width ( badgeWidth, Unit.Point ).Height ( badgeHeight, Unit.Point )
-            .Layers ( layers =>
-            {
-                IContainer container = layers.PrimaryLayer ().Border ( 0.5f, Unit.Point )
-                    .BorderColor ( QuestPDF.Helpers.Colors.Grey.Medium );
-
-                if ( image != null )
+        tableForLine.Cell ().
+            Row ( 1 ).
+            Column ( ( uint ) badgeIndex + 1 ).
+            Width ( badgeWidth, Unit.Point ).Height ( badgeHeight, Unit.Point ).
+            Layers ( layers =>
                 {
-                    container.Image ( image ).FitArea ();
-                }
+                    IContainer container = layers.PrimaryLayer ().Border ( 0.5f, Unit.Point )
+                        .BorderColor ( QuestPDF.Helpers.Colors.Grey.Medium );
 
-                RenderTextLines ( layers, beingRendered.Layout.TextLines );
-                RenderInsideImages ( layers, beingRendered.Layout.Images );
-                RenderInsideShapes ( layers, beingRendered.Layout.Shapes );
-            }
+                    if ( image != null )
+                    {
+                        container.Image ( image ).FitArea ();
+                    }
+
+                    RenderTextLines ( layers, beingRendered.Layout.TextLines );
+                    RenderInsideImages ( layers, beingRendered.Layout.Images );
+                    RenderInsideShapes ( layers, beingRendered.Layout.Shapes );
+                }
             );
     }
 
@@ -167,15 +170,15 @@ public sealed class PdfCreator
         {
             double linePaddingTop = textLine.Padding == null ? 0 : textLine.Padding.Top;
 
-            TextBlockDescriptor textBlock = layers
-            .Layer ()
-            .PaddingLeft ( ( float ) ( textLine.LeftOffset * _coefficient ), Unit.Point )
-            .PaddingTop ( ( float ) ( ( textLine.TopOffset + 2 * linePaddingTop ) * _coefficient ), Unit.Point )
-            .Text ( textLine.Content )
-            .ClampLines ( 1, "." )
-            .FontFamily ( textLine.FontName )
-            .FontColor ( Color.FromHex ( textLine.ForegroundHexStr ) )
-            .FontSize ( ( float ) ( textLine.FontSize * _coefficient ) );
+            TextBlockDescriptor textBlock = layers.
+                Layer ().
+                PaddingLeft ( ( float ) ( textLine.LeftOffset * _coefficient ), Unit.Point ).
+                PaddingTop ( ( float ) ( ( textLine.TopOffset + 2 * linePaddingTop ) * _coefficient ), Unit.Point ).
+                Text ( textLine.Content ).
+                ClampLines ( 1, "." ).
+                FontFamily ( textLine.FontName ).
+                FontColor ( Color.FromHex ( textLine.ForegroundHexStr ) ).
+                FontSize ( ( float ) ( textLine.FontSize * _coefficient ) );
 
             if ( textLine.FontWeight == "Thin" )
             {
@@ -199,14 +202,14 @@ public sealed class PdfCreator
                 continue;
             }
 
-            layers
-                .Layer ()
-                .PaddingLeft ( ( float ) ( image.LeftOffset * _coefficient ) )
-                .PaddingTop ( ( float ) ( image.TopOffset * _coefficient ) )
-                .Container ()
-                .Width ( ( float ) ( image.Width * _coefficient ) )
-                .Image ( img )
-                .FitArea ();
+            layers.
+                Layer ().
+                PaddingLeft ( ( float ) ( image.LeftOffset * _coefficient ) ).
+                PaddingTop ( ( float ) ( image.TopOffset * _coefficient ) ).
+                Container ().
+                Width ( ( float ) ( image.Width * _coefficient ) ).
+                Image ( img ).
+                FitArea ();
         }
     }
 
@@ -214,9 +217,9 @@ public sealed class PdfCreator
     {
         foreach ( ComponentShape shape in insideShapes )
         {
-            layers
-                .Layer ()
-                .SkiaSharpCanvas
+            layers.
+                Layer ().
+                SkiaSharpCanvas
                 (
                     ( canvas, size ) =>
                     {
@@ -232,10 +235,10 @@ public sealed class PdfCreator
                         if ( shape.Type == ShapeType.rectangle )
                         {
                             canvas.DrawRect ( ( float ) ( shape.LeftOffset * _coefficient ),
-                                              ( float ) ( shape.TopOffset * _coefficient ),
-                                              ( float ) ( shape.Width * _coefficient ),
-                                              ( float ) ( shape.Height * _coefficient ),
-                                              paint
+                                ( float ) ( shape.TopOffset * _coefficient ),
+                                ( float ) ( shape.Width * _coefficient ),
+                                ( float ) ( shape.Height * _coefficient ),
+                                paint
                             );
                         }
                         else if ( shape.Type == ShapeType.ellipse )
@@ -243,10 +246,11 @@ public sealed class PdfCreator
                             float centerVerticalCoordinate = ( float ) ( shape.TopOffset * _coefficient + shape.Height * _coefficient / 2 );
                             float centerHorizontalCoordinate = ( float ) ( shape.LeftOffset * _coefficient + shape.Width * _coefficient / 2 );
 
-                            canvas.DrawOval ( centerHorizontalCoordinate, centerVerticalCoordinate,
-                                              ( float ) ( shape.Width * _coefficient ) / 2,
-                                              ( float ) ( shape.Height * _coefficient ) / 2,
-                                              paint
+                            canvas.DrawOval ( centerHorizontalCoordinate,
+                                centerVerticalCoordinate,
+                                ( float ) ( shape.Width * _coefficient ) / 2,
+                                ( float ) ( shape.Height * _coefficient ) / 2,
+                                paint
                             );
                         }
                     }

@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="40"
+			 xmlns:uc="clr-namespace:Lister.Desktop.Views.MainView.Parts.PersonChoosing"
+			 xmlns:controls="clr-namespace:Lister.Desktop.Components.FilterableCombobox"
+			 x:Class="Lister.Desktop.Views.MainView.Parts.PersonChoosing.PersonChoosingUserControl"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainView.Parts.PersonChoosing.ViewModel;assembly=Lister.Desktop"
+			 xmlns:modelMappings="clr-namespace:Lister.Desktop.Entities;assembly=Lister.Desktop"
+			 xmlns:badgeVM="clr-namespace:Lister.Desktop.Entities.BadgeVM;assembly=Lister.Desktop"
+			 xmlns:person="clr-namespace:Lister.Core.Entities;assembly=Lister.Core"
+			 x:DataType="vm:PersonChoosingViewModel">
+
+	<Grid
+		ColumnDefinitions="70 * 10 90 195"
+		Background="#EEEEEE"
+		Height="40"
+		ZIndex="0">
+
+		<Label
+			Grid.Column="0"
+			Padding="10,5"
+			Content="ФИО:"
+		/>
+
+		<controls:FilterableComboboxUserControl
+			Name="PART_FilterableCombobox"
+			Grid.Column="1"
+			VisibleCount="9"
+			DefaultPlaceholder="Весь список"
+			ItemsSource="{Binding People, Mode=OneWay}"
+			SelectedItem="{Binding Selected, Mode=OneWayToSource}">
+
+			<controls:FilterableComboboxUserControl.Styles>
+				<Style Selector="ContentPresenter:pointerover">
+					<Setter Property="BorderBrush" Value="#4aacfe"/>
+					<Setter Property="Background" Value="#ffffff"/>
+				</Style>
+				<Style Selector="Label#item">
+					<Setter Property="BorderBrush" Value="#d5e8f6"/>
+					<Setter Property="Background" Value="#111111"/>
+					<Setter Property="Padding" Value="8,4"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="HorizontalAlignment" Value="Stretch"/>
+					<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+					<Setter Property="Height" Value="32"/>
+				</Style>
+				<Style Selector="Label#allSelection">
+					<Setter Property="FontStyle" Value="Italic"/>
+					<Setter Property="Background" Value="#ffffff"/>
+					<Setter Property="BorderBrush" Value="#d5e8f6"/>
+					<Setter Property="Height" Value="32"/>
+					<Setter Property="Padding" Value="8,4"/>
+					<Setter Property="BorderThickness" Value="2"/>
+					<Setter Property="Content" Value="Весь список"/>
+				</Style>
+			</controls:FilterableComboboxUserControl.Styles>
+
+			<controls:FilterableComboboxUserControl.ItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#ffffff"
+							Foreground="#000000"
+							Content="{Binding Model.FullName, Mode=OneWay}"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.ItemTemplate>
+
+			<controls:FilterableComboboxUserControl.CurrentItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#e3f1fc"
+							Foreground="#000000"
+							Content="{Binding Model.FullName, Mode=OneWay}"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.CurrentItemTemplate>
+
+			<controls:FilterableComboboxUserControl.SelectedItemTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							x:DataType="badgeVM:VisiblePerson"
+							Name="item"
+							Background="#e3f1fc"
+							FontWeight="Bold"
+							Foreground="#3a5a81"
+							Content="{Binding Model.FullName, Mode=OneWay}"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.SelectedItemTemplate>
+
+			<controls:FilterableComboboxUserControl.AllTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							Name="allSelection"
+							Background="#ffffff"
+							Foreground="#000000"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.AllTemplate>
+
+			<controls:FilterableComboboxUserControl.AllCurrentTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							Name="allSelection"
+							Background="#e3f1fc"
+							Foreground="#000000"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.AllCurrentTemplate>
+
+			<controls:FilterableComboboxUserControl.AllSelectedTemplate>
+				<DataTemplate>
+					<DataTemplate.Content>
+						<Label
+							Name="allSelection"
+							Background="#e3f1fc"
+							Foreground="#3a5a81"
+							FontWeight="Bold"
+						/>
+					</DataTemplate.Content>
+				</DataTemplate>
+			</controls:FilterableComboboxUserControl.AllSelectedTemplate>
+		</controls:FilterableComboboxUserControl>
+
+		<Label
+			Classes="narrow"
+			Grid.Column="3"
+			Content="Шаблон:"
+			Margin="10, 0"
+			Padding="10, 0"
+		/>
+		<ComboBox
+			Name="TemplateChoosing"
+			Grid.Column="4"
+			PlaceholderForeground="{Binding ChosenTemplate.Color, Mode=OneWay}"
+			PlaceholderText="{Binding ChosenTemplate.Name, Mode=OneWay}"
+			FontSize="16"
+			Height="32"
+			Width="184"
+			Margin="0,2"
+			VerticalAlignment="Center"
+			ScrollViewer.AllowAutoHide="False"
+			ScrollViewer.VerticalScrollBarVisibility="Auto"
+			MaxDropDownHeight="100"
+			SelectedItem="{Binding ChosenTemplate, Mode=TwoWay}"
+			ItemsSource="{Binding Templates, Mode=OneWay}">
+
+			<ComboBox.ItemTemplate >
+				<DataTemplate >
+					<Label
+						x:DataType="modelMappings:TemplateViewModel"
+						Classes="narrow"
+						Padding="4,0"
+						Foreground="{Binding Color, Mode=OneWay}"
+						Content="{Binding Name, Mode=OneWay}"
+					/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+	</Grid>
+</UserControl>

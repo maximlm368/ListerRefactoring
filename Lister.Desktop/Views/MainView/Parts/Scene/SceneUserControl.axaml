@@ -1,0 +1,234 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="830" d:DesignHeight="333"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;assembly=Lister.Desktop"
+			 xmlns:imageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+			 xmlns:BadgeComponent="clr-namespace:Lister.Desktop.Entities.BadgeVM"
+			 x:DataType="vm:SceneViewModel"
+			 x:Class="Lister.Desktop.Views.MainView.Parts.Scene.SceneUserControl">
+
+	<Grid
+		Name="MainGrid">
+
+		<Border
+			Name="WorkArea"
+			HorizontalAlignment="Left"
+			Width="830">
+
+			<ScrollViewer
+				Name="Scroller"
+				VerticalScrollBarVisibility="Auto"
+				HorizontalScrollBarVisibility="Auto"
+				AllowAutoHide="False"
+				Background="#FAFAFA">
+
+				<Border
+					Name="PageBorder"
+					Margin="5,20"
+					BorderBrush="#A0A0A0"
+					BorderThickness="1"
+					Width="{Binding BorderWidth, Mode=OneWay}"
+					Height="{Binding BorderHeight, Mode=OneWay}"
+					DataContext="{Binding VisiblePage, Mode=OneWay}">
+
+					<Canvas
+						Name="A4"
+						VerticalAlignment="Top"
+						Width="{Binding Width, Mode=OneWay}"
+						Height="{Binding Height, Mode=OneWay}"
+						Background="White"
+						PointerPressed="PagePressed">
+
+						<ItemsControl
+							Name="Lines"
+							Canvas.Top="{Binding ContentTopOffset, Mode=OneWay }"
+							Canvas.Left="{Binding ContentLeftOffset, Mode=OneWay }"
+							HorizontalAlignment="Left"
+							ItemsSource="{Binding Lines, Mode=OneWay }">
+
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+
+									<ItemsControl
+										HorizontalAlignment="Left"
+										Margin="{Binding Margin, Mode=OneWay }"
+										ItemsSource="{Binding Badges, Mode=OneWay }">
+
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Horizontal"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+
+												<Border
+													BorderThickness="{Binding BorderThickness, Mode=OneWay }"
+													Margin="{Binding Margin, Mode=OneWay }"
+													Width="{Binding BorderWidth, Mode=OneWay }"
+													Height="{Binding BorderHeight, Mode=OneWay }"
+													BorderBrush="Gray">
+
+													<Canvas
+														Width="{Binding BadgeWidth, Mode=OneWay }"
+														Height="{Binding BadgeHeight, Mode=OneWay }">
+
+														<Image
+															Canvas.Top="0"
+															Canvas.Left="0"
+															VerticalAlignment="Top"
+															Source="{Binding ImageBitmap, Mode=OneWay }"
+															Width="{Binding BadgeWidth, Mode=OneWay }"
+															Height="{Binding BadgeHeight, Mode=OneWay }"
+														/>
+														<ItemsControl
+															Name="TextLines"
+															ItemsSource="{Binding TextLines, Mode=OneWay }">
+
+															<ItemsControl.ItemsPanel>
+																<ItemsPanelTemplate>
+																	<Canvas
+																		Width="{Binding $parent[Canvas].Width, Mode=OneWay}"
+																		Height="{Binding $parent[Canvas].Height, Mode=OneWay}"
+																	/>
+																</ItemsPanelTemplate>
+															</ItemsControl.ItemsPanel>
+
+															<ItemsControl.Styles>
+																<Style Selector="ItemsControl ContentPresenter" 
+																	   x:DataType="BadgeComponent:TextLineViewModel">
+																	<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																	<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																</Style>
+															</ItemsControl.Styles>
+
+															<ItemsControl.ItemTemplate>
+																<DataTemplate>
+
+																	<TextBlock
+																		x:DataType="BadgeComponent:TextLineViewModel"
+																		VerticalAlignment="Center"
+																		Height="{Binding FontSize, Mode=OneWay}"
+																		FontSize="{Binding FontSize, Mode=OneWay}"
+																		TextAlignment="Center"
+																		Padding="{Binding Padding, Mode=OneWay}"
+																		FontFamily="{Binding FontFamily, Mode=OneWay}"
+																		FontWeight="{Binding FontWeight, Mode=OneWay}"
+																		Foreground="{Binding Foreground, Mode=OneWay}"
+																		Text="{Binding Content, Mode=OneWay}"
+																	/>
+																</DataTemplate>
+															</ItemsControl.ItemTemplate>
+														</ItemsControl>
+
+														<ItemsControl
+															Name="Images"
+															ItemsSource="{Binding InsideImages, Mode=OneWay }">
+
+															<ItemsControl.ItemsPanel>
+																<ItemsPanelTemplate>
+																	<Canvas
+																		Width="{Binding $parent[Canvas].Width, Mode=OneWay}"
+																		Height="{Binding $parent[Canvas].Height, Mode=OneWay}"
+																	/>
+																</ItemsPanelTemplate>
+															</ItemsControl.ItemsPanel>
+
+															<ItemsControl.Styles>
+																<Style Selector="ItemsControl ContentPresenter"
+																	   x:DataType="BadgeComponent:ImageViewModel">
+																	<Setter Property="Width" Value="{Binding Width}"/>
+																	<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																	<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																</Style>
+															</ItemsControl.Styles>
+
+															<ItemsControl.ItemTemplate>
+																<DataTemplate>
+																	<Image Source = "{Binding BitMap, Mode=OneWay }"/>
+																</DataTemplate>
+															</ItemsControl.ItemTemplate>
+														</ItemsControl>
+
+														<ItemsControl
+															Name="Rectangles"
+															ItemsSource="{Binding  Path = InsideRectangles,  Mode=OneWay}">
+
+															<ItemsControl.ItemsPanel>
+																<ItemsPanelTemplate>
+																	<Canvas
+																		Width="{Binding  $parent[Canvas].Width,  Mode=OneWay}"
+																		Height="{Binding  $parent[Canvas].Height,  Mode=OneWay}"
+																	/>
+																</ItemsPanelTemplate>
+															</ItemsControl.ItemsPanel>
+
+															<ItemsControl.Styles>
+																<Style Selector="ItemsControl ContentPresenter" 
+																				 x:DataType="BadgeComponent:ShapeViewModel">
+																	<Setter Property="Width" Value="{Binding Width}"/>
+																	<Setter Property="Height" Value="{Binding Height}"/>
+																	<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																	<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																</Style>
+															</ItemsControl.Styles>
+
+															<ItemsControl.ItemTemplate>
+																<DataTemplate>
+																	<Rectangle 
+																		x:DataType="BadgeComponent:ShapeViewModel"
+																		Fill="{Binding FillColor, Mode=OneWay}"
+																	/>
+																</DataTemplate>
+															</ItemsControl.ItemTemplate>
+														</ItemsControl>
+
+														<ItemsControl
+															Name="Ellipses"
+															ItemsSource="{Binding InsideEllipses, Mode=OneWay}">
+
+															<ItemsControl.ItemsPanel>
+																<ItemsPanelTemplate>
+																	<Canvas
+																		Width="{Binding $parent[Canvas].Width, Mode=OneWay}"
+																		Height="{Binding $parent[Canvas].Height, Mode=OneWay}"
+																	/>
+																</ItemsPanelTemplate>
+															</ItemsControl.ItemsPanel>
+
+															<ItemsControl.Styles>
+																<Style Selector="ItemsControl ContentPresenter" 
+																	   x:DataType="BadgeComponent:ShapeViewModel">
+																	<Setter Property="Width" Value="{Binding Width}"/>
+																	<Setter Property="Height" Value="{Binding Height}"/>
+																	<Setter Property="Canvas.Left" Value="{Binding LeftOffset}"/>
+																	<Setter Property="Canvas.Top" Value="{Binding TopOffset}"/>
+																</Style>
+															</ItemsControl.Styles>
+
+															<ItemsControl.ItemTemplate>
+																<DataTemplate>
+																	<Ellipse 
+																		x:DataType="BadgeComponent:ShapeViewModel"
+																		Fill="{Binding FillColor, Mode=OneWay}"
+																	/>
+																</DataTemplate>
+															</ItemsControl.ItemTemplate>
+														</ItemsControl>
+													</Canvas>
+												</Border>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</Canvas>
+				</Border>
+			</ScrollViewer>
+		</Border>
+	</Grid>
+</UserControl>

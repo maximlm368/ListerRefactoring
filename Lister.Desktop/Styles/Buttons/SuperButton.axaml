@@ -1,0 +1,31 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+    <Style Selector="Button.superButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#4AACFE"/>
+		<Setter Property="BorderThickness" Value="2"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+	</Style>
+	<Style Selector="Button.superButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#4AACFE"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+		<Setter Property="BorderBrush" Value="#2570A7"/>
+	</Style>
+	<Style Selector="Button.superButton:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#94BEE6"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+	</Style>
+	<Style Selector="Button.superButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#D5E8F6"/>
+		<Setter Property="Foreground" Value="#FAFAFA"/>
+	</Style>
+	<Style Selector="Button.superButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#FCF2E3"/>
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+	</Style>
+</Styles>

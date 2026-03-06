@@ -1,4 +1,4 @@
-﻿using Lister.Core.BadgesCreator.Abstractions;
+﻿using Lister.Core.BadgesCreator.AbstractComponents;
 using Lister.Core.Entities.Badge;
 using Microsoft.Extensions.Configuration;
 using NJsonSchema;
@@ -7,6 +7,7 @@ using System.Drawing.Text;
 using System.Text;
 using Lister.Desktop.Extentions;
 using Avalonia.Platform;
+using Lister.Desktop.Services;
 
 namespace Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 
@@ -21,11 +22,11 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
     private string _schemeFile = string.Empty;
     private readonly Dictionary<string, string> _templateNameToDirectory = [];
     private readonly Dictionary<string, string> _templateNameToJson = [];
-    private readonly Dictionary<string, string> _templateToIncorrectLineBackground = [];
-    private readonly Dictionary<string, string> _templateToIncorrectMemberBorderColor = [];
-    private readonly Dictionary<string, string> _templateToCorrectMemberBorderColor = [];
-    private readonly Dictionary<string, List<byte>> _templateToIncorrectMemberBorderThickness = [];
-    private readonly Dictionary<string, List<byte>> _templateToCorrectMemberBorderThickness = [];
+    private readonly Dictionary<string, string> _templateToIncorrectBackground = [];
+    private readonly Dictionary<string, string> _templateToIncorrectBorderColor = [];
+    private readonly Dictionary<string, string> _templateToCorrectBorderColor = [];
+    private readonly Dictionary<string, List<byte>> _templateToIncorrectBorderThickness = [];
+    private readonly Dictionary<string, List<byte>> _templateToCorrectBorderThickness = [];
     private readonly Dictionary<string, Layout> _badgeLayouts = [];
     private readonly Dictionary<string, ICollection<ValidationError>> _jsonAndErrors = [];
     private readonly Dictionary<string, string> _incorrectJsonAndError = [];
@@ -37,6 +38,11 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         AfterColon = 1,
         BeforeName = 2,
         InName = 3
+    }
+
+    private BadgeLayoutProvider () 
+    {
+    
     }
 
     public static BadgeLayoutProvider GetInstance ()
@@ -62,240 +68,6 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         return task;
     }
 
-    private void SetLayouts ( string resourceFolder, string schemeFile )
-    {
-        _schemeFile = schemeFile;
-        string templatesFolder = Path.Combine ( resourceFolder, "Templates" );
-        DirectoryInfo containingDirectory = new ( templatesFolder );
-        DirectoryInfo [] templateDirectories = containingDirectory.GetDirectories ();
-
-        foreach ( DirectoryInfo templateDirectory in templateDirectories )
-        {
-            string directoryName = templateDirectory.FullName;
-            FileInfo [] templateFiles = templateDirectory.GetFiles ( "*.json" );
-
-            foreach ( FileInfo fileInfo in templateFiles )
-            {
-                string jsonPath = fileInfo.FullName;
-
-                if ( JsonProcessor.TryValidJson ( jsonPath, out string validationMessage) )
-                {
-                    string templateName = JsonProcessor.GetSectionStrValue ( ["TemplateName"], jsonPath, false );
-                    _templateNameToDirectory.Add ( templateName, directoryName );
-
-                    bool nameShouldBeAdded = !string.IsNullOrEmpty ( templateName ) && !_templateNameToJson.ContainsKey ( templateName );
-
-                    if ( nameShouldBeAdded )
-                    {
-                        _templateNameToJson.Add ( templateName, jsonPath );
-                    }
-
-                    bool colorShouldBeAdded = nameShouldBeAdded && !string.IsNullOrEmpty ( templateName );
-
-                    if ( colorShouldBeAdded )
-                    {
-                        SetBadgeComponetMarkers ( jsonPath, templateName );
-                    }
-                }
-                else
-                {
-                    if ( IsJsonTemplate ( jsonPath, out string templateName ) )
-                    {
-                        _templateNameToDirectory.Add ( templateName, directoryName );
-                        _incorrectJsonAndError.Add ( jsonPath, TranslateIncorrectJsonMessage ( validationMessage ) );
-                        _templateNameToJson.Add ( templateName, jsonPath );
-                        SetBadgeComponetMarkers ( jsonPath, templateName );
-                    }
-                }
-            }
-        }
-    }
-
-    private void SetBadgeComponetMarkers ( string jsonPath, string templateName )
-    {
-        string background = GetIncorrectLineBackground ( jsonPath );
-        _templateToIncorrectLineBackground?.Add ( templateName, background );
-
-        string incorrectBorderColor = GetIncorrectLineBorderColor ( jsonPath );
-        _templateToIncorrectMemberBorderColor?.Add ( templateName, incorrectBorderColor );
-
-        string correctBorderColor = GetCorrectLineBorderColor ( jsonPath );
-        _templateToCorrectMemberBorderColor?.Add ( templateName, correctBorderColor );
-
-        List<byte> incorrectBorderThickness = GetIncorrectBorderThickness ( jsonPath );
-        _templateToIncorrectMemberBorderThickness?.Add ( templateName, incorrectBorderThickness );
-
-        List<byte> correctBorderThickness = GetCorrectBorderThickness ( jsonPath );
-        _templateToCorrectMemberBorderThickness?.Add ( templateName, correctBorderThickness );
-    }
-
-    private string GetIncorrectLineBackground ( string jsonPath )
-    {
-        string background = GetSectionStrValueOrDefault ( ["IncorrectMemberSettings", "Background"], jsonPath );
-
-        if ( string.IsNullOrWhiteSpace ( background ) )
-        {
-            background = "#c8c8c8";
-        }
-
-        return background;
-    }
-
-    private string GetIncorrectLineBorderColor ( string jsonPath )
-    {
-        return GetBorderColor ( jsonPath, "IncorrectMemberSettings" );
-    }
-
-    private string GetCorrectLineBorderColor ( string jsonPath )
-    {
-        return GetBorderColor ( jsonPath, "CorrectMemberSettings" );
-    }
-
-    private List<byte> GetIncorrectBorderThickness ( string jsonPath )
-    {
-        return GetThickness ( jsonPath, "IncorrectMemberSettings" );
-    }
-
-    private List<byte> GetCorrectBorderThickness ( string jsonPath )
-    {
-        return GetThickness ( jsonPath, "CorrectMemberSettings" );
-    }
-
-    private List<byte> GetThickness ( string jsonPath, string tag )
-    {
-        List<byte> thickness = [];
-
-        byte left = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Left"], jsonPath );
-        thickness.Add ( left );
-
-        byte top = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Top"], jsonPath );
-        thickness.Add ( top );
-
-        byte right = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Right"], jsonPath );
-        thickness.Add ( right );
-
-        byte bottom = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Bottom"], jsonPath );
-        thickness.Add ( bottom );
-
-        return thickness;
-    }
-
-    private string GetBorderColor ( string jsonPath, string tag )
-    {
-        string borderColor = GetSectionStrValueOrDefault ( [tag, "BorderColor"], jsonPath );
-
-        if ( string.IsNullOrWhiteSpace ( borderColor ) )
-        {
-            borderColor = "#d23650";
-        }
-
-        return borderColor;
-    }
-
-    private static string TranslateIncorrectJsonMessage ( string message )
-    {
-        string seekable = "LineNumber: ";
-        int lenght = seekable.Length;
-        int incomingIndex = message.IndexOf ( seekable );
-        int endIndex = message.IndexOf ( '|' );
-        string lineNumStr = message.Substring ( incomingIndex + lenght, endIndex - incomingIndex - lenght );//??????????
-        string? result = "Ошибка на строке " + lineNumStr + " (" + message + ")";
-
-        return result;
-    }
-
-    private static bool IsJsonTemplate ( string jsonPath, out string templateName )
-    {
-        List<char> tempNameChars = [];
-        List<char> forbidenForName = ['\'', '(', ')', '{', '}', '[', ']'];
-        string jsonText = File.ReadAllText ( jsonPath );
-        int lenght = "\"TemplateName\"".Length;
-        int incomingIndex = jsonText.IndexOf ( "\"TemplateName\"" );
-
-        if ( incomingIndex > -1 )
-        {
-            States states = States.BeforeColon;
-            int scratch = incomingIndex + lenght;
-
-            for ( int index = scratch; index < jsonText.Length; index++ )
-            {
-                char current = jsonText [index];
-
-                if ( states == States.BeforeColon )
-                {
-                    if ( current == ' ' )
-                    {
-                        continue;
-                    }
-                    else if ( current == ':' )
-                    {
-                        states = States.AfterColon;
-                    }
-                    else
-                    {
-                        templateName = string.Empty;
-                        return false;
-                    }
-                }
-                else if ( states == States.AfterColon )
-                {
-                    if ( current == ' ' )
-                    {
-                        continue;
-                    }
-                    else if ( current == '"' )
-                    {
-                        states = States.BeforeName;
-                    }
-                    else
-                    {
-                        templateName = string.Empty;
-
-                        return false;
-                    }
-                }
-                else if ( states == States.BeforeName )
-                {
-                    if ( current == ' ' || current == '"' || forbidenForName.Contains ( current ) )
-                    {
-                        templateName = string.Empty;
-
-                        return false;
-                    }
-                    else
-                    {
-                        states = States.InName;
-                        tempNameChars.Add ( current );
-                    }
-                }
-                else if ( states == States.InName )
-                {
-                    if ( current == '"' )
-                    {
-                        templateName = new string ( [.. tempNameChars] );
-                        return true;
-                    }
-                    else if ( forbidenForName.Contains ( current ) )
-                    {
-                        templateName = string.Empty;
-
-                        return false;
-                    }
-                    else
-                    {
-                        tempNameChars.Add ( current );
-
-                        continue;
-                    }
-                }
-            }
-        }
-
-        templateName = string.Empty;
-
-        return false;
-    }
-
     public string GetBadgeImageUri ( string templateName )
     {
         string fileName = GetSectionStrValueOrDefault ( ["BackgroundImagePath"], _templateNameToJson [templateName] ) ?? "";
@@ -306,29 +78,29 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         return fileUri;
     }
 
-    public string GetIncorrectLineBackgroundStr ( string templateName )
+    public string GetIncorrectLineBackgroundHex ( string templateName )
     {
-        return _templateToIncorrectLineBackground [templateName];
+        return _templateToIncorrectBackground [templateName];
     }
 
-    public string GetIncorrectMemberBorderStr ( string templateName )
+    public string GetIncorrectMemberBorderColor ( string templateName )
     {
-        return _templateToIncorrectMemberBorderColor [templateName];
+        return _templateToIncorrectBorderColor [templateName];
     }
 
-    public string GetCorrectMemberBorderStr ( string templateName )
+    public string GetCorrectMemberBorderColor ( string templateName )
     {
-        return _templateToCorrectMemberBorderColor [templateName];
+        return _templateToCorrectBorderColor [templateName];
     }
 
     public List<byte> GetIncorrectMemberBorderThickness ( string templateName )
     {
-        return _templateToIncorrectMemberBorderThickness [templateName];
+        return _templateToIncorrectBorderThickness [templateName];
     }
 
     public List<byte> GetCorrectMemberBorderThickness ( string templateName )
     {
-        return _templateToCorrectMemberBorderThickness [templateName];
+        return _templateToCorrectBorderThickness [templateName];
     }
 
     public Layout? GetBadgeLayout ( string templateName )
@@ -364,173 +136,6 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         List<ComponentShape> shapes = GetShapes ( jsonPath );
 
         Layout? result = Layout.GetInstance ( badgeWidth, badgeHeight, templateName, paddings, lines, images, shapes );
-
-        return result;
-    }
-
-    private List<TextLine> GetLines ( string jsonPath )
-    {
-        List<TextLine> textLines =
-        [
-            BuildTextLine ( "FamilyName", jsonPath, 0 ),
-            BuildTextLine ( "FirstName", jsonPath, 1 ),
-            BuildTextLine ( "PatronymicName", jsonPath, 2 ),
-            BuildTextLine ( "Post", jsonPath, 3 ),
-            BuildTextLine ( "Department", jsonPath, 4 )
-        ];
-
-        return textLines;
-    }
-
-    private void SetUnitingLines ( List<TextLine> atoms, string jsonPath )
-    {
-        IEnumerable<IConfigurationSection> items = JsonProcessor.GetIncludedItemsOfSection ( ["UnitedTextBlocks"], jsonPath );
-
-        foreach ( IConfigurationSection item in items )
-        {
-            int number = DigitalStringParser.ParseToInt ( item.GetSection ( "Number" )?.Value );
-
-            if ( number == 0 )
-            {
-                number = 1;
-            }
-
-            IConfigurationSection unitedSection = item.GetSection ( "United" );
-            IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
-            List<string> unitedTextLinesNames = [];
-
-            foreach ( IConfigurationSection name in unitedSections )
-            {
-                if ( name.Value == null )
-                {
-                    continue;
-                }
-
-                unitedTextLinesNames.Add ( name.Value );
-            }
-
-            TextLine complexTextLine = BuildTextLine ( item, jsonPath, unitedTextLinesNames, number );
-            atoms.Add ( complexTextLine );
-        }
-    }
-
-    private List<ComponentImage> GetImages ( string jsonPath, string templateName )
-    {
-        List<ComponentImage> images = [];
-        IEnumerable<IConfigurationSection> imageSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideImages"], jsonPath );
-
-        foreach ( IConfigurationSection imageSection in imageSections )
-        {
-            ComponentImage image = BuildInsideImage ( imageSection, templateName );
-            images.Add ( image );
-        }
-
-        return images;
-    }
-
-    private static List<ComponentShape> GetShapes ( string jsonPath )
-    {
-        List<ComponentShape> shapes = [];
-        IEnumerable<IConfigurationSection> shapeSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideShapes"], jsonPath );
-
-        foreach ( IConfigurationSection shapeSection in shapeSections )
-        {
-            ComponentShape shape = BuildInsideShape ( shapeSection );
-            shapes.Add ( shape );
-        }
-
-        return shapes;
-    }
-
-    private TextLine BuildTextLine ( string lineName, string jsonPath, int numberToLocate )
-    {
-        TextLine line = new (
-            lineName,
-            GetSectionIntValueOrDefault ( [lineName, "Width"], jsonPath ),
-            GetSectionIntValueOrDefault ( [lineName, "Height"], jsonPath ),
-            GetSectionIntValueOrDefault ( [lineName, "TopOffset"], jsonPath ),
-            GetSectionIntValueOrDefault ( [lineName, "LeftOffset"], jsonPath ),
-            GetSectionStrValueOrDefault ( [lineName, "Alignment"], jsonPath ),
-            GetSectionIntValueOrDefault ( [lineName, "FontSize"], jsonPath ),
-            GetSectionStrValueOrDefault ( [lineName, "FontName"], jsonPath ),
-            GetSectionStrValueOrDefault ( [lineName, "Foreground"], jsonPath ),
-            GetSectionStrValueOrDefault ( [lineName, "FontWeight"], jsonPath ),
-            null,
-            GetSectionBoolValueOrDefault ( [lineName, "IsSplitable"], jsonPath ),
-            numberToLocate
-        );
-
-        return line;
-    }
-
-    private TextLine BuildTextLine ( IConfigurationSection section, string jsonPath, List<string> united, int numberToLocate )
-    {
-        string lineName = section.GetSection ( "Name" )?.Value ?? "";
-        double width = GetSectionIntValueOrDefault ( section.GetSection ( "Width" ), jsonPath );
-        double height = GetSectionIntValueOrDefault ( section.GetSection ( "Height" ), jsonPath );
-        double topOffset = GetSectionIntValueOrDefault ( section.GetSection ( "TopOffset" ), jsonPath );
-        double leftOffset = GetSectionIntValueOrDefault ( section.GetSection ( "LeftOffset" ), jsonPath );
-        double fontSize = GetSectionIntValueOrDefault ( section.GetSection ( "FontSize" ), jsonPath );
-#pragma warning disable CS8600 //Converting null literal or possible null value to non-nullable type.
-        string alignment = GetSectionStrValueOrDefault ( section.GetSection ( "Alignment" ), jsonPath );
-        string fontName = GetSectionStrValueOrDefault ( section.GetSection ( "FontName" ), jsonPath );
-        string foreground = GetSectionStrValueOrDefault ( section.GetSection ( "Foreground" ), jsonPath );
-        string fontWeight = GetSectionStrValueOrDefault ( section.GetSection ( "FontWeight" ), jsonPath );
-#pragma warning disable CS8600 //Converting null literal or possible null value to non-nullable type.
-        string shiftableString = section.GetSection ( "IsSplitable" )?.Value ?? _defaultSplitability;
-        int shiftableInt = DigitalStringParser.ParseToInt ( shiftableString );
-        bool isShiftable = Convert.ToBoolean ( shiftableInt );
-#pragma warning disable CS8604 //Possible null reference argument for parameter.
-        TextLine textLine = new ( lineName, width, height, topOffset, leftOffset, alignment, fontSize, fontName, foreground,
-            fontWeight, united, isShiftable, numberToLocate 
-        );
-#pragma warning disable CS8604 //Possible null reference argument for parameter.
-        return textLine;
-    }
-
-    private ComponentImage BuildInsideImage ( IConfigurationSection section, string templateName )
-    {
-        double [] commonData = GetSharedData ( section );
-        string fileName = section.GetSection ( "Path" )?.Value ?? "";
-        string imagesFolder = _templateNameToDirectory [templateName] + "\\Images\\";
-        string fileUri = imagesFolder + fileName;
-        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
-        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
-        bool isAboveOfBinding = false;
-
-        if ( isAbove == "yes" )
-        {
-            isAboveOfBinding = true;
-        }
-
-        ComponentImage image = new ( fileUri, commonData [0], commonData [1], commonData [2], commonData [3],
-            bindingObjectName, isAboveOfBinding );
-
-        return image;
-    }
-
-    private static ComponentShape BuildInsideShape ( IConfigurationSection section )
-    {
-        double [] commonData = GetSharedData ( section );
-        string kind = section.GetSection ( "Type" )?.Value ?? "";
-        string fillColor = section.GetSection ( "FillColor" )?.Value ?? "#000000";
-        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
-        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
-
-        ComponentShape shape = new ( commonData [0], commonData [1], commonData [2], commonData [3], fillColor, kind,
-            bindingObjectName, isAbove == "yes"
-        );
-
-        return shape;
-    }
-
-    private static double [] GetSharedData ( IConfigurationSection section )
-    {
-        double [] result = new double [4];
-        _ = double.TryParse ( section.GetSection ( "Width" )?.Value, out result [0] );
-        _ = double.TryParse ( section.GetSection ( "Height" )?.Value, out result [1] );
-        _ = double.TryParse ( section.GetSection ( "TopOffset" )?.Value, out result [2] );
-        _ = double.TryParse ( section.GetSection ( "LeftOffset" )?.Value, out result [3] );
 
         return result;
     }
@@ -661,6 +266,387 @@ public sealed class BadgeLayoutProvider : IBadgeLayoutProvider
         }
 
         return layouts;
+    }
+
+    private void SetLayouts ( string resourceFolder, string schemeFile )
+    {
+        _schemeFile = schemeFile;
+        string templatesFolder = Path.Combine ( resourceFolder, "Templates" );
+        DirectoryInfo containingDirectory = new ( templatesFolder );
+        DirectoryInfo [] templateDirectories = containingDirectory.GetDirectories ();
+
+        foreach ( DirectoryInfo templateDirectory in templateDirectories )
+        {
+            string directoryName = templateDirectory.FullName;
+            FileInfo [] templateFiles = templateDirectory.GetFiles ( "*.json" );
+
+            foreach ( FileInfo fileInfo in templateFiles )
+            {
+                string jsonPath = fileInfo.FullName;
+
+                if ( JsonProcessor.TryValidJson ( jsonPath, out string validationMessage) )
+                {
+                    string templateName = JsonProcessor.GetSectionStrValue ( ["TemplateName"], jsonPath, false );
+                    _templateNameToDirectory.Add ( templateName, directoryName );
+
+                    bool nameShouldBeAdded = !string.IsNullOrEmpty ( templateName ) && !_templateNameToJson.ContainsKey ( templateName );
+
+                    if ( nameShouldBeAdded )
+                    {
+                        _templateNameToJson.Add ( templateName, jsonPath );
+                    }
+
+                    bool colorShouldBeAdded = nameShouldBeAdded && !string.IsNullOrEmpty ( templateName );
+
+                    if ( colorShouldBeAdded )
+                    {
+                        SetBadgeComponetMarkers ( jsonPath, templateName );
+                    }
+                }
+                else
+                {
+                    if ( IsJsonTemplate ( jsonPath, out string templateName ) )
+                    {
+                        _templateNameToDirectory.Add ( templateName, directoryName );
+                        _incorrectJsonAndError.Add ( jsonPath, TranslateIncorrectJsonMessage ( validationMessage ) );
+                        _templateNameToJson.Add ( templateName, jsonPath );
+                        SetBadgeComponetMarkers ( jsonPath, templateName );
+                    }
+                }
+            }
+        }
+    }
+
+    private void SetBadgeComponetMarkers ( string jsonPath, string templateName )
+    {
+        string background = GetIncorrectLineBackground ( jsonPath );
+        _templateToIncorrectBackground?.Add ( templateName, background );
+
+        string incorrectBorderColor = GetBorderColor ( jsonPath, "IncorrectMemberSettings" );
+        _templateToIncorrectBorderColor?.Add ( templateName, incorrectBorderColor );
+
+        string correctBorderColor = GetBorderColor ( jsonPath, "CorrectMemberSettings" );
+        _templateToCorrectBorderColor?.Add ( templateName, correctBorderColor );
+
+        List<byte> incorrectBorderThickness = GetThickness ( jsonPath, "IncorrectMemberSettings" );
+        _templateToIncorrectBorderThickness?.Add ( templateName, incorrectBorderThickness );
+
+        List<byte> correctBorderThickness = GetThickness ( jsonPath, "CorrectMemberSettings" );
+        _templateToCorrectBorderThickness?.Add ( templateName, correctBorderThickness );
+    }
+
+    private string GetIncorrectLineBackground ( string jsonPath )
+    {
+        string background = GetSectionStrValueOrDefault ( ["IncorrectMemberSettings", "Background"], jsonPath );
+
+        if ( string.IsNullOrWhiteSpace ( background ) )
+        {
+            background = "#c8c8c8";
+        }
+
+        return background;
+    }
+
+    private List<byte> GetThickness ( string jsonPath, string tag )
+    {
+        List<byte> thickness = [];
+
+        byte left = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Left"], jsonPath );
+        thickness.Add ( left );
+
+        byte top = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Top"], jsonPath );
+        thickness.Add ( top );
+
+        byte right = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Right"], jsonPath );
+        thickness.Add ( right );
+
+        byte bottom = ( byte ) GetSectionIntValueOrDefault ( [tag, "BorderThickness", "Bottom"], jsonPath );
+        thickness.Add ( bottom );
+
+        return thickness;
+    }
+
+    private string GetBorderColor ( string jsonPath, string tag )
+    {
+        string borderColor = GetSectionStrValueOrDefault ( [tag, "BorderColor"], jsonPath );
+
+        if ( string.IsNullOrWhiteSpace ( borderColor ) )
+        {
+            borderColor = "#d23650";
+        }
+
+        return borderColor;
+    }
+
+    private static string TranslateIncorrectJsonMessage ( string message )
+    {
+        string seekable = "LineNumber: ";
+        int lenght = seekable.Length;
+        int incomingIndex = message.IndexOf ( seekable );
+        int endIndex = message.IndexOf ( '|' );
+        string lineNumStr = message.Substring ( incomingIndex + lenght, endIndex - incomingIndex - lenght );
+        string? result = "Ошибка на строке " + lineNumStr + " (" + message + ")";
+
+        return result;
+    }
+
+    private static bool IsJsonTemplate ( string jsonPath, out string templateName )
+    {
+        List<char> tempNameChars = [];
+        List<char> forbidenForName = ['\'', '(', ')', '{', '}', '[', ']'];
+        string jsonText = File.ReadAllText ( jsonPath );
+        int lenght = "\"TemplateName\"".Length;
+        int incomingIndex = jsonText.IndexOf ( "\"TemplateName\"" );
+
+        if ( incomingIndex > -1 )
+        {
+            States states = States.BeforeColon;
+            int scratch = incomingIndex + lenght;
+
+            for ( int index = scratch; index < jsonText.Length; index++ )
+            {
+                char current = jsonText [index];
+
+                if ( states == States.BeforeColon )
+                {
+                    if ( current == ' ' )
+                    {
+                        continue;
+                    }
+                    else if ( current == ':' )
+                    {
+                        states = States.AfterColon;
+                    }
+                    else
+                    {
+                        templateName = string.Empty;
+                        return false;
+                    }
+                }
+                else if ( states == States.AfterColon )
+                {
+                    if ( current == ' ' )
+                    {
+                        continue;
+                    }
+                    else if ( current == '"' )
+                    {
+                        states = States.BeforeName;
+                    }
+                    else
+                    {
+                        templateName = string.Empty;
+
+                        return false;
+                    }
+                }
+                else if ( states == States.BeforeName )
+                {
+                    if ( current == ' ' || current == '"' || forbidenForName.Contains ( current ) )
+                    {
+                        templateName = string.Empty;
+
+                        return false;
+                    }
+                    else
+                    {
+                        states = States.InName;
+                        tempNameChars.Add ( current );
+                    }
+                }
+                else if ( states == States.InName )
+                {
+                    if ( current == '"' )
+                    {
+                        templateName = new string ( [.. tempNameChars] );
+                        return true;
+                    }
+                    else if ( forbidenForName.Contains ( current ) )
+                    {
+                        templateName = string.Empty;
+
+                        return false;
+                    }
+                    else
+                    {
+                        tempNameChars.Add ( current );
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        templateName = string.Empty;
+
+        return false;
+    }
+
+    private List<TextLine> GetLines ( string jsonPath )
+    {
+        List<TextLine> textLines =
+        [
+            BuildTextLine ( "FamilyName", jsonPath, 0 ),
+            BuildTextLine ( "FirstName", jsonPath, 1 ),
+            BuildTextLine ( "PatronymicName", jsonPath, 2 ),
+            BuildTextLine ( "Post", jsonPath, 3 ),
+            BuildTextLine ( "Department", jsonPath, 4 )
+        ];
+
+        return textLines;
+    }
+
+    private void SetUnitingLines ( List<TextLine> atoms, string jsonPath )
+    {
+        IEnumerable<IConfigurationSection> items = JsonProcessor.GetIncludedItemsOfSection ( ["UnitedTextBlocks"], jsonPath );
+
+        foreach ( IConfigurationSection item in items )
+        {
+            int number = DigitalStringParser.ParseToInt ( item.GetSection ( "Number" )?.Value );
+
+            if ( number == 0 )
+            {
+                number = 1;
+            }
+
+            IConfigurationSection unitedSection = item.GetSection ( "United" );
+            IEnumerable<IConfigurationSection> unitedSections = unitedSection.GetChildren ();
+            List<string> unitedTextLinesNames = [];
+
+            foreach ( IConfigurationSection name in unitedSections )
+            {
+                if ( name.Value == null )
+                {
+                    continue;
+                }
+
+                unitedTextLinesNames.Add ( name.Value );
+            }
+
+            TextLine complexTextLine = BuildTextLine ( item, jsonPath, unitedTextLinesNames, number );
+            atoms.Add ( complexTextLine );
+        }
+    }
+
+    private List<ComponentImage> GetImages ( string jsonPath, string templateName )
+    {
+        List<ComponentImage> images = [];
+        IEnumerable<IConfigurationSection> imageSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideImages"], jsonPath );
+
+        foreach ( IConfigurationSection imageSection in imageSections )
+        {
+            ComponentImage image = BuildInsideImage ( imageSection, templateName );
+            images.Add ( image );
+        }
+
+        return images;
+    }
+
+    private static List<ComponentShape> GetShapes ( string jsonPath )
+    {
+        List<ComponentShape> shapes = [];
+        IEnumerable<IConfigurationSection> shapeSections = JsonProcessor.GetIncludedItemsOfSection ( ["InsideShapes"], jsonPath );
+
+        foreach ( IConfigurationSection shapeSection in shapeSections )
+        {
+            ComponentShape shape = BuildInsideShape ( shapeSection );
+            shapes.Add ( shape );
+        }
+
+        return shapes;
+    }
+
+    private TextLine BuildTextLine ( string lineName, string jsonPath, int numberToLocate )
+    {
+        TextLine line = new (
+            lineName,
+            GetSectionIntValueOrDefault ( [lineName, "Width"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "Height"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "TopOffset"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "LeftOffset"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "Alignment"], jsonPath ),
+            GetSectionIntValueOrDefault ( [lineName, "FontSize"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "FontName"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "Foreground"], jsonPath ),
+            GetSectionStrValueOrDefault ( [lineName, "FontWeight"], jsonPath ),
+            null,
+            GetSectionBoolValueOrDefault ( [lineName, "IsSplitable"], jsonPath ),
+            numberToLocate
+        );
+
+        return line;
+    }
+
+    private TextLine BuildTextLine ( IConfigurationSection section, string jsonPath, List<string> united, int numberToLocate )
+    {
+        string lineName = section.GetSection ( "Name" )?.Value ?? "";
+        double width = GetSectionIntValueOrDefault ( section.GetSection ( "Width" ), jsonPath );
+        double height = GetSectionIntValueOrDefault ( section.GetSection ( "Height" ), jsonPath );
+        double topOffset = GetSectionIntValueOrDefault ( section.GetSection ( "TopOffset" ), jsonPath );
+        double leftOffset = GetSectionIntValueOrDefault ( section.GetSection ( "LeftOffset" ), jsonPath );
+        double fontSize = GetSectionIntValueOrDefault ( section.GetSection ( "FontSize" ), jsonPath );
+
+        string? alignment = GetSectionStrValueOrDefault ( section.GetSection ( "Alignment" ), jsonPath );
+        string? fontName = GetSectionStrValueOrDefault ( section.GetSection ( "FontName" ), jsonPath );
+        string? foreground = GetSectionStrValueOrDefault ( section.GetSection ( "Foreground" ), jsonPath );
+        string? fontWeight = GetSectionStrValueOrDefault ( section.GetSection ( "FontWeight" ), jsonPath );
+
+        string shiftableString = section.GetSection ( "IsSplitable" )?.Value ?? _defaultSplitability;
+        int shiftableInt = DigitalStringParser.ParseToInt ( shiftableString );
+        bool isShiftable = Convert.ToBoolean ( shiftableInt );
+
+        TextLine textLine = new ( lineName, width, height, topOffset, leftOffset, alignment, fontSize, fontName, foreground,
+            fontWeight, united, isShiftable, numberToLocate 
+        );
+
+        return textLine;
+    }
+
+    private ComponentImage BuildInsideImage ( IConfigurationSection section, string templateName )
+    {
+        double [] commonData = GetSharedData ( section );
+        string fileName = section.GetSection ( "Path" )?.Value ?? "";
+        string imagesFolder = _templateNameToDirectory [templateName] + "\\Images\\";
+        string fileUri = imagesFolder + fileName;
+        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
+        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
+        bool isAboveOfBinding = false;
+
+        if ( isAbove == "yes" )
+        {
+            isAboveOfBinding = true;
+        }
+
+        ComponentImage image = new ( fileUri, commonData [0], commonData [1], commonData [2], commonData [3],
+            bindingObjectName, isAboveOfBinding );
+
+        return image;
+    }
+
+    private static ComponentShape BuildInsideShape ( IConfigurationSection section )
+    {
+        double [] commonData = GetSharedData ( section );
+        string kind = section.GetSection ( "Type" )?.Value ?? "";
+        string fillColor = section.GetSection ( "FillColor" )?.Value ?? "#000000";
+        string bindingObjectName = section.GetSection ( "BindingObject" )?.Value ?? "";
+        string isAbove = section.GetSection ( "IsAboveOfBinding" )?.Value ?? "";
+
+        ComponentShape shape = new ( commonData [0], commonData [1], commonData [2], commonData [3], fillColor, kind,
+            bindingObjectName, isAbove == "yes"
+        );
+
+        return shape;
+    }
+
+    private static double [] GetSharedData ( IConfigurationSection section )
+    {
+        double [] result = new double [4];
+        _ = double.TryParse ( section.GetSection ( "Width" )?.Value, out result [0] );
+        _ = double.TryParse ( section.GetSection ( "Height" )?.Value, out result [1] );
+        _ = double.TryParse ( section.GetSection ( "TopOffset" )?.Value, out result [2] );
+        _ = double.TryParse ( section.GetSection ( "LeftOffset" )?.Value, out result [3] );
+
+        return result;
     }
 
     private List<string> GetUninstalledFontsFrom ( string jsonPath )

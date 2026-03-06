@@ -1,0 +1,35 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+    <Style Selector="Button.upDownArrows /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+		<Setter Property="FontSize" Value="20"/>
+		<Setter Property="Width" Value="26"/>
+		<Setter Property="Height" Value="26"/>
+		<Setter Property="Padding" Value="5,2"/>
+	</Style>
+	<Style Selector="Button.upDownArrows:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#1C547D"/>
+		<Setter Property="BorderBrush" Value="#4AACFE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.upDownArrows:focus /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.upDownArrows:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#2570A7"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+	<Style Selector="Button.upDownArrows:disabled /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Foreground" Value="#DBCAAE"/>
+		<Setter Property="Background" Value="#EEEEEE"/>
+	</Style>
+</Styles>

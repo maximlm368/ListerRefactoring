@@ -1,39 +1,34 @@
-﻿using Lister.Core.BadgesCreator.Abstractions;
-using Lister.Core.PeopleAccess.Abstractions;
+﻿using Lister.Core.BadgesCreator.AbstractComponents;
 using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
 
 namespace Lister.Core.BadgesCreator;
 
 /// <summary>
-/// Single class creating Badge class instance for person and template.
+/// Single class creating Badge class instance for person using template.
 /// </summary>
-public sealed class BadgeCreator
+internal sealed class BadgeCreator
 {
     private static BadgeCreator? _instance;
     private static IBadgeLayoutProvider? _badgeLayoutProvider;
-    private static IPeopleSourceFactory? _peopleSourceFactory;
 
     private Layout? _badgeLayout;
     private string? _backgroundPath;
     private string? _template;
 
-    public List<Person>? People { get; private set; }
-
-    private BadgeCreator ( IBadgeLayoutProvider badgeLayoutProvider, IPeopleSourceFactory peopleSourceFactory )
+    private BadgeCreator ( IBadgeLayoutProvider badgeLayoutProvider )
     {
         _badgeLayoutProvider ??= badgeLayoutProvider;
-        _peopleSourceFactory ??= peopleSourceFactory;
     }
 
-    public static BadgeCreator GetInstance ( IBadgeLayoutProvider badgeLayoutProvider, IPeopleSourceFactory peopleSourceFactory )
+    internal static BadgeCreator GetInstance ( IBadgeLayoutProvider badgeLayoutProvider )
     {
-        _instance ??= new BadgeCreator ( badgeLayoutProvider, peopleSourceFactory );
+        _instance ??= new BadgeCreator ( badgeLayoutProvider );
 
         return _instance;
     }
 
-    public Badge? CreateBadgeByTemplate ( string? templateName, Person? person )
+    internal Badge? CreateBadgeByTemplate ( string? templateName, Person? person )
     {
         if ( string.IsNullOrWhiteSpace ( templateName ) || person == null )
         {
@@ -50,20 +45,5 @@ public sealed class BadgeCreator
         return ( _backgroundPath != null && _badgeLayout != null )
             ? Badge.GetBadge ( person, _backgroundPath, _badgeLayout.Clone ( true ) )
             : null;
-    }
-
-    public bool TrySetPeopleFrom ( string filePath, int limit )
-    {
-        IPeopleSource? peopleSource = _peopleSourceFactory?.GetPeopleSource ( filePath );
-        List<Person>? people = peopleSource?.Get ( filePath, limit );
-
-        if ( people != null )
-        {
-            People = people;
-
-            return true;
-        }
-
-        return false;
     }
 }

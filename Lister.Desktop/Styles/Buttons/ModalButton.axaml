@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+    <Style Selector="Button.modalButton /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Width" Value="80"/>
+		<Setter Property="Height" Value="24"/>
+		<Setter Property="FontSize" Value="11"/>
+		<Setter Property="BorderThickness" Value="2"/>
+		<Setter Property="BorderBrush" Value="Gray"/>
+		<Setter Property="CornerRadius" Value="0"/>
+	</Style>
+</Styles>

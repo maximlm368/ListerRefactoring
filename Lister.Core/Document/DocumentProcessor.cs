@@ -1,41 +1,36 @@
-﻿using Lister.Core.BadgesCreator.Abstractions;
-using Lister.Core.PeopleAccess.Abstractions;
-using Lister.Core.Document.AbstractServices;
+﻿using Lister.Core.BadgesCreator.AbstractComponents;
+using Lister.Core.Document.AbstractComponents;
 using Lister.Core.Entities;
 using Lister.Core.Entities.Badge;
+using Lister.Core.PeopleAccess;
 
 namespace Lister.Core.Document;
 
 /// <summary>
 /// Single class, builds badges for template and for single person or all persons from source file,
-/// returning pages as result.
-/// Produces, save pdf file for result pages and sends these pages to printer. 
+/// returning pages as result. 
 /// </summary>
 public sealed class DocumentProcessor
 {
     private static DocumentProcessor? _instance = null;
+    private static IPeopleSourceFactory? _peopleSourceFactory;
 
-    private readonly IPdfCreator _pdfCreator;
-    private readonly IPdfPrinter _pdfPrinter;
     private readonly BadgesCreator.BadgeCreator _badgeCreator;
     private int _badgeCount;
 
-    private List<Page> _allPages = [];
+    public List<Person>? People { get; private set; }
+    public List<Page> AllPages { get; private set; } = [];
     public int IncorrectBadgeCount { get; private set; }
     public Page LastPage { get; private set; }
     public delegate void ComplatedPageHandler ( Page complated, bool mustBeReplacedByNext );
     public event ComplatedPageHandler? ComplatedPage;
 
-    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer,
-        IPdfCreator pdfCreator,
-        IPdfPrinter pdfPrinter,
-        IBadgeLayoutProvider badgeAppearenceProvider,
+    private DocumentProcessor ( ITextWidthMeasurer widthMeasurer, IBadgeLayoutProvider badgeLayoutProvider,
         IPeopleSourceFactory peopleSourceFactory
     )
     {
-        _pdfCreator = pdfCreator;
-        _pdfPrinter = pdfPrinter;
-        _badgeCreator = BadgesCreator.BadgeCreator.GetInstance ( badgeAppearenceProvider, peopleSourceFactory );
+        _badgeCreator = BadgesCreator.BadgeCreator.GetInstance ( badgeLayoutProvider );
+        _peopleSourceFactory = peopleSourceFactory;
 
         Page.Complated += page =>
         {
@@ -43,41 +38,37 @@ public sealed class DocumentProcessor
         };
 
         LastPage = new ();
-        _allPages.Add ( LastPage );
+        AllPages.Add ( LastPage );
 
         Layout.Measurer = widthMeasurer;
         TextLine.Measurer = widthMeasurer;
     }
 
     public static DocumentProcessor GetInstance ( ITextWidthMeasurer widthMeasurer,
-        IPdfCreator pdfCreator,
-        IPdfPrinter pdfPrinter,
         IBadgeLayoutProvider badgeAppearenceProvider,
         IPeopleSourceFactory peopleSourceFactory
     )
     {
-        _instance ??= new DocumentProcessor ( widthMeasurer, pdfCreator, pdfPrinter, badgeAppearenceProvider, peopleSourceFactory );
+        _instance ??= new DocumentProcessor ( widthMeasurer, badgeAppearenceProvider, peopleSourceFactory );
 
         return _instance;
     }
 
     public List<Page> BuildAllPages ( string templateName, int limit )
     {
-        List<Person>? people = _badgeCreator.People;
-
-        if ( people == null || ( _badgeCount + people.Count ) >= limit )
+        if ( People == null || ( _badgeCount + People.Count ) >= limit )
         {
             return [];
         }
 
         Page fillablePage = LastPage;
         bool lastIsNotEmpty = fillablePage.BadgeCount > 0;
-        int lastNumber = people.Count - 1;
+        int lastNumber = People.Count - 1;
         List<Badge> incorrects = [];
 
-        for ( int index = 0; index < people.Count; index++ )
+        for ( int index = 0; index < People.Count; index++ )
         {
-            Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, people [index] );
+            Badge? builtIn = _badgeCreator.CreateBadgeByTemplate ( templateName, People [index] );
 
             if ( builtIn == null )
             {
@@ -96,7 +87,7 @@ public sealed class DocumentProcessor
             if ( timeToAddNewPage )
             {
                 fillablePage = possibleNewPage;
-                _allPages.Add ( fillablePage );
+                AllPages.Add ( fillablePage );
             }
 
             if ( index == lastNumber )
@@ -107,9 +98,9 @@ public sealed class DocumentProcessor
             _badgeCount++;
         }
 
-        LastPage = _allPages.Last ();
+        LastPage = AllPages.Last ();
 
-        return _allPages;
+        return AllPages;
     }
 
     public List<Page> BuildBadge ( string? templateName, Person? person )
@@ -118,7 +109,7 @@ public sealed class DocumentProcessor
 
         if ( builtIn == null )
         {
-            return _allPages;
+            return AllPages;
         }
 
         if ( !builtIn.IsCorrect )
@@ -132,54 +123,36 @@ public sealed class DocumentProcessor
         if ( timeToIncrementVisiblePageNumber )
         {
             LastPage = possibleNewLastPage;
-            _allPages.Add ( LastPage );
+            AllPages.Add ( LastPage );
         }
 
         _badgeCount++;
 
-        return _allPages;
+        return AllPages;
     }
 
     public void Clear ()
     {
-        _allPages = [];
+        AllPages = [];
         LastPage = new Page ();
-        _allPages.Add ( LastPage );
+        AllPages.Add ( LastPage );
         _badgeCount = 0;
         IncorrectBadgeCount = 0;
         Badge.ToZeroState ();
     }
 
-    public bool CreateAndSavePdf ( string filePathToSave )
+    public bool TrySetPeopleFrom ( string source, int limit )
     {
-        if ( _allPages.Count == 0 )
+        IPeopleSource? peopleSource = _peopleSourceFactory?.GetPeopleSource ( source );
+        List<Person>? people = peopleSource?.Get ( source, limit );
+
+        if ( people != null ) 
         {
-            return false;
+            People = people;
+
+            return true;
         }
 
-        return _pdfCreator.CreateAndSave ( _allPages, filePathToSave );
-    }
-
-    public void Print ( string? printerName, List<int>? printablePageNumbers, int copiesAmount )
-    {
-        if ( string.IsNullOrWhiteSpace ( printerName )
-            || printablePageNumbers == null
-            || printablePageNumbers.Count == 0
-        )
-        {
-            return;
-        }
-
-        List<Page> printables = [];
-
-        for ( int index = 0; index < _allPages.Count; index++ )
-        {
-            if ( printablePageNumbers.Contains ( index ) )
-            {
-                printables.Add ( _allPages [index] );
-            }
-        }
-
-        _pdfPrinter.Print ( printables, _pdfCreator, printerName, copiesAmount );
+        return false;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Avalonia.Media;
-using Lister.Core.Document.AbstractServices;
+using Lister.Core.Document.AbstractComponents;
 
 namespace Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 

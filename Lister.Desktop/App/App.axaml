@@ -12,8 +12,29 @@
 	<Application.Styles>
 		<FluentTheme />
 		
-		<StyleInclude Source="/Views/Styles/ButtonStyles.axaml"/>
-		<StyleInclude Source="/Views/Styles/GeneralStyles.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/Button.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/ArrowButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/ExtenderButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/LittlePictureButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/ModalButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/PictureButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/PrimaryButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/ScrollButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/SuperButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/SwitcherButton.axaml"/>
+		<StyleInclude Source="/Styles/Buttons/TransparentButton.axaml"/>
+
+		<StyleInclude Source="/Styles/Comboboxes/Combobox.axaml"/>
+		<StyleInclude Source="/Styles/TextBlocks/PictureTextBlock.axaml"/>
+		<StyleInclude Source="/Styles/TextBoxes/TextBox.axaml"/>
+		<StyleInclude Source="/Styles/TextBoxes/PagesAmountTextBox.axaml"/>
+
+		<StyleInclude Source="/Styles/Labels/ComboboxItemLabel.axaml"/>
+		<StyleInclude Source="/Styles/Labels/Label.axaml"/>
+		<StyleInclude Source="/Styles/Labels/ModalLabel.axaml"/>
+		<StyleInclude Source="/Styles/Labels/NarrowLabel.axaml"/>
+		<StyleInclude Source="/Styles/Labels/TallLabel.axaml"/>
+		<StyleInclude Source="/Styles/Labels/PictureLabel.axaml"/>
 
 		<Style Selector="AdornerLayer">
 			<Setter Property="DefaultFocusAdorner">

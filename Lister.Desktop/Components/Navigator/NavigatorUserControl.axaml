@@ -1,0 +1,118 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="32"
+             x:Class="Lister.Desktop.Components.Navigator.NavigatorUserControl"
+			 xmlns:vm="clr-namespace:Lister.Desktop.Components.Navigator.ViewModel;assembly=Lister.Desktop"
+			 x:DataType="vm:NavigatorViewModel"
+			 Name="Root"
+			 Loaded="OnLoaded">
+
+    <Grid
+		Name="navigation"
+		ColumnDefinitions="34 34 64 40 60 34 34">
+
+		<Button
+			Name="ToFirstPage"
+			Grid.Column="0"
+			Classes="transparent"
+			Width="32"
+			Padding="8,6"
+			IsEnabled="{Binding IsFirstEnable, Mode=OneWay}"
+			Command="{Binding ToFirstCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="{Binding #Root.ToFirstToolTip}"
+			ToolTip.HorizontalOffset="20"
+			Content="&#xf048;"
+		/>
+		<Button
+			Name="ToPreviousPage"
+			Grid.Column="1"
+			Classes="littlePicture"
+			Width="32"
+			FontSize="20"
+			Padding="8,4"
+			IsEnabled="{Binding IsPreviousEnable, Mode=OneWay}"
+			Command="{Binding ToPreviousCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="{Binding #Root.ToPreviousToolTip}"
+			ToolTip.HorizontalOffset="20"
+			Content="&#xf0d9;" 
+		/>
+		<TextBox
+			Name="Number"
+			Grid.Column="2"
+			Width="60"
+			Height="32"
+			FontSize="16"
+			Background="White"
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			IsTabStop="{Binding #Root.IsVisibleNumberEditable}"
+			IsHitTestVisible="{Binding #Root.IsVisibleNumberEditable}"
+			ScrollViewer.VerticalScrollBarVisibility="Disabled"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			Text="1"
+			TextChanged="ToNumber"
+			LostFocus="CounterLostFocus"
+		/>
+		<TextBox
+			Name="EmptyNumber"
+			Grid.Column="2"
+			ZIndex="3"
+			Width="60"
+			Height="32"
+			FontSize="16"
+			Background="White"
+			IsTabStop="False"
+			IsHitTestVisible="False"
+			ScrollViewer.VerticalScrollBarVisibility="Disabled"
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+			IsVisible="{Binding IsEmptyNumberVisible}"
+		/>
+		<Label
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Grid.Column="3"
+			Content="из"
+			FontFamily="Segou UI"
+			FontSize="16"
+		/>
+		<Label
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			Margin="0,9"
+			Grid.Column="4"
+			Content="{Binding Count, Mode=OneWay}"
+		/>
+		<Button
+			Name="ToNextPage"
+			Grid.Column="5"
+			Classes="littlePicture"
+			Width="32"
+			FontSize="20"
+			Padding="8,4"
+			IsEnabled="{Binding IsNextEnable, Mode=OneWay}"
+			Command="{Binding ToNextCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="{Binding #Root.ToNextToolTip}"
+			ToolTip.HorizontalOffset="20"
+			Content="&#xf0da;"
+		/>
+		<Button
+			Name="ToLastPage"
+			Grid.Column="6"
+			Classes="transparent"
+			Width="32"
+			Padding="8,6"
+			IsEnabled="{Binding IsLastEnable, Mode=OneWay}"
+			Command="{Binding ToLastCommand}"
+			PointerPressed="SomeButtonPressed"
+			ToolTip.Tip="{Binding #Root.ToLastToolTip}"
+			ToolTip.HorizontalOffset="20"
+			Content="&#xf051;"
+		/>
+	</Grid>
+</UserControl>
+

@@ -1,7 +1,7 @@
 ﻿using Lister.Core.Entities;
-using Lister.Core.PeopleAccess.Abstractions;
 using System.Data;
 using ExcelDataReader;
+using Lister.Core.PeopleAccess;
 
 namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 
@@ -88,7 +88,6 @@ public sealed class PeopleXlsxSource : IPeopleSource
 
         return result;
     }
-
 
     public static List<string> GetRow ( string filePath )
     {

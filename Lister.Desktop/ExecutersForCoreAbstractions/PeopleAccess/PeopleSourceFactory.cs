@@ -1,4 +1,4 @@
-﻿using Lister.Core.PeopleAccess.Abstractions;
+﻿using Lister.Core.PeopleAccess;
 
 namespace Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
 

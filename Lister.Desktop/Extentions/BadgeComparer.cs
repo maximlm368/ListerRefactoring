@@ -1,4 +1,4 @@
-﻿using Lister.Desktop.ModelMappings.BadgeVM;
+﻿using Lister.Desktop.Entities.BadgeVM;
 
 namespace Lister.Desktop.Extentions;
 

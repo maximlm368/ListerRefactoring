@@ -1,4 +1,4 @@
-﻿using Lister.Core.Document.AbstractServices;
+﻿using Lister.Core.Document.AbstractComponents;
 using Lister.Core.Extentions;
 
 namespace Lister.Core.Entities.Badge;
@@ -34,7 +34,6 @@ public class TextLine : LayoutComponentBase
         {
             _content = value;
             ContentIsSet = true;
-            //TextChanged?.Invoke ( this );
         }
     }
     public double UsefullWidth { get; private set; }
@@ -67,8 +66,8 @@ public class TextLine : LayoutComponentBase
 
     public event Action<TextLine>? TextChanged;
 
-    public TextLine ( string name, double width, double height, double topOffset, double leftOffset, string alignment, double fontSize,
-        string fontName, string foregroundHexStr, string fontWeight, List<string>? includedLines, bool isSplitable, int numberToLocate
+    public TextLine ( string name, double width, double height, double topOffset, double leftOffset, string? alignment, double fontSize,
+        string? fontName, string? foregroundHexStr, string? fontWeight, List<string>? includedLines, bool isSplitable, int numberToLocate
     )
     {
         Content = "";
@@ -134,7 +133,7 @@ public class TextLine : LayoutComponentBase
         }
         else
         {
-            UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
+            UsefullWidth = Measurer != null ? Measurer.Measure ( Content, FontWeight, FontSize, FontName ) : 0;
             SetAlignment ();
             Width = UsefullWidth;
             Padding = GetPadding ();
@@ -182,7 +181,7 @@ public class TextLine : LayoutComponentBase
         }
 
         FontSize += 1;
-        UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
+        UsefullWidth = Measurer != null ? Measurer.Measure ( Content, FontWeight, FontSize, FontName ) : 0;
         double proportion = FontSize / oldFontSize;
         Height *= proportion;
         Padding = GetPadding ();
@@ -203,7 +202,7 @@ public class TextLine : LayoutComponentBase
         double oldWidth = UsefullWidth;
         double oldFontSize = FontSize;
         FontSize -= 1;
-        UsefullWidth = Measurer.Measure ( Content, FontWeight, FontSize, FontName );
+        UsefullWidth = Measurer != null ? Measurer.Measure ( Content, FontWeight, FontSize, FontName ) : 0;
         double proportion = oldFontSize / FontSize;
         Height /= proportion;
         Padding = GetPadding ();

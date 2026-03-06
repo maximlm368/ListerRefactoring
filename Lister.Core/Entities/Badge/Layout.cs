@@ -1,4 +1,4 @@
-﻿using Lister.Core.Document.AbstractServices;
+﻿using Lister.Core.Document.AbstractComponents;
 using Lister.Core.Extentions;
 
 namespace Lister.Core.Entities.Badge;

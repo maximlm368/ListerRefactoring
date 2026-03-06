@@ -1,5 +1,4 @@
-﻿using Lister.Core.Document;
-using Lister.Core.Document.AbstractServices;
+﻿using Lister.Core.Entities;
 using System.Diagnostics;
 using System.Drawing.Printing;
 
@@ -24,7 +23,7 @@ public sealed class Printer
         return _instance ?? new Printer ( osName );
     }
 
-    public void Print ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
+    public void Print ( List<Page> printables, PdfCreator creator, string printerName, int copiesAmount )
     {
         if ( _osName == "Windows" )
         {
@@ -50,15 +49,13 @@ public sealed class Printer
         };
 
         process.Start ();
-
         string result = process.StandardOutput.ReadToEnd ();
-
         process.WaitForExit ();
 
         return result;
     }
 
-    private void PrintOnWindows ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
+    private void PrintOnWindows ( List<Page> printables, PdfCreator creator, string printerName, int copiesAmount )
     {
         if ( _osName == "Windows" && OperatingSystem.IsWindowsVersionAtLeast ( 6, 1 ) ) 
         {
@@ -88,7 +85,7 @@ public sealed class Printer
         }
     }
 
-    private static void PrintOnLinux ( List<Page> printables, IPdfCreator creator, string printerName, int copiesAmount )
+    private static void PrintOnLinux ( List<Page> printables, PdfCreator creator, string printerName, int copiesAmount )
     {
         string pdfProxyName = @"./proxy.pdf";
         bool dataIsGenerated = creator.CreateAndSave ( printables, pdfProxyName );

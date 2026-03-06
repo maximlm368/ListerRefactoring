@@ -1,21 +1,21 @@
 ﻿using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Lister.Core.BadgesCreator;
 using Lister.Core.Document;
 using Lister.Desktop.App.Configs;
 using Lister.Desktop.ExecutersForCoreAbstractions.BadgeCreator;
 using Lister.Desktop.ExecutersForCoreAbstractions.DocumentProcessor;
 using Lister.Desktop.ExecutersForCoreAbstractions.PeopleAccess;
+using Lister.Desktop.Infrastructure;
+using Lister.Desktop.Services;
 using Lister.Desktop.Views.DialogMessageWindows.PrintDialog.ViewModel;
+using Lister.Desktop.Views.MainView;
+using Lister.Desktop.Views.MainView.Parts.PersonChoosing.ViewModel;
+using Lister.Desktop.Views.MainView.Parts.PersonSource.ViewModel;
+using Lister.Desktop.Views.MainView.Parts.Scene.ViewModel;
+using Lister.Desktop.Views.MainView.ViewModel;
 using Lister.Desktop.Views.MainWindow;
-using Lister.Desktop.Views.MainWindow.MainView;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing.ViewModel;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.PersonSource.ViewModel;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene;
-using Lister.Desktop.Views.MainWindow.MainView.Parts.Scene.ViewModel;
-using Lister.Desktop.Views.MainWindow.MainView.ViewModel;
-using Lister.Desktop.Views.MainWindow.WaitingView.ViewModel;
+using Lister.Desktop.Views.WaitingView.ViewModel;
 using Lister.Desktop.Views.SplashWindow;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +25,10 @@ public partial class ListerApp : Avalonia.Application
 {
     private static string _configPath = string.Empty;
     private static string _osName = string.Empty;
+    private static DocumentProcessor _documentProcessor = DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, 
+        BadgeLayoutProvider.GetInstance (),
+        PeopleSourceFactory.GetInstance ()
+    );
 
 #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Рассмотрите возможность добавления модификатора "required" или объявления значения, допускающего значение NULL.
     public static ServiceProvider Services { get; private set; }
@@ -82,13 +86,11 @@ public partial class ListerApp : Avalonia.Application
 
     private static MainViewModel GetMainViewModel ()
     {
-        MainViewModelArgs args = new (
-            GetPdfPrinter (),
-            GetPrintDialog (),
+        MainViewModelArgs args = new ( new PrintingManager ( PdfCreator.GetInstance ( _osName ), Printer.GetInstance ( _osName ) ),
             GetPersonChoosing (),
             GetPersonSource (),
-            GetScene (),
-            GetWaiting ()
+            new SceneViewModel ( PersonSourceConfigs.BadgeCountLimit, _documentProcessor ),
+            new WaitingViewModel ( WaitingElementConfigs.GifPath )
         )
         {
             OsName = _osName,
@@ -102,30 +104,10 @@ public partial class ListerApp : Avalonia.Application
         return new ( args );
     }
 
-    private static DocumentOutsider GetPdfPrinter ()
-    {
-        DocumentProcessor model = DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, PdfCreator.GetInstance ( _osName ),
-            Printer.GetInstance ( _osName ),
-            BadgeLayoutProvider.GetInstance (),
-            PeopleSourceFactory.GetInstance ()
-        );
-
-        return new DocumentOutsider ( model );
-    }
-
     private static PrintDialogViewModel GetPrintDialog ()
     {
         return new PrintDialogViewModel ( _osName );
     }
-
-    //private static DocumentProcessor GetDocumentProcessor ()
-    //{
-    //    return DocumentProcessor.GetInstance ( TextWidthMeasurer.Instance, PdfCreator.GetInstance ( _osName ),
-    //        PdfPrinter.GetInstance ( _osName ),
-    //        BadgeLayoutProvider.GetInstance (),
-    //        PeopleSourceFactory.GetInstance ()
-    //    );
-    //}
 
     private static PersonSourceViewModel GetPersonSource ()
     {
@@ -137,18 +119,16 @@ public partial class ListerApp : Avalonia.Application
 
         int badgeLimit = PersonSourceConfigs.BadgeCountLimit;
         string sourcePathKeeper = JsonProcessor.GetSectionStrValue ( ["personSource"], _configPath, false );
-        BadgeCreator badgesCreator = BadgeCreator.GetInstance ( BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
 
-        return new ( pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper, badgesCreator, _configPath );
+        return new ( pickerTitle, filePickerTitle, patterns, headers, badgeLimit, sourcePathKeeper, _documentProcessor, _configPath );
     }
 
     private static PersonChoosingViewModel GetPersonChoosing ()
     {
         SolidColorBrush incorrectTemplateForeground = GetColor ( PersonChoosingConfigs.IncorrectTemplateForeground );
         SolidColorBrush correctTemplateForeground = GetColor ( PersonChoosingConfigs.CorrectTemplateForeground );
-        BadgeCreator badgesCreator = BadgeCreator.GetInstance ( BadgeLayoutProvider.GetInstance (), PeopleSourceFactory.GetInstance () );
 
-        return new ( incorrectTemplateForeground, correctTemplateForeground, badgesCreator );
+        return new ( incorrectTemplateForeground, correctTemplateForeground, _documentProcessor );
     }
 
     private static SolidColorBrush GetColor ( string hexColor )
@@ -159,24 +139,5 @@ public partial class ListerApp : Avalonia.Application
         }
 
         return new SolidColorBrush ( new Color ( 255, 0, 0, 0 ) );
-    }
-
-    private static SceneViewModel GetScene ()
-    {
-        return new SceneViewModel (
-            SceneConfigs.BadgeCountLimit,
-            DocumentProcessor.GetInstance (
-                TextWidthMeasurer.Instance,
-                PdfCreator.GetInstance ( _osName ),
-                Printer.GetInstance ( _osName ),
-                BadgeLayoutProvider.GetInstance (),
-                PeopleSourceFactory.GetInstance ()
-            )
-        );
-    }
-
-    private static WaitingViewModel GetWaiting ()
-    {
-        return new WaitingViewModel ( WaitingElementConfigs.GifPath );
     }
 }

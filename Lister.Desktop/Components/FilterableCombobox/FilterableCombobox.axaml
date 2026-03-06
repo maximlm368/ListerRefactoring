@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="32"
+             xmlns:uc="clr-namespace:Lister.Desktop.Views.MainWindow.MainView.Parts.PersonChoosing"
+             x:Class="Lister.Desktop.Components.FilterableCombobox.FilterableComboboxUserControl"
+             Height="32"
+			 Loaded="OnLoaded">
+
+	<UserControl.Styles>
+		<Style Selector="Label /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Height" Value="32"/>	
+		</Style>
+		<Style Selector="Label.picture /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="FontFamily" Value="{StaticResource FA}"/>
+		</Style>
+	</UserControl.Styles>
+
+        <Grid
+            ColumnDefinitions="* 32">
+
+			    <TextBox 
+                    Name="PART_EditableTextBox"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Height="32"
+                    CornerRadius="3"
+                    FontSize="16"
+					SelectionBrush="{x:Null}"
+					SelectionForegroundBrush="Black"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+				    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    KeyDown="ManageByKey"
+					KeyUp="Filter"
+					LostFocus="OnLostFocus"
+                />
+
+            	<Label
+				    Name="PART_DropOpenButton"
+				    Classes="picture"
+                    Grid.Column="1"
+				    VerticalAlignment="Center"
+				    Width="28"
+				    Height="28"
+				    Padding="6,8,0,0"
+					CornerRadius="0,3,3,0"
+					Background="White"
+				    PointerPressed="OpenCloseButtonPressed"
+				    FontFamily="{StaticResource FA}"
+				    Content="&#xf107;"
+                    Tapped="CloseOpen"
+			    />
+
+                <Popup
+                    Name="PART_Popup"
+                    IsEnabled="True"
+                    IsOpen="False">
+
+					<Border
+                        BorderBrush="Gray"
+						Background="White"
+                        BorderThickness="1"
+						PointerPressed="TappedOnPopup"
+						PointerWheelChanged="ScrollByWheel">
+
+						<Grid
+							Name="PART_HorizontalPanel"
+							ColumnDefinitions="* 16"
+							Width="{Binding #PART_EditableTextBox.Bounds.Width}">
+
+							<StackPanel
+								Name="PART_ItemsPanel" 
+								Grid.Column="0">
+
+								<ContentPresenter
+									Name="PART_AllSign"
+									PointerPressed="Dischoice"
+								/>
+
+								<ItemsControl
+									Name="PART_ItemsControl"
+								/>
+							</StackPanel>
+
+							<Canvas
+								Name="scroller"
+								Grid.Column="1"
+								Width="16"
+								Background="White"
+								PointerPressed="ShiftRunner">
+
+								<Canvas
+									Name="upper"
+									Canvas.Left="0"
+									Canvas.Top="0"
+									Width="{Binding $parent[Canvas].Width}"
+									Height="16"
+									Background="LightGray"
+									PointerPressed="ScrollByTapping"
+									PointerReleased="StopRepeatScrolling"
+								/>
+								<Canvas
+									Name="runner"
+									Classes="Runner"
+									Canvas.Left="0"
+									Width="{Binding $parent[Canvas].Width}"
+									Background="#817974"
+									PointerPressed="CaptureRunner"
+									PointerMoved="ScrollByRunnerMoving"
+									PointerReleased="RunnerReleased"
+								/>
+								<Canvas
+									Name="downer"
+									Canvas.Left="0"
+									Canvas.Bottom="0"
+									Width="{Binding $parent[Canvas].Width}"
+									Height="16"
+									Background="LightGray"
+									PointerPressed="ScrollByTapping"
+									PointerReleased="StopRepeatScrolling"
+								/>
+							</Canvas>
+						</Grid>
+                    </Border>
+                </Popup>
+          </Grid>
+</UserControl>
